@@ -1,4 +1,3 @@
 import astropy.units as u
 
-
-Tcmb = 2.73 * u.K
+T_cmb = 2.73 * u.K
