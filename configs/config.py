@@ -10,13 +10,23 @@ class Config:
         self.setup_input = self.get_inputs(setup_input)
         self.fixed_input = self.get_inputs(fixed_input)
         self.default = self.get_inputs(default_input)
-        self.obs_freq = self.user_input.get('obs_freq', self.default.get('obs_freq')) 
-        self.n_pol = self.user_input.get('n_pol', self.default.get('n_pol')) 
-        # etc for all the input attributes
-        # self.pwv =
-        # self.RA =
-        # self.Dec =
-        # self.bandwidth =
+
+        self.bandwidth    = self.user_input.get('bandwidth', self.default.get('bandwidth'))
+        self.obs_freq     = self.user_input.get('obs_freq', self.default.get('obs_freq'))
+        self.n_pol        = self.user_input.get('n_pol', self.default.get('n_pol'))
+        self.pwv          = self.user_input.get('pwv', self.default.get('pwv'))
+        self.RA           = self.user_input.get('RA', self.default.get('RA'))
+        self.Dec          = self.user_input.get('Dec', self.default.get('Dec'))
+        self.surface_rms  = self.setup_input.get('surface_rms', self.default.get('surface_rms'))
+        self.dish_radius  = self.setup_input.get('dish_radius', self.default.get('dish_radius'))
+        self.eta_transp   = self.setup_input.get('eta_transp', self.default.get('eta_transp'))
+        self.eta_radr     = self.setup_input.get('eta_radr', self.default.get('eta_radr'))
+        self.eta_radf     = self.setup_input.get('eta_radf', self.default.get('eta_radf'))
+        self.eta_block    = self.setup_input.get('eta_block', self.default.get('eta_block'))
+        self.eta_surface  = self.setup_input.get('eta_surface', self.default.get('eta_surface'))
+        self.eta_ill      = self.setup_input.get('eta_ill', self.default.get('eta_ill'))
+        self.eta_q        = self.setup_input.get('eta_q', self.default.get('eta_q'))
+        self.eta_point    = self.setup_input.get('eta_point', self.default.get('eta_point'))
 
     def get_inputs(self, file):
         '''
@@ -28,14 +38,19 @@ class Config:
         :retunr: a dictionary of astropy.unit.Quantities, if units given
         :rtype: dict
         '''
-        dict = {}
+        params = {}
         file = open(file, "r")
         inputs = yaml.load(file, Loader=Loader)
         for key in inputs.keys():
             if inputs[key]['unit'] == "none":
-                dict[key] = inputs[key]['value']
+                params[key] = inputs[key]['value']
             else:
                 unit = getattr(u, inputs[key]['unit'])
-                dict[key] = inputs[key]['value'] * unit
-        return dict
+                params[key] = inputs[key]['value'] * unit
+        return params
+
+    def set_input(self, input_file, name):
+        ''' Get input from user input dictionary'''
+        param = getattr(self,input_file).get(name, self.default.get(name)) 
+        setattr(self, name, param)
 
