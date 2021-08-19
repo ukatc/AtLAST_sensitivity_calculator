@@ -2,5 +2,7 @@
 # Bandwidth comes from config
 # tau_atm comes from atm_model
 
+from astropy import constants
 
-def SEFD()
+def get_SEFD(T_sys, area, eta_A):
+    return (2 * constants.k_B * T_sys)/(eta_A * area)
