@@ -1,6 +1,8 @@
 
 class AtmosphereParams:
+    ''' Class used to retrieve atmospheric parameters from a model. '''
     def __init__(self, obs_freq, pwv):
+        ''' AtmosphereParams class constructor. '''
         self.obs_freq = obs_freq
         self.pwv = pwv
 
