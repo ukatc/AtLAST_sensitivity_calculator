@@ -3,6 +3,7 @@ from functions.calculations import *
 import astropy.units as u
 from astropy import constants 
 import numpy as np
+from configs.config import Config
 
 ####################
 # SOME FILLER INPUT VALUES FOR NOW
@@ -18,6 +19,8 @@ radius = 25 * u.m
 area = np.pi * radius**2
 eta_A = 1
 ####################
+
+params = Config("configs/user_inputs.yaml","configs/setup_inputs.yaml", "configs/fixed_inputs.yaml", "configs/default_inputs.yaml")
 
 sefd = get_SEFD(T_sys, area, eta_A)
 print(sefd)
