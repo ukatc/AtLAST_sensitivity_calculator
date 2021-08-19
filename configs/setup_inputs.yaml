@@ -1,4 +1,3 @@
 ---
 surface_rms:  {value: 25,   unit: micron}
 dish_radius:  {value: 25,   unit: m}
-T_spl:        {value: 0,    unit: K}
