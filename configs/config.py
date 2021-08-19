@@ -49,8 +49,4 @@ class Config:
                 params[key] = inputs[key]['value'] * unit
         return params
 
-    def set_input(self, input_file, name):
-        ''' Get input from user input dictionary'''
-        param = getattr(self,input_file).get(name, self.default.get(name)) 
-        setattr(self, name, param)
 
