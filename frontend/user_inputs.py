@@ -4,7 +4,7 @@
 # - bandwidth (?)
 # - number of polarizations
 # - precipitable water vapour
-#
+# Frontend structure not decided, this was just playing around with inputs. Will need work down the line.
 
 from astropy.coordinates import SkyCoord
 import astropy.units as u
