@@ -13,10 +13,10 @@ params = Config("configs/user_inputs.yaml","configs/setup_inputs.yaml", "configs
 # SOME FILLER INPUT VALUES FOR NOW
 bandwidth = 7.5 * u.GHz
 tau_atm = 0.7
-sefd = 10 * u.K / u.m**2 * (constants.k_B)
+# sefd = 10 * u.K / u.m**2 * (constants.k_B)
 n_pol = 1
 eta_s = 1
-sensitivity = 5e-6 * u.Jy
+sensitivity = 0.00882922 * u.Jy
 t_int= 1 * u.s
 T_sys = 270 * u.K
 radius = 25 * u.m
@@ -26,7 +26,7 @@ eta_A = 1
 
 
 
-sefd = get_SEFD(T_sys, area, eta_A)
+sefd = SEFD.calculate(T_sys, area, eta_A)
 print(sefd)
 
 bandwidth = bandwidth.to(u.Hz)
