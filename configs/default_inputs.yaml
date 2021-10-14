@@ -1,0 +1,17 @@
+---
+obs_freq:     {value: 600,    unit: GHz}
+n_pol:        {value: 1,      unit: none}
+pwv:          {value: 0.5,    unit: none}
+RA:           {value: 309.51, unit: deg}
+Dec:          {value: 19.42,  unit: deg}
+bandwidth:    {value: 7.5,    unit: GHz}
+surface_rms:  {value: 25,     unit: micron}
+dish_radius:  {value: 25,     unit: m}
+eta_transp:   {value: 1,      unit: none} 
+eta_radr:     {value: 1,      unit: none}
+eta_radf:     {value: 1,      unit: none}  
+eta_block:    {value: 1,      unit: none}  
+eta_surface:  {value: 1,      unit: none}  
+eta_ill:      {value: 1,      unit: none}  
+eta_q:        {value: 1,      unit: none}
+eta_point:    {value: 1,      unit: none} 
