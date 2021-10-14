@@ -1,12 +1,12 @@
-from functions.sensitivity import Calculator
-from functions.calculations import *
+from src.functions.sensitivity import Calculator
+from src.functions.calculations import *
 import astropy.units as u
 from astropy import constants 
 import numpy as np
-from configs.config import Config
+from src.configs.config import Config
 
 
-params = Config("configs/user_inputs.yaml","configs/setup_inputs.yaml", "configs/fixed_inputs.yaml", "configs/default_inputs.yaml")
+params = Config("src/configs/user_inputs.yaml","src/configs/setup_inputs.yaml", "src/configs/fixed_inputs.yaml", "src/configs/default_inputs.yaml")
 
 ####################
 # AT THE MOMENT THERE IS A DISCONNECT HERE 
