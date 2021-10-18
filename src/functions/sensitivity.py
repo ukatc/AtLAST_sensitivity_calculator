@@ -10,7 +10,7 @@ class Calculator:
         self.n_pol = n_pol
         self.eta_s = eta_s
         
-    def calc_sensitivity(self, t_int):
+    def sensitivity(self, t_int):
         '''
         Return sensitivity of telescope (Jansky) for a given integration time t_int
 
@@ -22,7 +22,7 @@ class Calculator:
         sensitivity = self.sefd/(self.eta_s * np.sqrt(self.n_pol * self.bandwidth * t_int)) * np.exp(self.tau_atm)
         return sensitivity.to(u.Jy)
 
-    def calc_t_integration(self, sensitivity):
+    def t_integration(self, sensitivity):
         '''
         Return integration time required for some sensitivity to be reached.
 

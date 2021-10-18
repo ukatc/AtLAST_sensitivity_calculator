@@ -33,6 +33,6 @@ bandwidth = bandwidth.to(u.Hz)
 
 calculator = Calculator(bandwidth, tau_atm, sefd, n_pol, eta_s)
 
-print("Sensitivity: ", calculator.calc_sensitivity(t_int))
+print("Sensitivity: ", calculator.sensitivity(t_int))
 
-print("Integration time: ", calculator.calc_t_integration(sensitivity))
+print("Integration time: ", calculator.t_integration(sensitivity))
