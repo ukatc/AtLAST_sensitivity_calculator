@@ -2,7 +2,7 @@ import pytest
 
 
 def test_SEFD():
-    from src.functions.calculations import SEFD 
+    from src.functions.sefd import SEFD 
     import astropy.units as u
     import numpy as np
 

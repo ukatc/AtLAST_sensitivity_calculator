@@ -15,4 +15,6 @@ class SystemTemperature:
         return self.T_atm*(1 - tau_atm) + self.T_cmb + self.T_gal
 
     def calculate(self, g, eta_eff, tau_atm):
+        '''
+        Returns '''
         return((1 + g) / eta_eff * tau_atm) * (self.T_rx + (eta_eff * self.T_sky) + ((1 - eta_eff) * self.T_amb))
