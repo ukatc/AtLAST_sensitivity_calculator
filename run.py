@@ -35,9 +35,8 @@ tau_atm = 0.8
 g = 1
 eta_eff = 0.9
 
-temperatures = SystemTemperature(T_rx, T_cmb, T_atm, T_amb, T_gal)
-temperatures.sky_temperature(tau_atm)
-T_sys = temperatures.system_temperature(g, eta_eff, tau_atm)
+temperatures = SystemTemperature(T_rx, T_cmb, T_atm, T_amb, T_gal, tau_atm)
+T_sys = temperatures.system_temperature(g, eta_eff)
 
 print(T_sys)
 

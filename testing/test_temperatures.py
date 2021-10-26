@@ -14,9 +14,8 @@ def test_temperatures():
     g = 1
     eta_eff = 0.9
 
-    t = SystemTemperature(T_rx, T_cmb, T_atm, T_amb, T_gal)
-    assert t.sky_temperature(tau_atm).value == pytest.approx(63.73, 0.01)
-    assert t.system_temperature(g, eta_eff, tau_atm).value == pytest.approx(238.856, 0.001)
+    t = SystemTemperature(T_rx, T_cmb, T_atm, T_amb, T_gal, tau_atm)
+    assert t.system_temperature(g, eta_eff).value == pytest.approx(238.856, 0.001)
 
 def test_units():
     import astropy.units as u
@@ -31,7 +30,6 @@ def test_units():
     g = 1
     eta_eff = 0.9
 
-    t = SystemTemperature(T_rx, T_cmb, T_atm, T_amb, T_gal)
-    assert t.sky_temperature(tau_atm).unit == "K"
-    assert t.system_temperature(g, eta_eff, tau_atm).unit == "K"
+    t = SystemTemperature(T_rx, T_cmb, T_atm, T_amb, T_gal, tau_atm)
+    assert t.system_temperature(g, eta_eff).unit == "K"
 
