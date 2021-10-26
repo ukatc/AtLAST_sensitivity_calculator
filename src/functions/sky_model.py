@@ -1,17 +1,23 @@
 import astropy.units as u
 
+from run import T_gal
 
-def get_T_gal(obs_freq, coords):
-    '''
-    Return T_gal for a given sky position.
+class SkyParams:
+    def __init__(self):
+        pass
 
-    :param obs_freq: the observing frequency
-    :type obs_freq: astropy.units.Quantity
-    :param coords: target coordinates
-    :type coords: astrpy.coordinates.SkyCoord
-    :return: T galaxy
-    :rtype: astropy.units.Quantity
-    '''
-    raise NotImplementedError
+    def get_T_gal(self, obs_freq, coords):
+        '''
+        Return T_gal for a given sky position.
 
-    return T_gal
+        :param obs_freq: the observing frequency
+        :type obs_freq: astropy.units.Quantity
+        :param coords: target coordinates
+        :type coords: astrpy.coordinates.SkyCoord
+        :return: T galaxy
+        :rtype: astropy.units.Quantity
+        '''
+        # raise NotImplementedError
+
+        self.T_gal = T_gal
+    
