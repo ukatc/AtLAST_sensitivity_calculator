@@ -1,7 +1,8 @@
 import pytest
 
+
 def test_sensitivity():
-    from src.functions.sensitivity import Calculator
+    from src.functions.sensitivity import Sensitivity
     from astropy import constants
     import astropy.units as u
     bandwidth = 7.5 * u.GHz
@@ -15,12 +16,12 @@ def test_sensitivity():
 
     bandwidth = bandwidth.to(u.Hz)
 
-    calculator = Calculator(bandwidth, tau_atm, sefd, n_pol, eta_s)
+    calculator = Sensitivity(bandwidth, tau_atm, sefd, n_pol, eta_s)
 
     assert calculator.sensitivity(example_t_int).value == 0.32103973505475175
 
 def test_integration():
-    from src.functions.sensitivity import Calculator
+    from src.functions.sensitivity import Sensitivity
     from astropy import constants
     import astropy.units as u
     bandwidth = 7.5 * u.GHz
@@ -32,6 +33,6 @@ def test_integration():
     
     example_sensitivity = 15e-5 * u.Jy
 
-    calculator = Calculator(bandwidth, tau_atm, sefd, n_pol, eta_s)
+    calculator = Sensitivity(bandwidth, tau_atm, sefd, n_pol, eta_s)
 
     assert calculator.t_integration(example_sensitivity).value == 4580733.843734454

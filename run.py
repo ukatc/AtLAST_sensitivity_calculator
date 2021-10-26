@@ -1,5 +1,4 @@
-from astropy.units.equivalencies import temperature
-from src.functions.sensitivity import Calculator
+from src.functions.sensitivity import Sensitivity
 from src.functions.sefd import SEFD
 from src.functions.system_temperature import SystemTemperature
 import astropy.units as u
@@ -36,8 +35,9 @@ tau_atm = 0.8
 g = 1
 eta_eff = 0.9
 
-temperature = SystemTemperature(T_rx, T_cmb, T_atm, T_amb, T_gal, tau_atm)
-T_sys = SystemTemperature.calculate(temperature, g, eta_eff, tau_atm)
+temperatures = SystemTemperature(T_rx, T_cmb, T_atm, T_amb, T_gal)
+temperatures.sky_temperature(tau_atm)
+T_sys = temperatures.system_temperature(g, eta_eff, tau_atm)
 
 print(T_sys)
 
@@ -46,7 +46,7 @@ print(sefd)
 
 bandwidth = bandwidth.to(u.Hz)
 
-calculator = Calculator(bandwidth, tau_atm, sefd, n_pol, eta_s)
+calculator = Sensitivity(bandwidth, tau_atm, sefd, n_pol, eta_s)
 
 print("Sensitivity: ", calculator.sensitivity(t_int))
 
