@@ -27,6 +27,7 @@ class Config:
         self.eta_ill      = self.setup_input.get('eta_ill', self.default.get('eta_ill'))
         self.eta_q        = self.setup_input.get('eta_q', self.default.get('eta_q'))
         self.eta_point    = self.setup_input.get('eta_point', self.default.get('eta_point'))
+        self.T_cmb        = self.fixed_input.get('T_cmb')
 
     def get_inputs(self, file):
         '''

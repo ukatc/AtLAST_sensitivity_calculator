@@ -1,3 +1,4 @@
+import astropy.units as u
 
 class AtmosphereParams:
     ''' Class used to retrieve atmospheric parameters from a model. '''
@@ -19,7 +20,8 @@ class AtmosphereParams:
         '''
         # something that calls the atmospheric model (same as SKA - interp over grid?)
 
-        raise NotImplementedError
+        # raise NotImplementedError
+        tau_atm = 0.8
         return tau_atm
         
     def T_atm(self):
@@ -35,5 +37,6 @@ class AtmosphereParams:
         '''
         # something that calls the atmospheric model (same as SKA - interp over grid?)
 
-        raise NotImplementedError
+        # raise NotImplementedError
+        T_atm = 255 * u.K
         return T_atm

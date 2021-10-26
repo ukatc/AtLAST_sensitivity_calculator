@@ -15,5 +15,6 @@ class SystemTemperature:
     def system_temperature(self, g, eta_eff):
         '''
         Returns system temperature, following calculation in [doc]
+        :param g: 
         '''
         return((1 + g) / eta_eff * self.tau_atm) * (self.T_rx + (eta_eff * self.T_sky) + ((1 - eta_eff) * self.T_amb))
