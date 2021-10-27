@@ -1,9 +1,10 @@
 import pytest
+from functions.sensitivity import Calculator
+from astropy import constants
+import astropy.units as u
+
 
 def test_sensitivity():
-    from src.functions.sensitivity import Calculator
-    from astropy import constants
-    import astropy.units as u
     bandwidth = 7.5 * u.GHz
 
     tau_atm = 0.7
@@ -20,9 +21,6 @@ def test_sensitivity():
     assert calculator.sensitivity(example_t_int).value == 0.32103973505475175
 
 def test_integration():
-    from src.functions.sensitivity import Calculator
-    from astropy import constants
-    import astropy.units as u
     bandwidth = 7.5 * u.GHz
 
     tau_atm = 0.7
