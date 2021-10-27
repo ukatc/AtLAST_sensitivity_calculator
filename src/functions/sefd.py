@@ -2,6 +2,7 @@
 
 from astropy import constants
 
+
 class SEFD:
     def __init__(self) -> None:
         """Constructor
@@ -19,4 +20,4 @@ class SEFD:
         :type eta_A: float
         """
 
-        return (2 * constants.k_B * T_sys)/(eta_A * area)
+        return (2 * constants.k_B * T_sys) / (eta_A * area)
