@@ -16,7 +16,7 @@ params = Config("src/configs/user_inputs.yaml","src/configs/setup_inputs.yaml", 
 # SOME FILLER INPUT VALUES FOR NOW
 
 eta_s = 1
-sensitivity = 0.00882922 * u.Jy
+sensitivity = 0.01 * u.Jy
 t_int= 1 * u.s
 
 # Temperatures
@@ -32,7 +32,7 @@ eta_eff = 0.9
 
 params.area = np.pi * params.dish_radius**2
 
-# At present, AtmopshereParams is just full of placeholders! not implemented properly!
+# At present, AtmosphereParams is just full of placeholders! not implemented properly!
 atm = AtmosphereParams(
     params.obs_freq, 
     params.pwv)
@@ -70,7 +70,17 @@ calculator = Sensitivity(
     params.n_pol, 
     eta_s)
 
-print("Sensitivity: ", calculator.sensitivity(t_int))
+print("For the following parameters: ")
+for attr in vars(params):
+    if type(getattr(params, attr)) == dict:
+        pass
+    else:
+        print("{} = {}".format(attr, getattr(params, attr)))
 
-print("Integration time: ", calculator.t_integration(sensitivity))
 
+print("-----------")
+print("Sensitivity: {:0.2f} for an integration time of {:0.2f} ".format(calculator.sensitivity(t_int).to(u.mJy), t_int))
+
+print("Integration time: {:0.2f} to obtain a sensitivity of {:0.2f}".format(calculator.t_integration(sensitivity), sensitivity.to(u.mJy)))
+
+print("-----------")
