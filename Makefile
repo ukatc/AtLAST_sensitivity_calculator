@@ -26,9 +26,4 @@ test:     ## Run pytest.
 	PYTHONPATH=./src
 	pytest
 
-html:     ## Make html documents.
-	sphinx-build -b html docs/source/ docs/build/html
-
 clean:    ## Delete temporary files.
-# remove the current docs build
-	rm -fr docs/build/html
