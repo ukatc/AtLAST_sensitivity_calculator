@@ -1,20 +1,27 @@
-.. AtLAST Sensitivity Calculator documentation master file, created by
-   sphinx-quickstart on Tue Oct 26 18:02:07 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to AtLAST Sensitivity Calculator's documentation!
 =========================================================
 
+Getting Started
+===============
+
+.. include:: README.md
+
+
+.. User Guide section
+   Hidden toctree to manage the sidebar navigation.
+
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
+   :caption: User Guide
+   :hidden:
 
 
+.. API section
+   Hidden toctree to allow sidebar navigation.
 
-Indices and tables
-==================
+.. toctree::
+   :maxdepth: 1
+   :caption: Public API Documentation
+   :hidden:
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   package/functions
