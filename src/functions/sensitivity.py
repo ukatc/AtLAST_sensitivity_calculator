@@ -1,15 +1,8 @@
 import astropy.units as u
 import numpy as np
 
-<<<<<<< HEAD
 class Sensitivity:
     ''' Calculator class that does the core calculation to get the output sensitivity or integration time. '''
-=======
-
-class Calculator:
-    """ Calculator class that does the core calculation to get the output sensitivity or integration time. """
-
->>>>>>> testing_setup
     def __init__(self, bandwidth, tau_atm, sefd, n_pol, eta_s):
         self.bandwidth = bandwidth
         self.tau_atm = tau_atm
