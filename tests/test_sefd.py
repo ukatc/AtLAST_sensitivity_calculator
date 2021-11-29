@@ -1,4 +1,4 @@
-from functions.sefd import SEFD 
+from src.functions.sefd import SEFD 
 import astropy.units as u
 import numpy as np
 

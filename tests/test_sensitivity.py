@@ -1,5 +1,5 @@
 import pytest
-from functions.sensitivity import Calculator
+from src.functions.sensitivity import Calculator
 from astropy import constants
 import astropy.units as u
 
