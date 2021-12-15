@@ -28,6 +28,8 @@ T_gal = 10 * u.K
 g = 1
 eta_eff = 0.9
 
+elevation = 20 * u.deg
+
 ####################
 
 params.area = np.pi * params.dish_radius**2
@@ -35,7 +37,7 @@ params.area = np.pi * params.dish_radius**2
 # At present, AtmosphereParams is just full of placeholders! not implemented properly!
 atm = AtmosphereParams(
     params.obs_freq, 
-    params.pwv)
+    params.pwv, elevation)
 
 params.tau_atm = atm.tau_atm()
 params.T_atm = atm.T_atm()
