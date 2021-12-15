@@ -1,6 +1,7 @@
 from src.functions.sefd import SEFD 
 import astropy.units as u
 import numpy as np
+import pytest
 
 def test_SEFD():
 
@@ -10,4 +11,4 @@ def test_SEFD():
     eta_A = 1
 
     sefd = SEFD.calculate(T_sys, area, eta_A).value
-    assert sefd == 3.797057313069965e-24
+    assert sefd == pytest.approx(3.797057313069965e-24, 1e-26)

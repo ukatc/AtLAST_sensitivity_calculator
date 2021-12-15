@@ -17,7 +17,7 @@ def test_sensitivity():
 
     calculator = Sensitivity(bandwidth, tau_atm, sefd, n_pol, eta_s)
 
-    assert calculator.sensitivity(example_t_int).value == 0.32103973505475175
+    assert calculator.sensitivity(example_t_int).value == pytest.approx(0.32103973505475175)
 
 def test_integration():
     from src.functions.sensitivity import Sensitivity
@@ -34,4 +34,4 @@ def test_integration():
 
     calculator = Sensitivity(bandwidth, tau_atm, sefd, n_pol, eta_s)
 
-    assert calculator.t_integration(example_sensitivity).value == 4580733.843734454
+    assert calculator.t_integration(example_sensitivity).value == pytest.approx(4580733.843734454)
