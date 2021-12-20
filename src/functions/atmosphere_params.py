@@ -8,13 +8,12 @@ from pathlib import Path
 # Following SKA method loosely, however can use AM to produce grid rather than CASA ATM
 # FOR NOW - using SKA values with adjusted frequencies. INCORRECT but testing process
 
-
 # This code copied directly from SKA's utilities.py:
 STATIC_DATA_PATH = Path(__file__).resolve().parents[1] / "static"
 
 WEATHER_PWV = np.array([5, 10, 20])
-T_ATM_PATH = STATIC_DATA_PATH / "lookups" / "T_atm_SKA.txt"
-TAU_ATM_PATH = STATIC_DATA_PATH / "lookups" / "tau_SKA.txt"
+T_ATM_PATH = STATIC_DATA_PATH / "lookups" / "T_atm_SKA_test.txt"
+TAU_ATM_PATH = STATIC_DATA_PATH / "lookups" / "tau_atm_SKA_test.txt"
 
 class AtmosphereParams:
     """ Class used to retrieve atmospheric parameters from a model. """
