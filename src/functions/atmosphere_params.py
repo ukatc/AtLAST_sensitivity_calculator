@@ -8,12 +8,13 @@ from pathlib import Path
 # Following SKA method loosely, however can use AM to produce grid rather than CASA ATM
 # FOR NOW - using SKA values with adjusted frequencies. INCORRECT but testing process
 
+
 # This code copied directly from SKA's utilities.py:
 STATIC_DATA_PATH = Path(__file__).resolve().parents[1] / "static"
 
-WEATHER_PWV = np.array([5, 10, 20])
-T_ATM_PATH = STATIC_DATA_PATH / "lookups" / "T_atm_SKA_test.txt"
-TAU_ATM_PATH = STATIC_DATA_PATH / "lookups" / "tau_atm_SKA_test.txt"
+WEATHER_PWV = [5, 25, 50, 75, 95]
+T_ATM_PATH = STATIC_DATA_PATH / "lookups" / "am_ACT_T_annual.txt"
+TAU_ATM_PATH = STATIC_DATA_PATH / "lookups" / "am_ACT_tau_annual.txt"
 
 class AtmosphereParams:
     """ Class used to retrieve atmospheric parameters from a model. """
@@ -25,8 +26,6 @@ class AtmosphereParams:
         :type obs_freq: astropy.units.Quantity
         :param pwv: the precipitable water vapour
         :type pwv: astropy.units.Quantity
-        :param elevation: the elevation of the source in degrees
-        :type elevation: astropy.units.Quantity
         """
         self.obs_freq = obs_freq
         self.pwv = pwv
@@ -53,6 +52,10 @@ class AtmosphereParams:
         """
         Return atmospheric temperature T_atm 
 
+        :param obs_freq: the central observing frequency
+        :type obs_freq: astropy.units.Quantity
+        :param pwv: the precipitable water vapour
+        :type pwv: astropy.units.Quantity
         :return: Atmospheric temperature
         :rtype: astropy.units.Quantity
         """
