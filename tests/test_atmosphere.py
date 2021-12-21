@@ -1,7 +1,5 @@
 import astropy.units as u
 import numpy as np
-from pathlib import Path
-import pytest
 
 def test_init():
     from src.functions.atmosphere_params import AtmosphereParams
