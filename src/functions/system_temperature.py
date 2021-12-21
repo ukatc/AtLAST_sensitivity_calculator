@@ -1,3 +1,5 @@
+import numpy as np
+
 class SystemTemperature:
     """
     Contains all the relevant temperatures that input to the total system temperature, T_sys
@@ -10,11 +12,12 @@ class SystemTemperature:
         self.T_amb = T_amb
         self.T_gal = T_gal
         self.tau_atm = tau_atm
-        self.T_sky =  self.T_atm*(1 - tau_atm) + self.T_cmb + self.T_gal
+        self.transmittance = np.exp(-self.tau_atm)
+        self.T_sky =  self.T_atm*(1 - self.transmittance) + self.T_cmb + self.T_gal
 
     def system_temperature(self, g, eta_eff):
         '''
         Returns system temperature, following calculation in [doc]
         :param g: 
         '''
-        return((1 + g) / eta_eff * self.tau_atm) * (self.T_rx + (eta_eff * self.T_sky) + ((1 - eta_eff) * self.T_amb))
+        return((1 + g) / eta_eff * self.transmittance) * (self.T_rx + (eta_eff * self.T_sky) + ((1 - eta_eff) * self.T_amb))
