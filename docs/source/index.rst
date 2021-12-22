@@ -3,9 +3,12 @@ Welcome to AtLAST Sensitivity Calculator's documentation!
 
 Getting Started
 ===============
-
 .. include:: README.md
 
+.. toctree::
+   installation
+   usage
+   sensitivity
 
 .. User Guide section
    Hidden toctree to manage the sidebar navigation.
@@ -20,8 +23,10 @@ Getting Started
    Hidden toctree to allow sidebar navigation.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :caption: Public API Documentation
    :hidden:
 
    package/functions
+   package/configs
+
