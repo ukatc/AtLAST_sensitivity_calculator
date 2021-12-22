@@ -19,14 +19,6 @@ eta_s = 1
 sensitivity = 0.01 * u.Jy
 t_int= 50 * u.s
 
-# Temperatures
-
-T_rx = 50 * u.K
-T_amb = 270 * u.K
-T_gal = 10 * u.K
-
-eta_eff = 0.9
-
 ####################
 
 params.area = np.pi * params.dish_radius**2
@@ -38,28 +30,26 @@ atm = AtmosphereParams(
 params.tau_atm = atm.tau_atm()
 params.T_atm = atm.T_atm()
 
-# At present, eta_a does not calculate efficiency properly! just a placeholder!
-eta_a = Efficiencies(
-    params.eta_radf,
-    params.eta_block,
-    params.eta_ill 
-    ).eta_a()
+eta = Efficiencies(
+    params.eta_ill
+    )
+
+params.eta_a = eta.eta_a(params.obs_freq, params.surface_rms)
 
 T_sys = SystemTemperature(
-    T_rx, 
+    params.T_rx, 
     params.T_cmb, 
     params.T_atm, 
-    T_amb, 
-    T_gal, 
+    params.T_amb, 
     params.tau_atm
     ).system_temperature(
         params.g, 
-        eta_eff)
+        params.eta_eff)
 
 sefd = SEFD.calculate(
     T_sys, 
     params.area, 
-    eta_a)
+    params.eta_a)
 
 calculator = Sensitivity(
     params.bandwidth.to(u.Hz), 
