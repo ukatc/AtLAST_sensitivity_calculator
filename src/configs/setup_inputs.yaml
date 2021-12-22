@@ -1,5 +1,9 @@
 ---
-surface_rms:  {value: 25,   unit: micron}
-dish_radius:  {value: 25,   unit: m}
 g:            {value: 1,    unit: none}
-n_pol:        {value: 2,    unit: none}
+surface_rms:  {value: 25,     unit: micron}
+dish_radius:  {value: 25,     unit: m}
+T_amb:        {value: 270,    unit: K}
+T_rx:         {value: 50,     unit: K}
+eta_eff:      {value: 0.80,  unit: none}
+eta_ill:      {value: 0.63,   unit: none}  
+eta_q:        {value: 0.96,   unit: none}

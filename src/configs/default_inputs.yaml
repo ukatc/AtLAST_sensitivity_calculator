@@ -1,23 +1,16 @@
 ---
+t_int       : {value: 70,     unit: s}  
+sensitivity : {value: 0,      unit: mJy} 
+bandwidth   : {value: 7.5,    unit: GHz}
 obs_freq:     {value: 600,    unit: GHz}
 n_pol:        {value: 2,      unit: none}
 weather:      {value: 50,     unit: none}
 elevation:    {value: 30,     unit: deg}
-bandwidth:    {value: 7.5,    unit: GHz}
 g:            {value: 1,      unit: none}
 surface_rms:  {value: 25,     unit: micron}
 dish_radius:  {value: 25,     unit: m}
-
 T_amb:        {value: 270,    unit: K}
 T_rx:         {value: 50,     unit: K}
-
-eta_eff:      {value: 0.80,  unit: none}
+eta_eff:      {value: 0.80,   unit: none}
 eta_ill:      {value: 0.63,   unit: none}  
 eta_q:        {value: 0.96,   unit: none}
-
-eta_transp:   {value: 1,      unit: none} 
-eta_radr:     {value: 1,      unit: none}
-eta_radf:     {value: 1,      unit: none}  
-eta_block:    {value: 1,      unit: none}  
-eta_surface:  {value: 1,      unit: none}  
-eta_point:    {value: 1,      unit: none} 
