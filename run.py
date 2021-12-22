@@ -17,7 +17,7 @@ params = Config("src/configs/user_inputs.yaml","src/configs/setup_inputs.yaml", 
 
 eta_s = 1
 sensitivity = 0.01 * u.Jy
-t_int= 1 * u.s
+t_int= 50 * u.s
 
 # Temperatures
 
@@ -25,19 +25,15 @@ T_rx = 50 * u.K
 T_amb = 270 * u.K
 T_gal = 10 * u.K
 
-g = 1
 eta_eff = 0.9
-
-elevation = 20 * u.deg
 
 ####################
 
 params.area = np.pi * params.dish_radius**2
 
-# At present, AtmosphereParams is just full of placeholders! not implemented properly!
 atm = AtmosphereParams(
     params.obs_freq, 
-    params.pwv, elevation)
+    params.weather, params.elevation)
 
 params.tau_atm = atm.tau_atm()
 params.T_atm = atm.T_atm()
@@ -57,7 +53,7 @@ T_sys = SystemTemperature(
     T_gal, 
     params.tau_atm
     ).system_temperature(
-        g, 
+        params.g, 
         eta_eff)
 
 sefd = SEFD.calculate(

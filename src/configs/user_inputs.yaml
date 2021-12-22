@@ -1,3 +1,3 @@
 ---
 obs_freq  : {value: 500,  unit: GHz}
-pwv       : {value: 60,  unit: none}
+weather   : {value: 60,  unit: none}
