@@ -30,4 +30,4 @@ class Efficiencies:
         PLACEHOLDER
         '''
         eta_s = 0.9
-        return 
+        return eta_s

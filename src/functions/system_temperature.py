@@ -17,6 +17,10 @@ class SystemTemperature:
     def system_temperature(self, g, eta_eff):
         '''
         Returns system temperature, following calculation in [doc]
-        :param g: 
+
+        :param g: sideband ratio
+        :type g: int
+        :param eta_eff: forward efficiency
+        :type eta_eff: float
         '''
         return((1 + g) / eta_eff * self.transmittance) * (self.T_rx + (eta_eff * self.T_sky) + ((1 - eta_eff) * self.T_amb))
