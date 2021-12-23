@@ -1,10 +1,29 @@
 Usage
 =====
 
-A .yaml config file of input variables can be found in ``user_inputs.yaml``.
-This lists the variable names, their values and units in a dictionary.
+Configuration
+-------------
 
-Here you can input either the required sensitivity, or the integration time.
-Both are set to zero by default.
+To configure the inputs to the calculation, users may edit the file ``user_inputs.yaml``.
+This is a .yaml config file which offers a structured input for the variables and their respective units, in the format:
 
-After editing the config file and saving, running run.py will output the sensitivity or integration time, depending on the input.
+.. code-block:: yaml
+
+    ---
+    t_int       : {value: 0,   unit: s}  
+    sensitivity : {value: 0,   unit: mJy} 
+    bandwidth   : {value: 7.5, unit: GHz}
+    obs_freq    : {value: 350, unit: GHz}
+    n_pol       : {value: 2,   unit: none} 
+    weather     : {value: 50,  unit: none}
+    elevation   : {value: 30,  unit: deg} 
+
+By default, the integration time ``t_int`` and the sensitivity ``sensitivity`` are both set to zero; upon running the software the user will encounter an error if neither or both of these parameters are given a value. Other user configurable parameters are provided with default example values.
+The user can modify these input parameters to match the observational setup required.
+
+To modify the telescope setup, there are further configurable values in files stored in ``src/configs/``. These contain values such as the efficiency factors of the telescope system. However these are not intended to be configurable for users and can be ignored unless intrinsic telescope parameters should be adjusted.
+
+
+Running the calculator
+----------------------
+

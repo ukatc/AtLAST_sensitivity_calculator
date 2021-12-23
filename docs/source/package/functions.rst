@@ -1,20 +1,17 @@
-.. _functions:
+.. _backend:
 
 *********
-functions
+backend
 *********
 
-.. automodule:: functions.atmosphere_params
+.. automodule:: backend.atmosphere_params
    :members:
 
-.. automodule:: functions.sefd
+.. automodule:: backend.sefd
    :members:
 
-.. automodule:: functions.sensitivity
+.. automodule:: backend.sensitivity
    :members:
 
-.. automodule:: functions.sky_model
-   :members:
-
-.. automodule:: functions.system_temperature
+.. automodule:: backend.system_temperature
    :members:

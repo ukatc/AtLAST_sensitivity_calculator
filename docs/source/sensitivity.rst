@@ -1,6 +1,8 @@
 The sensitivity calculation
 ===========================
 
+The following is a desription of the underlying calculations that the software perform.
+
 The sensitivity of a single dish telescope for an integration time :math:`t` is given by:
 
 .. math::

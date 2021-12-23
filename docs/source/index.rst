@@ -3,7 +3,7 @@ Welcome to AtLAST Sensitivity Calculator's documentation!
 
 Getting Started
 ===============
-.. include:: README.md
+.. include:: home.rst
 
 .. toctree::
    installation
