@@ -1,5 +1,5 @@
 ---
-t_int       : {value: 0,  unit: s}  
+t_int       : {value: 0,   unit: s}  
 sensitivity : {value: 0,   unit: mJy} 
 bandwidth   : {value: 7.5, unit: GHz}
 obs_freq    : {value: 350, unit: GHz}
