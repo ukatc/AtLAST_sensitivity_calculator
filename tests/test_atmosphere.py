@@ -1,5 +1,3 @@
-import astropy.units as u
-import numpy as np
 
 def test_init():
     from src.backend.atmosphere_params import AtmosphereParams
@@ -22,7 +20,6 @@ def test_tau_atm():
     zenith = 90.0 * u.deg - elevation
 
     assert (atm.tau_atm().value < 1.0419/np.cos(zenith)) and (atm.tau_atm().value > 1.040/np.cos(zenith))
-
 
 def test_T_atm():
     from src.backend.atmosphere_params import AtmosphereParams
