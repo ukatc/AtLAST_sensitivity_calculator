@@ -1,10 +1,9 @@
-from src.functions.sefd import SEFD 
-import astropy.units as u
-import numpy as np
+from src.backend.sefd import SEFD 
 import pytest
 
 def test_SEFD():
-
+    import astropy.units as u
+    import numpy as np
     T_sys = 270 * u.K
     radius = 25 * u.m
     area = np.pi * radius**2

@@ -1,14 +1,7 @@
-# Just the SEFD calculation in here. Will need input from system_temperature and efficiencies (some other calculation?)
-
 from astropy import constants
-
 
 class SEFD:
     ''' Class that calculates the source equivalent flux density, SEFD'''
-    def __init__(self) -> None:
-        """Constructor
-        """
-        pass
 
     def calculate(T_sys, area, eta_A):
         """
@@ -18,7 +11,7 @@ class SEFD:
         :type T_sys: astropy.units.Quantity
         :param area: the dish area 
         :type area: astropy.units.Quantity
-        :param eta_A: the efficiency factor
+        :param eta_A: the dish efficiency factor
         :type eta_A: float
         :return: source equivalent flux density
         :rtype: astropy.units.Quantity

@@ -1,88 +1,64 @@
-from src.functions.atmosphere_params import AtmosphereParams
-from src.functions.sensitivity import Sensitivity
-from src.functions.sefd import SEFD
-from src.functions.system_temperature import SystemTemperature
-from src.functions.efficiencies import Efficiencies
+from src.backend.atmosphere_params import AtmosphereParams
+from src.backend.sensitivity import Sensitivity
+from src.backend.sefd import SEFD
+from src.backend.system_temperature import SystemTemperature
+from src.backend.efficiencies import Efficiencies
 import astropy.units as u
-from astropy import constants 
 import numpy as np
 from src.configs.config import Config
 
 
-params = Config("src/configs/user_inputs.yaml","src/configs/setup_inputs.yaml", "src/configs/fixed_inputs.yaml", "src/configs/default_inputs.yaml")
+params = Config.from_yaml("user_inputs.yaml")               # Initialise the input parameters from Config
+params.area = np.pi * params.dish_radius**2                             # Calculate area of dish & add to parameters
 
-####################
-# AT THE MOMENT THERE IS A DISCONNECT HERE 
-# SOME FILLER INPUT VALUES FOR NOW
-
-eta_s = 1
-sensitivity = 0.01 * u.Jy
-t_int= 1 * u.s
-
-# Temperatures
-
-T_rx = 50 * u.K
-T_amb = 270 * u.K
-T_gal = 10 * u.K
-
-g = 1
-eta_eff = 0.9
-
-elevation = 20 * u.deg
-
-####################
-
-params.area = np.pi * params.dish_radius**2
-
-# At present, AtmosphereParams is just full of placeholders! not implemented properly!
-atm = AtmosphereParams(
+atm = AtmosphereParams( 
     params.obs_freq, 
-    params.pwv, elevation)
+    params.weather,
+    params.elevation)                                                   # Perform atmospheric model calculation
+params.tau_atm = atm.tau_atm()                                          # add atmospheric opacity to params
+params.T_atm = atm.T_atm()                                              # add atmospheric temperature to params
 
-params.tau_atm = atm.tau_atm()
-params.T_atm = atm.T_atm()
-
-# At present, eta_a does not calculate efficiency properly! just a placeholder!
-eta_a = Efficiencies(
-    params.eta_radf,
-    params.eta_block,
-    params.eta_ill 
-    ).eta_a()
+eta = Efficiencies(
+    params.eta_ill)                                                     # Perform efficiency calculations
+params.eta_a = eta.eta_a(params.obs_freq, params.surface_rms)           # add eta_a to params
+params.eta_s = eta.eta_s()                                              # add eta_s to params - NOTE: currently not implmented, placeholder value!!
 
 T_sys = SystemTemperature(
-    T_rx, 
+    params.T_rx, 
     params.T_cmb, 
     params.T_atm, 
-    T_amb, 
-    T_gal, 
+    params.T_amb, 
     params.tau_atm
     ).system_temperature(
-        g, 
-        eta_eff)
+        params.g, 
+        params.eta_eff)                                                 # Calculate system temperature
 
 sefd = SEFD.calculate(
     T_sys, 
     params.area, 
-    eta_a)
+    params.eta_a)                                                       # Calculate source equivalent flux density
 
 calculator = Sensitivity(
     params.bandwidth.to(u.Hz), 
     params.tau_atm, 
     sefd,
     params.n_pol, 
-    eta_s)
+    params.eta_s)                                                       # Initialise sensitivity calculator
 
-print("For the following parameters: ")
-for attr in vars(params):
+print("For the following parameters: ")                                 # List the parameters input to this calculation instance
+for attr in vars(params):                                               # May be useful to add a save to file function here
     if type(getattr(params, attr)) == dict:
         pass
     else:
-        print("{} = {}".format(attr, getattr(params, attr)))
-
+        print("{} = {:0.2f}".format(attr, getattr(params, attr)))
 
 print("-----------")
-print("Sensitivity: {:0.2f} for an integration time of {:0.2f} ".format(calculator.sensitivity(t_int).to(u.mJy), t_int))
-
-print("Integration time: {:0.2f} to obtain a sensitivity of {:0.2f}".format(calculator.t_integration(sensitivity), sensitivity.to(u.mJy)))
-
+if params.t_int.value and not params.sensitivity.value:                 # Calculate sensitivity or t_int depending on input
+    calculated_sensitivity = calculator.sensitivity(params.t_int).to(u.mJy) 
+    print("Sensitivity: {:0.2f} for an integration time of {:0.2f} ".format(calculated_sensitivity, params.t_int))
+elif params.sensitivity.value and not params.t_int.value:
+    calculated_t_int = calculator.t_integration(params.sensitivity)
+    print("Integration time: {:0.2f} to obtain a sensitivity of {:0.2f}".format(calculated_t_int, params.sensitivity.to(u.mJy)))
+else:
+    print("Please add either a sensitivity or an integration time to your input.")
 print("-----------")
