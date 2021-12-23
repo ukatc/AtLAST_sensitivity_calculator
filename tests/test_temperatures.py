@@ -3,7 +3,7 @@ import pytest
 
 def test_temperatures():
     import astropy.units as u
-    from src.functions.system_temperature import SystemTemperature
+    from src.backend.system_temperature import SystemTemperature
     T_rx = 50 * u.K
     T_cmb = 2.73 * u.K
     T_atm = 255 * u.K
@@ -18,7 +18,7 @@ def test_temperatures():
 
 def test_units():
     import astropy.units as u
-    from src.functions.system_temperature import SystemTemperature
+    from src.backend.system_temperature import SystemTemperature
     T_rx = 50 * u.K
     T_cmb = 2.73 * u.K
     T_atm = 255 * u.K

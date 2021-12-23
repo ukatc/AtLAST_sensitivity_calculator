@@ -6,6 +6,9 @@ class SystemTemperature:
     """
 
     def __init__(self, T_rx, T_cmb, T_atm, T_amb, tau_atm):
+        '''
+        All the temperatures required to calculated system temperature
+        '''
         self.T_atm = T_atm
         self.T_cmb = T_cmb
         self.T_rx = T_rx
@@ -22,5 +25,7 @@ class SystemTemperature:
         :type g: int
         :param eta_eff: forward efficiency
         :type eta_eff: float
+        :return: system temperature in Kelvin
+        :rtype: astropy.units.Quantity
         '''
         return((1 + g) / eta_eff * self.transmittance) * (self.T_rx + (eta_eff * self.T_sky) + ((1 - eta_eff) * self.T_amb))

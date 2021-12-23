@@ -6,7 +6,8 @@ from astropy import constants
 class SEFD:
     ''' Class that calculates the source equivalent flux density, SEFD'''
     def __init__(self) -> None:
-        """Constructor
+        """
+        Constructor
         """
         pass
 
@@ -18,7 +19,7 @@ class SEFD:
         :type T_sys: astropy.units.Quantity
         :param area: the dish area 
         :type area: astropy.units.Quantity
-        :param eta_A: the efficiency factor
+        :param eta_A: the dish efficiency factor
         :type eta_A: float
         :return: source equivalent flux density
         :rtype: astropy.units.Quantity

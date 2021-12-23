@@ -1,16 +1,22 @@
 import yaml
-from yaml import Loader, Dumper
+from yaml import Loader
 import astropy.units as u
-from src import functions
 from pathlib import Path
 import json
 
 CONFIG_PATH = Path(__file__).resolve().parents[0]
 
 class Config:
-    """ A class that reads in values from the input files, and if they do not exist fills with defaults. """
-
+    """ A class that reads in values from the input dictionaries, and if they do not exist fills with defaults. """
     def __init__(self, user_input):
+        '''
+        Initialises all the required parameters from various input sources
+        setup_input, fixed_input and the default can be found in .yaml files in the configs directory
+        User input is here read as dict but class methods allow reading various file types.
+
+        :param user_input: a dictionary of user inputs of structure {'param_name':{'value': , 'unit': }}
+        :type user_input: dict
+        '''
         self.user_input = self.enforce_units(user_input)
         self.setup_input = self.enforce_units(self._dict_from_yaml(CONFIG_PATH / "setup_inputs.yaml"))
         self.fixed_input = self.enforce_units(self._dict_from_yaml(CONFIG_PATH / "fixed_inputs.yaml"))
@@ -49,7 +55,7 @@ class Config:
     @classmethod
     def from_yaml(self, path):
         '''
-        Takes a .yaml input file of user inputs and returns an instance of Config
+        Takes a .yaml input file of user inputs and returns an instance of ``Config``
         '''
         inputs = Config._dict_from_yaml(path)
         return Config(inputs)
@@ -65,12 +71,12 @@ class Config:
 
     def enforce_units(self, inputs):
         """
-        Read dict of inputs
-        Check for units and convert value into astropy.unit.Quantity if units given
+        Read dict of inputs. 
+        Check for units and convert value into ``astropy.unit.Quantity`` if units given.
         
         :param inputs: a dictionary of inputs
         :type inputs: dict
-        :retunr: a dictionary of astropy.unit.Quantities, if units given
+        :return: a dictionary of ``astropy.unit.Quantity`, if units given
         :rtype: dict
         """
         params = {}

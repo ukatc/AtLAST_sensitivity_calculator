@@ -52,10 +52,6 @@ class AtmosphereParams:
         """
         Return atmospheric temperature T_atm 
 
-        :param obs_freq: the central observing frequency
-        :type obs_freq: astropy.units.Quantity
-        :param weather: the precipitable water vapour
-        :type weather: astropy.units.Quantity
         :return: Atmospheric temperature
         :rtype: astropy.units.Quantity
         """

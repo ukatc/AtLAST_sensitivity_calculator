@@ -1,15 +1,14 @@
-from src.functions.atmosphere_params import AtmosphereParams
-from src.functions.sensitivity import Sensitivity
-from src.functions.sefd import SEFD
-from src.functions.system_temperature import SystemTemperature
-from src.functions.efficiencies import Efficiencies
+from src.backend.atmosphere_params import AtmosphereParams
+from src.backend.sensitivity import Sensitivity
+from src.backend.sefd import SEFD
+from src.backend.system_temperature import SystemTemperature
+from src.backend.efficiencies import Efficiencies
 import astropy.units as u
-from astropy import constants 
 import numpy as np
 from src.configs.config import Config
 
 
-params = Config.from_yaml("src/configs/user_inputs.yaml")               # Initialise the input parameters from Config
+params = Config.from_yaml("user_inputs.yaml")               # Initialise the input parameters from Config
 params.area = np.pi * params.dish_radius**2                             # Calculate area of dish & add to parameters
 
 atm = AtmosphereParams( 

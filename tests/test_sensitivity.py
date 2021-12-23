@@ -1,9 +1,9 @@
 import pytest
 
-from src.functions import sensitivity
+from src.backend import sensitivity
 
 def test_sensitivity():
-    from src.functions.sensitivity import Sensitivity
+    from src.backend.sensitivity import Sensitivity
     from astropy import constants
     import astropy.units as u
     bandwidth = 7.5 * u.GHz
@@ -18,7 +18,7 @@ def test_sensitivity():
     assert calculator.sensitivity(example_t_int).value == pytest.approx(0.32103973505475175)
 
 def test_integration():
-    from src.functions.sensitivity import Sensitivity
+    from src.backend.sensitivity import Sensitivity
     from astropy import constants
     import astropy.units as u
     bandwidth = 7.5 * u.GHz
@@ -32,7 +32,7 @@ def test_integration():
     assert calculator.t_integration(example_sensitivity).value == pytest.approx(4580733.843734454)
 
 def test_consistency():
-    from src.functions.sensitivity import Sensitivity
+    from src.backend.sensitivity import Sensitivity
     from astropy import constants
     import astropy.units as u
     bandwidth = 7.5 * u.GHz
