@@ -1,6 +1,5 @@
 # Dependencies 
 
-astropy
-numpy
-scipy
-pathlib
+astropy ~= 4.2.1
+numpy ~= 1.20.1
+scipy ~= 1.6.2
