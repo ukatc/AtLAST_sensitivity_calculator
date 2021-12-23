@@ -3,8 +3,6 @@ import pytest
 def test_sensitivity():
     from src.backend.sensitivity import Sensitivity
     from src.configs.config import Config
-    from astropy import constants
-    import astropy.units as u
     from pathlib import Path
 
     CONFIG_PATH = Path(__file__).resolve().parents[0]
@@ -17,8 +15,6 @@ def test_sensitivity():
 def test_integration():
     from src.backend.sensitivity import Sensitivity
     from src.configs.config import Config
-    from astropy import constants
-    import astropy.units as u
     from pathlib import Path
     
     CONFIG_PATH = Path(__file__).resolve().parents[0]
@@ -31,7 +27,6 @@ def test_integration():
 def test_consistency():
     from src.backend.sensitivity import Sensitivity
     from src.configs.config import Config
-    from astropy import constants
     import astropy.units as u
     from pathlib import Path
     
