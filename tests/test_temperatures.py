@@ -1,6 +1,5 @@
 import pytest
 
-
 def test_temperatures():
     import astropy.units as u
     from src.backend.system_temperature import SystemTemperature

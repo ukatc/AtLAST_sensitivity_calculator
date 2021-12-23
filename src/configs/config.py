@@ -56,6 +56,9 @@ class Config:
     def from_yaml(self, path):
         '''
         Takes a .yaml input file of user inputs and returns an instance of ``Config``
+
+        :param path: the path of the input .yaml file
+        :type path: str
         '''
         inputs = Config._dict_from_yaml(path)
         return Config(inputs)
@@ -64,6 +67,9 @@ class Config:
     def from_json(self, path):
         '''
         Takes a .json input file of user inputs and returns an instance of Config
+
+        :param path: the path of the input json file
+        :type path: str
         '''
         with open(path, "r") as json_file:
             inputs = json.load(json_file)
@@ -87,3 +93,17 @@ class Config:
                 unit = getattr(u, inputs[key]["unit"])
                 params[key] = inputs[key]["value"] * unit
         return params
+
+    def to_file(self, path):
+        '''
+        Write config parameters to file
+        
+        :param path: the path of the output log file
+        :type path: str
+        '''
+        with open(path, "w") as f:
+            for attr in vars(self):
+                if type(getattr(self, attr)) == dict:
+                    pass
+                else:
+                    f.write("{} = {} \n".format(attr, getattr(self, attr)))

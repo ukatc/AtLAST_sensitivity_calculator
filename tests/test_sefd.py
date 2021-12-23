@@ -1,7 +1,7 @@
-from src.backend.sefd import SEFD 
 import pytest
 
 def test_SEFD():
+    from src.backend.sefd import SEFD 
     import astropy.units as u
     import numpy as np
     T_sys = 270 * u.K

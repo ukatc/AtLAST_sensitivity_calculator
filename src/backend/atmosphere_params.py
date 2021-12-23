@@ -5,11 +5,8 @@ from pathlib import Path
 
 # Plan is to use the AM model to produce a grid of T_atm and tau_atm
 # This code can then interpolate over that grid to get correct values
-# Following SKA method loosely, however can use AM to produce grid rather than CASA ATM
-# FOR NOW - using SKA values with adjusted frequencies. INCORRECT but testing process
+# Using AM as described in /am-code/README.md
 
-
-# This code copied directly from SKA's utilities.py:
 STATIC_DATA_PATH = Path(__file__).resolve().parents[1] / "static"
 
 WEATHER = [5, 25, 50, 75, 95]
