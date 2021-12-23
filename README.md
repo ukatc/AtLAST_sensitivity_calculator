@@ -1,3 +1,5 @@
+![example workflow](https://github.com/ukatc/AtLAST_sensitivity_calculator/actions/workflows/backend-tests.yml/badge.svg)
+
 
 In progress software to calculate either:
 
