@@ -3,6 +3,7 @@ import numpy as np
 
 def test_init():
     from src.backend.atmosphere_params import AtmosphereParams
+    import astropy.units as u
     obs_freq = 400 * u.GHz
     pwv = 50
     elevation = 20 * u.deg
@@ -12,6 +13,8 @@ def test_init():
 
 def test_tau_atm():
     from src.backend.atmosphere_params import AtmosphereParams
+    import astropy.units as u
+    import numpy as np
     obs_freq = 500 * u.GHz
     pwv = 50
     elevation = 20 * u.deg
@@ -23,6 +26,7 @@ def test_tau_atm():
 
 def test_T_atm():
     from src.backend.atmosphere_params import AtmosphereParams
+    import astropy.units as u
     obs_freq = 500 * u.GHz
     pwv = 50
     elevation = 20 * u.deg

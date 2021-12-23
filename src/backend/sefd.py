@@ -1,7 +1,4 @@
-# Just the SEFD calculation in here. Will need input from system_temperature and efficiencies (some other calculation?)
-
 from astropy import constants
-
 
 class SEFD:
     ''' Class that calculates the source equivalent flux density, SEFD'''
