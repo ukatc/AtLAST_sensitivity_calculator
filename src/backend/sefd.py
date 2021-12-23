@@ -5,11 +5,6 @@ from astropy import constants
 
 class SEFD:
     ''' Class that calculates the source equivalent flux density, SEFD'''
-    def __init__(self) -> None:
-        """
-        Constructor
-        """
-        pass
 
     def calculate(T_sys, area, eta_A):
         """
