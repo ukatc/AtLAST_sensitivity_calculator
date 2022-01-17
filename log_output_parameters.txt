@@ -1,5 +1,5 @@
 t_int = 100.0 s 
-sensitivity = 0.0 mJy 
+sensitivity = 0.5121540500724444 mJy 
 bandwidth = 7.5 GHz 
 obs_freq = 350.0 GHz 
 n_pol = 2 
