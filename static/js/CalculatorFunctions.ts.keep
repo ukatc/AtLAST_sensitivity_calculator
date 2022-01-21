@@ -1,0 +1,1615 @@
+//import $ from "jquery";
+
+// Define constants
+const band_limits = {
+    "Band 1": [0.35e9, 1.05e9],
+    "Band 2": [0.95e9, 1.76e9],
+    "Band 5a": [4.6e9, 8.4e9],
+    "Band 5b": [8.4e9, 15.4e9]
+}
+
+// Function to check if a given frequency is contained within an acceptable band
+function isFreqContained(obs_freq_scaled: string, obs_band: string): boolean {
+    const parsed_freq_scaled = parseFloat(obs_freq_scaled);
+    // Perhaps handle here wrong obs_band
+    if (Object.keys(band_limits).includes(obs_band)) {
+        return (
+                parsed_freq_scaled >= band_limits[obs_band][0] &&
+                parsed_freq_scaled <= band_limits[obs_band][1]
+        )
+    } else {
+        return true;
+    }
+}
+
+// Function to check if given bandwidth is entirely contained within the band.
+function isBandwidthContained(obs_freq_scaled: string, bandwidth_scaled: string, obs_band: string): boolean {
+    const obs_freq_scaled_num = Number(obs_freq_scaled)
+    const half_bandwidth = Number(bandwidth_scaled) / 2.0
+
+    const lower_bound: number = obs_freq_scaled_num - half_bandwidth
+    const upper_bound: number = obs_freq_scaled_num + half_bandwidth
+        switch (obs_band) {
+            case "Band 1":
+                if (lower_bound < 0.35e9 || upper_bound > 1.05e9) {
+                    return false;
+                }
+                break;
+            case "Band 2":
+                if (lower_bound < 0.95e9 || upper_bound > 1.76e9) {
+                    return false;
+                }
+                break;
+            case "Band 5a":
+                if (lower_bound< 4.6e9 || upper_bound > 8.4e9) {
+                    return false;
+                }
+                break;
+            case "Band 5b":
+                if (lower_bound< 8.4e9 || upper_bound  > 15.4e9) {
+                    return false;
+                }
+                break;
+        }
+
+        return true;
+}
+
+// functions to facilitate validating inputs
+
+function isNumeric(val: any): boolean {
+    return !(val instanceof Array) && (val - parseFloat(val) + 1) >= 0;
+}
+
+function parseRA(RA: string): boolean {
+    return (/^\d{1,2}:\d{1,2}:\d+(\.\d+)?$/.test(RA));
+}
+
+function parseDec(Dec: string): boolean {
+    return (/[-+]\d{1,2}:\d{1,2}:\d+(\.\d+)?$/.test(Dec));
+}
+
+// Validate a frequency input, making sure it is not empty and is a number.
+function validateObsFreq(field: string, obs_freq: string | number, obs_freq_scaled: string, obs_band: string): boolean {
+    const frequency_feedback = <HTMLInputElement>document.getElementById(field + "-invalid");
+    const frequency_input = <HTMLInputElement>document.getElementById(field + "-input");
+    if (!isNumeric(obs_freq) || obs_freq == "") {
+        frequency_feedback.textContent = "Please enter a number";
+        frequency_feedback.style.display = "block";
+        frequency_input.setCustomValidity("Invalid Field.");
+        return false;
+    } else {
+        if (isFreqContained(obs_freq_scaled, obs_band)) {
+            frequency_feedback.style.display = "none";
+            frequency_input.setCustomValidity("");
+        } else {
+            frequency_feedback.textContent = "Observing frequency out of range.";
+            frequency_feedback.style.display = "block";
+            frequency_input.setCustomValidity("Invalid Field.");
+            return false;
+        }
+    }
+    return true;
+}
+
+// Validate a bandwidth input, making sure it is not empty and is a number.
+function validateBandwidth(field: string, bandwidth: string | number, bandwidth_scaled: string, obs_freq_scaled: string, obs_band: string): boolean {
+    const bandwidth_feedback = document.getElementById(field + "-invalid");
+    const bandwidth_input = <HTMLInputElement>document.getElementById(field + "-input");
+    if (!isNumeric(bandwidth) || bandwidth == "") {
+        bandwidth_feedback.textContent = "Please enter a number";
+        bandwidth_feedback.style.display = "block";
+        bandwidth_input.setCustomValidity("Invalid Field.");
+        return false;
+    } else {
+        if (isBandwidthContained(obs_freq_scaled, bandwidth_scaled, obs_band)) {
+            bandwidth_feedback.style.display = "none";
+            bandwidth_input.setCustomValidity("");
+        } else {
+            bandwidth_feedback.textContent = "Bandwidth must be fully contained within the band.";
+            bandwidth_feedback.style.display = "block";
+            bandwidth_input.setCustomValidity("Invalid Field.");
+            return false;
+        }
+    }
+    return true;
+}
+
+// function to convert Sexagesimal declination to decimal for source validation
+
+function Sexa2Dec(Dec: string): number {
+    const DecSplit = Dec.split(':', 3)
+
+    if (Number(DecSplit[0]) < 0) {
+        return (Number(DecSplit[0]) -  Number(DecSplit[1]) / 60 - Number(DecSplit[2]) / 3600)
+    } else {
+        return (Number(DecSplit[0]) +  Number(DecSplit[1]) / 60 + Number(DecSplit[2]) / 3600)
+    }
+}
+
+function isAboveHorizon(Dec: string): boolean {
+    // this is a very coarse way to do this validation. Review in future.
+    const SkaLatitude = Sexa2Dec("-30:43:16.068")
+    if (Sexa2Dec(Dec) < 90.0 + SkaLatitude) {
+        return true
+    }
+    return false
+}
+
+
+// Validate right ascension input
+function validateRA(coords: string): boolean {
+    const feedback = document.getElementById("RA-invalid");
+    const input = <HTMLInputElement>document.getElementById("RA-input");
+
+    if (parseRA(coords)) {
+        feedback.style.display = "none";
+        input.setCustomValidity("");
+        return true;
+    }
+
+    feedback.textContent = "Input formatted incorrectly.";
+    feedback.style.display = "block";
+
+    input.setCustomValidity("Invalid Field.");
+    return false;
+}
+
+// Validate declination input
+function validateDec(coords:string): boolean {
+    const feedback = document.getElementById("dec-invalid");
+    const input = <HTMLInputElement>document.getElementById("dec-input");
+    if (!parseDec(coords)) {
+        feedback.textContent = "Input formatted incorrectly.";
+        feedback.style.display = "block";
+        input.setCustomValidity("Invalid Field.");
+        return false;
+    } else if (!isAboveHorizon(coords)) {
+        feedback.textContent = "Target is never above the horizon";
+        feedback.style.display = "block";
+        input.setCustomValidity("Invalid Field.");
+        return false
+    }
+
+    feedback.style.display = "none";
+    input.setCustomValidity("");
+    return true;
+}
+
+// Validate a given eta input, making sure it is not empty and is a number
+function validateEta(field: string, value: string | number): boolean {
+    const feedback = document.getElementById(field + "-invalid");
+    const input = <HTMLInputElement>document.getElementById(field + "-input");
+
+    if (input.disabled) {
+        feedback.style.display = "none";
+        input.setCustomValidity("");
+    } else {
+        if (!isNumeric(value) || value == "") {
+            feedback.textContent = "Please enter a number";
+            feedback.style.display = "block";
+            input.setCustomValidity("Invalid Field.");
+            return false;
+        } else {
+            if (value <= 0 || value > 1) {
+                feedback.textContent = "Value must be between 0 and 1";
+                feedback.style.display = "block";
+                input.setCustomValidity("Invalid Field.");
+                return false;
+            } else {
+                feedback.style.display = "none";
+                input.setCustomValidity("");
+            }
+        }
+    }
+    return true;
+}
+
+// General function to validate and input that needs no special treatment
+function validateGeneral(field: string, value: string | number): boolean {
+    const feedback = document.getElementById(field + "-invalid");
+    const input = <HTMLInputElement>document.getElementById(field + "-input");
+    if (input.disabled) {
+        feedback.style.display = "none";
+        input.setCustomValidity("");
+    } else {
+        if (!isNumeric(value) || value == "") {
+            feedback.textContent = "Please enter a number";
+            feedback.style.display = "block";
+            input.setCustomValidity("Invalid Field.");
+            return false;
+        } else {
+            if (value <= 0) {
+                feedback.textContent = "Value must be greater than 0";
+                feedback.style.display = "block";
+                input.setCustomValidity("Invalid Field.");
+                return false;
+            } else {
+                feedback.style.display = "none";
+                input.setCustomValidity("");
+            }
+        }
+    }
+    return true;
+}
+
+// Validate zoom inputs
+function validateZooms(zoom_freqs: number[] | string[], zoom_freqs_scaled: string[], zoom_resolution: string[], obs_band: string): boolean[] {
+    const return_bools = [true, true, true, true]
+
+    for (let i = 0; i < 4; i++) {
+        const zoom_feedback = document.getElementById("zoom" + String(i + 1) + "-frequency-invalid");
+        const zoom_input = <HTMLInputElement>document.getElementById("zoom" + String(i + 1) + "-frequency-input");
+
+        if (!zoom_input.disabled) {
+            if (zoom_freqs[i] == "") {
+                if (i == 0) {
+                    // If the first input is blank, need to invalidate form
+                    zoom_feedback.textContent = "Please enter a number";
+                    zoom_feedback.style.display = "block";
+
+                    zoom_input.setCustomValidity("Invalid Field.");
+                    return_bools[i] = false;
+                } else {
+                    zoom_feedback.style.display = "none";
+                    zoom_input.setCustomValidity("");
+                }
+            } else if (!isNumeric(zoom_freqs[i])) {
+                zoom_feedback.textContent = "Please enter a number";
+                zoom_feedback.style.display = "block";
+
+                zoom_input.setCustomValidity("Invalid Field.");
+                return_bools[i] = false;
+            } else if (!isBandwidthContained(zoom_freqs_scaled[i], zoom_resolution[i], obs_band)) {
+                zoom_feedback.textContent = "Zoom resolution must be entirely contained within the observing band";
+                zoom_feedback.style.display = "block";
+
+                zoom_input.setCustomValidity("Invalid Field.");
+                return_bools[i] = false;
+            } else {
+                zoom_feedback.style.display = "none";
+                zoom_input.setCustomValidity("");
+            }
+        } else {
+                zoom_feedback.style.display = "none";
+                zoom_input.setCustomValidity("");
+        }
+    }
+    return return_bools;
+}
+
+function validateInteger(field: string, value: number | string): boolean {
+    const feedback = document.getElementById(field + "-invalid");
+    const input = <HTMLInputElement>document.getElementById(field + "-input");
+    if (input.disabled) {
+        feedback.style.display = "none";
+        input.setCustomValidity("");
+    } else {
+        if (!isNumeric(value) || value == "") {
+            feedback.textContent = "Please enter a number";
+            feedback.style.display = "block";
+
+            input.setCustomValidity("Invalid Field.");
+            return false;
+        } else {
+            if (value < 0) {
+                feedback.textContent = "Value cannot be negative";
+                feedback.style.display = "block";
+
+                input.setCustomValidity("Invalid Field.");
+                return false;
+            }
+            if (!Number.isInteger(Number(value))) {
+                feedback.textContent = "Must be an integer value";
+                feedback.style.display = "block";
+
+                input.setCustomValidity("Invalid Field.");
+                return false;
+            } else {
+                feedback.style.display = "none";
+                input.setCustomValidity("");
+            }
+        }
+    }
+    return true;
+}
+
+// Function to validate fields that can either contain an empty string or
+// a number between min and max.
+function validateNumberMinMax(field: string, value: string, min: number, max: number): boolean {
+    const feedback = document.getElementById(field + "-invalid");
+    const input = <HTMLInputElement>document.getElementById(field + "-input");
+
+    // Got through possible situtations in turn.
+
+    if (input.disabled) {
+        feedback.style.display = "none";
+        input.setCustomValidity("");
+        return true;
+    }
+
+    if (value == "") {
+        feedback.style.display = "none";
+        input.setCustomValidity("");
+        return true;
+    }
+
+    if (!isNumeric(value)) {
+        feedback.textContent = "Please enter a number between " + min + " and " + max;
+        feedback.style.display = "block";
+        input.setCustomValidity("Invalid Field.");
+        return false;
+    }
+
+    const numval = parseFloat(value);
+    if (numval < min) {
+        feedback.textContent = "Please enter a number between " + min + " and " + max;
+        feedback.style.display = "block";
+        input.setCustomValidity("Invalid Field.");
+        return false;
+    }
+
+    if (numval > max) {
+        feedback.textContent = "Please enter a number between " + min + " and " + max;
+        feedback.style.display = "block";
+        input.setCustomValidity("Invalid Field.");
+        return false;
+    }
+
+    feedback.style.display = "none";
+    input.setCustomValidity("");
+    return true;
+}
+
+
+// Function to perform input validation.
+// Checks that a value has been entered for each input, that each value is formatted correctly and that each value
+// is within acceptable ranges. Returns a boolean to indicate whether there were any invalid inputs.
+function validateInput(input_dict,observing_modes: { [x: string]: boolean; continuum: boolean;
+line: boolean; pulsars: boolean; }): boolean {
+    // This will be set to false if there are any issues
+    let return_bool = true;
+
+    // --- Universal Inputs --- //
+    return_bool = return_bool && validateRA(input_dict.right_asc);
+    return_bool = return_bool && validateDec(input_dict.dec);
+    return_bool = return_bool && validateInteger("nMeer", input_dict.nMeer);
+    return_bool = return_bool && validateInteger("nSKA", input_dict.nSKA);
+    return_bool = return_bool && validateNumberMinMax("pwv", input_dict.weather, 3, 25);
+    return_bool = return_bool && validateNumberMinMax("elev", input_dict.elevation, 5, 90);
+
+    // If we're using the internal version, we want to check these extra inputs
+    if (input_dict.calculator_mode === "Internal") {
+        return_bool = return_bool && validateEta("etaPointing", input_dict.etaPointing)
+        return_bool = return_bool && validateEta("etaCoherence", input_dict.etaCoherence);
+        return_bool = return_bool && validateEta("etaDigitisation", input_dict.etaDigitisation);
+        return_bool = return_bool && validateEta("etaCorrelation", input_dict.etaCorrelation);
+        return_bool = return_bool && validateEta("etaBandpass", input_dict.etaBandpass);
+        return_bool = return_bool && validateGeneral("Tsys_SKA", input_dict.Tsys_SKA);
+        return_bool = return_bool && validateGeneral("Trcv_SKA", input_dict.Trcv_SKA);
+        return_bool = return_bool && validateGeneral("Tspl_SKA", input_dict.Tspl_SKA);
+        return_bool = return_bool && validateGeneral("Tsys_Meer", input_dict.Tsys_Meer);
+        return_bool = return_bool && validateGeneral("Trcv_Meer", input_dict.Trcv_Meer);
+        return_bool = return_bool && validateGeneral("Tspl_Meer", input_dict.Tspl_Meer);
+        return_bool = return_bool && validateGeneral("Tsky", input_dict.Tsky);
+        return_bool = return_bool && validateGeneral("Tgal", input_dict.Tgal);
+        return_bool = return_bool && validateGeneral("alpha", input_dict.alpha);
+        return_bool = return_bool && validateEta("etaSKA", input_dict.etaSKA);
+        return_bool = return_bool && validateEta("etaMeer", input_dict.etaMeer);
+    }
+
+    // Special case for Integration Time Override, since it's allowed to be left blank
+    if (input_dict.main_int_time != null) {
+        return_bool = return_bool && validateGeneral("main-integration", input_dict.main_int_time);
+    } else {
+        document.getElementById("main-integration-invalid").style.display = "none";
+        (<HTMLInputElement>document.getElementById("main-integration-input")).setCustomValidity("");
+    }
+
+    // --- Continuum Inputs --- //
+    if (observing_modes["continuum"]) {
+        return_bool = return_bool && validateObsFreq("continuum-frequency", input_dict.continuum_obs_freq, input_dict.continuum_obs_freq_scaled, input_dict.obs_band);
+        return_bool = return_bool && validateBandwidth("continuum-bandwidth", input_dict.continuum_bandwidth, input_dict.continuum_bandwidth_scaled, input_dict.continuum_obs_freq_scaled, input_dict.obs_band);
+        return_bool = return_bool && validateGeneral("continuum-chunks", input_dict.continuum_n_chunks)
+
+        // Only want to validate one of either integration or sensitivity
+        if (input_dict.continuum_supplied == "IntegrationTime") {
+            return_bool = return_bool && validateGeneral("continuum-integration", input_dict.continuum_int_time);
+        } else {
+            return_bool = return_bool && validateGeneral("continuum-sensitivity", input_dict.continuum_sensitivity);
+        }
+    } else {
+        // If Continuum is not an active observing mode, we ignore these inputs and assume they're all fine
+        document.getElementById("continuum-frequency-invalid").style.display = "none";
+        (<HTMLInputElement>document.getElementById("continuum-frequency-input")).setCustomValidity("");
+
+        document.getElementById("continuum-bandwidth-invalid").style.display = "none";
+        (<HTMLInputElement>document.getElementById("continuum-bandwidth-input")).setCustomValidity("");
+
+        document.getElementById("continuum-chunks-invalid").style.display = "none";
+        (<HTMLInputElement>document.getElementById("continuum-chunks-input")).setCustomValidity("");
+
+        document.getElementById("continuum-integration-invalid").style.display = "none";
+        (<HTMLInputElement>document.getElementById("continuum-integration-input")).setCustomValidity("");
+
+        document.getElementById("continuum-sensitivity-invalid").style.display = "none";
+        (<HTMLInputElement>document.getElementById("continuum-sensitivity-input")).setCustomValidity("");
+    }
+
+    // --- Line Inputs --- //
+    if (observing_modes["line"]) {
+        // Validate zooms, getting an array of bools. Use each one in turn to update return_bool
+        const zoom_bools = validateZooms(input_dict.zoom_freqs, input_dict.zoom_freqs_scaled, input_dict.zoom_resolutions, input_dict.obs_band);
+        zoom_bools.forEach(bool => return_bool == return_bool && bool);
+
+        return_bool == return_bool && validateGeneral("line-integration", input_dict.line_int_time);
+        return_bool == return_bool && validateGeneral("line-sensitivity", input_dict.line_sensitivity);
+    } else {
+        // If Line is not an active observing mode, we ignore these inputs and assumw they're all fine
+        for (let i = 0; i < 4; i++) {
+            document.getElementById("zoom" + String(i + 1) + "-frequency-invalid").style.display = "none";
+           (<HTMLInputElement>document.getElementById("zoom" + String(i + 1) + "-frequency-input")).setCustomValidity("");
+        }
+
+        document.getElementById("line-integration-invalid").style.display = "none";
+        (<HTMLInputElement>document.getElementById("line-integration-input")).setCustomValidity("");
+
+        document.getElementById("line-sensitivity-invalid").style.display = "none";
+        (<HTMLInputElement>document.getElementById("line-sensitivity-input")).setCustomValidity("");
+    }
+    return return_bool;
+}
+
+//Function to convert a given frequency to Hz according to the units
+function scaleFrequency(freq_val, freq_units): number {
+    let freq_val_scaled = 0;
+    switch (freq_units) {
+        case "kHz": freq_val_scaled = freq_val * 1000; break
+        case "MHz": freq_val_scaled = freq_val * 1000000; break
+        case "GHz": freq_val_scaled = freq_val * 1000000000; break
+        case "Hz": freq_val_scaled = freq_val; break
+        default: freq_val_scaled = freq_val;
+    }
+    return freq_val_scaled;
+}
+
+function scaleTime(time_val: string | number, time_units: string): null | number {
+    let time_val_scaled = null;
+    if (isNumeric(time_val)) {
+        switch (time_units) {
+            case "ms": time_val_scaled = Number(time_val) / 1000; break;
+            case "us": time_val_scaled = Number(time_val) / 1000000; break;
+            case "ns": time_val_scaled = Number(time_val) / 1000000000; break;
+            case "m": time_val_scaled = Number(time_val) * 60; break;
+            case "h": time_val_scaled = Number(time_val) * 3600; break;
+            case "d": time_val_scaled = Number(time_val) * 86400; break;
+            case "s": time_val_scaled = Number(time_val); break;
+            default: time_val_scaled = Number(time_val);
+        }
+    }
+    return time_val_scaled;
+}
+
+//Function to convert a given sensitivity into Janskys according to the units
+function scaleSensitivity(sens_val: number, sens_units: string): number {
+    let sens_val_scaled = 0;
+    switch (sens_units) {
+        case "Jy": sens_val_scaled = sens_val; break;
+        case "mJy": sens_val_scaled = sens_val / 1000; break;
+        case "uJy": sens_val_scaled = sens_val / 1000000; break;
+        case "nJy": sens_val_scaled = sens_val / 1000000000; break;
+        default: sens_val_scaled = sens_val;
+    }
+    return sens_val_scaled;
+}
+
+// This function is a utility used in the readForm function when using internal mode. Updated by Liz to make the value
+// null if the element is disabled, rather than capturing what's in the field.
+
+function getElementValueOrNull(element_id: string, ): string | null {
+    if ((<HTMLInputElement>document.getElementById(element_id)).disabled) {
+        return  null
+    } else {
+        const temp = (<HTMLInputElement>document.getElementById(element_id)).value.trim();
+        if (temp.length === 0) {
+            return null
+        } else {
+            return temp
+        }
+    }
+}
+
+// This function scans through the page and collects the values, units, etc from every input
+function readForm(observing_modes: { [x: string]: boolean; continuum: boolean; line: boolean; pulsars: boolean; }) {
+    // --- Universal Inputs --- //
+    const obs_band = document.getElementById("band-radio").querySelector(".active").textContent.trim();
+
+    // RA and dec
+    const right_asc = (<HTMLInputElement>document.getElementById("RA-input")).value.trim();
+    const dec = (<HTMLInputElement>document.getElementById("dec-input")).value.trim();
+
+    const array_config = document.getElementById("dropdown-button-array-config").textContent.trim();
+
+    let nSKA = null;
+    let nMeer = null;
+
+    if (array_config === "custom") {
+        nMeer = getElementValueOrNull("nMeer-input");
+        nSKA = getElementValueOrNull("nSKA-input");
+    }
+
+    // Setting the version of the calculator
+    let calculator_mode = "Public"
+    if (document.getElementById("checkbox-toggleExpert").getAttribute("aria-expanded") === "true") {
+        calculator_mode = "Internal"
+    }
+
+    let etaPointing = null;
+    let etaCoherence = null;
+    let etaDigitisation = null;
+    let etaCorrelation = null;
+    let etaBandpass = null;
+
+    let Tsys_SKA = null;
+    let Trcv_SKA = null;
+    let Tspl_SKA = null;
+    let Tsys_Meer = null;
+    let Trcv_Meer = null;
+    let Tspl_Meer = null;
+
+    let Tsky = null;
+    let Tgal = null;
+    let alpha = null;
+
+    let etaSKA = null;
+    let etaMeer = null;
+
+    // Assume we're using the public version of the calculator...
+    if (calculator_mode == 'Internal') {
+        // first the efficiencies that go into etaSys
+        etaPointing = getElementValueOrNull("etaPointing-input");
+        etaCoherence = getElementValueOrNull("etaCoherence-input");
+        etaDigitisation = getElementValueOrNull("etaDigitisation-input");
+        etaCorrelation = getElementValueOrNull("etaCorrelation-input");
+        etaBandpass = getElementValueOrNull("etaBandpass-input");
+
+        Tsys_SKA = getElementValueOrNull("Tsys_SKA-input");
+        Trcv_SKA = getElementValueOrNull("Trcv_SKA-input");
+        Tspl_SKA = getElementValueOrNull("Tspl_SKA-input");
+
+        Tsys_Meer = getElementValueOrNull("Tsys_Meer-input");
+        Trcv_Meer = getElementValueOrNull("Trcv_Meer-input");
+        Tspl_Meer = getElementValueOrNull("Tspl_Meer-input");
+
+        Tsky = getElementValueOrNull("Tsky-input");
+        Tgal = getElementValueOrNull("Tgal-input");
+        alpha = getElementValueOrNull("alpha-input");
+
+        etaSKA = getElementValueOrNull("etaSKA-input");
+        etaMeer = getElementValueOrNull("etaMeer-input");
+    }
+
+    const weather = (<HTMLInputElement>document.getElementById("pwv-input")).value.trim();
+    const elevation = (<HTMLInputElement>document.getElementById("elev-input")).value.trim();
+
+    // 'Main' integration time. Overrides any other integration time inputs.
+    // TODO: Might be nice to disable other integration time inputs when this one has a value
+    let main_int_time = (<HTMLInputElement>document.getElementById("main-integration-input")).value.trim();
+    main_int_time = main_int_time == "" ? null : main_int_time;		// If left blank, set value to null.
+    const main_int_time_units = document.getElementById("dropdown-button-integration-main").textContent.trim();
+
+    // --- Continuum Inputs --- //
+    let continuum_obs_freq
+    let continuum_obs_freq_units
+    let continuum_bandwidth
+    let continuum_bandwidth_units
+    let continuum_resolution
+    let continuum_n_chunks
+    let continuum_int_time
+    let continuum_int_time_units
+    let continuum_sensitivity
+    let continuum_sensitivity_units
+    let continuum_supplied
+
+    // If Continuum is an active observing mode, read these inputs, otherwise set them as null
+    if (observing_modes["continuum"]) {
+        continuum_obs_freq = (<HTMLInputElement>document.getElementById("continuum-frequency-input")).value.trim();
+        continuum_obs_freq_units = document.getElementById("dropdown-button-frequency-continuum").textContent.trim();
+
+        continuum_bandwidth = (<HTMLInputElement>document.getElementById("continuum-bandwidth-input")).value.trim();
+        continuum_bandwidth_units = document.getElementById("dropdown-button-bandwidth-continuum").textContent.trim();
+
+        const continuum_resolution_khz = Number(document.getElementById("dropdown-button-continuum-resolution").textContent.slice(0, -4))
+        continuum_resolution = continuum_resolution_khz * 1000; //All in kHz. Convert to Hz.
+
+        continuum_n_chunks = (<HTMLInputElement>document.getElementById("continuum-chunks-input")).value.trim();
+
+        continuum_int_time = (<HTMLInputElement>document.getElementById("continuum-integration-input")).value.trim();
+        continuum_int_time_units = document.getElementById("dropdown-button-continuum-integration").textContent.trim();
+
+        continuum_sensitivity = (<HTMLInputElement>document.getElementById("continuum-sensitivity-input")).value.trim();
+        continuum_sensitivity = continuum_sensitivity == "-" ? null : continuum_sensitivity;
+        continuum_sensitivity_units = document.getElementById("dropdown-button-continuum-sensitivity").textContent.trim();
+
+        continuum_supplied = document.getElementById("continuum-input-switch-radio").querySelector(".active").textContent.trim();
+    } else {
+        continuum_obs_freq = null;
+        continuum_obs_freq_units = null;
+        continuum_bandwidth = null;
+        continuum_bandwidth_units = null;
+        continuum_resolution = null;
+        continuum_n_chunks = null;
+        continuum_int_time = null;
+        continuum_int_time_units = null;
+        continuum_sensitivity = null;
+        continuum_sensitivity_units = null;
+        continuum_supplied = null;
+    }
+
+
+    // --- Line Inputs --- //
+    let zoom_freqs = new Array(4);
+    let zoom_freq_units = new Array(4);
+    let zoom_resolutions = new Array(4);
+    let line_int_time;
+    let line_int_time_units;
+    let line_sensitivity;
+    let line_sensitivity_units;
+    let line_supplied;
+
+    // If Continuum is an active observing mode, read these inputs, otherwise set them as null
+    if (observing_modes["line"]) {
+        // For each zoom...
+        for (let i = 0; i < 4; i++) {
+            zoom_freqs[i] = (<HTMLInputElement>document.getElementById("zoom" + String(i + 1) + "-frequency-input")).value;
+            zoom_freq_units[i] = document.getElementById("dropdown-button-zoom" + String(i + 1) + "-frequency").textContent;
+            const zoom_resolution_khz = Number(document.getElementById("dropdown-button-zoom" + String(i + 1) + "-resolution").textContent.slice(0, -4))
+            zoom_resolutions[i] = zoom_resolution_khz * 1000; //All in kHz. Set to Hz.
+        }
+
+        line_int_time = (<HTMLInputElement>document.getElementById("line-integration-input")).value.trim();
+        line_int_time_units = document.getElementById("dropdown-button-line-integration").textContent.trim();
+
+        line_sensitivity = (<HTMLInputElement>document.getElementById("line-sensitivity-input")).value.trim();
+        line_sensitivity = line_sensitivity == "-" ? null : line_sensitivity;
+        line_sensitivity_units = document.getElementById("dropdown-button-line-sensitivity").textContent.trim();
+
+        line_supplied = document.getElementById("line-input-switch-radio").querySelector(".active").textContent.trim();
+    } else {
+        zoom_freqs = [null, null, null, null];
+        zoom_freq_units = [null, null, null, null];
+        zoom_resolutions = [null, null, null, null];
+
+        line_int_time = null;
+        line_int_time_units = null;
+        line_sensitivity = null;
+        line_sensitivity_units = null;
+        line_supplied = null;
+    }
+
+
+    // --- Pulsar Inputs --- //
+    // ...
+
+
+    // Scale all inputs where units can be selected. Values always scalled to their base units, e.g. GHz -> Hz and ns -> s
+    // If any of these values are null, they will stay as null
+    const continuum_obs_freq_scaled = scaleFrequency(continuum_obs_freq, continuum_obs_freq_units);
+    const continuum_bandwidth_scaled = scaleFrequency(continuum_bandwidth, continuum_bandwidth_units);
+
+    const main_int_time_scaled = scaleTime(main_int_time, main_int_time_units);
+    const continuum_int_time_scaled = scaleTime(continuum_int_time, continuum_int_time_units);
+
+    const continuum_sensitivity_scaled = scaleSensitivity(continuum_sensitivity, continuum_sensitivity_units);
+
+    // Scale zoom central frequencies according to the units
+    const zoom_freqs_scaled = new Array(4);
+    for (let i = 0; i < 4; i++) {
+        switch (zoom_freq_units[i]) {
+            case "kHz": zoom_freqs_scaled[i] = zoom_freqs[i] * 1000; break;
+            case "MHz": zoom_freqs_scaled[i] = zoom_freqs[i] * 1000000; break;
+            case "GHz": zoom_freqs_scaled[i] = zoom_freqs[i] * 1000000000; break;
+            case "Hz": zoom_freqs_scaled[i] = zoom_freqs[i]; break;
+            default: zoom_freqs_scaled[i] = zoom_freqs[i];
+        }
+    }
+
+    const line_int_time_scaled = scaleTime(line_int_time, line_int_time_units);
+    const line_sensitivity_scaled = scaleSensitivity(line_sensitivity, line_sensitivity_units);
+
+    // Gather values into a dictionary and return
+    const return_dict = {
+        "calculator_mode": calculator_mode,
+        "obs_band": obs_band,
+        "right_asc": right_asc,
+        "dec": dec,
+        "array_config": array_config,
+        "etaPointing": etaPointing,
+        "etaCoherence": etaCoherence,
+        "etaDigitisation": etaDigitisation,
+        "etaCorrelation": etaCorrelation,
+        "etaBandpass": etaBandpass,
+        "Tsys_SKA": Tsys_SKA,
+        "Trcv_SKA": Trcv_SKA,
+        "Tspl_SKA": Tspl_SKA,
+        "Tsys_Meer": Tsys_Meer,
+        "Trcv_Meer": Trcv_Meer,
+        "Tspl_Meer": Tspl_Meer,
+        "Tsky": Tsky,
+        "Tgal": Tgal,
+        "alpha": alpha,
+        "etaSKA": etaSKA,
+        "nSKA": nSKA,
+        "etaMeer": etaMeer,
+        "nMeer": nMeer,
+        "weather": weather,
+        "elevation": elevation,
+        "main_int_time": main_int_time,
+        "main_int_time_units": main_int_time_units,
+        "main_int_time_scaled": main_int_time_scaled,
+        "continuum_obs_freq": continuum_obs_freq,
+        "continuum_obs_freq_units": continuum_obs_freq_units,
+        "continuum_obs_freq_scaled": continuum_obs_freq_scaled,
+        "continuum_bandwidth": continuum_bandwidth,
+        "continuum_bandwidth_units": continuum_bandwidth_units,
+        "continuum_bandwidth_scaled": continuum_bandwidth_scaled,
+        "continuum_resolution": continuum_resolution,
+        "continuum_n_chunks": continuum_n_chunks,
+        "continuum_int_time": continuum_int_time,
+        "continuum_int_time_units": continuum_int_time_units,
+        "continuum_int_time_scaled": continuum_int_time_scaled,
+        "continuum_sensitivity": continuum_sensitivity,
+        "continuum_sensitivity_units": continuum_sensitivity_units,
+        "continuum_sensitivity_scaled": continuum_sensitivity_scaled,
+        "continuum_supplied": continuum_supplied,
+        "zoom_freqs": zoom_freqs,
+        "zoom_freq_units": zoom_freq_units,
+        "zoom_freqs_scaled": zoom_freqs_scaled,
+        "zoom_resolutions": zoom_resolutions,
+        "line_int_time": line_int_time,
+        "line_int_time_units": line_int_time_units,
+        "line_int_time_scaled": line_int_time_scaled,
+        "line_sensitivity": line_sensitivity,
+        "line_sensitivity_units": line_sensitivity_units,
+        "line_sensitivity_scaled": line_sensitivity_scaled,
+        "line_supplied": line_supplied
+    }
+    return return_dict
+}
+
+// Function to skim through the input dictionary and remove any key-value pairs which aren't needed anymore.
+// This reduces the amount of data sent to the server in the AJAX calls.
+function reduceInputs(input_dict: {Tgal: null | number;
+      Trcv_SKA: null | number;
+      Tspl_SKA: null | number;
+      Tsys_SKA: null | number;
+      Trcv_Meer: null | number;
+      Tspl_Meer: null | number;
+      Tsys_Meer: null | number;
+      Tsky: null | number;
+      alpha: null | number;
+      array_config: string;
+      calculator_mode: string;
+      continuum_bandwidth: number;
+      continuum_bandwidth_scaled: number;
+      continuum_bandwidth_units: string;
+      continuum_int_time: string | number;
+      continuum_int_time_scaled: null | number;
+      continuum_int_time_units: string;
+      continuum_n_chunks: string | number;
+      continuum_obs_freq: string | number;
+      continuum_obs_freq_scaled: number;
+      continuum_obs_freq_units: string;
+      continuum_resolution: number;
+      continuum_sensitivity: null | number;
+      continuum_sensitivity_scaled: null | number;
+      continuum_sensitivity_units: string;
+      continuum_supplied: string;
+      dec: string;
+      etaPointing: null | number;
+      etaCoherence:null | number;
+      etaDigitisation:null | number;
+      etaCorrelation:null | number;
+      etaBandpass:null | number;
+      etaMeer: null | number;
+      etaSKA: null | number;
+      line_int_time: null | number;
+      line_int_time_scaled: null | number;
+      line_int_time_units: null | number;
+      line_sensitivity: null | number;
+      line_sensitivity_scaled: null | number;
+      line_sensitivity_units: null | number;
+      line_supplied: null | number;
+      main_int_time: null | string;
+      main_int_time_scaled: null | number;
+      main_int_time_units: string;
+      nMeer: null | number;
+      nSKA: null | number;
+      obs_band: string;
+      right_asc: string;
+      weather: string;
+      elevation: string;
+      zoom_freq_units: null[] | string[];
+      zoom_freqs: null[] | number[];
+      zoom_freqs_scaled: null[] | number[];
+      zoom_resolutions: null[] | number[]},
+    observing_modes: { [x: string]: boolean; continuum: boolean; line: boolean; pulsars: boolean; }) {
+
+    // If continuum is not an active observing mode, we can remove all of these inputs.
+    if (!observing_modes["continuum"]) {
+        delete input_dict["continuum_obs_freq_scaled"];
+        delete input_dict["continuum_bandwidth_scaled"];
+        delete input_dict["continuum_resolution"];
+        delete input_dict["continuum_n_chunks"];
+        delete input_dict["continuum_int_time_scaled"];
+        delete input_dict["continuum_sensitivity_scaled"];
+        delete input_dict["continuum_supplied"];
+    }
+
+    // Likewise for line...
+    if (!observing_modes["line"]) {
+        delete input_dict["zoom_freqs_scaled"];
+        delete input_dict["zoom_resolutions"];
+        delete input_dict["line_int_time_scaled"];
+        delete input_dict["line_sensitivity_scaled"];
+        delete input_dict["line_supplied"];
+    }
+
+
+    // By this point we don't need to know if we're using the internal/public version of the calculator
+    delete input_dict["calculator_mode"]
+
+    // Return the reduced form of the input_dict
+    return input_dict
+}
+
+// Function to find which observing modes are currently active
+function getObservingModes(): { [x: string]: boolean; continuum: boolean; line: boolean; pulsars: boolean; } {
+    return {
+        "continuum": document.getElementById("collapse-continuum").classList.contains("show"),
+        "line": document.getElementById("collapse-line").classList.contains("show"),
+        "pulsars": document.getElementById("collapse-pulsars").classList.contains("show")
+    }
+}
+
+// Function to render the continuum output report to the page
+function outputContinuum(input_dict: {
+        continuum_n_chunks: number;
+        continuum_supplied: string;
+        main_int_time: null | number;
+        continuum_int_time: null | number;
+        continuum_int_time_units: string;
+        main_int_time_units: string;
+        continuum_obs_freq: null | number;
+        continuum_obs_freq_units: string;
+        continuum_resolution: number;
+        continuum_sensitivity: number;
+        continuum_sensitivity_units: string; }, data): void {
+
+    // Get output element and reveal it
+    const cont_output = document.getElementById("continuum-output");
+    cont_output.classList.remove("hidden");
+
+    // Begin building up output HTML string
+    let out_string = "";	
+
+    // Check whether Integration/Sensitiviy was supplied. We report each differently
+    if (input_dict.continuum_supplied == "IntegrationTime") {	
+        out_string += continuumOutputForIntegrationTime(input_dict, data)
+    } else {
+        out_string += continuumOutputForSensitivity(input_dict, data)
+    }
+
+    // Copy HTML string we've built up to the output element on the page
+    cont_output.innerHTML = out_string;
+    outputInput(data["calculator_state"])
+}
+
+
+// Function to sort the results object keys in order of decreasing PWV
+function sortResults(data){
+	
+    // Assemble a list of [key,pwv] pairs
+    let keyval: [string, string];
+    const datamap: Array<typeof keyval> = [];
+    for (const k in data)
+    {
+        const pwv = !("calculator_state" in data[k]) ? null 
+             : !("pwv" in data[k]["calculator_state"]) ? null
+             : data[k]["calculator_state"]["pwv"];
+        datamap.push([k, pwv]);
+    }
+
+    // Sort the list in decreasing PWV
+    datamap.sort(function(a, b) {
+        const pwv_a = a[1];
+        const pwv_b = b[1];
+        if (pwv_a == null) {
+            return 0;
+        }
+        if (pwv_b == null) {
+            return 0;
+        }
+        const pwv_a_float = parseFloat(pwv_a);
+        const pwv_b_float = parseFloat(pwv_b);
+        if (pwv_a_float < pwv_b_float) {
+            return 1;
+        }
+        if (pwv_a_float > pwv_b_float) {
+            return -1;
+        }
+        // pwvs must be equal
+        return 0;
+    });
+
+    return datamap;
+}
+
+
+function continuumOutputForSensitivity(input_dict, data){
+
+    let out_string = '';
+
+    out_string += "<div class='table-wrapper'><div class='row' style='border-bottom: 1px solid rgba(0, 0, 0, 0.3);'>";
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Weather</div>";		
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Int.Time Full BW</div>";
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Int.Time Chunk</div>";
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Chunk Centre</div>";
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Int.Time Line</div>";
+    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>PWV</div>";
+    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>Elevation</div>";	
+    out_string += "</div>";
+
+    // sort the results in order of increasing PWV
+
+    const datamap = sortResults(data);
+
+    // format the results in turn
+
+    for (const k2 in datamap) {
+        const key = datamap[k2][0];
+
+        out_string += "<div class='row row-padding'>";
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>"+key+"</div>";			
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>"+data[key]["cont_int_time"]+"</div>";
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
+        for(let i = 0; i < data[key]["chunk_int_times"].length; i++){
+            out_string += "<span class='margin-right'>"+data[key]["chunk_int_times"][i]+" <br> </span>"		
+        }
+        out_string += "</div>";
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
+        for(let i = 0; i < data[key]["chunk_centres"].length; i++){
+            out_string += "<span class='margin-right'>"+data[key]["chunk_centres"][i]+" <br> </span>"		
+        }
+        out_string += "</div>";	
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>"+data[key]["cont_line_int_time"]+"</div>";
+        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>"+(data[key]["calculator_state"]["pwv"]==undefined ? 'null' : data[key]["calculator_state"]["pwv"])+"</div>";
+        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>"+(data[key]["calculator_state"]["elevation"] || 'null')+"</div>";		
+        out_string += "</div>";			
+    }
+    out_string+="</div></br><div>";	
+    out_string += "<p>The target RMS noise is <b> "+String(input_dict.continuum_sensitivity) + String(input_dict.continuum_sensitivity_units) + "</b></p>"; 
+    if (input_dict.continuum_n_chunks > 1) {
+        out_string += "<p>The band is divided into <b>" + String(input_dict.continuum_n_chunks) + "</b> chunks, each <b>" + String(data[Object.keys(data)[0]]["chunk_width"]) + " </b>wide.</p>";
+    }
+    out_string += "<p>The line int. time is for the central frequency (<b>" + String(input_dict.continuum_obs_freq) + String(input_dict.continuum_obs_freq_units)
+    out_string += "</b>) , with a resolution of <b>" + String(input_dict.continuum_resolution / 1000.0) + "kHz</b></p></div>"	
+    return out_string
+}
+
+function continuumOutputForIntegrationTime(input_dict, data): string {
+	
+    let out_string = '';
+
+    out_string += "<div class='table-wrapper'><div class='row' style='border-bottom: 1px solid rgba(0, 0, 0, 0.3);'>";
+    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>Weather</div>";		
+    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>Integration Time</div>";
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Noise Full BW</div>";
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Noise Chunk</div>";
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Chunk Centre</div>";
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Line Noise</div>";
+    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>PWV</div>";
+    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>Elevation</div>";	
+    out_string += "</div>";
+
+    // sort the results in order of increasing PWV
+
+    const datamap = sortResults(data);
+
+    // format the results in turn
+
+    for (const k2 in datamap) {
+        const key = datamap[k2][0];
+        out_string += "<div class='row row-padding'>";
+        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>"+key+"</div>";			
+        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>"+(input_dict.main_int_time == null ? String(input_dict.continuum_int_time) + String(input_dict.continuum_int_time_units) : String(input_dict.main_int_time) + String(input_dict.main_int_time_units))+"</div>";
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>"+data[key]["cont_sens"]+"</div>";
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
+        for(let i =0; i < data[key]["chunk_sensitivities"].length;i++){
+            out_string += "<span class='margin-right'>"+data[key]["chunk_sensitivities"][i]+" <br> </span>";
+        }
+        out_string += "</div>";
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
+        for(let i =0; i < data[key]["chunk_centres"].length;i++){
+            out_string += "<span class='margin-right'>"+data[key]["chunk_centres"][i]+" <br> </span>";	
+        }
+        out_string += "</div>";	
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>"+data[key]["cont_line_sens"]+"</div>";
+        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>"+(data[key]["calculator_state"]["pwv"]==undefined ? 'null' : data[key]["calculator_state"]["pwv"])+"</div>";
+        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>"+(data[key]["calculator_state"]["elevation"] || 'null')+"</div>";
+        out_string += "</div>";
+    }
+    out_string+="</div></br></br><div>";
+    if (input_dict.continuum_n_chunks > 1) {
+        out_string += "<p>Dividing the bandwidth into <b>" + String(input_dict.continuum_n_chunks) + ", " + String(data[Object.keys(data)[0]]["chunk_width"]) + " </b>chunks.</p>";
+    }
+    out_string += "<p>The Line noise is at the central frequency of (<b>" + String(input_dict.continuum_obs_freq) + String(input_dict.continuum_obs_freq_units);
+    out_string += "</b>) , with a resolution of <b>" + String(input_dict.continuum_resolution / 1000.0) + "kHz</b></p></div>";
+    return out_string;
+}
+
+// Function to render the line report to the page
+function outputLine(input_dict: {
+        zoom_freqs_scaled: string | number[];
+        line_supplied: string;
+        main_int_time: null | number;
+        line_int_time: null | number;
+        line_int_time_units: string;
+        main_int_time_units: string;
+        zoom_freqs: number[];
+        zoom_freq_units: string[];
+        zoom_resolutions: number[];
+        line_sensitivity: string;
+        line_sensitivity_units: string }, data: { [x: string]: any; }): void {
+
+    const line_output = document.getElementById("line-output");
+    line_output.classList.remove("hidden");
+
+    let out_string = "";
+
+    // Check whether Integration/Sensitiviy was supplied. We report each differently
+    if (input_dict.line_supplied == "IntegrationTime") {
+        out_string += lineOutputForIntegrationTime(input_dict, data);
+    } else {
+       out_string += lineOutputForSensitivity(input_dict, data);
+    }
+
+    // Copy HTML string we've built up to the output element on the page
+    line_output.innerHTML = out_string;
+    outputInput(data["calculator_state"])
+}
+
+function lineOutputForIntegrationTime(input_dict, data): string {
+    let out_string = "";	
+	
+    out_string += "<div class='table-wrapper'><div class='row' style='border-bottom: 1px solid rgba(0, 0, 0, 0.3);'>";
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Weather</div>";		
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>ZoomID</div>";
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Noise</div>";
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Centre</div>";		
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Resolution</div>";
+    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>PWV</div>";
+    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>Elevation</div>";	
+    out_string += "</div>";
+
+    // sort the results in order of increasing PWV
+
+    const datamap = sortResults(data);
+
+    // format the results in turn
+
+    for (const k2 in datamap) {
+        const key = datamap[k2][0];
+
+        out_string += "<div class='row row-padding'>";
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>"+key+"</div>";
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
+        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
+            if (input_dict.zoom_freqs_scaled[i] != null) {
+                out_string += "<span class='margin-right'>"+(i+1)+"<br> </span>";
+            }
+        }		
+        out_string += "</div>";
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
+        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
+            if (input_dict.zoom_freqs_scaled[i] != null) {
+                out_string += "<span class='margin-right'>"+data[key]["zoom_sensitivities"][i]+"<br> </span>";
+            }
+        }
+        out_string += "</div>";
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
+        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
+            if (input_dict.zoom_freqs_scaled[i] != null) {
+                out_string += "<span class='margin-right'>"+input_dict.zoom_freqs[i]+" "+input_dict.zoom_freq_units[i]+"<br> </span>";
+            }
+        }		
+        out_string += "</div>";
+		
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
+        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
+            if (input_dict.zoom_freqs_scaled[i] != null) {
+                out_string += "<span class='margin-right'>"+String(input_dict.zoom_resolutions[i] / 1000.0) +" kHz<br> </span>";
+            }
+        }		
+        out_string += "</div>";
+        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>"+(data[key]["calculator_state"]["pwv"]==undefined ? 'null' : data[key]["calculator_state"]["pwv"])+"</div>";
+        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>"+(data[key]["calculator_state"]["elevation"] || 'null')+"</div>";		
+        out_string += "</div>";			
+    }
+    out_string+="</div></br></br><div>";
+    out_string+="<p>The integration time is "+(input_dict.main_int_time == null ? String(input_dict.line_int_time) + String(input_dict.line_int_time_units) : String(input_dict.main_int_time) + String(input_dict.main_int_time_units))+" .</p></div>";
+
+    return out_string;
+}
+
+function lineOutputForSensitivity(input_dict, data): string {
+    let out_string = "";
+
+    out_string += "<div class='table-wrapper'><div class='row' style='border-bottom: 1px solid rgba(0, 0, 0, 0.3);'>";
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Weather</div>";		
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>ZoomID</div>";
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Int.Time</div>";
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Centre</div>";		
+    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Resolution</div>";
+    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>PWV</div>";
+    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>Elevation</div>";	
+    out_string += "</div>";
+
+    // sort the results in order of increasing PWV
+
+    const datamap = sortResults(data);
+
+    // format the results in turn
+
+    for (const k2 in datamap) {
+        const key = datamap[k2][0];
+
+        out_string += "<div class='row row-padding'>";
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>"+key+"</div>";
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
+        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
+            if (input_dict.zoom_freqs_scaled[i] != null) {
+                out_string += "<span class='margin-right'>"+(i+1)+"<br> </span>";
+            }
+        }		
+        out_string += "</div>";
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
+        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
+            if (input_dict.zoom_freqs_scaled[i] != null) {
+                out_string += "<span class='margin-right'>"+data[key]["zoom_int_times"][i]+"<br> </span>";
+            }
+        }
+        out_string += "</div>";
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
+        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
+            if (input_dict.zoom_freqs_scaled[i] != null) {
+                out_string += "<span class='margin-right'>"+input_dict.zoom_freqs[i]+" "+input_dict.zoom_freq_units[i]+"<br> </span>";
+            }
+        }		
+        out_string += "</div>";
+
+        // out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>"+String(input_dict.zoom_resolutions[0] / 1000.0) +" kHz</div>";
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
+        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
+            if (input_dict.zoom_freqs_scaled[i] != null) {
+                out_string += "<span class='margin-right'>"+String(input_dict.zoom_resolutions[i] / 1000.0) +" kHz<br> </span>";
+            }
+        }		
+        out_string += "</div>";
+        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>"+(data[key]["calculator_state"]["pwv"]==undefined ? 'null' : data[key]["calculator_state"]["pwv"])+"</div>";
+        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>"+(data[key]["calculator_state"]["elevation"] || 'null')+"</div>";		
+        out_string += "</div>";			
+    }
+    out_string+="</div></br></br><div>";
+    out_string += "<p>The target RMS noise is <b> "+String(input_dict.line_sensitivity) + String(input_dict.line_sensitivity_units) + "</b>.</p></div>";
+	
+    return out_string;
+}
+
+// Function to render the pulsars output report to the page (Not yet implemented, just left as an example)
+/* eslint-disable */ // turns off lint warning for no-unused-vars for input_dict and data
+function outputPulsars(input_dict, data): number {
+    return 0;
+}
+/* eslint-enable */
+
+// Function which decides, based on active observing modes, which outputs need to be rendered
+function updateOutput(observing_modes: { [x: string]: boolean; continuum: boolean; line: boolean; pulsars: boolean; }, input_dict, data): void {
+    if (observing_modes["continuum"]) {
+        outputContinuum(input_dict, data);
+    }
+    if (observing_modes["line"]) {
+        outputLine(input_dict, data);
+    }
+    if (observing_modes["pulsars"]) {
+        outputPulsars(input_dict, data);
+    }
+}
+
+// === ON SUBMIT === //
+// This code will run when the "Calculate" button is clicked.
+// Capture and disable form submission. If there are invalid fields, present invalid feedback to the user, otherwise perform calculation.
+(function (): void {
+    'use strict';
+    window.addEventListener('load', function () {
+        // Populate the subarray dropdown menu
+        retrieveSubarrays()
+        // Get the forms we want to add validation styles to
+        const forms = document.getElementsByClassName('needs-validation');
+        // Loop over them (There will only be the one form)
+        /* eslint-disable */
+        const validation = Array.prototype.filter.call(forms, function (form) {
+            /*eslint-enable */
+            form.addEventListener('submit', function (event) {
+            // Prevent form submission to stop a page change/refresh
+            event.preventDefault();
+            event.stopPropagation();
+
+            //let card_link_continuum = document.getElementById("card-link-continuum");
+            const collapse_continuum = document.getElementById("collapse-continuum");
+
+            //let card_link_line = document.getElementById("card-link-line");
+            const collapse_line = document.getElementById("collapse-line");
+
+            //let card_link_pulsars = document.getElementById("card-link-pulsars");
+            const collapse_pulsars = document.getElementById("collapse-pulsars");
+
+            // Find which observing modes are active
+            const observing_modes = getObservingModes();
+
+            // Don't proceed if any of the cards on the page are currently collapsing (or expanding).
+            if (!(collapse_continuum.classList.contains("collapsing") || collapse_line.classList.contains("collapsing") || collapse_pulsars.classList.contains("collapsing"))) {
+                // If no active observing mode(s), display an error message and go no further
+                if (!(observing_modes["continuum"] || observing_modes["line"] || observing_modes["pulsars"])) {
+                    document.getElementById("submit-feedback").style.display = "block";
+                } else {
+                    document.getElementById("submit-feedback").style.display = "none";
+
+                    // Read inputs from the page
+                    let input_dict = readForm(observing_modes);
+
+                    // Check that the inputs are valid
+                    if (validateInput(input_dict, observing_modes)) {
+                        // Add observing modes to input_dict to send over to server for calculator
+                        // Must first be converted from an object literal to an array.
+                        input_dict["observing_modes"] = $.map(observing_modes, function (value) { return value; });
+
+                        // At this point we want to clear the contents of the integration/sensitivity field that is
+                        // disabled to avoid confusion.
+
+                        for( const item in observing_modes) {
+                            if (observing_modes[item] == true) {
+                                const sens_input = <HTMLInputElement>document.getElementById(item + "-sensitivity-input");
+                                const time_input = <HTMLInputElement>document.getElementById(item + "-integration-input");
+
+                                if (sens_input.disabled) {
+                                    sens_input.value = "-"
+                                } else {
+                                    time_input.value = "-"
+                                }
+                            }
+                        }
+
+                        // If weather button group is hidden (d-none), set weather to be null in the input dict
+                        // if (document.getElementById("row-weather").classList.contains("d-none")) {
+                        // 	input_dict.weather = null;
+                        // }
+
+                        // If line observing mode is active, set any disabled/inactive zooms to null
+                        if (observing_modes["line"]) {
+                            for (let i = 1; i < 4; i++) {
+                                if ((<HTMLInputElement>document.getElementById("zoom" + String(i + 1) + "-frequency-input")).value == "") {
+                                    for (let j = i; j < 4; j++) {
+                                        input_dict.zoom_freqs[j] = null;
+                                        input_dict.zoom_freq_units[j] = null;
+                                        input_dict.zoom_freqs_scaled[j] = null;
+                                        input_dict.zoom_resolutions[j] = null;
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+
+                        // Remove extraneous members from input_dict before sending GET request. This reduces the amount of data being sent to the server.
+                        input_dict = reduceInputs(input_dict, observing_modes);
+
+                        // Using AJAX, make a GET request to the '/calc' Flask route in calculate.py
+                        $.ajax({
+                            url: '/calc',
+                            type: 'GET',
+                            data: input_dict,
+                            success: function (data) {
+                                updateOutput(observing_modes, input_dict, data);
+                            }
+                        });
+                    } else {
+                        // If there is an error with the input validation, hide the output elements for each observing mode
+                        for (const mode in observing_modes) {
+                            document.getElementById(mode + "-output").classList.add("hidden");
+                        }
+                    }
+                }
+            }
+
+            // Add the "was-validated" class to the form to indicate validation has happened at least once (Used by bootstrap).
+            form.classList.add('was-validated');
+        }, false);
+    });
+}, false);
+})();
+
+// Retrieve subarray configuration list
+function retrieveSubarrays(): void {
+    $.ajax({
+        url: '/subarrays',
+        type: 'GET',
+        success: function (data) {
+            populateDropdown(data);
+        }
+    });
+}
+
+// Function to populate the dropdown menu.
+function populateDropdown(data: string[]): void {
+    const dropdownElementHolder = document.getElementById("subarrays-dropdown")
+    const dropdownDefault = dropdownElementHolder.innerHTML
+    let dropdown = ""
+
+    data.forEach(function (subarray, index) {
+        const entry = "<a class=\"dropdown-item array-config-option\" href=\"#\" " +
+        "onclick=\"event.preventDefault(); updateDropdown('array-config', '" +
+          subarray + "')\">" + subarray +"</a>\n"
+
+        // Check that the placeholder subarray entered in AT2-606 is removed when necessary
+        if (subarray !== "custom") {
+            dropdown += entry
+        }
+    })
+
+    dropdown += dropdownDefault
+    dropdownElementHolder.innerHTML = dropdown
+}
+
+
+// Function to update text on dropdown button when an option is selected.
+function updateDropdown(field: string, label: string): void {
+    document.getElementById("dropdown-button-" + field).textContent = label;
+    if ((field === "array-config") && (label === "custom")) {
+        (<HTMLInputElement>document.getElementById("nSKA-input")).disabled = false;
+        (<HTMLInputElement>document.getElementById("nMeer-input")).disabled = false;
+    } else if ((field === "array-config") && (label !== "custom")) {
+        (<HTMLInputElement>document.getElementById("nSKA-input")).disabled = true;
+        (<HTMLInputElement>document.getElementById("nMeer-input")).disabled = true;
+    }
+}
+
+// Function used in the internal version to reveal hidden inputs when needed.
+// perhaps better to be implemented in the html with bootstrap in future
+// function revealInputs(field: string): void {
+// 	//const dependents = [];
+// 	switch (field) {
+// 		case "Tsys_SKA" || "Tsys_Meer":
+// 			// hide the option to change the weather
+// 			document.getElementById("row-weather").classList.add("d-none");
+// 			break;
+// 		case "Tsky":
+// 			// hide the option to change the weather
+// 			document.getElementById("row-weather").classList.add("d-none");
+// 			break;
+// 		case "Tgal":
+// 			// Reveal the option to change the weather
+// 			document.getElementById("row-weather").classList.remove("d-none");
+// 			break;
+// 	}
+// }
+//
+// // Function used in the internal version to hide visible inputs when needed
+// function hideInputs(field: string): void {
+// 	//const dependents = [];
+// 	switch (field) {
+// 		case "Tsys_SKA":
+// 			// Reveal the option to change the weather
+// 			document.getElementById("row-weather").classList.remove("d-none");
+// 			break;
+// 		case "Tsky":
+// 			// Also want to reveal the option to change the weather
+// 			document.getElementById("row-weather").classList.add("d-none");
+// 			break;
+// 		case "Tgal":
+// 			// Reveal the option to change the weather
+// 			document.getElementById("row-weather").classList.add("d-none");
+// 			break;
+// 	}
+// }
+// This function is clears the input of the fields that have disabled by enabling another field. It also updates the
+// check boxes and disables the fields
+
+function updateDisabledCheckboxes(fields: string[]): void {
+    for (const item in fields) {
+        (<HTMLInputElement>document.getElementById(fields[item] +  "-input")).disabled = true;
+        document.getElementById("checkbox-" + fields[item]).textContent = "Enter Manually";
+    }
+}
+
+// Function used in the internal version to disable inputs when needed
+function disableInputs(field: string): void {
+    if (field == "Tsys_SKA" ) {
+        updateDisabledCheckboxes(["Trcv_SKA", "Tspl_SKA", "Tsky", "Tgal", "alpha"])
+    }
+    if (field === "Trcv_SKA" || field === "Tspl_SKA" || field === "Tsky") {
+        updateDisabledCheckboxes(["Tsys_SKA"])
+    }
+    if (field === "Tsys_Meer" ) {
+        updateDisabledCheckboxes(["Trcv_Meer", "Tspl_Meer", "Tsky", "Tgal", "alpha"])
+    }
+    if (field === "Trcv_Meer" || field === "Tspl_Meer" || field === "Tsky") {
+        updateDisabledCheckboxes(["Tsys_Meer"])
+    }
+    if (field === "Tgal") {
+        updateDisabledCheckboxes(["Tsys_SKA", "Tsys_Meer", "Tsky", "alpha"])
+    }
+    if (field === "Tsky") {
+        updateDisabledCheckboxes(["Tgal", "alpha"])
+    }
+    if (field === "alpha") {
+        updateDisabledCheckboxes(["Tsys_SKA", "Tsys_Meer", "Tsky", "Tgal"])
+    }
+}
+
+// If "Enter Manually" is clicked, swap that element on the page to say "Calculate Automatically" and vice-versa
+/* eslint-disable */
+// all of the following functions trigger no-unused-var warnings in eslint. disabling these for now ahead of refactoring
+function updateCheckbox(field: string): void {
+    if (document.getElementById("checkbox-" + field).textContent.trim() === "Enter Manually") {
+        document.getElementById("checkbox-" + field).textContent = "Calculate Automatically";
+        (<HTMLInputElement>document.getElementById(field + "-input")).disabled = false;
+
+        // revealInputs(field);
+        disableInputs(field);
+    } else {
+        document.getElementById("checkbox-" + field).textContent = "Enter Manually";
+        (<HTMLInputElement>document.getElementById(field + "-input")).disabled = true;
+
+        // hideInputs(field);
+    }
+}
+
+
+// Function added by Liz as a proof of concept. It probably needs refactoring
+
+function outputInput(data: Record<string, number>): void {
+    for (const variable in data) {
+        let value = String(data[variable]);
+        (<HTMLInputElement>document.getElementById(variable + "-input")).value = value;
+    }
+}
+
+// When the observing band is changed, we update any frequency/bandwidth options to some defaults within that band.
+// For bands 1 and 2, the user is offered the entire band by default
+function updateBandSelection(selected_band: string): void {
+    const cont_freq_input = <HTMLInputElement>document.getElementById("continuum-frequency-input");
+    const cont_band_input = <HTMLInputElement>document.getElementById("continuum-bandwidth-input");
+
+    const zoom_freq_inputs = [
+        <HTMLInputElement>document.getElementById("zoom1-frequency-input"),
+        <HTMLInputElement>document.getElementById("zoom2-frequency-input"),
+        <HTMLInputElement>document.getElementById("zoom3-frequency-input"),
+        <HTMLInputElement>document.getElementById("zoom4-frequency-input"),
+    ]
+
+    switch (selected_band) {
+        case '1':
+            cont_freq_input.value = "0.7";
+            cont_band_input.value = "0.7";
+
+            for (let i = 0; i < zoom_freq_inputs.length; i++) {
+                if (zoom_freq_inputs[i].value != "" && !zoom_freq_inputs[i].disabled) {
+                    zoom_freq_inputs[i].value = "0.7"
+                }
+            }
+            break;
+        case '2':
+            cont_freq_input.value = "1.35";
+            cont_band_input.value = "0.81";
+
+            for (let i = 0; i < zoom_freq_inputs.length; i++) {
+                if (zoom_freq_inputs[i].value != "" && !zoom_freq_inputs[i].disabled) {
+                    zoom_freq_inputs[i].value = "1.35"
+                }
+            }
+            break;
+        case '5a':
+            cont_freq_input.value = "6.5";
+            cont_band_input.value = "0.8";
+
+            for (let i = 0; i < zoom_freq_inputs.length; i++) {
+                if (zoom_freq_inputs[i].value != "" && !zoom_freq_inputs[i].disabled) {
+                    zoom_freq_inputs[i].value = "6.5"
+                }
+            }
+            break;
+        case '5b':
+            cont_freq_input.value = "11.9";
+            cont_band_input.value = "0.8";
+
+            for (let i = 0; i < zoom_freq_inputs.length; i++) {
+                if (zoom_freq_inputs[i].value != "" && !zoom_freq_inputs[i].disabled) {
+                    zoom_freq_inputs[i].value = "11.9"
+                }
+            }
+            break;
+    }
+}
+
+// When a change is detected to a zoom text input, this function handles which of those inputs should currently be enabled/disabled.
+
+function manageActiveZooms(zoom_num: null | number): void {
+    const changed_input = <HTMLInputElement>document.getElementById("zoom" + String(zoom_num) + "-frequency-input");
+
+    if (changed_input.value == "") {
+        let i;
+        for (i = zoom_num + 1; i <= 4; i++) {
+            (<HTMLInputElement>document.getElementById("zoom" + String(i) + "-frequency-input")).disabled = true;
+            (<HTMLInputElement>document.getElementById("dropdown-button-zoom" + String(i) + "-frequency")).disabled = true;
+            (<HTMLInputElement>document.getElementById("dropdown-button-zoom" + String(i) + "-resolution")).disabled = true;
+        }
+    } else {
+        if (zoom_num < 4) {
+            (<HTMLInputElement>document.getElementById("zoom" + String(zoom_num + 1) + "-frequency-input")).disabled = false;
+            (<HTMLInputElement>document.getElementById("dropdown-button-zoom" + String(zoom_num + 1) + "-frequency")).disabled = false;
+            (<HTMLInputElement>document.getElementById("dropdown-button-zoom" + String(zoom_num + 1) + "-resolution")).disabled = false;
+            manageActiveZooms(zoom_num + 1);
+        }
+    }
+}
+
+// When one of the inputs is changed, this function is called to run the validation.
+// This is helpful to the user, as they can see if they've made an error immediately after changing an input.
+function updateForm(): void {
+    const observing_modes = getObservingModes();
+    const input_dict = readForm(observing_modes);
+
+    validateInput(input_dict, observing_modes)
+}
+
+// For the observing mode cards, when the header is clicked to expand/collapse, swap between a plus/minus to suit
+function swapPlusMinus(card_link_id: string): void {
+    const card_link_element = document.getElementById("card-link-" + card_link_id);
+    const collapse_element = document.getElementById("collapse-" + card_link_id);
+
+    // Assuming the card is not already in the "collapsing" state, swap the +/-
+    if (!collapse_element.classList.contains("collapsing")) {
+        if (card_link_element.textContent.trim()[0] == "+") {
+            card_link_element.textContent = card_link_element.textContent.replace("+", "-");
+        } else {
+            card_link_element.textContent = card_link_element.textContent.replace("-", "+");
+        }
+    }
+}
+
+// Function to swap which of the sensitivity/integration inputs is disabled/enabled for a given card.
+function setInputs(name: string, card: string): void {
+    const sens_input = <HTMLInputElement>document.getElementById(card + "-sensitivity-input");
+    const time_input = <HTMLInputElement>document.getElementById(card + "-integration-input");
+
+    switch (name) {
+
+        case 'Integration':
+            sens_input.disabled = true;
+            time_input.disabled = false;
+            break;
+
+        case 'Sensitivity':
+            sens_input.disabled = false;
+            time_input.disabled = true;
+            break;
+
+        default:
+            console.log('oops')
+    }
+}
+
+export {isFreqContained, parseRA, parseDec, sortResults};
+
+/*eslint-enable */
+
