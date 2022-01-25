@@ -41,39 +41,6 @@
     }, false);
 })();
 
-// Function to check if given bandwidth is entirely contained within the band.
-function isBandwidthContained(obs_freq_scaled: string, bandwidth_scaled: string, obs_band: string): boolean {
-    const obs_freq_scaled_num = Number(obs_freq_scaled)
-    const half_bandwidth = Number(bandwidth_scaled) / 2.0
-
-    const lower_bound: number = obs_freq_scaled_num - half_bandwidth
-    const upper_bound: number = obs_freq_scaled_num + half_bandwidth
-        switch (obs_band) {
-            case "Band 1":
-                if (lower_bound < 0.35e9 || upper_bound > 1.05e9) {
-                    return false;
-                }
-                break;
-            case "Band 2":
-                if (lower_bound < 0.95e9 || upper_bound > 1.76e9) {
-                    return false;
-                }
-                break;
-            case "Band 5a":
-                if (lower_bound< 4.6e9 || upper_bound > 8.4e9) {
-                    return false;
-                }
-                break;
-            case "Band 5b":
-                if (lower_bound< 8.4e9 || upper_bound  > 15.4e9) {
-                    return false;
-                }
-                break;
-        }
-
-        return true;
-}
-
 // functions to facilitate validating inputs
 
 function isNumeric(val: any): boolean {
@@ -111,16 +78,6 @@ function validateBandwidth(field: string, bandwidth: string | number, bandwidth_
         bandwidth_feedback.style.display = "block";
         bandwidth_input.setCustomValidity("Invalid Field.");
         return false;
-    } else {
-        if (isBandwidthContained(obs_freq_scaled, bandwidth_scaled, obs_band)) {
-            bandwidth_feedback.style.display = "none";
-            bandwidth_input.setCustomValidity("");
-        } else {
-            bandwidth_feedback.textContent = "Bandwidth must be fully contained within the band.";
-            bandwidth_feedback.style.display = "block";
-            bandwidth_input.setCustomValidity("Invalid Field.");
-            return false;
-        }
     }
     return true;
 }
@@ -145,7 +102,6 @@ function isAboveHorizon(Dec: string): boolean {
     }
     return false
 }
-
 
 // Validate right ascension input
 function validateRA(coords: string): boolean {
@@ -215,7 +171,7 @@ function validateEta(field: string, value: string | number): boolean {
     return true;
 }
 
-// General function to validate and input that needs no special treatment
+// General function to validate an input that needs no special treatment
 function validateGeneral(field: string, value: string | number): boolean {
     const feedback = document.getElementById(field + "-invalid");
     const input = <HTMLInputElement>document.getElementById(field + "-input");
@@ -241,51 +197,6 @@ function validateGeneral(field: string, value: string | number): boolean {
         }
     }
     return true;
-}
-
-// Validate zoom inputs
-function validateZooms(zoom_freqs: number[] | string[], zoom_freqs_scaled: string[], zoom_resolution: string[], obs_band: string): boolean[] {
-    const return_bools = [true, true, true, true]
-
-    for (let i = 0; i < 4; i++) {
-        const zoom_feedback = document.getElementById("zoom" + String(i + 1) + "-frequency-invalid");
-        const zoom_input = <HTMLInputElement>document.getElementById("zoom" + String(i + 1) + "-frequency-input");
-
-        if (!zoom_input.disabled) {
-            if (zoom_freqs[i] == "") {
-                if (i == 0) {
-                    // If the first input is blank, need to invalidate form
-                    zoom_feedback.textContent = "Please enter a number";
-                    zoom_feedback.style.display = "block";
-
-                    zoom_input.setCustomValidity("Invalid Field.");
-                    return_bools[i] = false;
-                } else {
-                    zoom_feedback.style.display = "none";
-                    zoom_input.setCustomValidity("");
-                }
-            } else if (!isNumeric(zoom_freqs[i])) {
-                zoom_feedback.textContent = "Please enter a number";
-                zoom_feedback.style.display = "block";
-
-                zoom_input.setCustomValidity("Invalid Field.");
-                return_bools[i] = false;
-            } else if (!isBandwidthContained(zoom_freqs_scaled[i], zoom_resolution[i], obs_band)) {
-                zoom_feedback.textContent = "Zoom resolution must be entirely contained within the observing band";
-                zoom_feedback.style.display = "block";
-
-                zoom_input.setCustomValidity("Invalid Field.");
-                return_bools[i] = false;
-            } else {
-                zoom_feedback.style.display = "none";
-                zoom_input.setCustomValidity("");
-            }
-        } else {
-                zoom_feedback.style.display = "none";
-                zoom_input.setCustomValidity("");
-        }
-    }
-    return return_bools;
 }
 
 function validateInteger(field: string, value: number | string): boolean {
@@ -436,71 +347,7 @@ line: boolean; pulsars: boolean; }): boolean {
         (<HTMLInputElement>document.getElementById("continuum-sensitivity-input")).setCustomValidity("");
     }
 
-    // --- Line Inputs --- //
-    if (observing_modes["line"]) {
-        // Validate zooms, getting an array of bools. Use each one in turn to update return_bool
-        const zoom_bools = validateZooms(input_dict.zoom_freqs, input_dict.zoom_freqs_scaled, input_dict.zoom_resolutions, input_dict.obs_band);
-        zoom_bools.forEach(bool => return_bool == return_bool && bool);
-
-        return_bool == return_bool && validateGeneral("line-integration", input_dict.line_int_time);
-        return_bool == return_bool && validateGeneral("line-sensitivity", input_dict.line_sensitivity);
-    } else {
-        // If Line is not an active observing mode, we ignore these inputs and assumw they're all fine
-        for (let i = 0; i < 4; i++) {
-            document.getElementById("zoom" + String(i + 1) + "-frequency-invalid").style.display = "none";
-           (<HTMLInputElement>document.getElementById("zoom" + String(i + 1) + "-frequency-input")).setCustomValidity("");
-        }
-
-        document.getElementById("line-integration-invalid").style.display = "none";
-        (<HTMLInputElement>document.getElementById("line-integration-input")).setCustomValidity("");
-
-        document.getElementById("line-sensitivity-invalid").style.display = "none";
-        (<HTMLInputElement>document.getElementById("line-sensitivity-input")).setCustomValidity("");
-    }
     return return_bool;
-}
-
-//Function to convert a given frequency to Hz according to the units
-function scaleFrequency(freq_val, freq_units): number {
-    let freq_val_scaled = 0;
-    switch (freq_units) {
-        case "kHz": freq_val_scaled = freq_val * 1000; break
-        case "MHz": freq_val_scaled = freq_val * 1000000; break
-        case "GHz": freq_val_scaled = freq_val * 1000000000; break
-        case "Hz": freq_val_scaled = freq_val; break
-        default: freq_val_scaled = freq_val;
-    }
-    return freq_val_scaled;
-}
-
-function scaleTime(time_val: string | number, time_units: string): null | number {
-    let time_val_scaled = null;
-    if (isNumeric(time_val)) {
-        switch (time_units) {
-            case "ms": time_val_scaled = Number(time_val) / 1000; break;
-            case "us": time_val_scaled = Number(time_val) / 1000000; break;
-            case "ns": time_val_scaled = Number(time_val) / 1000000000; break;
-            case "m": time_val_scaled = Number(time_val) * 60; break;
-            case "h": time_val_scaled = Number(time_val) * 3600; break;
-            case "d": time_val_scaled = Number(time_val) * 86400; break;
-            case "s": time_val_scaled = Number(time_val); break;
-            default: time_val_scaled = Number(time_val);
-        }
-    }
-    return time_val_scaled;
-}
-
-//Function to convert a given sensitivity into Janskys according to the units
-function scaleSensitivity(sens_val: number, sens_units: string): number {
-    let sens_val_scaled = 0;
-    switch (sens_units) {
-        case "Jy": sens_val_scaled = sens_val; break;
-        case "mJy": sens_val_scaled = sens_val / 1000; break;
-        case "uJy": sens_val_scaled = sens_val / 1000000; break;
-        case "nJy": sens_val_scaled = sens_val / 1000000000; break;
-        default: sens_val_scaled = sens_val;
-    }
-    return sens_val_scaled;
 }
 
 // This function is a utility used in the readForm function when using internal mode. Updated by Liz to make the value
@@ -523,104 +370,37 @@ function getElementValueOrNull(element_id: string, ): string | null {
 function readForm() {
     // --- Universal Inputs --- //
 
-    // RA and dec
-    const right_asc = (<HTMLInputElement>document.getElementById("RA-input")).value.trim();
-    const dec = (<HTMLInputElement>document.getElementById("dec-input")).value.trim();
+    const elev = (<HTMLInputElement>document.getElementById("elev-input")).value.trim();
+    const obs_freq = (<HTMLInputElement>document.getElementById("obs-freq-input")).value.trim();
+    const bandwidth = (<HTMLInputElement>document.getElementById("bandwidth-input")).value.trim();
+    const pwv = (<HTMLInputElement>document.getElementById("pwv-input")).value.trim();
+    const npol = (<HTMLInputElement>document.getElementById("npol-input")).value.trim();
+    const Trx = (<HTMLInputElement>document.getElementById("Trx-input")).value.trim();
+    const Tamb = (<HTMLInputElement>document.getElementById("Tamb-input")).value.trim();
+    const g = (<HTMLInputElement>document.getElementById("g-input")).value.trim();
+    const eta_eff = (<HTMLInputElement>document.getElementById("eta-eff-input")).value.trim();
+    const eta_ill = (<HTMLInputElement>document.getElementById("eta-ill-input")).value.trim();
+    const eta_g = (<HTMLInputElement>document.getElementById("eta-g-input")).value.trim();
+    const integration_time = (<HTMLInputElement>document.getElementById("integration-time-input")).value.trim();
 
     // Gather values into a dictionary and return
     const return_dict = {
-        "right_asc": right_asc,
-        "dec": dec
+        "elevation": elev,
+        "obs_freq": obs_freq,
+        "bandwidth": bandwidth,
+        "pwv": pwv,
+        "npol": npol,
+        "Trx": Trx,
+        "Tamb": Tamb,
+        "g": g,
+        "eta_eff": eta_eff,
+        "eta_ill": eta_ill,
+        "eta_g": eta_g,
+        "integration_time": integration_time
     }
     console.log('readForm');
     console.log(return_dict)
     return return_dict
-}
-
-// Function to skim through the input dictionary and remove any key-value pairs which aren't needed anymore.
-// This reduces the amount of data sent to the server in the AJAX calls.
-function reduceInputs(input_dict: {Tgal: null | number;
-      Trcv_SKA: null | number;
-      Tspl_SKA: null | number;
-      Tsys_SKA: null | number;
-      Trcv_Meer: null | number;
-      Tspl_Meer: null | number;
-      Tsys_Meer: null | number;
-      Tsky: null | number;
-      alpha: null | number;
-      array_config: string;
-      calculator_mode: string;
-      continuum_bandwidth: number;
-      continuum_bandwidth_scaled: number;
-      continuum_bandwidth_units: string;
-      continuum_int_time: string | number;
-      continuum_int_time_scaled: null | number;
-      continuum_int_time_units: string;
-      continuum_n_chunks: string | number;
-      continuum_obs_freq: string | number;
-      continuum_obs_freq_scaled: number;
-      continuum_obs_freq_units: string;
-      continuum_resolution: number;
-      continuum_sensitivity: null | number;
-      continuum_sensitivity_scaled: null | number;
-      continuum_sensitivity_units: string;
-      continuum_supplied: string;
-      dec: string;
-      etaPointing: null | number;
-      etaCoherence:null | number;
-      etaDigitisation:null | number;
-      etaCorrelation:null | number;
-      etaBandpass:null | number;
-      etaMeer: null | number;
-      etaSKA: null | number;
-      line_int_time: null | number;
-      line_int_time_scaled: null | number;
-      line_int_time_units: null | number;
-      line_sensitivity: null | number;
-      line_sensitivity_scaled: null | number;
-      line_sensitivity_units: null | number;
-      line_supplied: null | number;
-      main_int_time: null | string;
-      main_int_time_scaled: null | number;
-      main_int_time_units: string;
-      nMeer: null | number;
-      nSKA: null | number;
-      obs_band: string;
-      right_asc: string;
-      weather: string;
-      elevation: string;
-      zoom_freq_units: null[] | string[];
-      zoom_freqs: null[] | number[];
-      zoom_freqs_scaled: null[] | number[];
-      zoom_resolutions: null[] | number[]},
-    observing_modes: { [x: string]: boolean; continuum: boolean; line: boolean; pulsars: boolean; }) {
-
-    // If continuum is not an active observing mode, we can remove all of these inputs.
-    if (!observing_modes["continuum"]) {
-        delete input_dict["continuum_obs_freq_scaled"];
-        delete input_dict["continuum_bandwidth_scaled"];
-        delete input_dict["continuum_resolution"];
-        delete input_dict["continuum_n_chunks"];
-        delete input_dict["continuum_int_time_scaled"];
-        delete input_dict["continuum_sensitivity_scaled"];
-        delete input_dict["continuum_supplied"];
-    }
-
-    // Likewise for line...
-    if (!observing_modes["line"]) {
-        delete input_dict["zoom_freqs_scaled"];
-        delete input_dict["zoom_resolutions"];
-        delete input_dict["line_int_time_scaled"];
-        delete input_dict["line_sensitivity_scaled"];
-        delete input_dict["line_supplied"];
-    }
-
-
-    // By this point we don't need to know if we're using the internal/public version of the calculator
-    delete input_dict["calculator_mode"]
-
-    // Return the reduced form of the input_dict
-    return input_dict
 }
 
 // Function to find which observing modes are currently active
@@ -774,169 +554,6 @@ function continuumOutputForIntegrationTime(input_dict, data): string {
     return out_string;
 }
 
-// Function to render the line report to the page
-function outputLine(input_dict: {
-        zoom_freqs_scaled: string | number[];
-        line_supplied: string;
-        main_int_time: null | number;
-        line_int_time: null | number;
-        line_int_time_units: string;
-        main_int_time_units: string;
-        zoom_freqs: number[];
-        zoom_freq_units: string[];
-        zoom_resolutions: number[];
-        line_sensitivity: string;
-        line_sensitivity_units: string }, data: { [x: string]: any; }): void {
-
-    const line_output = document.getElementById("line-output");
-    line_output.classList.remove("hidden");
-
-    let out_string = "";
-
-    // Check whether Integration/Sensitiviy was supplied. We report each differently
-    if (input_dict.line_supplied == "IntegrationTime") {
-        out_string += lineOutputForIntegrationTime(input_dict, data);
-    } else {
-       out_string += lineOutputForSensitivity(input_dict, data);
-    }
-
-    // Copy HTML string we've built up to the output element on the page
-    line_output.innerHTML = out_string;
-    outputInput(data["calculator_state"])
-}
-
-function lineOutputForIntegrationTime(input_dict, data): string {
-    let out_string = "";	
-	
-    out_string += "<div class='table-wrapper'><div class='row' style='border-bottom: 1px solid rgba(0, 0, 0, 0.3);'>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Weather</div>";		
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>ZoomID</div>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Noise</div>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Centre</div>";		
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Resolution</div>";
-    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>PWV</div>";
-    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>Elevation</div>";	
-    out_string += "</div>";
-
-    // sort the results in order of increasing PWV
-
-    const datamap = sortResults(data);
-
-    // format the results in turn
-
-    for (const k2 in datamap) {
-        const key = datamap[k2][0];
-
-        out_string += "<div class='row row-padding'>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>"+key+"</div>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>"+(i+1)+"<br> </span>";
-            }
-        }		
-        out_string += "</div>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>"+data[key]["zoom_sensitivities"][i]+"<br> </span>";
-            }
-        }
-        out_string += "</div>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>"+input_dict.zoom_freqs[i]+" "+input_dict.zoom_freq_units[i]+"<br> </span>";
-            }
-        }		
-        out_string += "</div>";
-		
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>"+String(input_dict.zoom_resolutions[i] / 1000.0) +" kHz<br> </span>";
-            }
-        }		
-        out_string += "</div>";
-        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>"+(data[key]["calculator_state"]["pwv"]==undefined ? 'null' : data[key]["calculator_state"]["pwv"])+"</div>";
-        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>"+(data[key]["calculator_state"]["elevation"] || 'null')+"</div>";		
-        out_string += "</div>";			
-    }
-    out_string+="</div></br></br><div>";
-    out_string+="<p>The integration time is "+(input_dict.main_int_time == null ? String(input_dict.line_int_time) + String(input_dict.line_int_time_units) : String(input_dict.main_int_time) + String(input_dict.main_int_time_units))+" .</p></div>";
-
-    return out_string;
-}
-
-function lineOutputForSensitivity(input_dict, data): string {
-    let out_string = "";
-
-    out_string += "<div class='table-wrapper'><div class='row' style='border-bottom: 1px solid rgba(0, 0, 0, 0.3);'>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Weather</div>";		
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>ZoomID</div>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Int.Time</div>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Centre</div>";		
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Resolution</div>";
-    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>PWV</div>";
-    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>Elevation</div>";	
-    out_string += "</div>";
-
-    // sort the results in order of increasing PWV
-
-    const datamap = sortResults(data);
-
-    // format the results in turn
-
-    for (const k2 in datamap) {
-        const key = datamap[k2][0];
-
-        out_string += "<div class='row row-padding'>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>"+key+"</div>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>"+(i+1)+"<br> </span>";
-            }
-        }		
-        out_string += "</div>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>"+data[key]["zoom_int_times"][i]+"<br> </span>";
-            }
-        }
-        out_string += "</div>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>"+input_dict.zoom_freqs[i]+" "+input_dict.zoom_freq_units[i]+"<br> </span>";
-            }
-        }		
-        out_string += "</div>";
-
-        // out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>"+String(input_dict.zoom_resolutions[0] / 1000.0) +" kHz</div>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (let i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>"+String(input_dict.zoom_resolutions[i] / 1000.0) +" kHz<br> </span>";
-            }
-        }		
-        out_string += "</div>";
-        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>"+(data[key]["calculator_state"]["pwv"]==undefined ? 'null' : data[key]["calculator_state"]["pwv"])+"</div>";
-        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>"+(data[key]["calculator_state"]["elevation"] || 'null')+"</div>";		
-        out_string += "</div>";			
-    }
-    out_string+="</div></br></br><div>";
-    out_string += "<p>The target RMS noise is <b> "+String(input_dict.line_sensitivity) + String(input_dict.line_sensitivity_units) + "</b>.</p></div>";
-	
-    return out_string;
-}
-
-// Function to render the pulsars output report to the page (Not yet implemented, just left as an example)
-/* eslint-disable */ // turns off lint warning for no-unused-vars for input_dict and data
-function outputPulsars(input_dict, data): number {
-    return 0;
-}
 /* eslint-enable */
 
 // Function which decides, based on active observing modes, which outputs need to be rendered
@@ -957,93 +574,6 @@ function updateOutput(input_dict, data): void {
     // Copy HTML string we've built up to the output element on the page
     cont_output.innerHTML = out_string;
 }
-
-
-// Retrieve subarray configuration list
-function retrieveSubarrays(): void {
-    $.ajax({
-        url: '/subarrays',
-        type: 'GET',
-        success: function (data) {
-            populateDropdown(data);
-        }
-    });
-}
-
-// Function to populate the dropdown menu.
-function populateDropdown(data: string[]): void {
-    const dropdownElementHolder = document.getElementById("subarrays-dropdown")
-    const dropdownDefault = dropdownElementHolder.innerHTML
-    let dropdown = ""
-
-    data.forEach(function (subarray, index) {
-        const entry = "<a class=\"dropdown-item array-config-option\" href=\"#\" " +
-        "onclick=\"event.preventDefault(); updateDropdown('array-config', '" +
-          subarray + "')\">" + subarray +"</a>\n"
-
-        // Check that the placeholder subarray entered in AT2-606 is removed when necessary
-        if (subarray !== "custom") {
-            dropdown += entry
-        }
-    })
-
-    dropdown += dropdownDefault
-    dropdownElementHolder.innerHTML = dropdown
-}
-
-
-// Function to update text on dropdown button when an option is selected.
-function updateDropdown(field: string, label: string): void {
-    document.getElementById("dropdown-button-" + field).textContent = label;
-    if ((field === "array-config") && (label === "custom")) {
-        (<HTMLInputElement>document.getElementById("nSKA-input")).disabled = false;
-        (<HTMLInputElement>document.getElementById("nMeer-input")).disabled = false;
-    } else if ((field === "array-config") && (label !== "custom")) {
-        (<HTMLInputElement>document.getElementById("nSKA-input")).disabled = true;
-        (<HTMLInputElement>document.getElementById("nMeer-input")).disabled = true;
-    }
-}
-
-// Function used in the internal version to reveal hidden inputs when needed.
-// perhaps better to be implemented in the html with bootstrap in future
-// function revealInputs(field: string): void {
-// 	//const dependents = [];
-// 	switch (field) {
-// 		case "Tsys_SKA" || "Tsys_Meer":
-// 			// hide the option to change the weather
-// 			document.getElementById("row-weather").classList.add("d-none");
-// 			break;
-// 		case "Tsky":
-// 			// hide the option to change the weather
-// 			document.getElementById("row-weather").classList.add("d-none");
-// 			break;
-// 		case "Tgal":
-// 			// Reveal the option to change the weather
-// 			document.getElementById("row-weather").classList.remove("d-none");
-// 			break;
-// 	}
-// }
-//
-// // Function used in the internal version to hide visible inputs when needed
-// function hideInputs(field: string): void {
-// 	//const dependents = [];
-// 	switch (field) {
-// 		case "Tsys_SKA":
-// 			// Reveal the option to change the weather
-// 			document.getElementById("row-weather").classList.remove("d-none");
-// 			break;
-// 		case "Tsky":
-// 			// Also want to reveal the option to change the weather
-// 			document.getElementById("row-weather").classList.add("d-none");
-// 			break;
-// 		case "Tgal":
-// 			// Reveal the option to change the weather
-// 			document.getElementById("row-weather").classList.add("d-none");
-// 			break;
-// 	}
-// }
-// This function is clears the input of the fields that have disabled by enabling another field. It also updates the
-// check boxes and disables the fields
 
 function updateDisabledCheckboxes(fields: string[]): void {
     for (const item in fields) {
@@ -1102,85 +632,6 @@ function outputInput(data: Record<string, number>): void {
     for (const variable in data) {
         let value = String(data[variable]);
         (<HTMLInputElement>document.getElementById(variable + "-input")).value = value;
-    }
-}
-
-// When the observing band is changed, we update any frequency/bandwidth options to some defaults within that band.
-// For bands 1 and 2, the user is offered the entire band by default
-function updateBandSelection(selected_band: string): void {
-    const cont_freq_input = <HTMLInputElement>document.getElementById("continuum-frequency-input");
-    const cont_band_input = <HTMLInputElement>document.getElementById("continuum-bandwidth-input");
-
-    const zoom_freq_inputs = [
-        <HTMLInputElement>document.getElementById("zoom1-frequency-input"),
-        <HTMLInputElement>document.getElementById("zoom2-frequency-input"),
-        <HTMLInputElement>document.getElementById("zoom3-frequency-input"),
-        <HTMLInputElement>document.getElementById("zoom4-frequency-input"),
-    ]
-
-    switch (selected_band) {
-        case '1':
-            cont_freq_input.value = "0.7";
-            cont_band_input.value = "0.7";
-
-            for (let i = 0; i < zoom_freq_inputs.length; i++) {
-                if (zoom_freq_inputs[i].value != "" && !zoom_freq_inputs[i].disabled) {
-                    zoom_freq_inputs[i].value = "0.7"
-                }
-            }
-            break;
-        case '2':
-            cont_freq_input.value = "1.35";
-            cont_band_input.value = "0.81";
-
-            for (let i = 0; i < zoom_freq_inputs.length; i++) {
-                if (zoom_freq_inputs[i].value != "" && !zoom_freq_inputs[i].disabled) {
-                    zoom_freq_inputs[i].value = "1.35"
-                }
-            }
-            break;
-        case '5a':
-            cont_freq_input.value = "6.5";
-            cont_band_input.value = "0.8";
-
-            for (let i = 0; i < zoom_freq_inputs.length; i++) {
-                if (zoom_freq_inputs[i].value != "" && !zoom_freq_inputs[i].disabled) {
-                    zoom_freq_inputs[i].value = "6.5"
-                }
-            }
-            break;
-        case '5b':
-            cont_freq_input.value = "11.9";
-            cont_band_input.value = "0.8";
-
-            for (let i = 0; i < zoom_freq_inputs.length; i++) {
-                if (zoom_freq_inputs[i].value != "" && !zoom_freq_inputs[i].disabled) {
-                    zoom_freq_inputs[i].value = "11.9"
-                }
-            }
-            break;
-    }
-}
-
-// When a change is detected to a zoom text input, this function handles which of those inputs should currently be enabled/disabled.
-
-function manageActiveZooms(zoom_num: null | number): void {
-    const changed_input = <HTMLInputElement>document.getElementById("zoom" + String(zoom_num) + "-frequency-input");
-
-    if (changed_input.value == "") {
-        let i;
-        for (i = zoom_num + 1; i <= 4; i++) {
-            (<HTMLInputElement>document.getElementById("zoom" + String(i) + "-frequency-input")).disabled = true;
-            (<HTMLInputElement>document.getElementById("dropdown-button-zoom" + String(i) + "-frequency")).disabled = true;
-            (<HTMLInputElement>document.getElementById("dropdown-button-zoom" + String(i) + "-resolution")).disabled = true;
-        }
-    } else {
-        if (zoom_num < 4) {
-            (<HTMLInputElement>document.getElementById("zoom" + String(zoom_num + 1) + "-frequency-input")).disabled = false;
-            (<HTMLInputElement>document.getElementById("dropdown-button-zoom" + String(zoom_num + 1) + "-frequency")).disabled = false;
-            (<HTMLInputElement>document.getElementById("dropdown-button-zoom" + String(zoom_num + 1) + "-resolution")).disabled = false;
-            manageActiveZooms(zoom_num + 1);
-        }
     }
 }
 

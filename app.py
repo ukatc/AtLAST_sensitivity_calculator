@@ -27,32 +27,22 @@ def hello():
 def sensitivity():
     app.logger.debug('sensitivity1')
 
-    ra = request.args.get("right_asc")
-    dec = request.args.get("dec")
-    app.logger.debug('right_asc {ra}'.format(ra=ra))
-    app.logger.debug('dec {dec}'.format(dec=dec))
-    frame = "icrs"
-
-    target = SkyCoord(
-        ra, dec, frame=frame, unit=(u.hourangle, u.deg)
-    )
-
     inputs = {}
-    inputs['t_int'] = {'value':10.1, 'unit':'s'}
+    inputs['t_int'] = {'value': float(request.args.get('integration_time')), 'unit':'s'}
 #    inputs['sensitivity'] = {'value':1e-6, 'unit':'mJy'}
-    inputs['bandwidth'] = {'value':1e6, 'unit':'Hz'}
-    inputs['obs_freq'] = {'value':100e9, 'unit':'Hz'}
-    inputs['n_pol'] = {'value':2, 'unit':'none'}
-    inputs['weather'] = {'value': 50, 'unit': 'none'}
-    inputs['elevation'] = {'value': 30, 'unit': 'deg'}
-    inputs['g'] = {'value': 1.0, 'unit': 'none'}
+    inputs['bandwidth'] = {'value': float(request.args.get('bandwidth')), 'unit':'MHz'}
+    inputs['obs_freq'] = {'value': float(request.args.get('obs_freq')), 'unit':'GHz'}
+    inputs['n_pol'] = {'value': int(request.args.get('npol')), 'unit':'none'}
+    inputs['weather'] = {'value': float(request.args.get('pwv')), 'unit': 'none'}
+    inputs['elevation'] = {'value': float(request.args.get('elevation')), 'unit': 'deg'}
+    inputs['g'] = {'value': float(request.args.get('g')), 'unit': 'none'}
     inputs['surface_rms'] = {'value': 25, 'unit': 'micron'}
     inputs['dish_radius'] = {'value': 25, 'unit': 'm'}
-    inputs['T_amb'] = {'value': 270, 'unit': 'K'}
-    inputs['T_rx'] = {'value': 50, 'unit': 'K'}
-    inputs['eta_eff'] = {'value': 0.8, 'unit': 'none'}
-    inputs['eta_ill'] = {'value': 0.63, 'unit': 'none'}
-    inputs['eta_q'] = {'value': 0.96, 'unit': 'none'}
+    inputs['T_amb'] = {'value': float(request.args.get('Tamb')), 'unit': 'K'}
+    inputs['T_rx'] = {'value': float(request.args.get('Trx')), 'unit': 'K'}
+    inputs['eta_eff'] = {'value': float(request.args.get('eta_eff')), 'unit': 'none'}
+    inputs['eta_ill'] = {'value': float(request.args.get('eta_ill')), 'unit': 'none'}
+    inputs['eta_q'] = {'value': float(request.args.get('eta_g')), 'unit': 'none'}
 
     app.logger.debug(inputs)
 
