@@ -381,7 +381,15 @@ function readForm() {
     const eta_eff = (<HTMLInputElement>document.getElementById("eta-eff-input")).value.trim();
     const eta_ill = (<HTMLInputElement>document.getElementById("eta-ill-input")).value.trim();
     const eta_g = (<HTMLInputElement>document.getElementById("eta-g-input")).value.trim();
+
+    const integration_time_disabled = (<HTMLInputElement>document.getElementById("integration-time-input")).disabled;
+    console.log(integration_time_disabled);
     const integration_time = (<HTMLInputElement>document.getElementById("integration-time-input")).value.trim();
+    console.log(integration_time);
+    const sensitivity_disabled = (<HTMLInputElement>document.getElementById("sensitivity-input")).disabled;
+    console.log(sensitivity_disabled);
+    const sensitivity = (<HTMLInputElement>document.getElementById("sensitivity-input")).value.trim();
+    console.log(sensitivity);
 
     // Gather values into a dictionary and return
     const return_dict = {
@@ -396,8 +404,21 @@ function readForm() {
         "eta_eff": eta_eff,
         "eta_ill": eta_ill,
         "eta_g": eta_g,
-        "integration_time": integration_time
     }
+
+    if (sensitivity_disabled) {
+        return_dict["integration_time"] = integration_time;
+    }
+    if (integration_time_disabled) {
+        return_dict["sensitivity"] = sensitivity;
+    }
+    if (sensitivity_disabled && integration_time_disabled) {
+        console.log('oops 1');
+    }
+    if (!sensitivity_disabled && !integration_time_disabled) {
+        console.log('oops 2');
+    }
+
     console.log('readForm');
     console.log(return_dict)
     return return_dict
@@ -660,20 +681,26 @@ function swapPlusMinus(card_link_id: string): void {
 }
 
 // Function to swap which of the sensitivity/integration inputs is disabled/enabled for a given card.
-function setInputs(name: string, card: string): void {
-    const sens_input = <HTMLInputElement>document.getElementById(card + "-sensitivity-input");
-    const time_input = <HTMLInputElement>document.getElementById(card + "-integration-input");
+function setInputs(name: string): void {
+    const sens_row = <HTMLInputElement>document.getElementById("row-sensitivity");
+    const sens_input = <HTMLInputElement>document.getElementById("sensitivity-input");
+    const time_row = <HTMLInputElement>document.getElementById("row-integration-time");
+    const time_input = <HTMLInputElement>document.getElementById("integration-time-input");
 
     switch (name) {
 
-        case 'Integration':
+        case 'integration':
             sens_input.disabled = true;
+            sens_row.style.display = "none";
             time_input.disabled = false;
+            time_row.style.display = "flex";
             break;
 
-        case 'Sensitivity':
+        case 'sensitivity':
             sens_input.disabled = false;
+            sens_row.style.display = "flex";
             time_input.disabled = true;
+            time_row.style.display = "none";
             break;
 
         default:

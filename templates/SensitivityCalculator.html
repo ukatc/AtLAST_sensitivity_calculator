@@ -240,20 +240,6 @@
         </div>
       </div>
 
-      <div class="row" id="row-integration-time">
-        <div class="col-sm-8">
-          <label for="integration-time-input">Integration time (s):</label>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" id="integration-time-input" placeholder="Enter value..." name="integration-tim-input" value="15" onchange="updateForm();">
-            <div class="invalid-feedback" id="integration-time-invalid">Please enter valid number; > 0</div>
-          </div>
-        </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
-          <br>
-          <p>Integration time (s)</p>
-        </div>
-      </div>
-
       <div class="row collapse internal">
         <div class="col-sm-8">
           <label for="etaPointing-input">etaPointing:</label>
@@ -293,6 +279,51 @@
         <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
       	  <br>
       	  <p>Coherence Efficiency.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-8">
+          <label for="input-switch-radio">Calculate integration time or sensitivity?</label>
+          <div class="form-group">
+            <div class="btn-group btn-group-toggle" id="input-switch-radio" data-toggle="buttons">
+              <label class="btn btn-primary active" onclick="setInputs('integration');">
+                <input type="radio" name="options" id="option-sens" autocomplete="off" checked> IntegrationTime
+              </label>
+              <label class="btn btn-primary" onclick="setInputs('sensitivity');">
+                <input type="radio" name="options" id="option-time" autocomplete="off"> Sensitivity
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-4"></div>
+      </div>
+
+      <div class="row" id="row-integration-time">
+        <div class="col-sm-8">
+          <label for="integration-time-input">Integration time (s):</label>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" id="integration-time-input" placeholder="Enter value..." name="integration-tim-input" value="15" onchange="updateForm();">
+            <div class="invalid-feedback" id="integration-time-invalid">Please enter valid number; > 0</div>
+          </div>
+        </div>
+        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
+          <br>
+          <p>Integration time (s)</p>
+        </div>
+      </div>
+
+      <div class="row" id="row-sensitivity" style="display: none;">
+        <div class="col-sm-8">
+          <label for="sensitivity-input">Sensitivity (mJy):</label>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" id="sensitivity-input" placeholder="Enter value..." name="sensitivity-input" value="15" onchange="updateForm();" disabled>
+            <div class="invalid-feedback" id="sensitivity-invalid">Please enter valid number; > 0</div>
+          </div>
+        </div>
+        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
+          <br>
+          <p>Sensitivity (mJy)</p>
         </div>
       </div>
 
