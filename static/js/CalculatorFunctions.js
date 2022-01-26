@@ -38,36 +38,6 @@ exports.sortResults = exports.parseDec = exports.parseRA = void 0;
         });
     }, false);
 })();
-// Function to check if given bandwidth is entirely contained within the band.
-function isBandwidthContained(obs_freq_scaled, bandwidth_scaled, obs_band) {
-    var obs_freq_scaled_num = Number(obs_freq_scaled);
-    var half_bandwidth = Number(bandwidth_scaled) / 2.0;
-    var lower_bound = obs_freq_scaled_num - half_bandwidth;
-    var upper_bound = obs_freq_scaled_num + half_bandwidth;
-    switch (obs_band) {
-        case "Band 1":
-            if (lower_bound < 0.35e9 || upper_bound > 1.05e9) {
-                return false;
-            }
-            break;
-        case "Band 2":
-            if (lower_bound < 0.95e9 || upper_bound > 1.76e9) {
-                return false;
-            }
-            break;
-        case "Band 5a":
-            if (lower_bound < 4.6e9 || upper_bound > 8.4e9) {
-                return false;
-            }
-            break;
-        case "Band 5b":
-            if (lower_bound < 8.4e9 || upper_bound > 15.4e9) {
-                return false;
-            }
-            break;
-    }
-    return true;
-}
 // functions to facilitate validating inputs
 function isNumeric(val) {
     return !(val instanceof Array) && (val - parseFloat(val) + 1) >= 0;
@@ -103,18 +73,6 @@ function validateBandwidth(field, bandwidth, bandwidth_scaled, obs_freq_scaled, 
         bandwidth_feedback.style.display = "block";
         bandwidth_input.setCustomValidity("Invalid Field.");
         return false;
-    }
-    else {
-        if (isBandwidthContained(obs_freq_scaled, bandwidth_scaled, obs_band)) {
-            bandwidth_feedback.style.display = "none";
-            bandwidth_input.setCustomValidity("");
-        }
-        else {
-            bandwidth_feedback.textContent = "Bandwidth must be fully contained within the band.";
-            bandwidth_feedback.style.display = "block";
-            bandwidth_input.setCustomValidity("Invalid Field.");
-            return false;
-        }
     }
     return true;
 }
@@ -200,7 +158,7 @@ function validateEta(field, value) {
     }
     return true;
 }
-// General function to validate and input that needs no special treatment
+// General function to validate an input that needs no special treatment
 function validateGeneral(field, value) {
     var feedback = document.getElementById(field + "-invalid");
     var input = document.getElementById(field + "-input");
@@ -229,50 +187,6 @@ function validateGeneral(field, value) {
         }
     }
     return true;
-}
-// Validate zoom inputs
-function validateZooms(zoom_freqs, zoom_freqs_scaled, zoom_resolution, obs_band) {
-    var return_bools = [true, true, true, true];
-    for (var i = 0; i < 4; i++) {
-        var zoom_feedback = document.getElementById("zoom" + String(i + 1) + "-frequency-invalid");
-        var zoom_input = document.getElementById("zoom" + String(i + 1) + "-frequency-input");
-        if (!zoom_input.disabled) {
-            if (zoom_freqs[i] == "") {
-                if (i == 0) {
-                    // If the first input is blank, need to invalidate form
-                    zoom_feedback.textContent = "Please enter a number";
-                    zoom_feedback.style.display = "block";
-                    zoom_input.setCustomValidity("Invalid Field.");
-                    return_bools[i] = false;
-                }
-                else {
-                    zoom_feedback.style.display = "none";
-                    zoom_input.setCustomValidity("");
-                }
-            }
-            else if (!isNumeric(zoom_freqs[i])) {
-                zoom_feedback.textContent = "Please enter a number";
-                zoom_feedback.style.display = "block";
-                zoom_input.setCustomValidity("Invalid Field.");
-                return_bools[i] = false;
-            }
-            else if (!isBandwidthContained(zoom_freqs_scaled[i], zoom_resolution[i], obs_band)) {
-                zoom_feedback.textContent = "Zoom resolution must be entirely contained within the observing band";
-                zoom_feedback.style.display = "block";
-                zoom_input.setCustomValidity("Invalid Field.");
-                return_bools[i] = false;
-            }
-            else {
-                zoom_feedback.style.display = "none";
-                zoom_input.setCustomValidity("");
-            }
-        }
-        else {
-            zoom_feedback.style.display = "none";
-            zoom_input.setCustomValidity("");
-        }
-    }
-    return return_bools;
 }
 function validateInteger(field, value) {
     var feedback = document.getElementById(field + "-invalid");
@@ -404,96 +318,7 @@ function validateInput(input_dict, observing_modes) {
         document.getElementById("continuum-sensitivity-invalid").style.display = "none";
         document.getElementById("continuum-sensitivity-input").setCustomValidity("");
     }
-    // --- Line Inputs --- //
-    if (observing_modes["line"]) {
-        // Validate zooms, getting an array of bools. Use each one in turn to update return_bool
-        var zoom_bools = validateZooms(input_dict.zoom_freqs, input_dict.zoom_freqs_scaled, input_dict.zoom_resolutions, input_dict.obs_band);
-        zoom_bools.forEach(function (bool) { return return_bool == return_bool && bool; });
-        return_bool == return_bool && validateGeneral("line-integration", input_dict.line_int_time);
-        return_bool == return_bool && validateGeneral("line-sensitivity", input_dict.line_sensitivity);
-    }
-    else {
-        // If Line is not an active observing mode, we ignore these inputs and assumw they're all fine
-        for (var i = 0; i < 4; i++) {
-            document.getElementById("zoom" + String(i + 1) + "-frequency-invalid").style.display = "none";
-            document.getElementById("zoom" + String(i + 1) + "-frequency-input").setCustomValidity("");
-        }
-        document.getElementById("line-integration-invalid").style.display = "none";
-        document.getElementById("line-integration-input").setCustomValidity("");
-        document.getElementById("line-sensitivity-invalid").style.display = "none";
-        document.getElementById("line-sensitivity-input").setCustomValidity("");
-    }
     return return_bool;
-}
-//Function to convert a given frequency to Hz according to the units
-function scaleFrequency(freq_val, freq_units) {
-    var freq_val_scaled = 0;
-    switch (freq_units) {
-        case "kHz":
-            freq_val_scaled = freq_val * 1000;
-            break;
-        case "MHz":
-            freq_val_scaled = freq_val * 1000000;
-            break;
-        case "GHz":
-            freq_val_scaled = freq_val * 1000000000;
-            break;
-        case "Hz":
-            freq_val_scaled = freq_val;
-            break;
-        default: freq_val_scaled = freq_val;
-    }
-    return freq_val_scaled;
-}
-function scaleTime(time_val, time_units) {
-    var time_val_scaled = null;
-    if (isNumeric(time_val)) {
-        switch (time_units) {
-            case "ms":
-                time_val_scaled = Number(time_val) / 1000;
-                break;
-            case "us":
-                time_val_scaled = Number(time_val) / 1000000;
-                break;
-            case "ns":
-                time_val_scaled = Number(time_val) / 1000000000;
-                break;
-            case "m":
-                time_val_scaled = Number(time_val) * 60;
-                break;
-            case "h":
-                time_val_scaled = Number(time_val) * 3600;
-                break;
-            case "d":
-                time_val_scaled = Number(time_val) * 86400;
-                break;
-            case "s":
-                time_val_scaled = Number(time_val);
-                break;
-            default: time_val_scaled = Number(time_val);
-        }
-    }
-    return time_val_scaled;
-}
-//Function to convert a given sensitivity into Janskys according to the units
-function scaleSensitivity(sens_val, sens_units) {
-    var sens_val_scaled = 0;
-    switch (sens_units) {
-        case "Jy":
-            sens_val_scaled = sens_val;
-            break;
-        case "mJy":
-            sens_val_scaled = sens_val / 1000;
-            break;
-        case "uJy":
-            sens_val_scaled = sens_val / 1000000;
-            break;
-        case "nJy":
-            sens_val_scaled = sens_val / 1000000000;
-            break;
-        default: sens_val_scaled = sens_val;
-    }
-    return sens_val_scaled;
 }
 // This function is a utility used in the readForm function when using internal mode. Updated by Liz to make the value
 // null if the element is disabled, rather than capturing what's in the field.
@@ -514,43 +339,36 @@ function getElementValueOrNull(element_id) {
 // This function scans through the page and collects the values, units, etc from every input
 function readForm() {
     // --- Universal Inputs --- //
-    // RA and dec
-    var right_asc = document.getElementById("RA-input").value.trim();
-    var dec = document.getElementById("dec-input").value.trim();
+    var elev = document.getElementById("elev-input").value.trim();
+    var obs_freq = document.getElementById("obs-freq-input").value.trim();
+    var bandwidth = document.getElementById("bandwidth-input").value.trim();
+    var pwv = document.getElementById("pwv-input").value.trim();
+    var npol = document.getElementById("npol-input").value.trim();
+    var Trx = document.getElementById("Trx-input").value.trim();
+    var Tamb = document.getElementById("Tamb-input").value.trim();
+    var g = document.getElementById("g-input").value.trim();
+    var eta_eff = document.getElementById("eta-eff-input").value.trim();
+    var eta_ill = document.getElementById("eta-ill-input").value.trim();
+    var eta_g = document.getElementById("eta-g-input").value.trim();
+    var integration_time = document.getElementById("integration-time-input").value.trim();
     // Gather values into a dictionary and return
     var return_dict = {
-        "right_asc": right_asc,
-        "dec": dec
+        "elevation": elev,
+        "obs_freq": obs_freq,
+        "bandwidth": bandwidth,
+        "pwv": pwv,
+        "npol": npol,
+        "Trx": Trx,
+        "Tamb": Tamb,
+        "g": g,
+        "eta_eff": eta_eff,
+        "eta_ill": eta_ill,
+        "eta_g": eta_g,
+        "integration_time": integration_time
     };
     console.log('readForm');
     console.log(return_dict);
     return return_dict;
-}
-// Function to skim through the input dictionary and remove any key-value pairs which aren't needed anymore.
-// This reduces the amount of data sent to the server in the AJAX calls.
-function reduceInputs(input_dict, observing_modes) {
-    // If continuum is not an active observing mode, we can remove all of these inputs.
-    if (!observing_modes["continuum"]) {
-        delete input_dict["continuum_obs_freq_scaled"];
-        delete input_dict["continuum_bandwidth_scaled"];
-        delete input_dict["continuum_resolution"];
-        delete input_dict["continuum_n_chunks"];
-        delete input_dict["continuum_int_time_scaled"];
-        delete input_dict["continuum_sensitivity_scaled"];
-        delete input_dict["continuum_supplied"];
-    }
-    // Likewise for line...
-    if (!observing_modes["line"]) {
-        delete input_dict["zoom_freqs_scaled"];
-        delete input_dict["zoom_resolutions"];
-        delete input_dict["line_int_time_scaled"];
-        delete input_dict["line_sensitivity_scaled"];
-        delete input_dict["line_supplied"];
-    }
-    // By this point we don't need to know if we're using the internal/public version of the calculator
-    delete input_dict["calculator_mode"];
-    // Return the reduced form of the input_dict
-    return input_dict;
 }
 // Function to find which observing modes are currently active
 function getObservingModes() {
@@ -682,136 +500,6 @@ function continuumOutputForIntegrationTime(input_dict, data) {
     out_string += "</b>) , with a resolution of <b>" + String(input_dict.continuum_resolution / 1000.0) + "kHz</b></p></div>";
     return out_string;
 }
-// Function to render the line report to the page
-function outputLine(input_dict, data) {
-    var line_output = document.getElementById("line-output");
-    line_output.classList.remove("hidden");
-    var out_string = "";
-    // Check whether Integration/Sensitiviy was supplied. We report each differently
-    if (input_dict.line_supplied == "IntegrationTime") {
-        out_string += lineOutputForIntegrationTime(input_dict, data);
-    }
-    else {
-        out_string += lineOutputForSensitivity(input_dict, data);
-    }
-    // Copy HTML string we've built up to the output element on the page
-    line_output.innerHTML = out_string;
-    outputInput(data["calculator_state"]);
-}
-function lineOutputForIntegrationTime(input_dict, data) {
-    var out_string = "";
-    out_string += "<div class='table-wrapper'><div class='row' style='border-bottom: 1px solid rgba(0, 0, 0, 0.3);'>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Weather</div>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>ZoomID</div>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Noise</div>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Centre</div>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Resolution</div>";
-    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>PWV</div>";
-    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>Elevation</div>";
-    out_string += "</div>";
-    // sort the results in order of increasing PWV
-    var datamap = sortResults(data);
-    // format the results in turn
-    for (var k2 in datamap) {
-        var key = datamap[k2][0];
-        out_string += "<div class='row row-padding'>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>" + key + "</div>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (var i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>" + (i + 1) + "<br> </span>";
-            }
-        }
-        out_string += "</div>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (var i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>" + data[key]["zoom_sensitivities"][i] + "<br> </span>";
-            }
-        }
-        out_string += "</div>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (var i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>" + input_dict.zoom_freqs[i] + " " + input_dict.zoom_freq_units[i] + "<br> </span>";
-            }
-        }
-        out_string += "</div>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (var i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>" + String(input_dict.zoom_resolutions[i] / 1000.0) + " kHz<br> </span>";
-            }
-        }
-        out_string += "</div>";
-        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>" + (data[key]["calculator_state"]["pwv"] == undefined ? 'null' : data[key]["calculator_state"]["pwv"]) + "</div>";
-        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>" + (data[key]["calculator_state"]["elevation"] || 'null') + "</div>";
-        out_string += "</div>";
-    }
-    out_string += "</div></br></br><div>";
-    out_string += "<p>The integration time is " + (input_dict.main_int_time == null ? String(input_dict.line_int_time) + String(input_dict.line_int_time_units) : String(input_dict.main_int_time) + String(input_dict.main_int_time_units)) + " .</p></div>";
-    return out_string;
-}
-function lineOutputForSensitivity(input_dict, data) {
-    var out_string = "";
-    out_string += "<div class='table-wrapper'><div class='row' style='border-bottom: 1px solid rgba(0, 0, 0, 0.3);'>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Weather</div>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>ZoomID</div>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Int.Time</div>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Centre</div>";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content header-text'>Zoom Resolution</div>";
-    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>PWV</div>";
-    out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content header-text'>Elevation</div>";
-    out_string += "</div>";
-    // sort the results in order of increasing PWV
-    var datamap = sortResults(data);
-    // format the results in turn
-    for (var k2 in datamap) {
-        var key = datamap[k2][0];
-        out_string += "<div class='row row-padding'>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>" + key + "</div>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (var i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>" + (i + 1) + "<br> </span>";
-            }
-        }
-        out_string += "</div>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (var i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>" + data[key]["zoom_int_times"][i] + "<br> </span>";
-            }
-        }
-        out_string += "</div>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (var i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>" + input_dict.zoom_freqs[i] + " " + input_dict.zoom_freq_units[i] + "<br> </span>";
-            }
-        }
-        out_string += "</div>";
-        // out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>"+String(input_dict.zoom_resolutions[0] / 1000.0) +" kHz</div>";
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>";
-        for (var i = 0; i < input_dict.zoom_freqs_scaled.length; i++) {
-            if (input_dict.zoom_freqs_scaled[i] != null) {
-                out_string += "<span class='margin-right'>" + String(input_dict.zoom_resolutions[i] / 1000.0) + " kHz<br> </span>";
-            }
-        }
-        out_string += "</div>";
-        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>" + (data[key]["calculator_state"]["pwv"] == undefined ? 'null' : data[key]["calculator_state"]["pwv"]) + "</div>";
-        out_string += "<div class='col-lg-1 col-xl-1 col-md-1 column-content row-text'>" + (data[key]["calculator_state"]["elevation"] || 'null') + "</div>";
-        out_string += "</div>";
-    }
-    out_string += "</div></br></br><div>";
-    out_string += "<p>The target RMS noise is <b> " + String(input_dict.line_sensitivity) + String(input_dict.line_sensitivity_units) + "</b>.</p></div>";
-    return out_string;
-}
-// Function to render the pulsars output report to the page (Not yet implemented, just left as an example)
-/* eslint-disable */ // turns off lint warning for no-unused-vars for input_dict and data
-function outputPulsars(input_dict, data) {
-    return 0;
-}
 /* eslint-enable */
 // Function which decides, based on active observing modes, which outputs need to be rendered
 function updateOutput(input_dict, data) {
@@ -827,85 +515,6 @@ function updateOutput(input_dict, data) {
     // Copy HTML string we've built up to the output element on the page
     cont_output.innerHTML = out_string;
 }
-// Retrieve subarray configuration list
-function retrieveSubarrays() {
-    $.ajax({
-        url: '/subarrays',
-        type: 'GET',
-        success: function (data) {
-            populateDropdown(data);
-        }
-    });
-}
-// Function to populate the dropdown menu.
-function populateDropdown(data) {
-    var dropdownElementHolder = document.getElementById("subarrays-dropdown");
-    var dropdownDefault = dropdownElementHolder.innerHTML;
-    var dropdown = "";
-    data.forEach(function (subarray, index) {
-        var entry = "<a class=\"dropdown-item array-config-option\" href=\"#\" " +
-            "onclick=\"event.preventDefault(); updateDropdown('array-config', '" +
-            subarray + "')\">" + subarray + "</a>\n";
-        // Check that the placeholder subarray entered in AT2-606 is removed when necessary
-        if (subarray !== "custom") {
-            dropdown += entry;
-        }
-    });
-    dropdown += dropdownDefault;
-    dropdownElementHolder.innerHTML = dropdown;
-}
-// Function to update text on dropdown button when an option is selected.
-function updateDropdown(field, label) {
-    document.getElementById("dropdown-button-" + field).textContent = label;
-    if ((field === "array-config") && (label === "custom")) {
-        document.getElementById("nSKA-input").disabled = false;
-        document.getElementById("nMeer-input").disabled = false;
-    }
-    else if ((field === "array-config") && (label !== "custom")) {
-        document.getElementById("nSKA-input").disabled = true;
-        document.getElementById("nMeer-input").disabled = true;
-    }
-}
-// Function used in the internal version to reveal hidden inputs when needed.
-// perhaps better to be implemented in the html with bootstrap in future
-// function revealInputs(field: string): void {
-// 	//const dependents = [];
-// 	switch (field) {
-// 		case "Tsys_SKA" || "Tsys_Meer":
-// 			// hide the option to change the weather
-// 			document.getElementById("row-weather").classList.add("d-none");
-// 			break;
-// 		case "Tsky":
-// 			// hide the option to change the weather
-// 			document.getElementById("row-weather").classList.add("d-none");
-// 			break;
-// 		case "Tgal":
-// 			// Reveal the option to change the weather
-// 			document.getElementById("row-weather").classList.remove("d-none");
-// 			break;
-// 	}
-// }
-//
-// // Function used in the internal version to hide visible inputs when needed
-// function hideInputs(field: string): void {
-// 	//const dependents = [];
-// 	switch (field) {
-// 		case "Tsys_SKA":
-// 			// Reveal the option to change the weather
-// 			document.getElementById("row-weather").classList.remove("d-none");
-// 			break;
-// 		case "Tsky":
-// 			// Also want to reveal the option to change the weather
-// 			document.getElementById("row-weather").classList.add("d-none");
-// 			break;
-// 		case "Tgal":
-// 			// Reveal the option to change the weather
-// 			document.getElementById("row-weather").classList.add("d-none");
-// 			break;
-// 	}
-// }
-// This function is clears the input of the fields that have disabled by enabling another field. It also updates the
-// check boxes and disables the fields
 function updateDisabledCheckboxes(fields) {
     for (var item in fields) {
         document.getElementById(fields[item] + "-input").disabled = true;
@@ -957,76 +566,6 @@ function outputInput(data) {
     for (var variable in data) {
         var value = String(data[variable]);
         document.getElementById(variable + "-input").value = value;
-    }
-}
-// When the observing band is changed, we update any frequency/bandwidth options to some defaults within that band.
-// For bands 1 and 2, the user is offered the entire band by default
-function updateBandSelection(selected_band) {
-    var cont_freq_input = document.getElementById("continuum-frequency-input");
-    var cont_band_input = document.getElementById("continuum-bandwidth-input");
-    var zoom_freq_inputs = [
-        document.getElementById("zoom1-frequency-input"),
-        document.getElementById("zoom2-frequency-input"),
-        document.getElementById("zoom3-frequency-input"),
-        document.getElementById("zoom4-frequency-input"),
-    ];
-    switch (selected_band) {
-        case '1':
-            cont_freq_input.value = "0.7";
-            cont_band_input.value = "0.7";
-            for (var i = 0; i < zoom_freq_inputs.length; i++) {
-                if (zoom_freq_inputs[i].value != "" && !zoom_freq_inputs[i].disabled) {
-                    zoom_freq_inputs[i].value = "0.7";
-                }
-            }
-            break;
-        case '2':
-            cont_freq_input.value = "1.35";
-            cont_band_input.value = "0.81";
-            for (var i = 0; i < zoom_freq_inputs.length; i++) {
-                if (zoom_freq_inputs[i].value != "" && !zoom_freq_inputs[i].disabled) {
-                    zoom_freq_inputs[i].value = "1.35";
-                }
-            }
-            break;
-        case '5a':
-            cont_freq_input.value = "6.5";
-            cont_band_input.value = "0.8";
-            for (var i = 0; i < zoom_freq_inputs.length; i++) {
-                if (zoom_freq_inputs[i].value != "" && !zoom_freq_inputs[i].disabled) {
-                    zoom_freq_inputs[i].value = "6.5";
-                }
-            }
-            break;
-        case '5b':
-            cont_freq_input.value = "11.9";
-            cont_band_input.value = "0.8";
-            for (var i = 0; i < zoom_freq_inputs.length; i++) {
-                if (zoom_freq_inputs[i].value != "" && !zoom_freq_inputs[i].disabled) {
-                    zoom_freq_inputs[i].value = "11.9";
-                }
-            }
-            break;
-    }
-}
-// When a change is detected to a zoom text input, this function handles which of those inputs should currently be enabled/disabled.
-function manageActiveZooms(zoom_num) {
-    var changed_input = document.getElementById("zoom" + String(zoom_num) + "-frequency-input");
-    if (changed_input.value == "") {
-        var i = void 0;
-        for (i = zoom_num + 1; i <= 4; i++) {
-            document.getElementById("zoom" + String(i) + "-frequency-input").disabled = true;
-            document.getElementById("dropdown-button-zoom" + String(i) + "-frequency").disabled = true;
-            document.getElementById("dropdown-button-zoom" + String(i) + "-resolution").disabled = true;
-        }
-    }
-    else {
-        if (zoom_num < 4) {
-            document.getElementById("zoom" + String(zoom_num + 1) + "-frequency-input").disabled = false;
-            document.getElementById("dropdown-button-zoom" + String(zoom_num + 1) + "-frequency").disabled = false;
-            document.getElementById("dropdown-button-zoom" + String(zoom_num + 1) + "-resolution").disabled = false;
-            manageActiveZooms(zoom_num + 1);
-        }
     }
 }
 // When one of the inputs is changed, this function is called to run the validation.
