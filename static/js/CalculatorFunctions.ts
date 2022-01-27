@@ -386,7 +386,7 @@ function readForm() {
     console.log(integration_time_disabled);
     const integration_time = (<HTMLInputElement>document.getElementById("integration-time-input")).value.trim();
     console.log(integration_time);
-    const sensitivity_disabled = (<HTMLInputElement>document.getElementById("sensitivity-input")).disabled;
+    let sensitivity_disabled = (<HTMLInputElement>document.getElementById("sensitivity-input")).disabled;
     console.log(sensitivity_disabled);
     const sensitivity = (<HTMLInputElement>document.getElementById("sensitivity-input")).value.trim();
     console.log(sensitivity);
@@ -406,6 +406,15 @@ function readForm() {
         "eta_g": eta_g,
     }
 
+    // It's not supposed to but the form starts up with neither 
+    // input disabled. In this case, disable sensitivity.
+    if (!sensitivity_disabled && !integration_time_disabled) {
+        console.log('oops 2');
+        (<HTMLInputElement>document.getElementById("sensitivity-input")).disabled = true;
+        sensitivity_disabled = (<HTMLInputElement>document.getElementById("sensitivity-input")).disabled;
+    }
+
+    // Now decide if the user has set integration time or sensitivity
     if (sensitivity_disabled) {
         return_dict["integration_time"] = integration_time;
     }
@@ -416,7 +425,7 @@ function readForm() {
         console.log('oops 1');
     }
     if (!sensitivity_disabled && !integration_time_disabled) {
-        console.log('oops 2');
+        console.log('oops 3');
     }
 
     console.log('readForm');
@@ -587,10 +596,15 @@ function updateOutput(input_dict, data): void {
 
     // Begin building up output HTML string
     let out_string = "";	
-     console.log(data)
+        console.log(data)
 
-    const key = "sensitivity";
-    out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>"+data[key]+"</div>";
+    if ("sensitivity" in data) {
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>"+data['sensitivity']+"</div>";
+    } else if ("integration_time" in data) {
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>"+data['integration_time']+"</div>";
+    } else {
+        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>uncoded response</div>";
+    }
 
     // Copy HTML string we've built up to the output element on the page
     cont_output.innerHTML = out_string;
