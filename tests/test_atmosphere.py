@@ -1,6 +1,6 @@
 
 def test_init():
-    from src.backend.atmosphere_params import AtmosphereParams
+    from atlast_sc.atmosphere_params import AtmosphereParams
     import astropy.units as u
     obs_freq = 400 * u.GHz
     pwv = 50
@@ -10,7 +10,7 @@ def test_init():
     assert atm.T_atm_table[0,0] == 30
 
 def test_tau_atm():
-    from src.backend.atmosphere_params import AtmosphereParams
+    from atlast_sc.atmosphere_params import AtmosphereParams
     import astropy.units as u
     import numpy as np
     obs_freq = 500 * u.GHz
@@ -22,7 +22,7 @@ def test_tau_atm():
     assert (atm.tau_atm().value < 1.0419/np.cos(zenith)) and (atm.tau_atm().value > 1.040/np.cos(zenith))
 
 def test_T_atm():
-    from src.backend.atmosphere_params import AtmosphereParams
+    from atlast_sc.atmosphere_params import AtmosphereParams
     import astropy.units as u
     obs_freq = 500 * u.GHz
     pwv = 50

@@ -1,6 +1,5 @@
 from astropy import constants
 import numpy as np
-from scipy.interpolate.dfitpack import regrid_smth_spher
 
 class Efficiencies:
     '''

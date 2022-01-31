@@ -1,6 +1,6 @@
-from src.backend.sensitivity import Sensitivity
+from atlast_sc.sensitivity import Sensitivity
 import astropy.units as u
-from src.configs.config import Config
+from atlast_sc.configs.config import Config
 
 # Initialise the input parameters from Config
 calculator = Sensitivity(Config.from_yaml("user_inputs.yaml"))

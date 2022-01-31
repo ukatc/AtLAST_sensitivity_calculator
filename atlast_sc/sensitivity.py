@@ -1,7 +1,7 @@
-from src.backend.atmosphere_params import AtmosphereParams
-from src.backend.sefd import SEFD
-from src.backend.system_temperature import SystemTemperature
-from src.backend.efficiencies import Efficiencies
+from atlast_sc.atmosphere_params import AtmosphereParams
+from atlast_sc.sefd import SEFD
+from atlast_sc.system_temperature import SystemTemperature
+from atlast_sc.efficiencies import Efficiencies
 import astropy.units as u
 import numpy as np
 

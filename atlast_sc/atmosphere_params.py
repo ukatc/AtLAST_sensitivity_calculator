@@ -7,7 +7,7 @@ from pathlib import Path
 # This code can then interpolate over that grid to get correct values
 # Using AM as described in /am-code/README.md
 
-STATIC_DATA_PATH = Path(__file__).resolve().parents[1] / "static"
+STATIC_DATA_PATH = Path(__file__).resolve().parents[0] / "static"
 
 WEATHER = [5, 25, 50, 75, 95]
 T_ATM_PATH = STATIC_DATA_PATH / "lookups" / "am_ACT_T_annual.txt"
