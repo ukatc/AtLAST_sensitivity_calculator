@@ -344,12 +344,12 @@ function readForm() {
     var bandwidth = document.getElementById("bandwidth-input").value.trim();
     var pwv = document.getElementById("pwv-input").value.trim();
     var npol = document.getElementById("npol-input").value.trim();
-    var Trx = document.getElementById("Trx-input").value.trim();
-    var Tamb = document.getElementById("Tamb-input").value.trim();
-    var g = document.getElementById("g-input").value.trim();
-    var eta_eff = document.getElementById("eta-eff-input").value.trim();
-    var eta_ill = document.getElementById("eta-ill-input").value.trim();
-    var eta_g = document.getElementById("eta-g-input").value.trim();
+    // var Trx = document.getElementById("Trx-input").value.trim();
+    // var Tamb = document.getElementById("Tamb-input").value.trim();
+    // var g = document.getElementById("g-input").value.trim();
+    // var eta_eff = document.getElementById("eta-eff-input").value.trim();
+    // var eta_ill = document.getElementById("eta-ill-input").value.trim();
+    // var eta_g = document.getElementById("eta-g-input").value.trim();
     var integration_time_disabled = document.getElementById("integration-time-input").disabled;
     console.log(integration_time_disabled);
     var integration_time = document.getElementById("integration-time-input").value.trim();
@@ -365,12 +365,12 @@ function readForm() {
         "bandwidth": bandwidth,
         "pwv": pwv,
         "npol": npol,
-        "Trx": Trx,
-        "Tamb": Tamb,
-        "g": g,
-        "eta_eff": eta_eff,
-        "eta_ill": eta_ill,
-        "eta_g": eta_g
+        // "Trx": Trx,
+        // "Tamb": Tamb,
+        // "g": g,
+        // "eta_eff": eta_eff,
+        // "eta_ill": eta_ill,
+        // "eta_g": eta_g
     };
     // It's not supposed to but the form starts up with neither 
     // input disabled. In this case, disable sensitivity.
