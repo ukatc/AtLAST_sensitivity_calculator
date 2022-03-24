@@ -1,8 +1,8 @@
 import pytest
 
 def test_sensitivity():
-    from src.backend.sensitivity import Sensitivity
-    from src.configs.config import Config
+    from atlast_sc.sensitivity import Sensitivity
+    from atlast_sc.configs.config import Config
     from pathlib import Path
 
     CONFIG_PATH = Path(__file__).resolve().parents[0]
@@ -13,8 +13,8 @@ def test_sensitivity():
     assert calculator.sensitivity(config.t_int).value == pytest.approx(0.00724, abs=0.00001)
 
 def test_integration():
-    from src.backend.sensitivity import Sensitivity
-    from src.configs.config import Config
+    from atlast_sc.sensitivity import Sensitivity
+    from atlast_sc.configs.config import Config
     from pathlib import Path
     
     CONFIG_PATH = Path(__file__).resolve().parents[0]
@@ -25,8 +25,8 @@ def test_integration():
     assert calculator.t_integration(config.sensitivity).value == pytest.approx(0.5246, abs=0.0001)
 
 def test_consistency():
-    from src.backend.sensitivity import Sensitivity
-    from src.configs.config import Config
+    from atlast_sc.sensitivity import Sensitivity
+    from atlast_sc.configs.config import Config
     import astropy.units as u
     from pathlib import Path
     

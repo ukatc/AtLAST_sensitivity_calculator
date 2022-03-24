@@ -12,7 +12,8 @@
 
   <!-- Bootstrap CDN tags -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-style.css') }}">
+  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/atlast.css') }}">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
   <!-- BootstrapValidator CDN tags -->
@@ -32,14 +33,28 @@
   </style>
 </head>
 
+<body>
 
-<body bgcolor="#00aeef">
+  <div id="head-wrapper" role="banner">
+    <div id="head">
+      <div id="header">
+        <img id="logoimg" src="{{ url_for('static', filename='resources/atlast-banner-foreground.png') }}" alt="AtLAST logo image">
+        <a id="logotext" href="#">
+          <span>AtLAST</span>
+          <span class="tagline" style="border-top-width: 0px;border-top-style: solid;padding-top: 20px;">Towards and Atacama Large Aperture Submillimeter Telescope</span>
+        </a>
+      </div> 
+      <!-- <div class="head-menu" role="navigation">
+        <ul>
+          <li>
+            <a href="https://www.atlast.uio.no/">AtLAST</a>
+          </li>
+        </ul>
+      </div> -->
+    </div>
+  </div>
 
   <nav class="navbar navbar-expand-sm bg-primary navbar-dark fixed-top">
-    <a class="navbar-brand" href="http://www.skatelescope.org">
-      <img src="{{ url_for('static', filename='resources/skaint_logo-1030x728.jpg') }}" alt="SKA_Logo" style="width:80px;" class="img-thumbnail">
-    </a>
-
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -47,42 +62,21 @@
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link" href="#">SKA</a>
+          <a class="nav-link" href="https://www.atlast.uio.no/" target="_blank">AtLAST</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://developer.skatelescope.org/projects/sensitivity-calculator/en/latest/?badge=latest">Documentation</a>
+          <a class="nav-link" href="#" target="_blank">Documentation </a>
         </li>
       </ul>
     </div>  
   </nav>
 
+
   <div class="container mt-4">
-    <h1 class="mt-5">AtLAST Sensitivity Calculator</h1>
+    <h1 class="mt-5">Sensitivity Calculator</h1>
     <form action="#" onsubmit="checkValidity();" id="calculator-form" class="needs-validation" novalidate>
       <div class="row" id="row-band">
         <div class="col-sm-8">
-          <label for="band-radio">Instrument:</label>
-          <div class="form-group">
-            <div class="btn-group btn-group-toggle" id="band-radio" data-toggle="buttons">
-              <label class="btn btn-primary" onclick="updateInstrumentSelection('1');">
-                <input type="radio" name="options" id="option-instr1" autocomplete="off"> Instrument 1
-              </label>
-              <label class="btn btn-primary" onclick="updateInstrumentSelection('2');">
-                <input type="radio" name="options" id="option-instr2" autocomplete="off"> Instrument 2
-              </label>
-              <label class="btn btn-primary active"  onclick="updateInstrumentSelection('3');">
-                <input type="radio" name="options" id="option-instr3" autocomplete="off" checked> Instrument 3
-              </label>
-              <label class="btn btn-primary" onclick="updateBandSelection('4');">
-                <input type="radio" name="options" id="option-instr4" autocomplete="off"> Instrument 4
-              </label>
-            </div>
-          </div>
-          <p id="band-explanation"></p>
-        </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
-          <br>
-          <p>The instrument to use.</p>
         </div>
       </div>
 
@@ -104,7 +98,7 @@
         <div class="col-sm-8">
           <label for="obs-freq-input">Observing frequency (GHz):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="obs-freq-input" placeholder="Enter value..." name="obs-freq-input" value="230.0" onchange="updateForm();">
+            <input type="text" class="form-control" id="obs-freq-input" placeholder="Enter value..." name="obs-freq-input" value="450.0" onchange="updateForm();">
             <div class="invalid-feedback" id="obs-freq-invalid">Please enter valid number, between ? and ?</div>
           </div>
         </div>
@@ -116,9 +110,9 @@
 
       <div class="row" id="row-bandwidth">
         <div class="col-sm-8">
-          <label for="bandwidth-input">Bandwidth (MHz):</label>
+          <label for="bandwidth-input">Bandwidth (GHz):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="bandwidth-input" placeholder="Enter value..." name="bandwidth-input" value="100.0" onchange="updateForm();">
+            <input type="text" class="form-control" id="bandwidth-input" placeholder="Enter value..." name="bandwidth-input" value="7.5" onchange="updateForm();">
             <div class="invalid-feedback" id="bandwidth-invalid">Please enter valid number, between ? and ?</div>
           </div>
         </div>
@@ -130,155 +124,28 @@
 
       <div class="row" id="row-pwv">
         <div class="col-sm-8">
-      	  <label for="pwv-input">Weather PWV (mm):</label>
+      	  <label for="pwv-input">H2O profile percentile:</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="pwv-input" placeholder="Enter value..." name="pwv-input" value="30.0" onchange="updateForm();">
+            <input type="text" class="form-control" id="pwv-input" placeholder="Enter value..." name="pwv-input" value="10" onchange="updateForm();">
 	    <div class="invalid-feedback" id="pwv-invalid">Please enter valid number.</div>
           </div>
         </div>
         <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
           <br>
-          <p>The weather condition for observing, PWV (mm) between ? and ?.</p>
+          <p>The weather condition for observing, H2O profile percentile between 0 and 100 %.</p>
         </div>
       </div>
+
 
       <div class="row" id="row-npol">
         <div class="col-sm-8">
           <label for="npol-input">Number of polarizations:</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="npol-input" placeholder="Enter value..." name="npol-input" value="1" onchange="updateForm();">
-            <div class="invalid-feedback" id="npol-invalid">Please enter valid number; 1 or 2</div>
+            <select id="npol-input" name="npol">
+              <option value=1>1</option>
+              <option value=2>2</option>
+              </select>
           </div>
-        </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
-          <br>
-          <p>Number of polarizations (1 or 2)</p>
-        </div>
-      </div>
-
-      <div class="row" id="row-Trx">
-        <div class="col-sm-8">
-          <label for="Trx-input">T rx (K):</label>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" id="Trx-input" placeholder="Enter value..." name="Trx-input" value="15" onchange="updateForm();">
-            <div class="invalid-feedback" id="Trx-invalid">Please enter valid number; > 0</div>
-          </div>
-        </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
-          <br>
-          <p>Receiver temperature (K)</p>
-        </div>
-      </div>
-
-      <div class="row" id="row-Tamb">
-        <div class="col-sm-8">
-          <label for="Tamb-input">T ambient (K):</label>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" id="Tamb-input" placeholder="Enter value..." name="Tamb-input" value="275" onchange="updateForm();">
-            <div class="invalid-feedback" id="Tamb-invalid">Please enter valid number; > 0</div>
-          </div>
-        </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
-          <br>
-          <p>Ambient temperature (K)</p>
-        </div>
-      </div>
-
-      <div class="row" id="row-g">
-        <div class="col-sm-8">
-          <label for="g-input">g:</label>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" id="g-input" placeholder="Enter value..." name="g-input" value="1.0" onchange="updateForm();">
-            <div class="invalid-feedback" id="g-invalid">Please enter valid number: ?</div>
-          </div>
-        </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
-          <br>
-          <p>g</p>
-        </div>
-      </div>
-
-      <div class="row" id="row-eta-eff">
-        <div class="col-sm-8">
-          <label for="eta-eff-input">eta eff:</label>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" id="eta-eff-input" placeholder="Enter value..." name="eta-eff-input" value="0.95" onchange="updateForm();">
-            <div class="invalid-feedback" id="eta-eff-invalid">Please enter valid number; 0 < eta eff < 1</div>
-          </div>
-        </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
-          <br>
-          <p>eta effective</p>
-        </div>
-      </div>
-
-      <div class="row" id="row-eta-ill">
-        <div class="col-sm-8">
-          <label for="eta-ill-input">eta illumination:</label>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" id="eta-ill-input" placeholder="Enter value..." name="eta-ill-input" value="0.95" onchange="updateForm();">
-            <div class="invalid-feedback" id="eta-ill-invalid">Please enter valid number; 0 < eta ill < 1</div>
-          </div>
-        </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
-          <br>
-          <p>eta illumination</p>
-        </div>
-      </div>
-
-      <div class="row" id="row-eta-g">
-        <div class="col-sm-8">
-          <label for="eta-g-input">eta g:</label>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" id="eta-g-input" placeholder="Enter value..." name="eta-g-input" value="0.95" onchange="updateForm();">
-            <div class="invalid-feedback" id="eta-g-invalid">Please enter valid number; 0 < eta g < 1</div>
-          </div>
-        </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
-          <br>
-          <p>eta g</p>
-        </div>
-      </div>
-
-      <div class="row collapse internal">
-        <div class="col-sm-8">
-          <label for="etaPointing-input">etaPointing:</label>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" id="etaPointing-input" placeholder="Enter value..." name="etaPointing-input" onchange="updateForm();" disabled required>
-            <div class="input-group-append">
-              <div class="btn-group-toggle" data-toggle="buttons">
-                <label class="btn btn-primary active" id="checkbox-etaPointing" href="#" onclick="event.preventDefault(); updateCheckbox('etaPointing');">
-                  <input type="checkbox" checked autocomplete="off">Enter Manually
-                </label>
-              </div>
-            </div>
-            <div class="invalid-feedback" id="etaPointing-invalid">Please fill out this field.</div>
-          </div>
-        </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
-      	  <br>
-      	  <p>Pointing Efficiency.</p>
-        </div>
-      </div>
-
-      <div class="row collapse internal">
-        <div class="col-sm-8">
-          <label for="etaCoherence-input">etaCoherence:</label>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" id="etaCoherence-input" placeholder="Enter value..." name="etaCoherence-input" onchange="updateForm();" disabled required>
-            <div class="input-group-append">
-              <div class="btn-group-toggle" data-toggle="buttons">
-                <label class="btn btn-primary active" id="checkbox-etaCoherence" href="#" onclick="event.preventDefault(); updateCheckbox('etaCoherence');">
-                  <input type="checkbox" checked autocomplete="off">Enter Manually
-                </label>
-              </div>
-	    </div>
-	    <div class="invalid-feedback" id="etaCoherence-invalid">Please fill out this field.</div>
-          </div>
-        </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
-      	  <br>
-      	  <p>Coherence Efficiency.</p>
         </div>
       </div>
 
