@@ -5,7 +5,7 @@ from atlast_sc.configs.config import Config
 # Initialise the input parameters from Config
 calculator = Sensitivity(Config.from_yaml("user_inputs.yaml"))
 
-# Stre the parameters input to this calculation instance in the variable "config"
+# Store the parameters input to this calculation instance in the variable "config"
 config = calculator.config
 
 
@@ -20,9 +20,10 @@ elif config.sensitivity.value and not config.t_int.value:
     print("Integration time: {:0.2f} to obtain a sensitivity of {:0.2f}".format(calculated_t_int, config.sensitivity.to(u.mJy)))
     config.t_int = calculated_t_int
 else:
-    print("Please add either a sensitivity or an integration time to your input.")
+    print("Please add either a sensitivity *or* an integration time to your input.")
 print("-----------")
 
 
 # Print all parameters to a log file
-config.to_file("log_output_parameters.txt")
+config.to_file("logs/log_output_parameters.txt")
+config.to_yaml("logs/repeat.yaml")
