@@ -4,8 +4,8 @@ from flask import Flask, render_template, request, jsonify
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-from configs.config import Config
-from backend.sensitivity import Sensitivity
+from atlast_sc.configs.config import Config
+from atlast_sc.sensitivity import Sensitivity
 
 
 app = Flask(__name__)
