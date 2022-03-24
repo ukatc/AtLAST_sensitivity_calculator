@@ -12,7 +12,8 @@
 
   <!-- Bootstrap CDN tags -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-style.css') }}">
+  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/atlast.css') }}">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
   <!-- BootstrapValidator CDN tags -->
@@ -32,14 +33,28 @@
   </style>
 </head>
 
+<body>
 
-<body bgcolor="#00aeef">
+  <div id="head-wrapper" role="banner">
+    <div id="head">
+      <div id="header">
+        <img id="logoimg" src="{{ url_for('static', filename='resources/atlast-banner-foreground.png') }}" alt="AtLAST logo image">
+        <a id="logotext" href="#">
+          <span>AtLAST</span>
+          <span class="tagline" style="border-top-width: 0px;border-top-style: solid;padding-top: 20px;">Towards and Atacama Large Aperture Submillimeter Telescope</span>
+        </a>
+      </div> 
+      <!-- <div class="head-menu" role="navigation">
+        <ul>
+          <li>
+            <a href="https://www.atlast.uio.no/">AtLAST</a>
+          </li>
+        </ul>
+      </div> -->
+    </div>
+  </div>
 
   <nav class="navbar navbar-expand-sm bg-primary navbar-dark fixed-top">
-    <a class="navbar-brand" href="http://www.skatelescope.org">
-      <img src="{{ url_for('static', filename='resources/skaint_logo-1030x728.jpg') }}" alt="SKA_Logo" style="width:80px;" class="img-thumbnail">
-    </a>
-
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -47,17 +62,18 @@
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link" href="#">SKA</a>
+          <a class="nav-link" href="https://www.atlast.uio.no/" target="_blank">AtLAST</a>
         </li>
         <li class="nav-item">
-          <!-- <a class="nav-link" href="https://developer.skatelescope.org/projects/sensitivity-calculator/en/latest/?badge=latest">Documentation</a> -->
+          <a class="nav-link" href="#" target="_blank">Documentation </a>
         </li>
       </ul>
     </div>  
   </nav>
 
+
   <div class="container mt-4">
-    <h1 class="mt-5">AtLAST Sensitivity Calculator</h1>
+    <h1 class="mt-5">Sensitivity Calculator</h1>
     <form action="#" onsubmit="checkValidity();" id="calculator-form" class="needs-validation" novalidate>
       <div class="row" id="row-band">
         <div class="col-sm-8">
@@ -120,19 +136,6 @@
         </div>
       </div>
 
-      <!-- <div class="row" id="row-npol">
-        <div class="col-sm-8">
-          <label for="npol-input">Number of polarizations:</label>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" id="npol-input" placeholder="Enter value..." name="npol-input" value="1" onchange="updateForm();">
-            <div class="invalid-feedback" id="npol-invalid">Please enter valid number; 1 or 2</div>
-          </div>
-        </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
-          <br>
-          <p>Number of polarizations (1 or 2)</p>
-        </div>
-      </div> -->
 
       <div class="row" id="row-npol">
         <div class="col-sm-8">
@@ -141,10 +144,10 @@
             <select id="npol-input" name="npol">
               <option value=1>1</option>
               <option value=2>2</option>
+              </select>
           </div>
         </div>
       </div>
-
 
       <div class="row">
         <div class="col-sm-8">

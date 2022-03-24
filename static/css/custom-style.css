@@ -3,11 +3,11 @@ body{
 }
 
 .bg-primary{
-	background-color: #00688a !important;
+	color: rgba(255, 255, 255, 0) !important;
 }
 
 .nav-link{
-	color: white !important;
+	color: #3b3b3b !important;
 }
 
 .btn-primary{
