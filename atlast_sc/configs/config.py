@@ -90,7 +90,7 @@ class Config:
             if inputs[key]["unit"] == "none":
                 params[key] = inputs[key]["value"]
             else:
-                unit = getattr(u, inputs[key]["unit"])
+                unit = u.Unit(inputs[key]["unit"])
                 params[key] = inputs[key]["value"] * unit
         return params
 
@@ -107,3 +107,15 @@ class Config:
                     pass
                 else:
                     f.write("{} = {} \n".format(attr, getattr(self, attr)))
+
+    def to_yaml(self, path):
+        import astropy
+        with open(path, "w") as f:
+            for attr in vars(self):
+                if type(getattr(self, attr)) == dict:
+                    pass
+                else:
+                    if type(getattr(self, attr)) == astropy.units.quantity.Quantity and not getattr(self, attr).unit == ' ':
+                        f.write("{0: <16}: {{value: {1: >10}, unit: {2}}} \n".format(attr, getattr(self, attr).value, getattr(self, attr).unit))
+                    else:
+                        f.write("{0: <16}: {{value: {1: >10}, unit: none}} \n".format(attr, getattr(self, attr)))
