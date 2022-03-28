@@ -1,0 +1,14 @@
+name: sens-calc
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.9
+  - astropy>=4.3.1
+  - Flask>=2.0.2
+  - numpy>=1.22.1
+  - pytest>=6.2.4
+  - PyYAML>=6.0
+  - scipy>=1.7.3
+  - setuptools>=52.0.0
+  - sphinx_rtd_theme>=1.0.0

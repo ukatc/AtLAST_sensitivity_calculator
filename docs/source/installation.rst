@@ -1,9 +1,14 @@
 Installation
 ============
 
+Eventually this calculator will be hosted on a server and made available publicly, however for the time being it can be downloaded from this repo and run locally.
+
 To install the package the necessary steps are:
 
-1. blah blah.
+1. Clone this github repo: 
+```
+git clone https://github.com/https://github.com/ukatc/AtLAST_sensitivity_calculator.git
+```
 
 2. blah blah
 
