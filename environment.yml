@@ -1,4 +1,4 @@
-name: sens-calc
+name: sens-calc02
 channels:
   - conda-forge
   - defaults
@@ -12,3 +12,4 @@ dependencies:
   - scipy>=1.7.3
   - setuptools>=52.0.0
   - sphinx_rtd_theme>=1.0.0
+  - python-dotenv >= 0.20.0

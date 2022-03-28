@@ -4,5 +4,6 @@ numpy==1.22.1
 pytest==6.2.4
 PyYAML==6.0
 scipy==1.7.3
-setuptools==52.0.0.post20210125
+setuptools==52.0.0
 sphinx_rtd_theme==1.0.0
+python-dotenv==0.20.0
