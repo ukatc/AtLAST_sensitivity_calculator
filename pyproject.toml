@@ -13,6 +13,7 @@ scipy = "^1.6.2"
 pyyaml = "5.4.1"
 Flask = "^2.0.2"
 python-dotenv = "^0.20.0"
+sphinx-rtd-theme = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 
