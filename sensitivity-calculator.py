@@ -23,6 +23,10 @@ def template():
 def hello():
     return "Hello2 World"
 
+@app.route('/documentation')
+def docs():
+    return "To build the html version of the documentation, start from the main package directory and type ``cd docs; make html'. Read the documentation by pointing your browser at ``{}/docs/build/html/index.html".format(app.root_path)
+
 @app.route('/v1/sensitivity')
 def sensitivity():
     app.logger.debug('sensitivity1')
