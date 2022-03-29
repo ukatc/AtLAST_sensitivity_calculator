@@ -39,8 +39,6 @@ To install the package the necessary steps are:
 
     c) With pip:
     
-    .. WARNING:: This has not been tested!
-    
         $ pip install -r requirements.txt
     
 
