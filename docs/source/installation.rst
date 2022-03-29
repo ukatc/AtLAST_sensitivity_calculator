@@ -6,39 +6,44 @@ Eventually this calculator will be hosted on a server and made available publicl
 To install the package the necessary steps are:
 
 1. Clone this github repo: 
-```
+
+``
 $ git clone https://github.com/https://github.com/ukatc/AtLAST_sensitivity_calculator.git
-```
+``
 
 2. Initialise your environment: this depends on what you use for environment management
     
     a) With poetry, create a poetry shell start a poetry shell in the directory of the repo:
-    ```bash
+    
+    ``
     $ poetry shell
     Spawning shell within /home/user/.cache/pypoetry/virtualenvs/...
-    ```
+    ``
 
     b) With Conda:
-    ```
+    
+    ``
     $ conda env create -f environment.yml
     $ conda activate sens-calc
-    ```
+    ``
+
     c) With pip (not tested!):
-    ```
+    
+    ``
     $ pip install -r requirements.txt
-    ```
+    ``
 
 3. Start a server with Flask:
 
-```
+``
 $ flask run
- * Serving Flask app 'sensitivity-calculator.py' (lazy loading)
- * Environment: development
- * Debug mode: on
- * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
- * Restarting with stat
- * Debugger is active!
-```
+* Serving Flask app 'sensitivity-calculator.py' (lazy loading)
+* Environment: development
+* Debug mode: on
+* Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+* Restarting with stat
+* Debugger is active!
+``
 
 4. Point your browser at http://127.0.0.1:5000/. You should now see the sensitivity calculator browser interface!
 
