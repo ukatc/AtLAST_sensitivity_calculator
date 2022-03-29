@@ -1,6 +1,10 @@
 AM FOR AtLAST README
 --------------------
 
+This directory contains the code that was used to run AM atmospheric modeling to produce a grid of values that the sensitivity calculator uses to calculate atmospheric parameters. This code is not necessary for atlast_sc, and should be deleted/archived at some point.
+The resulting grids are stored in ``atlast_sc/static/lookups`` so versions here are redundant.
+
+
 AM downloaded December 2021.
 
 ACT_annual_50.amc copied from AM cookbook, edited to produce desired output only, of format:
