@@ -37,7 +37,8 @@ To install the package the necessary steps are:
         $ conda activate sens-calc
     
 
-    c) With pip (not tested!):
+    c) With pip:
+    .. WARNING:: This has not been tested!
     
         $ pip install -r requirements.txt
     
