@@ -4,5 +4,5 @@
 configs
 *********
 
-.. automodule:: configs.config
+.. automodule:: atlast_sc.configs.config
    :members:

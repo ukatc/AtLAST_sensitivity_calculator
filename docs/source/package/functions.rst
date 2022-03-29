@@ -4,14 +4,14 @@
 backend
 *********
 
-.. automodule:: backend.atmosphere_params
+.. automodule:: atlast_sc.atmosphere_params
    :members:
 
-.. automodule:: backend.sefd
+.. automodule:: atlast_sc.sefd
    :members:
 
-.. automodule:: backend.sensitivity
+.. automodule:: atlast_sc.sensitivity
    :members:
 
-.. automodule:: backend.system_temperature
+.. automodule:: atlast_sc.system_temperature
    :members:
