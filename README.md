@@ -20,7 +20,7 @@ To install the package the necessary steps are:
 
 1. Clone this github repo: 
 
-    $ git clone https://github.com/https://github.com/ukatc/AtLAST_sensitivity_calculator.git
+        $ git clone https://github.com/https://github.com/ukatc/AtLAST_sensitivity_calculator.git
 
 
 2. Initialise your environment: this depends on what you use for environment management
@@ -45,13 +45,13 @@ To install the package the necessary steps are:
 3. Start a server with Flask:
 
 
-    $ flask run
-    * Serving Flask app 'sensitivity-calculator.py' (lazy loading)
-    * Environment: development
-    * Debug mode: on
-    * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-    * Restarting with stat
-    * Debugger is active!
+        $ flask run
+        * Serving Flask app 'sensitivity-calculator.py' (lazy loading)
+        * Environment: development
+        * Debug mode: on
+        * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+        * Restarting with stat
+        * Debugger is active!
 
 
 4. Point your browser at http://127.0.0.1:5000/. You should now see the sensitivity calculator browser interface!
