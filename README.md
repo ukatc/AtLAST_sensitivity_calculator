@@ -20,10 +20,10 @@ To install the package the necessary steps are:
 
 1. Clone this github repo: 
 
-        $ git clone https://github.com/https://github.com/ukatc/AtLAST_sensitivity_calculator.git
+        $ git clone https://github.com/ukatc/AtLAST_sensitivity_calculator.git
 
 
-2. Initialise your environment: this depends on what you use for environment management
+2. Navigate into the directory you have just created the git repo in, and initialise your environment: this depends on what you use for environment management
     
     a) With poetry, create a poetry shell start a poetry shell in the directory of the repo:
             
@@ -42,7 +42,7 @@ To install the package the necessary steps are:
         $ pip install -r requirements.txt
     
 
-3. Start a server with Flask:
+3. Start a server with Flask - note: this may take a minute to load:
 
 
         $ flask run
