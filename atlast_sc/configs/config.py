@@ -8,7 +8,7 @@ CONFIG_PATH = Path(__file__).resolve().parents[0]
 
 class Config:
     """ A class that reads in values from the input dictionaries, and if they do not exist fills with defaults. """
-    def __init__(self, user_input):
+    def __init__(self, user_input, setup = "setup_inputs.yaml", fixed = "fixed_inputs.yaml", default = "default_inputs.yaml"):
         '''
         Initialises all the required parameters from various input sources
         setup_input, fixed_input and the default can be found in .yaml files in the configs directory
@@ -18,9 +18,9 @@ class Config:
         :type user_input: dict
         '''
         self.user_input = self.enforce_units(user_input)
-        self.setup_input = self.enforce_units(self._dict_from_yaml(CONFIG_PATH / "setup_inputs.yaml"))
-        self.fixed_input = self.enforce_units(self._dict_from_yaml(CONFIG_PATH / "fixed_inputs.yaml"))
-        self.default = self.enforce_units(self._dict_from_yaml(CONFIG_PATH / "default_inputs.yaml"))
+        self.setup_input = self.enforce_units(self._dict_from_yaml(CONFIG_PATH / setup))
+        self.fixed_input = self.enforce_units(self._dict_from_yaml(CONFIG_PATH / fixed))
+        self.default = self.enforce_units(self._dict_from_yaml(CONFIG_PATH / default))
 
         self.t_int        = self.user_input.get('t_int', self.default.get('t_int')) 
         self.sensitivity  = self.user_input.get('sensitivity', self.default.get('sensitivity')) 
