@@ -5,6 +5,7 @@ exports.sortResults = exports.parseDec = exports.parseRA = void 0;
 // === ON SUBMIT === //
 // This code will run when the "Calculate" button is clicked.
 // Capture and disable form submission. If there are invalid fields, present invalid feedback to the user, otherwise perform calculation.
+
 (function () {
     'use strict';
     window.addEventListener('load', function () {
@@ -30,7 +31,7 @@ exports.sortResults = exports.parseDec = exports.parseRA = void 0;
                 $.ajax({ url: '/v1/sensitivity',
                     type: 'GET',
                     data: input_dict,
-                    success: function (data) {
+                    success: function validateBandwidth(data) {
                         updateOutput(input_dict, data);
                     }
                 });
