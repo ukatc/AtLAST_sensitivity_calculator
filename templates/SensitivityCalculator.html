@@ -141,7 +141,7 @@
         </div>
       </div>
 
-      <div class="row">
+      <div class="row mb-3">
         <div class="col-sm-8">
           <label for="input-switch-radio">Calculate integration time or sensitivity?</label>
           <div class="form-group">
@@ -187,23 +187,26 @@
       </div>
 
       <div class="row">
-        <div class="col-sm-8">
-          <button type="submit" class="btn btn-primary">Calculate</button>
+        <div class="col-sm-2">
+          <button type="submit" class="btn btn-primary col-sm-12">Calculate</button>
         </div>
-      </div>
-
-      <div class="row">
-        <div class="col-sm-12">
-          <div class="card output-card hidden" id="output"></div>
+        <div class="col-sm-3">
+          <div class="card d-none" id="output"></div>
         </div>
       </div>
 
     </form>
   </div>
 
-  <div class="jumbotron text-center" style="margin-bottom:0">
-    <p>This project has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 951815</p>
+  <div style="min-height: 150px">
+
   </div>
 
+  <footer class="py-3 my-4">
+    <p class="text-center text-muted">This project has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 951815</p>
+    <p style="text-align:center;">
+      <img src="/static/resources/eu_flag.png" alt="The EU flag" style="width:60px"></p>
+  </footer>
+  
 </body>
 </html>

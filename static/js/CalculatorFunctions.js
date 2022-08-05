@@ -533,18 +533,18 @@ function updateOutput(input_dict, data) {
     console.log('updateOutput');
     // Get output element and reveal it
     var cont_output = document.getElementById("output");
-    cont_output.classList.remove("hidden");
+    cont_output.classList.remove("d-none");
     // Begin building up output HTML string
     var out_string = "";
     console.log(data);
     if ("sensitivity" in data) {
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>" + data['sensitivity'] + "</div>";
+        out_string += "<div class='column-content row-text'>" + data['sensitivity'] + "</div>";
     }
     else if ("integration_time" in data) {
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>" + data['integration_time'] + "</div>";
+        out_string += "<div class='column-content row-text'>" + data['integration_time'] + "</div>";
     }
     else {
-        out_string += "<div class='col-lg-2 col-xl-2 col-md-2 column-content row-text'>uncoded response</div>";
+        out_string += "<div class='column-content row-text'>uncoded response</div>";
     }
     // Copy HTML string we've built up to the output element on the page
     cont_output.innerHTML = out_string;

@@ -26,6 +26,14 @@
   color: #747474;
 }
 
+.card {
+  background-color: #aceadd;
+  border-width: 0px;
+  padding: 5px;
+  font-weight: bold;
+  text-align: center;
+  min-height: 39px;
+}
 
 /* stuff that was here before: */
 
