@@ -26,7 +26,7 @@ exports.sortResults = exports.parseDec = exports.parseRA = void 0;
 
                 if (!validateInput(input_dict)){
                     form.classList.add('was-validated');
-                    updateOutput(input_dict, {"sensitivity": "-", "integration_time": "-"});
+                    updateOutput(input_dict, {"sensitivity": " - ", "integration_time": " - "});
                     return
                 }
                 // Using AJAX, make a GET request to the '/calc' Flask route in calculate.py
