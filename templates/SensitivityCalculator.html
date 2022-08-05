@@ -11,8 +11,7 @@
   <link rel="shortcut icon" type="image/png" href="/static/resources/favicon.ico"/>
 
   <!-- Bootstrap CDN tags -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/atlast.css') }}">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
@@ -41,16 +40,9 @@
         <img id="logoimg" src="{{ url_for('static', filename='resources/atlast-banner-foreground.png') }}" alt="AtLAST logo image">
         <a id="logotext" href="#">
           <span>AtLAST</span>
-          <span class="tagline" style="border-top-width: 0px;border-top-style: solid;padding-top: 20px;">Towards and Atacama Large Aperture Submillimeter Telescope</span>
+          <div class="tagline" style="border-top-width: 0px;border-top-style: solid;padding-top: 20px;">Towards an Atacama Large Aperture Submillimeter Telescope</div>
         </a>
       </div> 
-      <!-- <div class="head-menu" role="navigation">
-        <ul>
-          <li>
-            <a href="https://www.atlast.uio.no/">AtLAST</a>
-          </li>
-        </ul>
-      </div> -->
     </div>
   </div>
 
@@ -65,7 +57,7 @@
           <a class="nav-link" href="https://www.atlast.uio.no/" target="_blank">AtLAST</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="docs/build/html/index.html" target="_blank">Documentation </a>
+          <a class="nav-link" href="documentation" target="_blank">Documentation </a>
         </li>
       </ul>
     </div>  
@@ -88,9 +80,9 @@
             <div class="invalid-feedback" id="elev-invalid">Please enter valid number, between 5 and 90</div>
           </div>
         </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
+        <div class="col-sm-4 align-self-center info-col">
           <br>
-          <p>Elevation in degrees (Min: 5; Max: 90)</p>
+          <p class="notes">Elevation in degrees (Min: 5; Max: 90)</p>
         </div>
       </div>
 
@@ -102,9 +94,9 @@
             <div class="invalid-feedback" id="obs-freq-invalid">Please enter valid number, between ? and ?</div>
           </div>
         </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
+        <div class="col-sm-4 align-self-center info-col">
           <br>
-          <p>Observing frequency in GHz (Min: ?; Max: /)</p>
+          <p class="notes">Observing frequency in GHz (Min: ?; Max: /)</p>
         </div>
       </div>
 
@@ -116,9 +108,9 @@
             <div class="invalid-feedback" id="bandwidth-invalid">Please enter valid number, between ? and ?</div>
           </div>
         </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
+        <div class="col-sm-4 align-self-center info-col">
           <br>
-          <p>Bandwidth in MHz (Min: ?; Max: ?)</p>
+          <p class="notes">Bandwidth in MHz (Min: ?; Max: ?)</p>
         </div>
       </div>
 
@@ -130,9 +122,9 @@
 	    <div class="invalid-feedback" id="pwv-invalid">Please enter valid number.</div>
           </div>
         </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
+        <div class="col-sm-4 align-self-center info-col">
           <br>
-          <p>The weather condition for observing, H2O profile percentile between 0 and 100 %.</p>
+          <p class="notes">The weather condition for observing, H2O profile percentile between 0 and 100 %.</p>
         </div>
       </div>
 
@@ -174,9 +166,9 @@
             <div class="invalid-feedback" id="integration-time-invalid">Please enter valid number; > 0</div>
           </div>
         </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
+        <div class="col-sm-4 align-self-center info-col">
           <br>
-          <p>Integration time (s)</p>
+          <p class="notes">Integration time (s)</p>
         </div>
       </div>
 
@@ -188,16 +180,15 @@
             <div class="invalid-feedback" id="sensitivity-invalid">Please enter valid number; > 0</div>
           </div>
         </div>
-        <div class="col-sm-4 align-self-center info-col border border-dark mb-3">
+        <div class="col-sm-4 align-self-center info-col">
           <br>
-          <p>Sensitivity (mJy)</p>
+          <p class="notes">Sensitivity (mJy)</p>
         </div>
       </div>
 
       <div class="row">
         <div class="col-sm-8">
           <button type="submit" class="btn btn-primary">Calculate</button>
-          <div id="submit-feedback" class="invalid-feedback">Please choose one or more observing modes.</div>
         </div>
       </div>
 
@@ -211,7 +202,7 @@
   </div>
 
   <div class="jumbotron text-center" style="margin-bottom:0">
-    <p>Footer</p>
+    <p>This project has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 951815</p>
   </div>
 
 </body>

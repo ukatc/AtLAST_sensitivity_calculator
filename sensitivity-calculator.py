@@ -1,6 +1,8 @@
 import logging
 
 from flask import Flask, render_template, request, jsonify
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -15,7 +17,7 @@ app.logger.addHandler(handler)
 app.logger.propagate = False
 app.logger.level = logging.DEBUG
 
-@app.route('/')
+@app.route('/', methods=('GET', 'POST'))
 def template():
     return render_template('SensitivityCalculator.html')
 

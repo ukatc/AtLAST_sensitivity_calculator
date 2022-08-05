@@ -5,6 +5,7 @@ exports.sortResults = exports.parseDec = exports.parseRA = void 0;
 // === ON SUBMIT === //
 // This code will run when the "Calculate" button is clicked.
 // Capture and disable form submission. If there are invalid fields, present invalid feedback to the user, otherwise perform calculation.
+
 (function () {
     'use strict';
     window.addEventListener('load', function () {
@@ -19,19 +20,26 @@ exports.sortResults = exports.parseDec = exports.parseRA = void 0;
                 // Prevent form submission to stop a page change/refresh
                 event.preventDefault();
                 event.stopPropagation();
-                // Add the "was-validated" class to the form to indicate 
-                // validation has happened at least once (Used by bootstrap).
-                form.classList.add('was-validated');
                 // Read inputs from the page
                 var input_dict = readForm();
-                console.log('after');
                 console.log(input_dict);
+
+                if (!validateInput(input_dict)){
+                    form.classList.add('was-validated');
+                    updateOutput(input_dict, {"sensitivity": " - ", "integration_time": " - "});
+                    return
+                }
                 // Using AJAX, make a GET request to the '/calc' Flask route in calculate.py
+
                 $.ajax({ url: '/v1/sensitivity',
                     type: 'GET',
                     data: input_dict,
                     success: function (data) {
                         updateOutput(input_dict, data);
+                        console.log(data)
+                        //  --- Add the "was-validated" class to the form to indicate 
+                        // ---- validation has happened at least once (Used by bootstrap).
+                        form.classList.add('was-validated');
                     }
                 });
             }, false);
@@ -51,21 +59,29 @@ function parseDec(Dec) {
 }
 exports.parseDec = parseDec;
 // Validate a frequency input, making sure it is not empty and is a number.
-function validateObsFreq(field, obs_freq, obs_freq_scaled, obs_band) {
+function validateObsFreq(field, obs_freq) {
     var frequency_feedback = document.getElementById(field + "-invalid");
     var frequency_input = document.getElementById(field + "-input");
     if (!isNumeric(obs_freq) || obs_freq == "") {
-        frequency_feedback.textContent = "Please enter a number";
+        frequency_feedback.textContent = "Please enter a valid number";
+        frequency_feedback.style.display = "block";
+        frequency_input.setCustomValidity("Invalid Field.");
+        return false;
+    }
+    if (!validateNumberMinMax(field, obs_freq, 35, 950)){
+        frequency_feedback.textContent = "Please enter a valid number between 35 and 950 GHz";
         frequency_feedback.style.display = "block";
         frequency_input.setCustomValidity("Invalid Field.");
         return false;
     }
     else {
+        frequency_input.setCustomValidity("");
+        frequency_feedback.style.display = "none";
+        return true;
     }
-    return true;
 }
 // Validate a bandwidth input, making sure it is not empty and is a number.
-function validateBandwidth(field, bandwidth, bandwidth_scaled, obs_freq_scaled, obs_band) {
+function validateBandwidth(field, bandwidth) {
     var bandwidth_feedback = document.getElementById(field + "-invalid");
     var bandwidth_input = document.getElementById(field + "-input");
     if (!isNumeric(bandwidth) || bandwidth == "") {
@@ -74,8 +90,13 @@ function validateBandwidth(field, bandwidth, bandwidth_scaled, obs_freq_scaled, 
         bandwidth_input.setCustomValidity("Invalid Field.");
         return false;
     }
-    return true;
+    else {
+        bandwidth_input.setCustomValidity("");
+        bandwidth_feedback.style.display = "none";
+        return true;
+    }
 }
+
 // function to convert Sexagesimal declination to decimal for source validation
 function Sexa2Dec(Dec) {
     var DecSplit = Dec.split(':', 3);
@@ -249,7 +270,7 @@ function validateNumberMinMax(field, value, min, max) {
         return false;
     }
     feedback.style.display = "none";
-    input.setCustomValidity("");
+    input.setCustomValidity(" ");
     return true;
 }
 // Function to perform input validation.
@@ -258,83 +279,11 @@ function validateNumberMinMax(field, value, min, max) {
 function validateInput(input_dict, observing_modes) {
     // This will be set to false if there are any issues
     var return_bool = true;
-    // --- Universal Inputs --- //
-    return_bool = return_bool && validateRA(input_dict.right_asc);
-    return_bool = return_bool && validateDec(input_dict.dec);
-    return_bool = return_bool && validateInteger("nMeer", input_dict.nMeer);
-    return_bool = return_bool && validateInteger("nSKA", input_dict.nSKA);
-    return_bool = return_bool && validateNumberMinMax("pwv", input_dict.weather, 3, 25);
-    return_bool = return_bool && validateNumberMinMax("elev", input_dict.elevation, 5, 90);
-    // If we're using the internal version, we want to check these extra inputs
-    if (input_dict.calculator_mode === "Internal") {
-        return_bool = return_bool && validateEta("etaPointing", input_dict.etaPointing);
-        return_bool = return_bool && validateEta("etaCoherence", input_dict.etaCoherence);
-        return_bool = return_bool && validateEta("etaDigitisation", input_dict.etaDigitisation);
-        return_bool = return_bool && validateEta("etaCorrelation", input_dict.etaCorrelation);
-        return_bool = return_bool && validateEta("etaBandpass", input_dict.etaBandpass);
-        return_bool = return_bool && validateGeneral("Tsys_SKA", input_dict.Tsys_SKA);
-        return_bool = return_bool && validateGeneral("Trcv_SKA", input_dict.Trcv_SKA);
-        return_bool = return_bool && validateGeneral("Tspl_SKA", input_dict.Tspl_SKA);
-        return_bool = return_bool && validateGeneral("Tsys_Meer", input_dict.Tsys_Meer);
-        return_bool = return_bool && validateGeneral("Trcv_Meer", input_dict.Trcv_Meer);
-        return_bool = return_bool && validateGeneral("Tspl_Meer", input_dict.Tspl_Meer);
-        return_bool = return_bool && validateGeneral("Tsky", input_dict.Tsky);
-        return_bool = return_bool && validateGeneral("Tgal", input_dict.Tgal);
-        return_bool = return_bool && validateGeneral("alpha", input_dict.alpha);
-        return_bool = return_bool && validateEta("etaSKA", input_dict.etaSKA);
-        return_bool = return_bool && validateEta("etaMeer", input_dict.etaMeer);
-    }
-    // Special case for Integration Time Override, since it's allowed to be left blank
-    if (input_dict.main_int_time != null) {
-        return_bool = return_bool && validateGeneral("main-integration", input_dict.main_int_time);
-    }
-    else {
-        document.getElementById("main-integration-invalid").style.display = "none";
-        document.getElementById("main-integration-input").setCustomValidity("");
-    }
-    // --- Continuum Inputs --- //
-    if (observing_modes["continuum"]) {
-        return_bool = return_bool && validateObsFreq("continuum-frequency", input_dict.continuum_obs_freq, input_dict.continuum_obs_freq_scaled, input_dict.obs_band);
-        return_bool = return_bool && validateBandwidth("continuum-bandwidth", input_dict.continuum_bandwidth, input_dict.continuum_bandwidth_scaled, input_dict.continuum_obs_freq_scaled, input_dict.obs_band);
-        return_bool = return_bool && validateGeneral("continuum-chunks", input_dict.continuum_n_chunks);
-        // Only want to validate one of either integration or sensitivity
-        if (input_dict.continuum_supplied == "IntegrationTime") {
-            return_bool = return_bool && validateGeneral("continuum-integration", input_dict.continuum_int_time);
-        }
-        else {
-            return_bool = return_bool && validateGeneral("continuum-sensitivity", input_dict.continuum_sensitivity);
-        }
-    }
-    else {
-        // If Continuum is not an active observing mode, we ignore these inputs and assume they're all fine
-        document.getElementById("continuum-frequency-invalid").style.display = "none";
-        document.getElementById("continuum-frequency-input").setCustomValidity("");
-        document.getElementById("continuum-bandwidth-invalid").style.display = "none";
-        document.getElementById("continuum-bandwidth-input").setCustomValidity("");
-        document.getElementById("continuum-chunks-invalid").style.display = "none";
-        document.getElementById("continuum-chunks-input").setCustomValidity("");
-        document.getElementById("continuum-integration-invalid").style.display = "none";
-        document.getElementById("continuum-integration-input").setCustomValidity("");
-        document.getElementById("continuum-sensitivity-invalid").style.display = "none";
-        document.getElementById("continuum-sensitivity-input").setCustomValidity("");
-    }
-    return return_bool;
-}
-// This function is a utility used in the readForm function when using internal mode. Updated by Liz to make the value
-// null if the element is disabled, rather than capturing what's in the field.
-function getElementValueOrNull(element_id) {
-    if (document.getElementById(element_id).disabled) {
-        return null;
-    }
-    else {
-        var temp = document.getElementById(element_id).value.trim();
-        if (temp.length === 0) {
-            return null;
-        }
-        else {
-            return temp;
-        }
-    }
+    return_bool = return_bool && validateObsFreq("obs-freq", input_dict.obs_freq);
+    return_bool = return_bool && validateBandwidth("bandwidth", input_dict.bandwidth);
+
+    return return_bool
+
 }
 // This function scans through the page and collects the values, units, etc from every input
 function readForm() {
@@ -604,9 +553,10 @@ function outputInput(data) {
 // When one of the inputs is changed, this function is called to run the validation.
 // This is helpful to the user, as they can see if they've made an error immediately after changing an input.
 function updateForm() {
-    var observing_modes = getObservingModes();
+    // raises an error, copypasta from another project?
+    // var observing_modes = getObservingModes();
     var input_dict = readForm();
-    validateInput(input_dict, observing_modes);
+    validateInput(input_dict);
 }
 // For the observing mode cards, when the header is clicked to expand/collapse, swap between a plus/minus to suit
 function swapPlusMinus(card_link_id) {
