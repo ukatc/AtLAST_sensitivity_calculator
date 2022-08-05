@@ -58,7 +58,33 @@ function parseDec(Dec) {
     return (/[-+]\d{1,2}:\d{1,2}:\d+(\.\d+)?$/.test(Dec));
 }
 exports.parseDec = parseDec;
-// Validate a frequency input, making sure it is not empty and is a number.
+
+
+// Validate the elevation input, making sure it is not empty and is a number between 5 and 90.
+function validateElevation(field, elevation) {
+    var elevation_feedback = document.getElementById(field + "-invalid");
+    var elevation_input = document.getElementById(field + "-input");
+    if (!isNumeric(elevation) || elevation == "") {
+        elevation_feedback.textContent = "Please enter a valid number";
+        elevation_feedback.style.display = "block";
+        elevation_input.setCustomValidity("Invalid Field.");
+        return false;
+    }
+    if (!validateNumberMinMax(field, elevation, 5, 90)){
+        elevation_feedback.textContent = "Please enter a valid number between 5 and 90 degrees";
+        elevation_feedback.style.display = "block";
+        elevation_input.setCustomValidity("Invalid Field.");
+        return false;
+    }
+    else {
+        elevation_input.setCustomValidity("");
+        elevation_feedback.style.display = "none";
+        return true;
+    }
+
+}
+
+// Validate a frequency input, making sure it is not empty and is a number between 35 and 950.
 function validateObsFreq(field, obs_freq) {
     var frequency_feedback = document.getElementById(field + "-invalid");
     var frequency_input = document.getElementById(field + "-input");
@@ -96,6 +122,30 @@ function validateBandwidth(field, bandwidth) {
         return true;
     }
 }
+
+// Validate a H20 input, making sure it is not empty and is a number between 0 and 10.
+function validatePwv(field, pwv) {
+    var pwv_feedback = document.getElementById(field + "-invalid");
+    var pwv_input = document.getElementById(field + "-input");
+    if (!isNumeric(pwv) || pwv == "") {
+        pwv_feedback.textContent = "Please enter a valid number";
+        pwv_feedback.style.display = "block";
+        pwv_input.setCustomValidity("Invalid Field.");
+        return false;
+    }
+    if (!validateNumberMinMax(field, pwv, 0, 10)){
+        pwv_feedback.textContent = "Please enter a valid number between 0 and 10";
+        pwv_feedback.style.display = "block";
+        pwv_input.setCustomValidity("Invalid Field.");
+        return false;
+    }
+    else {
+        pwv_input.setCustomValidity("");
+        pwv_feedback.style.display = "none";
+        return true;
+    }
+}
+
 
 // function to convert Sexagesimal declination to decimal for source validation
 function Sexa2Dec(Dec) {
@@ -281,6 +331,8 @@ function validateInput(input_dict, observing_modes) {
     var return_bool = true;
     return_bool = return_bool && validateObsFreq("obs-freq", input_dict.obs_freq);
     return_bool = return_bool && validateBandwidth("bandwidth", input_dict.bandwidth);
+    return_bool = return_bool && validateElevation("elev", input_dict.elevation);
+    return_bool = return_bool && validatePwv("pwv", input_dict.pwv);
 
     return return_bool
 
