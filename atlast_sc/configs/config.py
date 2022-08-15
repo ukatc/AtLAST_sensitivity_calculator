@@ -36,6 +36,10 @@ class Config:
         self.T_rx         = self.setup_input.get('T_rx', self.default.get('T_rx'))
         self.eta_eff      = self.setup_input.get('eta_eff', self.default.get('eta_eff'))
         self.eta_ill      = self.setup_input.get('eta_ill', self.default.get('eta_ill'))
+        self.eta_spill      = self.setup_input.get('eta_spill', self.default.get('eta_spill'))
+        self.eta_block      = self.setup_input.get('eta_block', self.default.get('eta_block'))
+        self.eta_pol      = self.setup_input.get('eta_pol', self.default.get('eta_pol'))
+        self.eta_r        = self.setup_input.get('eta_r', self.default.get('eta_r'))
         self.eta_q        = self.setup_input.get('eta_q', self.default.get('eta_q'))
         self.T_cmb        = self.fixed_input.get('T_cmb')
 
