@@ -1,22 +1,22 @@
-t_int           : {value:      100.0, unit: s} 
-sensitivity     : {value: 0.5121540500724444, unit: mJy} 
+t_int           : {value:     3600.0, unit: s} 
+sensitivity     : {value: 2.694810536659905, unit: mJy} 
 bandwidth       : {value:        7.5, unit: GHz} 
 obs_freq        : {value:      350.0, unit: GHz} 
 n_pol           : {value:          2, unit: none} 
 weather         : {value:         50, unit: none} 
 elevation       : {value:       30.0, unit: deg} 
 g               : {value:          1, unit: none} 
-surface_rms     : {value:       25.0, unit: micron} 
-dish_radius     : {value:       25.0, unit: m} 
+surface_rms     : {value:       24.0, unit: micron} 
+dish_radius     : {value:        7.5, unit: m} 
 T_amb           : {value:      270.0, unit: K} 
-T_rx            : {value:       50.0, unit: K} 
-eta_eff         : {value:        0.8, unit: none} 
-eta_ill         : {value:       0.63, unit: none} 
+T_rx            : {value:      100.0, unit: K} 
+eta_eff         : {value:       0.64, unit: none} 
+eta_ill         : {value:        0.5, unit: none} 
 eta_q           : {value:       0.96, unit: none} 
 T_cmb           : {value:       2.73, unit: K} 
-area            : {value: 1963.4954084936207, unit: m2} 
+area            : {value: 176.71458676442586, unit: m2} 
 tau_atm         : {value: 0.3142251999999999, unit: none} 
 T_atm           : {value:   44.23064, unit: K} 
-eta_a           : {value: 0.7207138390927517, unit: none} 
+eta_a           : {value: 0.5659942342167273, unit: none} 
 eta_s           : {value:        0.9, unit: none} 
-sefd            : {value: 4.123086821051053e-24, unit: J / m2} 
+sefd            : {value: 1.3016713788392757e-22, unit: J / m2} 

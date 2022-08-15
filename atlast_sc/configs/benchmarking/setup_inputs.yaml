@@ -1,0 +1,9 @@
+---
+g:            {value: 1,      unit: none}
+surface_rms:  {value: 24,     unit: micron} # for JCMT
+dish_radius:  {value: 7.5,     unit: m}     # for JCMT
+T_amb:        {value: 270,    unit: K}
+T_rx:         {value: 100,     unit: K}
+eta_eff:      {value: 0.64,   unit: none}  # From JCMT HARP webpage
+eta_ill:      {value: 0.5,   unit: none}   # tweaked to get eta_a of 0.52 as according to JCMT webpage
+eta_q:        {value: 0.96,   unit: none}
