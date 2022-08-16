@@ -59,7 +59,12 @@ class Sensitivity:
         config.T_atm = atm.T_atm()                                              # add atmospheric temperature to params
 
         eta = Efficiencies(
-            config.eta_ill)                                                     # Perform efficiency calculations
+            config.eta_ill, 
+            config.eta_q, 
+            config.eta_spill, 
+            config.eta_block, 
+            config.eta_pol, 
+            config.eta_r)                                                     # Perform efficiency calculations
         config.eta_a = eta.eta_a(config.obs_freq, config.surface_rms)           # add eta_a to params
         config.eta_s = eta.eta_s()                                              # add eta_s to params - NOTE: currently not implmented, placeholder value!!
 

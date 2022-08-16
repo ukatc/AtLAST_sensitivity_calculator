@@ -1,11 +1,12 @@
 from astropy import constants
+import astropy.units as u
 import numpy as np
 
 class Efficiencies:
     '''
     All of the efficiency factors need to come in here...
     '''
-    def __init__(self, eta_ill):
+    def __init__(self, eta_ill, eta_q, eta_spill, eta_block, eta_pol, eta_r):
         '''
         At present, a placeholder method just to hold some efficiencies.
 
@@ -13,6 +14,11 @@ class Efficiencies:
         :type eta_ill: float
         '''
         self.eta_ill = eta_ill
+        self.eta_q = eta_q
+        self.eta_spill = eta_spill
+        self.eta_block = eta_block
+        self.eta_pol = eta_pol
+        self.eta_r = eta_r
 
     def eta_a(self, obs_freq, surface_rms):
         '''
@@ -26,8 +32,8 @@ class Efficiencies:
         :return: dish efficiency
         :rtype: astropy.units quantity
         '''
-        wavelength = constants.c / obs_freq
-        eta_a = self.eta_ill * np.exp((4* np.pi * surface_rms / wavelength)**2)
+        wavelength = (constants.c / obs_freq).to(u.m)
+        eta_a = self.eta_ill * self.eta_spill * self.eta_r * self.eta_pol * self.eta_block * np.exp(-(4* np.pi * surface_rms / wavelength)**2)
         return eta_a
 
     def eta_s(self):

@@ -345,12 +345,6 @@ function readForm() {
     var bandwidth = document.getElementById("bandwidth-input").value.trim();
     var pwv = document.getElementById("pwv-input").value.trim();
     var npol = document.getElementById("npol-input").value.trim();
-    // var Trx = document.getElementById("Trx-input").value.trim();
-    // var Tamb = document.getElementById("Tamb-input").value.trim();
-    // var g = document.getElementById("g-input").value.trim();
-    // var eta_eff = document.getElementById("eta-eff-input").value.trim();
-    // var eta_ill = document.getElementById("eta-ill-input").value.trim();
-    // var eta_g = document.getElementById("eta-g-input").value.trim();
     var integration_time_disabled = document.getElementById("integration-time-input").disabled;
     console.log(integration_time_disabled);
     var integration_time = document.getElementById("integration-time-input").value.trim();
@@ -366,12 +360,7 @@ function readForm() {
         "bandwidth": bandwidth,
         "pwv": pwv,
         "npol": npol,
-        // "Trx": Trx,
-        // "Tamb": Tamb,
-        // "g": g,
-        // "eta_eff": eta_eff,
-        // "eta_ill": eta_ill,
-        // "eta_g": eta_g
+
     };
     // It's not supposed to but the form starts up with neither 
     // input disabled. In this case, disable sensitivity.
@@ -397,14 +386,43 @@ function readForm() {
     console.log(return_dict);
     return return_dict;
 }
-// Function to find which observing modes are currently active
-function getObservingModes() {
-    return {
-        "continuum": document.getElementById("collapse-continuum").classList.contains("show"),
-        "line": document.getElementById("collapse-line").classList.contains("show"),
-        "pulsars": document.getElementById("collapse-pulsars").classList.contains("show")
-    };
+
+
+
+function recalculate() 
+{
+    var elem = document.getElementById("calculate");
+    if (elem.innerHTML=="Calculate") elem.innerHTML = "Re-calculate", elem.style.color = "#7b8a8b";
+    if (elem.innerHTML=="Re-calculate") elem.style.backgroundColor = "#2c3e50", elem.style.borderColor = "#2c3e50", elem.style.color = "#7b8a8b";
 }
+
+function highlight_recalculate()
+{
+    var elem = document.getElementById("calculate");
+    if (elem.innerHTML=="Re-calculate") elem.style.backgroundColor = "#e74c3c", elem.style.borderColor = "#e74c3c", elem.style.color = "#FFFFFF";
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Function to sort the results object keys in order of decreasing PWV
 function sortResults(data) {
     // Assemble a list of [key,pwv] pairs
@@ -555,46 +573,7 @@ function updateDisabledCheckboxes(fields) {
         document.getElementById("checkbox-" + fields[item]).textContent = "Enter Manually";
     }
 }
-// Function used in the internal version to disable inputs when needed
-function disableInputs(field) {
-    if (field == "Tsys_SKA") {
-        updateDisabledCheckboxes(["Trcv_SKA", "Tspl_SKA", "Tsky", "Tgal", "alpha"]);
-    }
-    if (field === "Trcv_SKA" || field === "Tspl_SKA" || field === "Tsky") {
-        updateDisabledCheckboxes(["Tsys_SKA"]);
-    }
-    if (field === "Tsys_Meer") {
-        updateDisabledCheckboxes(["Trcv_Meer", "Tspl_Meer", "Tsky", "Tgal", "alpha"]);
-    }
-    if (field === "Trcv_Meer" || field === "Tspl_Meer" || field === "Tsky") {
-        updateDisabledCheckboxes(["Tsys_Meer"]);
-    }
-    if (field === "Tgal") {
-        updateDisabledCheckboxes(["Tsys_SKA", "Tsys_Meer", "Tsky", "alpha"]);
-    }
-    if (field === "Tsky") {
-        updateDisabledCheckboxes(["Tgal", "alpha"]);
-    }
-    if (field === "alpha") {
-        updateDisabledCheckboxes(["Tsys_SKA", "Tsys_Meer", "Tsky", "Tgal"]);
-    }
-}
-// If "Enter Manually" is clicked, swap that element on the page to say "Calculate Automatically" and vice-versa
-/* eslint-disable */
-// all of the following functions trigger no-unused-var warnings in eslint. disabling these for now ahead of refactoring
-function updateCheckbox(field) {
-    if (document.getElementById("checkbox-" + field).textContent.trim() === "Enter Manually") {
-        document.getElementById("checkbox-" + field).textContent = "Calculate Automatically";
-        document.getElementById(field + "-input").disabled = false;
-        // revealInputs(field);
-        disableInputs(field);
-    }
-    else {
-        document.getElementById("checkbox-" + field).textContent = "Enter Manually";
-        document.getElementById(field + "-input").disabled = true;
-        // hideInputs(field);
-    }
-}
+
 // Function added by Liz as a proof of concept. It probably needs refactoring
 function outputInput(data) {
     for (var variable in data) {
