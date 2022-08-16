@@ -44,5 +44,5 @@ class Efficiencies:
         :return: system efficiency
         :rtype: astropy.units quantity
         '''
-        eta_s = 0.9
+        eta_s = 0.99
         return eta_s
