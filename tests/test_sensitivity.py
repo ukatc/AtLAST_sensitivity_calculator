@@ -10,7 +10,7 @@ def test_sensitivity():
     config = Config.from_yaml(CONFIG_PATH / "test_user_inputs.yaml")
 
     calculator = Sensitivity(config)
-    assert calculator.sensitivity(config.t_int).value == pytest.approx(0.00724, abs=0.00001)
+    assert calculator.sensitivity(config.t_int).value == pytest.approx(0.0044, abs=0.00001)
 
 def test_integration():
     from atlast_sc.sensitivity import Sensitivity
