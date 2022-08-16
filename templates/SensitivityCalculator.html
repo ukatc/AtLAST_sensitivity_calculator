@@ -73,10 +73,10 @@
       </div>
 
       <div class="row" id="row-elevation">
-        <div class="col-sm-8">
+        <div class="col-sm-3">
           <label for="elev-input">Elevation:</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="elev-input" placeholder="Enter value..." name="elev-input" value="30.0" onchange="updateForm();">
+            <input type="text" class="form-control" id="elev-input" placeholder="Enter value..." name="elev-input" value="30.0" onchange="updateForm(); highlight_recalculate()">
             <div class="invalid-feedback" id="elev-invalid">Please enter valid number, between 5 and 90</div>
           </div>
         </div>
@@ -87,24 +87,24 @@
       </div>
 
       <div class="row" id="obs-freq">
-        <div class="col-sm-8">
+        <div class="col-sm-3">
           <label for="obs-freq-input">Observing frequency (GHz):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="obs-freq-input" placeholder="Enter value..." name="obs-freq-input" value="450.0" onchange="updateForm();">
-            <div class="invalid-feedback" id="obs-freq-invalid">Please enter valid number, between ? and ?</div>
+            <input type="text" class="form-control" id="obs-freq-input" placeholder="Enter value..." name="obs-freq-input" value="450.0" onchange="updateForm(); highlight_recalculate();">
+            <div class="invalid-feedback" id="obs-freq-invalid">Please enter valid number, between 35 and 950</div>
           </div>
         </div>
         <div class="col-sm-4 align-self-center info-col">
           <br>
-          <p class="notes">Observing frequency in GHz (Min: ?; Max: /)</p>
+          <p class="notes">Observing frequency in GHz (Min: 35; Max:90)</p>
         </div>
       </div>
 
       <div class="row" id="row-bandwidth">
-        <div class="col-sm-8">
+        <div class="col-sm-3">
           <label for="bandwidth-input">Bandwidth (GHz):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="bandwidth-input" placeholder="Enter value..." name="bandwidth-input" value="7.5" onchange="updateForm();">
+            <input type="text" class="form-control" id="bandwidth-input" placeholder="Enter value..." name="bandwidth-input" value="7.5" onchange="updateForm(); highlight_recalculate();">
             <div class="invalid-feedback" id="bandwidth-invalid">Please enter valid number, between ? and ?</div>
           </div>
         </div>
@@ -115,14 +115,14 @@
       </div>
 
       <div class="row" id="row-pwv">
-        <div class="col-sm-8">
+        <div class="col-sm-3">
       	  <label for="pwv-input">H2O profile percentile:</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="pwv-input" placeholder="Enter value..." name="pwv-input" value="10" onchange="updateForm();">
+            <input type="text" class="form-control" id="pwv-input" placeholder="Enter value..." name="pwv-input" value="10" onchange="updateForm(); highlight_recalculate();">
 	    <div class="invalid-feedback" id="pwv-invalid">Please enter valid number.</div>
           </div>
         </div>
-        <div class="col-sm-4 align-self-center info-col">
+        <div class="col-sm-8 align-self-center info-col">
           <br>
           <p class="notes">The weather condition for observing, H2O profile percentile between 0 and 100 %.</p>
         </div>
@@ -130,7 +130,7 @@
 
 
       <div class="row" id="row-npol">
-        <div class="col-sm-8">
+        <div class="col-sm-3">
           <label for="npol-input">Number of polarizations:</label>
           <div class="input-group mb-3">
             <select id="npol-input" name="npol">
@@ -142,14 +142,14 @@
       </div>
 
       <div class="row mb-3">
-        <div class="col-sm-8">
+        <div class="col-sm-3">
           <label for="input-switch-radio">Calculate integration time or sensitivity?</label>
           <div class="form-group">
             <div class="btn-group btn-group-toggle" id="input-switch-radio" data-toggle="buttons">
-              <label class="btn btn-primary active" onclick="setInputs('integration');">
-                <input type="radio" name="options" id="option-sens" autocomplete="off" checked> IntegrationTime
+              <label class="btn btn-primary active" onclick="setInputs('integration'); highlight_recalculate();">
+                <input type="radio" name="options" id="option-sens" autocomplete="off" checked> Integration Time
               </label>
-              <label class="btn btn-primary" onclick="setInputs('sensitivity');">
+              <label class="btn btn-primary" onclick="setInputs('sensitivity'); highlight_recalculate();">
                 <input type="radio" name="options" id="option-time" autocomplete="off"> Sensitivity
               </label>
             </div>
@@ -159,10 +159,10 @@
       </div>
 
       <div class="row" id="row-integration-time">
-        <div class="col-sm-8">
+        <div class="col-sm-3">
           <label for="integration-time-input">Integration time (s):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="integration-time-input" placeholder="Enter value..." name="integration-tim-input" value="15" onchange="updateForm();">
+            <input type="text" class="form-control" id="integration-time-input" placeholder="Enter value..." name="integration-tim-input" value="15" onchange="updateForm(); highlight_recalculate();">
             <div class="invalid-feedback" id="integration-time-invalid">Please enter valid number; > 0</div>
           </div>
         </div>
@@ -173,10 +173,10 @@
       </div>
 
       <div class="row" id="row-sensitivity" style="display: none;">
-        <div class="col-sm-8">
+        <div class="col-sm-3">
           <label for="sensitivity-input">Sensitivity (mJy):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="sensitivity-input" placeholder="Enter value..." name="sensitivity-input" value="15" onchange="updateForm();" disabled  >
+            <input type="text" class="form-control" id="sensitivity-input" placeholder="Enter value..." name="sensitivity-input" value="15" onchange="updateForm(); highlight_recalculate();" disabled  >
             <div class="invalid-feedback" id="sensitivity-invalid">Please enter valid number; > 0</div>
           </div>
         </div>
@@ -188,9 +188,9 @@
 
       <div class="row">
         <div class="col-sm-2">
-          <button type="submit" class="btn btn-primary col-sm-12">Calculate</button>
+          <button id="calculate" type="submit" class="btn btn-primary col-sm-12" onclick="recalculate()">Calculate</button>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-2">
           <div class="card d-none" id="output"></div>
         </div>
       </div>
