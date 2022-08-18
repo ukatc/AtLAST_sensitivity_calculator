@@ -16,14 +16,14 @@ or conversely, to obtain the integration time required for a given sensitivity :
 
 where 
 
-* :math:`SEFD` is the source equivalent flux density
+* :math:`SEFD` is the system equivalent flux density
 * :math:`\eta_{s}` is the system efficiency
 * :math:`n_{pol}` is the number of polarizations
 * :math:`\Delta \nu` is the bandwidth
 * :math:`\tau_{atm}` is the atmospheric opacity
 
 
-The source equivalent flux density is calculated as:
+The system equivalent flux density is calculated as:
 
 .. math::
     SEFD = \frac{2kT_{sys}}{\eta_{A}A_{g}}
