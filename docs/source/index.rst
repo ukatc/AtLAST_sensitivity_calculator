@@ -9,6 +9,7 @@ Getting Started
    installation
    usage
    sensitivity
+   Imaging_example
 
 .. User Guide section
    Hidden toctree to manage the sidebar navigation.
