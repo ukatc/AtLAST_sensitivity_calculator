@@ -7,3 +7,7 @@ T_rx:         {value: 50,     unit: K}
 eta_eff:      {value: 0.80,   unit: none}
 eta_ill:      {value: 0.63,   unit: none}  
 eta_q:        {value: 0.96,   unit: none}
+eta_spill:    {value: 0.95,   unit: none}
+eta_block:    {value: 0.94,   unit: none}
+eta_pol:      {value: 0.99,   unit: none}
+eta_r:        {value: 1,      unit: none}
