@@ -13,7 +13,7 @@ def test_temperatures():
     eta_eff = 0.9
 
     t = SystemTemperature(T_rx, T_cmb, T_atm, T_amb, tau_atm)
-    assert t.system_temperature(g, eta_eff).value == pytest.approx(205.529, 0.001)
+    assert t.system_temperature(g, eta_eff).value == pytest.approx(205.761, 0.001)
 
 def test_units():
     import astropy.units as u

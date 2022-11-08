@@ -28,4 +28,4 @@ class SystemTemperature:
         :return: system temperature in Kelvin
         :rtype: astropy.units.Quantity
         '''
-        return((1 + g) / eta_eff * self.transmittance) * (self.T_rx + (eta_eff * self.T_sky) + ((1 - eta_eff) * self.T_amb))
+        return((1 + g) / eta_eff * self.transmittance) * self.T_rx + (eta_eff * self.T_sky) + ((1 - eta_eff) * self.T_amb)
