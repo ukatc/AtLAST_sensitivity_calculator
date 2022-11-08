@@ -48,3 +48,20 @@ where
 * :math:`T_{rx}` is the receiver temperature
 * :math:`T_{sky}` is the sky temperature
 * :math:`T_{amb}` is the ambient temperature
+
+
+Efficiencies
+------------
+
+:math:`\eta_{A}`, the dish efficiency, is given by:
+
+.. math::
+    \eta_{A} = \eta_{ill} \times \eta_{spill} \times \eta_{r} \times \eta_{pol} \times \eta_{block} \times exp^{(-\frac{(4\pi \times RMS}{\lambda^2})}
+
+where
+
+* :math:`\eta_{ill}` is the illumination efficiency (defaults to value 0.8)
+* :math:`\eta_{spill}` is the spillover efficiency (defaults to value of 0.95)
+* :math:`\eta_{r}` 
+* :math:`\eta_{pol}` is a polarisation efficiency
+* :math:`\eta_{block}` accounts for the physical aperture blockage (defaults to 0.94)
