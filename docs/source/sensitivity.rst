@@ -48,3 +48,14 @@ where
 * :math:`T_{rx}` is the receiver temperature
 * :math:`T_{sky}` is the sky temperature
 * :math:`T_{amb}` is the ambient temperature
+
+
+Efficiencies
+------------
+
+:math:`\eta_{A}`, the dish efficiency, is given by:
+
+.. math::
+    \eta_{A} = \eta_{ill} \times exp^{(-\frac{(4\pi \times RMS}{\lambda^2})}
+
+where :math:`\eta_{ill}` is the illumination efficiency (defaults to value 0.63), and the latter term accounts for Ruze losses due to the RMS of the dish surface roughness.
