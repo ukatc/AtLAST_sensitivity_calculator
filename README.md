@@ -7,11 +7,16 @@ In progress software to calculate either:
 
 2. the reverse, the sensitivity for a given exposure time.
 
-To be packaged as a standalone python package.
+To be packaged as a standalone python package (WIP).
 
-A web interface frontend is in development.
+A simple web interface is included, follow installation instructions below.
 
-Installation
+Documentation
+==========
+
+Full documentation, including a ``User Guide`` can be found in the [``docs``](docs/) folder. To build the html version of the documentation, start from the main package directory and type ``cd docs; make html``. Read the documentation by pointing your browser at ``docs/build/html/index.html``.
+
+Installation of browser interface
 ============
 
 Eventually this calculator will be hosted on a server and made available publicly, however for the time being it can be downloaded from this repo and run locally.
@@ -58,4 +63,3 @@ To install the package the necessary steps are:
 
 
 
-Documentation, including a ``User Guide`` can be found in the ``docs`` folder. To build the html version of the documentation, start from the main package directory and type ``cd docs; make html``. Read the documentation by pointing your browser at ``docs/build/html/index.html``.
