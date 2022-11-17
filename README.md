@@ -13,7 +13,7 @@ A simple web interface is included, follow installation instructions below.
 
 Testing is incomplete but initial tests can be run using ``make test``.
 
-The ``benchmarking`` branch is a work-in-progress to test the results of the calculator matching the input and setup to JCMT. This exercise is incomplete. As it includes changes to the underlying code (the efficiency calculation), it should **not** be merged with ``main``. 
+The [``benchmarking``](https://github.com/ukatc/AtLAST_sensitivity_calculator/blob/benchmarking/README.md) branch is a work-in-progress to test the results of the calculator matching the input and setup to JCMT. This exercise is incomplete. As it includes changes to the underlying code (the efficiency calculation), it should **not** be merged with ``main``. 
 After validation of the calculator results and before publication of this package, the ``benchmarking`` branch can be deleted.
 
 Documentation
