@@ -39,7 +39,7 @@ class Efficiencies:
     def eta_s(self):
         '''
         Return the system efficiency eta_s that goes into the sensitivity calculation
-        PLACEHOLDER
+        PLACEHOLDER - more/different efficiencies may need to be added
 
         :return: system efficiency
         :rtype: astropy.units quantity
