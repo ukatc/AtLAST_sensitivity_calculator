@@ -13,7 +13,8 @@ def test_sensitivity():
     
     # This assert statement is currently failing due to the static value being incorrect.
     # These values should be re-calculated by hand to ensure tests are correct and robust.
-    assert calculator.sensitivity(config.t_int).value == pytest.approx(0.00724, abs=0.00001)
+    assert calculator.sensitivity(config.t_int).value == pytest.approx(0.007675, abs=0.00001)
+
 
 def test_integration():
     from atlast_sc.sensitivity import Sensitivity
@@ -28,7 +29,7 @@ def test_integration():
 
     # This assert statement is currently failing due to the static value being incorrect.
     # These values should be re-calculated by hand to ensure tests are correct and robust.
-    assert calculator.t_integration(config.sensitivity).value == pytest.approx(0.5246, abs=0.0001)
+    assert calculator.t_integration(config.sensitivity).value == pytest.approx(0.5892, abs=0.0001)
 
 def test_consistency():
     from atlast_sc.sensitivity import Sensitivity

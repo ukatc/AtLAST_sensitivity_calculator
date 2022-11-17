@@ -19,13 +19,24 @@
  * Relative root for graphical profile folder.
  * Used mainly when LESS files are included from a different folder.
  */
-@font-face {
-  font-family: 'Concert One';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/concertone/v11/VEM1Ro9xs5PjtzCu-srDqRTl.ttf) format('truetype');
+
+/* stuff added by Jo */
+.notes {
+  font-weight: 600;
+  color: #747474;
 }
+
+.card {
+  background-color: #aceadd;
+  border-width: 0px;
+  padding: 5px;
+  font-weight: bold;
+  text-align: center;
+  min-height: 39px;
+}
+
+/* stuff that was here before: */
+
 @font-face {
   font-family: 'Roboto';
   font-style: normal;
@@ -63,15 +74,10 @@ body {
   line-height: 26px;
   color: #3b3b3b;
   font-weight: 400;
-}
-body {
   font-size: 17px;
   font-size: inherit;
 }
 
-
-/* end of edits ------------------------------
-*/
 a {
   font-family: "Roboto", sans-serif;
   font-weight: 500;
@@ -123,8 +129,8 @@ h4 a.vrtx-title,
   font-weight: 500;
 }
 h1 {
-  font-size: 40px;
-  font-size: 4rem;
+  font-size: 30px;
+  font-size: 3rem;
 }
 h2 {
   font-size: 26px;
@@ -280,25 +286,25 @@ button a:hover {
  #head-wrapper #head #header a#logotext {
   width: 600px;
   display: block;
-  font-size: 70px;
-  font-size: 6rem;
-  top: 80px;
+  font-size: 5rem;
+  top: 100px;
   left: 600px;
   position: absolute;
   height: 80px;
-  padding: 20px 0;
+  padding: 10px 0;
+  text-decoration: none
 }
  #head-wrapper #head #header a:hover,
  #head-wrapper #head #header a:focus {
   color: #6b5455;
   text-decoration: none;
 }
- #head-wrapper #head #header span.tagline {
-  top: 70px;
+ #head-wrapper #head #header div.tagline {
+  top: 40px;
   position: absolute;
   left: 0;
-  font-size: 20px;
   font-size: 2rem;
+  line-height: 1.1;
 }
  #head-wrapper .vrtx-frontpage-box-picture img {
   margin-top: -36px;

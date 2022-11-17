@@ -9,13 +9,13 @@ To install the sensitivity calculator:
 
 .. code-block:: bash
 
-    $ git clone https://github.com/https://github.com/ukatc/AtLAST_sensitivity_calculator.git
+    $ git clone https://github.com/ukatc/AtLAST_sensitivity_calculator.git
 
 
 To use the browser interface:
 ------------------------------
 
-2. Initialise your environment: this depends on what you use for environment management
+2. Navigate into the directory you have just created the git repo in, and initialise your environment: this depends on what you use for environment management
     
     a) With poetry, create a poetry shell start a poetry shell in the directory of the repo:
     
@@ -26,7 +26,6 @@ To use the browser interface:
     
 
     b) With Conda:
-    
 
     .. code-block:: bash
     
@@ -35,16 +34,13 @@ To use the browser interface:
     
 
     c) With pip (not tested!):
-    
-
 
     .. code-block:: bash
     
         $ pip install -r requirements.txt
     
 
-3. Start a server with Flask:
-
+3. Start a server with Flask - note, this may take a minute to load:
 
 .. code-block:: bash
 
