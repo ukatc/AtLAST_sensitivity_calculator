@@ -10,6 +10,7 @@ def test_sensitivity():
     config = Config.from_yaml(CONFIG_PATH / "test_user_inputs.yaml")
 
     calculator = Sensitivity(config)
+    # TO DO: Re-calculate this value by hand to ensure tests are correct!
     assert calculator.sensitivity(config.t_int).value == pytest.approx(0.00724, abs=0.00001)
 
 def test_integration():
@@ -22,6 +23,7 @@ def test_integration():
     config = Config.from_yaml(CONFIG_PATH / "test_user_inputs.yaml")
 
     calculator = Sensitivity(config)
+    # TO DO: Re-calculate this value by hand to ensure tests are correct!
     assert calculator.t_integration(config.sensitivity).value == pytest.approx(0.5246, abs=0.0001)
 
 def test_consistency():
