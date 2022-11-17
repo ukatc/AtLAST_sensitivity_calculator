@@ -1,6 +1,6 @@
 ![example workflow](https://github.com/ukatc/AtLAST_sensitivity_calculator/actions/workflows/backend-tests.yml/badge.svg)
 
-IMPORTANT: Do not merge this branch to main! This is a testing branch for benchmarking exercises only. 
+:warning: **IMPORTANT: Do not merge this branch to main! This is a testing branch for benchmarking exercises only** :warning:
 
 Some modifications to the calculations have been made to match other telescope efficiency parameterisations. These efficiencies do NOT need to be implemented in the final AtLAST sensitivity calculator and are only here to provide the closest match to the JCMT calculator online.
 
