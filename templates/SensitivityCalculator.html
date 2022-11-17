@@ -76,7 +76,7 @@
         <div class="col-sm-3">
           <label for="elev-input">Elevation:</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="elev-input" placeholder="Enter value..." name="elev-input" value="30.0" onchange="updateForm(); highlight_recalculate()">
+            <input type="text" class="form-control" id="elev-input" placeholder="Enter value..." name="elev-input" value="30.0" oninput="updateForm(); highlight_recalculate()">
             <div class="invalid-feedback" id="elev-invalid">Please enter valid number, between 5 and 90</div>
           </div>
         </div>
@@ -90,13 +90,13 @@
         <div class="col-sm-3">
           <label for="obs-freq-input">Observing frequency (GHz):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="obs-freq-input" placeholder="Enter value..." name="obs-freq-input" value="450.0" onchange="updateForm(); highlight_recalculate();">
+            <input type="text" class="form-control" id="obs-freq-input" placeholder="Enter value..." name="obs-freq-input" value="450.0" oninput="updateForm(); highlight_recalculate();">
             <div class="invalid-feedback" id="obs-freq-invalid">Please enter valid number, between 35 and 950</div>
           </div>
         </div>
         <div class="col-sm-4 align-self-center info-col">
           <br>
-          <p class="notes">Observing frequency in GHz (Min: 35; Max:90)</p>
+          <p class="notes">Observing frequency in GHz (Min: 35; Max:950)</p>
         </div>
       </div>
 
@@ -104,7 +104,7 @@
         <div class="col-sm-3">
           <label for="bandwidth-input">Bandwidth (GHz):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="bandwidth-input" placeholder="Enter value..." name="bandwidth-input" value="7.5" onchange="updateForm(); highlight_recalculate();">
+            <input type="text" class="form-control" id="bandwidth-input" placeholder="Enter value..." name="bandwidth-input" value="7.5" oninput="updateForm(); highlight_recalculate();">
             <div class="invalid-feedback" id="bandwidth-invalid">Please enter valid number, between ? and ?</div>
           </div>
         </div>
@@ -118,7 +118,7 @@
         <div class="col-sm-3">
       	  <label for="pwv-input">H2O profile percentile:</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="pwv-input" placeholder="Enter value..." name="pwv-input" value="10" onchange="updateForm(); highlight_recalculate();">
+            <input type="text" class="form-control" id="pwv-input" placeholder="Enter value..." name="pwv-input" value="10" oninput="updateForm(); highlight_recalculate();">
 	    <div class="invalid-feedback" id="pwv-invalid">Please enter valid number.</div>
           </div>
         </div>
@@ -133,7 +133,7 @@
         <div class="col-sm-3">
           <label for="npol-input">Number of polarizations:</label>
           <div class="input-group mb-3">
-            <select id="npol-input" name="npol">
+            <select id="npol-input" name="npol" onchange="highlight_recalculate();">
               <option value=1>1</option>
               <option value=2>2</option>
               </select>
@@ -162,7 +162,7 @@
         <div class="col-sm-3">
           <label for="integration-time-input">Integration time (s):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="integration-time-input" placeholder="Enter value..." name="integration-tim-input" value="15" onchange="updateForm(); highlight_recalculate();">
+            <input type="text" class="form-control" id="integration-time-input" placeholder="Enter value..." name="integration-tim-input" value="15" oninput="updateForm(); highlight_recalculate();">
             <div class="invalid-feedback" id="integration-time-invalid">Please enter valid number; > 0</div>
           </div>
         </div>
@@ -176,7 +176,7 @@
         <div class="col-sm-3">
           <label for="sensitivity-input">Sensitivity (mJy):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="sensitivity-input" placeholder="Enter value..." name="sensitivity-input" value="15" onchange="updateForm(); highlight_recalculate();" disabled  >
+            <input type="text" class="form-control" id="sensitivity-input" placeholder="Enter value..." name="sensitivity-input" value="15" oninput="updateForm(); highlight_recalculate();" disabled  >
             <div class="invalid-feedback" id="sensitivity-invalid">Please enter valid number; > 0</div>
           </div>
         </div>
