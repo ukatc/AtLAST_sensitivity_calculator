@@ -6,14 +6,17 @@ authors = ["jtr6 <joanna.ramasawmy@stfc.ac.uk>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "3.9"
-astropy = "^4.2.1"
-numpy = "^1.20.1"
-scipy = "^1.6.2"
-pyyaml = "5.4.1"
-Flask = "^2.0.2"
-python-dotenv = "^0.20.0"
-sphinx-rtd-theme = "^1.0.0"
+python = "^3.9"
+astropy = "^5.1"
+numpy = "^1.23"
+scipy = "^1.9"
+pyyaml = "^6.0"
+Flask = "^2.2"
+flask-wtf = "^1.0"
+python-dotenv = "^0.21"
+sphinx-rtd-theme = "^1.1"
+nbsphinx = "^0.8"
+#  - pytest=7.2 PUT IN DEV DEPENDENCIES?
 
 [tool.poetry.dev-dependencies]
 

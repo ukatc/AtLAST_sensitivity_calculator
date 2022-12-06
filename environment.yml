@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.10
+  - python=3.9
   - astropy=5.1
   - Flask=2.2
   - flask-wtf=1.0
