@@ -2,6 +2,9 @@
 test:
 	PYTHONPATH=. pytest
 
+pip-install: build
+    pip install -e
+
 build: clean
 	python -m build
 

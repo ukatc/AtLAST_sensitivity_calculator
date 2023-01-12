@@ -6,7 +6,8 @@ build-backend = "setuptools.build_meta"
 include = ["atlast_sc*"]
 
 [project]
-name = "sensitivity_calculator"
+#name = "sensitivity_calculator"
+name = "atlast_sc"
 version = "0.1.0"
 authors = [
     { name="Joanna Ramasawmy", email="joanna.ramasawmy@stfc.ac.uk" }
