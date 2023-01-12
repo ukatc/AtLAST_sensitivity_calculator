@@ -37,7 +37,7 @@ directory of the repository and run the following:
 
 .. code-block:: python
 
-    python -m atlast_sc.demo.run
+    python -m demo.run
 
 How it works
 ************
