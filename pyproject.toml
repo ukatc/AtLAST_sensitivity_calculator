@@ -11,12 +11,6 @@ astropy = "^5.1"
 numpy = "^1.23"
 scipy = "^1.9"
 pyyaml = "^6.0"
-Flask = "^2.2"
-flask-wtf = "^1.0"
-python-dotenv = "^0.21"
-sphinx-rtd-theme = "^1.1"
-nbsphinx = "^0.8"
-#  - pytest=7.2 PUT IN DEV DEPENDENCIES?
 
 [tool.poetry.dev-dependencies]
 
