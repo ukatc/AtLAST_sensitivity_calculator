@@ -2,6 +2,11 @@ from atlast_sc.sensitivity import Sensitivity
 import astropy.units as u
 from atlast_sc.configs.config import Config
 
+import os
+# Change the working directory
+# TODO this is a temporary change
+os.chdir('atlast_sc/demo')
+
 # Initialise the input parameters from Config
 calculator = Sensitivity(Config.from_yaml("user_inputs.yaml"))
 

@@ -9,7 +9,6 @@ from astropy.coordinates import SkyCoord
 from atlast_sc.configs.config import Config
 from atlast_sc.sensitivity import Sensitivity
 
-
 app = Flask(__name__)
 
 handler = logging.StreamHandler()
