@@ -1,19 +1,25 @@
-[tool.poetry]
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["atlast_sc*"]
+
+[project]
 name = "sensitivity_calculator"
 version = "0.1.0"
-description = ""
-authors = ["jtr6 <joanna.ramasawmy@stfc.ac.uk>"]
-license = "MIT"
+authors = [
+    { name="Joanna Ramasawmy", email="joanna.ramasawmy@stfc.ac.uk" }
+]
+description = "AtLast sensitivity calculator"
+#license = "MIT"
+requires-python = ">=3.9"
+dependencies = [
+    "astropy == 5.1.*",
+    "numpy == 1.23.*",
+    "scipy == 1.9.*",
+    "pyyaml == 6.0.*"
+]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-astropy = "^5.1"
-numpy = "^1.23"
-scipy = "^1.9"
-pyyaml = "^6.0"
-
-[tool.poetry.dev-dependencies]
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[project.urls]
+repository="https://github.com/ukatc/AtLAST_sensitivity_calculator"
