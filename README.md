@@ -21,50 +21,43 @@ Documentation
 
 Full documentation, including a ``User Guide`` can be found in the [``docs``](docs/) folder. To build the html version of the documentation, start from the main package directory and type ``cd docs; make html``. Read the documentation by pointing your browser at ``docs/build/html/index.html``.
 
-Installation of browser interface
-============
+
+Quick Start Guide
+=================
 
 Eventually this calculator will be hosted on a server and made available publicly, however for the time being it can be downloaded from this repo and run locally.
 
-To install the package the necessary steps are:
+Setting up your environment
+---------------------------
 
-1. Clone this github repo: 
+1. Clone the repository:
 
-        $ git clone https://github.com/ukatc/AtLAST_sensitivity_calculator.git
+   ```
+   $ git clone https://github.com/ukatc/AtLAST_sensitivity_calculator.git
+   ```
 
+2. Create a conda environment:
 
-2. Navigate into the directory you have just created the git repo in, and initialise your environment: this depends on what you use for environment management
-    
-    a) With poetry, create a poetry shell start a poetry shell in the directory of the repo:
-            
-        $ poetry shell
-        Spawning shell within /home/user/.cache/pypoetry/virtualenvs/...
-    
+   ```
+   $ conda env create -f environment.yml
+   ```
+   
+3. Activate the conda environment
 
-    b) With Conda:
-    
-        $ conda env create -f environment.yml
-        $ conda activate sens-calc
-    
-
-    c) With pip:
-    
-        $ pip install -r requirements.txt
-    
-
-3. Start a server with Flask - note: this may take a minute to load:
-
-
-        $ flask run
-        * Serving Flask app 'sensitivity-calculator.py' (lazy loading)
-        * Environment: development
-        * Debug mode: on
-        * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-        * Restarting with stat
-        * Debugger is active!
-
-
-4. Point your browser at http://127.0.0.1:5000/. You should now see the sensitivity calculator browser interface!
+   ```
+   $ conda activate sens-calc
+   ```
 
 
 
+Running the web client
+----------------------
+
+1. Navigate to the `web_client` directory
+2. Start a server with Flask (note: this may take a minute to load)
+
+   ```
+   $ flask run
+   ```
+
+4. Point your browser at http://127.0.0.1:5000/. You should now see the sensitivity calculator web client!
