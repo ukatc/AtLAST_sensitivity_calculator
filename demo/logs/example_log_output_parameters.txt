@@ -1,5 +1,5 @@
 t_int = 100.0 s 
-sensitivity = 0.4413425061267876 mJy 
+sensitivity = 0.3050866282839424 mJy 
 bandwidth = 7.5 GHz 
 obs_freq = 100.0 GHz 
 n_pol = 2 
@@ -23,4 +23,4 @@ tau_atm = 0.04384339999999999
 T_atm = 8.429821 K 
 eta_a = 0.6995318165809129 
 eta_s = 0.99 
-sefd = 5.121717664309235e-24 J / m2 
+sefd = 3.540487380061061e-24 J / m2 

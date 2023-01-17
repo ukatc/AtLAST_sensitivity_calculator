@@ -1,5 +1,5 @@
 t_int           : {value:      100.0, unit: s} 
-sensitivity     : {value: 0.4413425061267876, unit: mJy} 
+sensitivity     : {value: 0.3050866282839424, unit: mJy} 
 bandwidth       : {value:        7.5, unit: GHz} 
 obs_freq        : {value:      100.0, unit: GHz} 
 n_pol           : {value:          2, unit: none} 
@@ -23,4 +23,4 @@ tau_atm         : {value: 0.04384339999999999, unit: none}
 T_atm           : {value:   8.429821, unit: K} 
 eta_a           : {value: 0.6995318165809129, unit: none} 
 eta_s           : {value:       0.99, unit: none} 
-sefd            : {value: 5.121717664309235e-24, unit: J / m2} 
+sefd            : {value: 3.540487380061061e-24, unit: J / m2} 

@@ -30,7 +30,18 @@ To modify the telescope setup, there are further configurable values in files st
 Running the calculator
 ----------------------
 
-A simple script ``run.py`` is provided, demonstrating the functionality of the calculator.
+A simple script ``run.py`` is provided in the ``demo`` directory, demonstrating the functionality of the calculator.
+
+Development of this demo is currently a work in progress. For now, the demo can be run by navigating to the root
+directory of the repository and run the following:
+
+.. code-block:: python
+
+    python -m demo.run
+
+How it works
+************
+
 To begin we initialise the input parameters from the configuration file ``user_inputs.yaml``:
 
 .. code-block:: python
