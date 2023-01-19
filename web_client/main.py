@@ -74,4 +74,3 @@ def sensitivity():
 
     result = jsonify(result_dict)
     return result
-
