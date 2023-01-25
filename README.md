@@ -57,16 +57,49 @@ Setting up your environment
 
 Running the web client
 ----------------------
+The web client can be run directly in your development environment from the command line. Alternatively, it can be
+run in a docker container. Instructions for each method are provided below.
 
-1. Navigate to the `web_client` directory
-2. Start a server with Flask (note: this may take a minute to load)
+### Running the web client directly
+
+1. Ensure you have created and activated the conda environment as per the instructions above.
+2. Navigate to the `web_client` directory
+3. Start a server with Flask (note: this may take a minute to load)
 
    ```
    $ flask run
    ```
 
-4. Point your browser at http://127.0.0.1:5000/. You should now see the sensitivity calculator web client!
+4. Point your browser at http://127.0.0.1:5000/. You should now see the sensitivity calculator web client.
 
+
+### Running the web client in a container
+
+A Dockerfile is provided in the repository that can be used to build and run the web client application. 
+As part of the build process, the Dockerfile installs the python application from the AtLast Sensitivity
+Calculator GitHub repository.
+
+At present, the repository is private. You therefore need to provide your credentials as "secrets" to the
+Docker build process. To do this:
+
+1. Create a directory under `web_client` called `secrets`.
+2. In the `secrets` directory, create a file called `.env` with the following content:
+   ```
+   GIT_USERNAME=<your username>
+   GIT_PAT=<your Personal Access Token>   
+   ```
+
+You can now build and run the Docker container as follows:
+3. From the `web_client` directory, build the image with the command:
+   ```
+   $ DOCKER_BUILDKIT=1 docker build -t atlast_sc_client:latest --secret id=git_secrets,src=secrets/.env .
+   ```
+4. Run the container with the command:
+   ```
+   $ docker run --rm -d -p 5000:80 atlast_sc_client:latest -t atlast_sc_client 
+   ```
+
+4. Point your browser at http://127.0.0.1:5000/. You should now see the sensitivity calculator web client.
 
 Generating the Documentation
 -------------
