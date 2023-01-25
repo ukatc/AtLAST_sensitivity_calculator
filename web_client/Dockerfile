@@ -6,6 +6,7 @@ RUN apt update ; \
 
 COPY ./ /app
 
-RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt; \
-    pip install --no-cache-dir git+https://fkirton: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@github.com/ukatc/AtLAST_sensitivity_calculator.git@main#egg=atlast_sc
+RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
+RUN --mount=type=secret,id=git_secrets . /run/secrets/git_secrets \
+    && pip install --no-cache-dir git+https://${GIT_USERNAME}:${GIT_PAT}@github.com/ukatc/AtLAST_sensitivity_calculator.git@main#egg=atlast_sc
