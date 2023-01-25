@@ -5,6 +5,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 include = ["atlast_sc*"]
 
+[tool.setuptools.package-data]
+"*" = ["*.txt", "*.yaml"]
+
 [project]
 #name = "sensitivity_calculator"
 name = "atlast_sc"
