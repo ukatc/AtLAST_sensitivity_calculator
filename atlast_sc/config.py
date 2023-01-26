@@ -1,0 +1,154 @@
+import os
+from pathlib import Path
+import json
+from yaml import load, Loader
+from astropy.units import Unit
+from astropy.units.quantity import Quantity
+
+PARENT_PATH = Path(__file__).resolve().parents[0]
+
+STANDARD_CONFIG_PATH = os.path.join(PARENT_PATH, "configs", "standard")
+
+STANDARD_SETUP = 'standard'
+CUSTOM_SETUP = 'custom'
+# TODO: are these benchmarking setups still required?
+BENCHMARKING_APEX = 'apex'
+BENCHMARKING_JCMT = 'jcmt'
+
+
+class Config:
+    """
+    Sets up the configuration used to perform the sensitivity calculations.
+
+    Attributes
+    ----------
+
+    Methods
+    -------
+    """
+    # def __init__(self, user_input, setup="setup_inputs.yaml", fixed="fixed_inputs.yaml",
+    #              default="default_inputs.yaml"):
+    def __init__(self, user_input, setup='standard'):
+        """
+        Initialises all the required parameters from various input sources
+        setup_input, fixed_input and the default can be found in .yaml files in the configs directory
+        User input is here read as dict but class methods allow reading various file types.
+
+        :param user_input: A dictionary of user inputs of structure {'param_name':{'value': , 'unit': }}
+        :type user_input: dict
+        :param setup: The required telescope setup. Default value 'standard'
+        """
+
+        self._user_input = self.enforce_units(user_input)
+
+        if setup == STANDARD_SETUP:
+            config_path = STANDARD_CONFIG_PATH
+
+        self._setup_input = self.enforce_units(self._dict_from_yaml(config_path, "setup_inputs.yaml"))
+        self._fixed_input = self.enforce_units(self._dict_from_yaml(config_path, "fixed_inputs.yaml"))
+        self._default = self.enforce_units(self._dict_from_yaml(config_path, "default_inputs.yaml"))
+
+        self.t_int = self._user_input.get('t_int', self._default.get('t_int'))
+        self.sensitivity = self._user_input.get('sensitivity', self._default.get('sensitivity'))
+        self.bandwidth = self._user_input.get('bandwidth', self._default.get('bandwidth'))
+        self.obs_freq = self._user_input.get('obs_freq', self._default.get('obs_freq'))
+        self.n_pol = self._user_input.get('n_pol', self._default.get('n_pol'))
+        self.weather = self._user_input.get('weather', self._default.get('weather'))
+        self.elevation = self._user_input.get('elevation', self._default.get('elevation'))
+        self.g = self._setup_input.get('g', self._default.get('g'))
+        self.surface_rms = self._setup_input.get('surface_rms', self._default.get('surface_rms'))
+        self.dish_radius = self._setup_input.get('dish_radius', self._default.get('dish_radius'))
+        self.T_amb = self._setup_input.get('T_amb', self._default.get('T_amb'))
+        self.T_rx= self._setup_input.get('T_rx', self._default.get('T_rx'))
+        self.eta_eff = self._setup_input.get('eta_eff', self._default.get('eta_eff'))
+        self.eta_ill = self._setup_input.get('eta_ill', self._default.get('eta_ill'))
+        self.eta_spill = self._setup_input.get('eta_spill', self._default.get('eta_spill'))
+        self.eta_block = self._setup_input.get('eta_block', self._default.get('eta_block'))
+        self.eta_pol = self._setup_input.get('eta_pol', self._default.get('eta_pol'))
+        self.eta_r = self._setup_input.get('eta_r', self._default.get('eta_r'))
+        self.eta_q = self._setup_input.get('eta_q', self._default.get('eta_q'))
+        self.T_cmb = self._fixed_input.get('T_cmb')
+
+    @classmethod
+    def _dict_from_yaml(cls, path, file_name):
+        """
+        Read input from a .yaml file and return a dictionary
+
+        :param path: the .yaml file with parameters described as param_name: {value:param_value, unit:param_unit}
+        :type path: str (file path)
+        """
+
+        file_path = os.path.join(path, file_name)
+        with open(file_path, "r") as yaml_file:
+            inputs = load(yaml_file, Loader=Loader)
+        return inputs
+
+    @classmethod
+    def from_yaml(cls, path, file_name):
+        """
+        Takes a .yaml input file of user inputs and returns an instance of ``Config``
+
+        :param path: the path to the input .yaml file
+        :type path: str
+        :param file_name: the name of input file
+        :type path: str
+        """
+        inputs = cls._dict_from_yaml(path, file_name)
+        return Config(inputs)
+
+    @classmethod
+    def from_json(cls, path):
+        """
+        Takes a .json input file of user inputs and returns an instance of Config
+
+        :param path: the path of the input json file
+        :type path: str
+        """
+        with open(path, "r") as json_file:
+            inputs = json.load(json_file)
+        return Config(inputs)
+
+    @classmethod
+    def enforce_units(cls, inputs):
+        """
+        Read dict of inputs. 
+        Check for units and convert value into ``astropy.unit.Quantity`` if units given.
+        
+        :param inputs: a dictionary of inputs
+        :type inputs: dict
+        :return: a dictionary of ``astropy.unit.Quantity`, if units given
+        :rtype: dict
+        """
+        params = {}
+        for key in inputs.keys():
+            if inputs[key]["unit"] == "none":
+                params[key] = inputs[key]["value"]
+            else:
+                unit = Unit(inputs[key]["unit"])
+                params[key] = inputs[key]["value"] * unit
+        return params
+
+    def to_file(self, path):
+        """
+        Write config parameters to file
+        
+        :param path: the path of the output log file
+        :type path: str
+        """
+        with open(path, "w") as f:
+            for attr in vars(self):
+                if type(getattr(self, attr)) == dict:
+                    pass
+                else:
+                    f.write("{} = {} \n".format(attr, getattr(self, attr)))
+
+    def to_yaml(self, path):
+        with open(path, "w") as f:
+            for attr in vars(self):
+                if type(getattr(self, attr)) == dict:
+                    pass
+                else:
+                    if type(getattr(self, attr)) == Quantity and not getattr(self, attr).unit == ' ':
+                        f.write("{0: <16}: {{value: {1: >10}, unit: {2}}} \n".format(attr, getattr(self, attr).value, getattr(self, attr).unit))
+                    else:
+                        f.write("{0: <16}: {{value: {1: >10}, unit: none}} \n".format(attr, getattr(self, attr)))

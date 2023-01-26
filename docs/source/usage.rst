@@ -47,7 +47,7 @@ To begin we initialise the input parameters from the configuration file ``user_i
 .. code-block:: python
 
     from atlast_sc.sensitivity import Sensitivity
-    from atlast_sc.configs.config import Config
+    from atlast_sc.config import Config
     import astropy.units as u
 
     # Initialise the input parameters from Config

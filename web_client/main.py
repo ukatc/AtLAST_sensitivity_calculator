@@ -1,12 +1,9 @@
 import logging
 
 from flask import Flask, render_template, request, jsonify
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
 
 import astropy.units as u
-from astropy.coordinates import SkyCoord
-from atlast_sc.configs.config import Config
+from atlast_sc.configs import Config
 from atlast_sc.sensitivity import Sensitivity
 
 app = Flask(__name__)
