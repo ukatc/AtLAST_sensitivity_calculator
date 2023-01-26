@@ -1,8 +1,9 @@
 import pytest
+import astropy.units as u
+from atlast_sc.system_temperature import SystemTemperature
+
 
 def test_temperatures():
-    import astropy.units as u
-    from atlast_sc.system_temperature import SystemTemperature
     T_rx = 50 * u.K
     T_cmb = 2.73 * u.K
     T_atm = 255 * u.K
@@ -15,9 +16,8 @@ def test_temperatures():
     t = SystemTemperature(T_rx, T_cmb, T_atm, T_amb, tau_atm)
     assert t.system_temperature(g, eta_eff).value == pytest.approx(205.761, 0.001)
 
+
 def test_units():
-    import astropy.units as u
-    from atlast_sc.system_temperature import SystemTemperature
     T_rx = 50 * u.K
     T_cmb = 2.73 * u.K
     T_atm = 255 * u.K
