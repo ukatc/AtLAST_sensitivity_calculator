@@ -1,7 +1,8 @@
-from astropy import constants
+from astropy.constants import k_B
+
 
 class SEFD:
-    ''' Class that calculates the source equivalent flux density, SEFD'''
+    """ Class that calculates the source equivalent flux density, SEFD"""
 
     def calculate(T_sys, area, eta_A):
         """
@@ -17,4 +18,4 @@ class SEFD:
         :rtype: astropy.units.Quantity
         """
 
-        return (2 * constants.k_B * T_sys) / (eta_A * area)
+        return (2 * k_B * T_sys) / (eta_A * area)

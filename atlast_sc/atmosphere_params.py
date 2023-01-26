@@ -1,7 +1,7 @@
+from pathlib import Path
 import astropy.units as u
 from scipy.interpolate import interp2d 
 import numpy as np
-from pathlib import Path
 
 # Plan is to use the AM model to produce a grid of T_atm and tau_atm
 # This code can then interpolate over that grid to get correct values
@@ -12,6 +12,7 @@ STATIC_DATA_PATH = Path(__file__).resolve().parents[0] / "static"
 WEATHER = [5, 25, 50, 75, 95]
 T_ATM_PATH = STATIC_DATA_PATH / "lookups" / "am_ACT_T_annual.txt"
 TAU_ATM_PATH = STATIC_DATA_PATH / "lookups" / "am_ACT_tau_annual.txt"
+
 
 class AtmosphereParams:
     """ Class used to retrieve atmospheric parameters from a model. """
@@ -52,5 +53,4 @@ class AtmosphereParams:
         :return: Atmospheric temperature
         :rtype: astropy.units.Quantity
         """
-        T_atm = self.interp_T_atm(self.obs_freq, self.weather)[0] * u.K
-        return T_atm
+        return self.interp_T_atm(self.obs_freq, self.weather)[0] * u.K

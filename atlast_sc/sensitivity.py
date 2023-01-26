@@ -1,12 +1,13 @@
+import astropy.units as u
+import numpy as np
 from atlast_sc.atmosphere_params import AtmosphereParams
 from atlast_sc.sefd import SEFD
 from atlast_sc.system_temperature import SystemTemperature
 from atlast_sc.efficiencies import Efficiencies
-import astropy.units as u
-import numpy as np
+
 
 class Sensitivity:
-    ''' Calculator class that does the core calculation to get the output sensitivity or integration time. '''
+    """ Calculator class that does the core calculation to get the output sensitivity or integration time. """
     def __init__(self, config):
         self.config = self.resolve_config(config)
 
@@ -40,23 +41,29 @@ class Sensitivity:
         )
         return t_int.to(u.s)
 
-    def resolve_config(self, config):    
-        '''
-        Performs the calculations required to produce the final set of parameters required for the sensitivity calculation, 
+    @classmethod
+    def resolve_config(cls, config):
+        """
+        Performs the calculations required to produce the final set of parameters
+        required for the sensitivity calculation,
         and outputs the sensitivity / integration time as required.
 
         :param config: a ``Config`` instance
         :type config: ``configs.config.Config`` object
         :return: 
-        '''
-        config.area = np.pi * config.dish_radius**2                             # Calculate area of dish & add to parameters
+        """
+
+        # Calculate area of dish & add to parameters
+        config.area = np.pi * config.dish_radius**2
 
         atm = AtmosphereParams( 
             config.obs_freq, 
             config.weather,
-            config.elevation)                                                   # Perform atmospheric model calculation
-        config.tau_atm = atm.tau_atm()                                          # add atmospheric opacity to params
-        config.T_atm = atm.T_atm()                                              # add atmospheric temperature to params
+            config.elevation)
+        # Perform atmospheric model calculation and add
+        # opacity and temperature to config parameters
+        config.tau_atm = atm.tau_atm()
+        config.T_atm = atm.T_atm()
 
         eta = Efficiencies(
             config.eta_ill, 
@@ -64,10 +71,13 @@ class Sensitivity:
             config.eta_spill, 
             config.eta_block, 
             config.eta_pol, 
-            config.eta_r)                                                     # Perform efficiency calculations
-        config.eta_a = eta.eta_a(config.obs_freq, config.surface_rms)           # add eta_a to params
-        config.eta_s = eta.eta_s()                                              # add eta_s to params - NOTE: currently not implmented, placeholder value!!
+            config.eta_r)
+        # Perform efficiency calculations
+        # TODO eta_s() currently not implemented, placeholder value only
+        config.eta_a = eta.eta_a(config.obs_freq, config.surface_rms)
+        config.eta_s = eta.eta_s()
 
+        # Calculate the system temperature
         T_sys = SystemTemperature(
             config.T_rx, 
             config.T_cmb, 
@@ -76,12 +86,13 @@ class Sensitivity:
             config.tau_atm
             ).system_temperature(
                 config.g, 
-                config.eta_eff)                                                 # Calculate system temperature
+                config.eta_eff)
 
+        # Calculate source equivalent flux density
         sefd = SEFD.calculate(
             T_sys, 
             config.area, 
-            config.eta_a)                                                       # Calculate source equivalent flux density
+            config.eta_a)
         config.sefd = sefd
 
         return config
