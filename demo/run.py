@@ -1,5 +1,5 @@
-from atlast_sc.sensitivity import Sensitivity
 import astropy.units as u
+from atlast_sc.sensitivity import Sensitivity
 from atlast_sc.configs.config import Config
 
 import os

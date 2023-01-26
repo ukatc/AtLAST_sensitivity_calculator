@@ -65,7 +65,7 @@ class Config:
         :param path: the path of the input .yaml file
         :type path: str
         """
-        inputs = Config._dict_from_yaml(path)
+        inputs = cls._dict_from_yaml(path)
         return Config(inputs)
 
     @classmethod
