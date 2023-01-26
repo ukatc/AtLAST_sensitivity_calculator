@@ -36,7 +36,7 @@ class Sensitivity:
         :return: integration time in seconds
         :rtype: astropy.units.Quantity
         """
-        t_int =((self.config.sefd * np.exp(self.config.tau_atm))/ (sensitivity * self.config.eta_s)) ** 2 / (
+        t_int = ((self.config.sefd * np.exp(self.config.tau_atm))/ (sensitivity * self.config.eta_s)) ** 2 / (
             self.config.n_pol * self.config.bandwidth
         )
         return t_int.to(u.s)
