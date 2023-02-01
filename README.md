@@ -96,7 +96,7 @@ You can now build and run the Docker container as follows:
    ```
 4. Run the container with the command:
    ```
-   $ docker run --rm -d -p 5000:80 atlast_sc_client:latest -t atlast_sc_client 
+   $ docker run --rm -d -p 5000:80 --name atlast_sc_client atlast_sc_client:latest
    ```
 
 4. Point your browser at http://127.0.0.1:5000/. You should now see the sensitivity calculator web client.
