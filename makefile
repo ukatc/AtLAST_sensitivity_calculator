@@ -6,7 +6,7 @@ test:
 
 buildwebclientimage:
 	@echo "Building web client image for current branch '${GIT_BRANCH}'..."
-	DOCKER_BUILDKIT=1 docker build -t ${GIT_CR_REPO}:${GIT_BRANCH} --secret id=git_secrets,src=web_client/secrets/.env ./web_client
+	DOCKER_BUILDKIT=1 docker build --build-arg BRANCH=${GIT_BRANCH} -t ${GIT_CR_REPO}:${GIT_BRANCH} --secret id=git_secrets,src=web_client/secrets/.env ./web_client
 	@echo "Image build complete."
 
 pushwebclientimage: buildwebclientimage
