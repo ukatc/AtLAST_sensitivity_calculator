@@ -15,5 +15,6 @@ COPY ./ /app
 
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
+# TODO allow installing from a local branch
 RUN --mount=type=secret,id=git_secrets . /run/secrets/git_secrets \
     && pip install --no-cache-dir git+https://${GIT_USERNAME}:${GIT_PAT}@github.com/ukatc/AtLAST_sensitivity_calculator.git@${BRANCH}#egg=atlast_sc

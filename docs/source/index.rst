@@ -7,6 +7,7 @@ Getting Started
 
 .. toctree::
    installation
+   guide_for_developers
    usage
    sensitivity
    Imaging_example
