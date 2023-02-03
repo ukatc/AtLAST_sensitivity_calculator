@@ -10,19 +10,9 @@ In progress software to calculate either:
 
 2. the reverse, the sensitivity for a given exposure time.
 
-To be packaged as a standalone python package (WIP).
-
-A simple web interface is included, follow installation instructions below.
-
-Testing is incomplete but initial tests can be run using ``make test``.
-
-The [``benchmarking``](https://github.com/ukatc/AtLAST_sensitivity_calculator/blob/benchmarking/README.md) branch is a work-in-progress to test the results of the calculator matching the input and setup to JCMT. This exercise is incomplete. As it includes changes to the underlying code (the efficiency calculation), it should **not** be merged with ``main``. 
-After validation of the calculator results and before publication of this package, the ``benchmarking`` branch can be deleted.
-
-
-Using The Sensitivity Calculater
+Using the Sensitivity Calculator
 ================================
-Eventually this calculator will be hosted on a server and made available publicly.
+Eventually this calculator will be hosted on a server and made publicly available.
 
 For the time being it can be installed or downloaded from this repository.
 
