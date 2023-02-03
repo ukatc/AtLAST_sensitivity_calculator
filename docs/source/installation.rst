@@ -1,5 +1,5 @@
-Installation
-============
+Installation Guide
+==================
 
 Eventually, the web client will be hosted on a publicly available server. The calculator will also be
 available as a standalone python package, hosted on a publicly available server.
@@ -15,7 +15,7 @@ Installing the Python package from Git
 --------------------------------------
 
 Before you begin
-################
+^^^^^^^^^^^^^^^^
 
 It is strongly recommended that you create a separate environment for your work using your
 preferred environment management tool (e.g., `conda <https://docs.conda.io/en/latest/>`__,
@@ -37,7 +37,7 @@ If this returns ``2.x.x``, then try:
 
 
 Installing the sensitivity calculator
-#####################################
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Once you have created and activated your environment, install the Sensitivity Calculator python package from the
 ``main`` branch using pip:
@@ -65,7 +65,7 @@ The web client can be run directly in your development environment from the comm
 run in a docker container. Instructions for each method are provided below.
 
 Running the web client directly
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 First, you need to clone the Sensitivity Calculator GitHub repository:
 
 .. code-block:: bash
@@ -101,10 +101,11 @@ Once you have set up your environment, run the web client as follows:
 
 
 Running the web client in a container
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Pulling the Docker image
-========================
+++++++++++++++++++++++++
+
 A Docker container image is provided for running the web client. This can be pulled from the GitHub Container
 Registry as follows:
 
@@ -148,7 +149,7 @@ You should now see the sensitivity calculator web client.
 .. _building-the-container:
 
 Building and running the Docker container
-=========================================
++++++++++++++++++++++++++++++++++++++++++
 
 A Dockerfile is provided in the repository that can be used to build and run the web client application.
 As part of the build process, the Dockerfile installs the python application from the AtLast Sensitivity
@@ -172,13 +173,13 @@ You can now build and run the Docker container as follows:
 
 .. code-block:: bash
 
-    $ DOCKER_BUILDKIT=1 docker build -t atlast_sc_client:latest --secret id=git_secrets,src=secrets/.env .
+    $ DOCKER_BUILDKIT=1 docker build -t atlast_sc_client:main --secret id=git_secrets,src=secrets/.env .
 
 2. Run the container with the command:
 
 .. code-block:: bash
 
-    $ docker run --rm -d -p 5000:80 atlast_sc_client:latest -t atlast_sc_client
+    $ docker run --rm -d -p 5000:80 --name atlast_sc_client atlast_sc_client:main
 
 3. Point your browser at http://127.0.0.1:5000/. You should now see the sensitivity calculator web client.
 
