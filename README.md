@@ -33,4 +33,4 @@ in the [``Installation Guide``](docs/source/installation.rst).
 Guide for Developers
 ====================
 Information on setting up your development environment, building, running, and deploying the application, running tests,
-and generating the docs is provided in the [``Guide for Devlopers``](docs/source/guide_for_developers.rst).
+and generating the docs is provided in the [``Guide for Developers``](docs/source/guide_for_developers.rst).
