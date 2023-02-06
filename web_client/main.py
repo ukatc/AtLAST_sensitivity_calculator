@@ -3,7 +3,7 @@ import logging
 from flask import Flask, render_template, request, jsonify
 
 import astropy.units as u
-from atlast_sc.configs import Config
+from atlast_sc.config import Config
 from atlast_sc.sensitivity import Sensitivity
 
 app = Flask(__name__)
