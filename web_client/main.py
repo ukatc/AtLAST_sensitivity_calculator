@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, jsonify
 
 import astropy.units as u
 from atlast_sc.config import Config
-from atlast_sc.sensitivity import Sensitivity
+from atlast_sc.calculator import Calculator
 
 app = Flask(__name__)
 
@@ -53,7 +53,7 @@ def sensitivity():
     app.logger.debug(inputs)
 
     config = Config(inputs)
-    calculator = Sensitivity(config)
+    calculator = Calculator(config)
 
     result_dict = {}
     if 'integration_time' in request.args:

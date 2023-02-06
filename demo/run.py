@@ -1,12 +1,12 @@
 import astropy.units as u
-from atlast_sc.sensitivity import Sensitivity
+from atlast_sc.calculator import Calculator
 from atlast_sc.config import Config
 
 import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # Initialise the input parameters from Config
-calculator = Sensitivity(Config.from_yaml("input_data", "user_inputs.yaml"))
+calculator = Calculator(Config.from_yaml("input_data", "user_inputs.yaml"))
 
 # Store the parameters input to this calculation instance in the variable "config"
 config = calculator.config

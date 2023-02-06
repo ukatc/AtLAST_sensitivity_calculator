@@ -1,14 +1,14 @@
 from pathlib import Path
 import pytest
 import astropy.units as u
-from atlast_sc.sensitivity import Sensitivity
+from atlast_sc.calculator import Calculator
 from atlast_sc.config import Config
 
 CONFIG_PATH = Path(__file__).resolve().parents[0]
 
 config = Config.from_yaml(CONFIG_PATH, "test_user_inputs.yaml")
 
-calculator = Sensitivity(config)
+calculator = Calculator(config)
 
 
 def test_sensitivity():

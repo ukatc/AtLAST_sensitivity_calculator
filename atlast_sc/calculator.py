@@ -6,7 +6,7 @@ from atlast_sc.system_temperature import SystemTemperature
 from atlast_sc.efficiencies import Efficiencies
 
 
-class Sensitivity:
+class Calculator:
     """ Calculator class that does the core calculation to get the output sensitivity or integration time. """
     def __init__(self, config):
         self.config = self.resolve_config(config)

@@ -17,3 +17,6 @@ dependencies:
   - python-dotenv=0.21
   - pandoc
   - build
+  - jupyterlab
+  - ipykernel
+  - matplotlib

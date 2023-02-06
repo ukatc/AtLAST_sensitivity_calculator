@@ -46,12 +46,12 @@ To begin we initialise the input parameters from the configuration file ``user_i
 
 .. code-block:: python
 
-    from atlast_sc.sensitivity import Sensitivity
+    from atlast_sc.calculator import Calculator
     from atlast_sc.config import Config
     import astropy.units as u
 
     # Initialise the input parameters from Config
-    calculator = Sensitivity(Config.from_yaml("user_inputs.yaml"))
+    calculator = Calculator(Config.from_yaml("user_inputs.yaml"))
 
 
 To obtain a sensitivity given an integration time:
