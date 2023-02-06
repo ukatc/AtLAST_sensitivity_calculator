@@ -9,6 +9,9 @@ from atlast_sc.efficiencies import Efficiencies
 class Calculator:
     """ Calculator class that does the core calculation to get the output sensitivity or integration time. """
     def __init__(self, config):
+
+
+
         self.config = self.resolve_config(config)
 
     def sensitivity(self, t_int):

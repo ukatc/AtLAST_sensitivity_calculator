@@ -5,6 +5,8 @@ from yaml import load, Loader
 from astropy.units import Unit
 from astropy.units.quantity import Quantity
 
+from atlast_sc import inputs
+
 PARENT_PATH = Path(__file__).resolve().parents[0]
 
 STANDARD_CONFIG_PATH = os.path.join(PARENT_PATH, "configs", "standard")
@@ -42,6 +44,11 @@ class Config:
         :type user_input: dict
         :param setup: The required telescope setup. Default value 'standard'
         """
+
+        my_val = inputs.ValueWithUnits(value=70, unit="blah")
+        print(my_val)
+        calculation_input = inputs.CalculationInput(**{"t_int": {"value": 0, "unit": "s"}})
+        print(calculation_input.t_int)
 
         self._user_input = self.enforce_units(user_input)
 
