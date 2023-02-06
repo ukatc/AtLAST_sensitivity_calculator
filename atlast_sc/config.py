@@ -32,7 +32,7 @@ class Config:
     # def __init__(self, user_input, setup="setup_inputs.yaml", fixed="fixed_inputs.yaml",
     #              default="default_inputs.yaml"):
     def __init__(self, user_input, setup='standard', file_path=None, setup_inputs_file="setup_inputs.yaml",
-                 fixed_inputs_file="fixed_inputs.yaml", default_inputs_file="default_input.yaml"):
+                 fixed_inputs_file="fixed_inputs.yaml", default_inputs_file="default_inputs.yaml"):
         """
         Initialises all the required parameters from various input sources
         setup_input, fixed_input and the default can be found in .yaml files in the configs directory
@@ -54,7 +54,7 @@ class Config:
         elif setup == CUSTOM_SETUP:
             # User is expected to provide the path
             # TODO: figure out how to make this easy for the user
-            # TODO: report and error if the file path is not provided
+            # TODO: report an error if the file path is not provided
             config_path = file_path
         else:
             # TODO need some error handling/data validation
