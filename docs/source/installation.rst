@@ -22,7 +22,7 @@ preferred environment management tool (e.g., `conda <https://docs.conda.io/en/la
 `venv <https://realpython.com/python-virtual-environments-a-primer/>`__,
 or `poetry <https://python-poetry.org/docs/>`__).
 
-The sensitivity calculator python package requires Python >= 3.9. You can check your version of Python by
+The sensitivity calculator python package requires Python >= 3.10. You can check your version of Python by
 typing:
 
 .. code-block:: bash
