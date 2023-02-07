@@ -9,10 +9,14 @@ from atlast_sc.efficiencies import Efficiencies
 class Calculator:
     """ Calculator class that does the core calculation to get the output sensitivity or integration time. """
     def __init__(self, config):
-
-
-
-        self.config = self.resolve_config(config)
+        # TODO: the calculator should instantiate the Config object and accept inputs
+        #       to the calculation as arguments
+        self._calculation_inputs = config.calculation_inputs
+        print('the calculation inputs are', self._calculation_inputs)
+        self._calculation_params = self.calculate_parameters()
+        print('the calculation params are', self._calculation_params)
+        self.config = self.calculate_parameters(config)
+        print('the config is', config)
 
     def sensitivity(self, t_int):
         """
@@ -44,60 +48,61 @@ class Calculator:
         )
         return t_int.to(u.s)
 
-    @classmethod
-    def resolve_config(cls, config):
+
+    def calculate_parameters(self):
         """
         Performs the calculations required to produce the final set of parameters
         required for the sensitivity calculation,
         and outputs the sensitivity / integration time as required.
 
-        :param config: a ``Config`` instance
-        :type config: ``configs.config.Config`` object
+        :param calculation_inputs:
+        :type calculation_inputs:
         :return: 
         """
 
+        calculation_params = {}
         # Calculate area of dish & add to parameters
-        config.area = np.pi * config.dish_radius**2
+        calculation_params.area = np.pi * self._calculation_inputs.dish_radius.value ** 2
 
         atm = AtmosphereParams( 
-            config.obs_freq, 
-            config.weather,
-            config.elevation)
+            self._calculation_inputs.obs_freq,
+            self._calculation_inputs.weather,
+            self._calculation_inputs.elevation)
         # Perform atmospheric model calculation and add
         # opacity and temperature to config parameters
-        config.tau_atm = atm.tau_atm()
-        config.T_atm = atm.T_atm()
+        calculation_params.tau_atm = atm.tau_atm()
+        calculation_params.T_atm = atm.T_atm()
 
         eta = Efficiencies(
-            config.eta_ill, 
-            config.eta_q, 
-            config.eta_spill, 
-            config.eta_block, 
-            config.eta_pol, 
-            config.eta_r)
+            self._calculation_inputs.eta_ill,
+            self._calculation_inputs.eta_q,
+            self._calculation_inputs.eta_spill,
+            self._calculation_inputs.eta_block,
+            self._calculation_inputs.eta_pol,
+            self._calculation_inputs.eta_r)
         # Perform efficiency calculations
         # TODO eta_s() currently not implemented, placeholder value only
-        config.eta_a = eta.eta_a(config.obs_freq, config.surface_rms)
-        config.eta_s = eta.eta_s()
+        calculation_params.eta_a = eta.eta_a(self._calculation_inputs.obs_freq, self._calculation_inputs.surface_rms)
+        calculation_params.eta_s = eta.eta_s()
 
         # Calculate the system temperature
         T_sys = SystemTemperature(
-            config.T_rx, 
-            config.T_cmb, 
-            config.T_atm, 
-            config.T_amb, 
-            config.tau_atm
+            self._calculation_inputs.T_rx,
+            self._calculation_inputs.T_cmb,
+            self._calculation_inputs.T_atm,
+            self._calculation_inputs.T_amb,
+            self._calculation_inputs.tau_atm
             ).system_temperature(
-                config.g, 
-                config.eta_eff)
+                self._calculation_inputs.g,
+                self._calculation_inputs.eta_eff)
 
         # Calculate source equivalent flux density
         sefd = SEFD.calculate(
             T_sys, 
-            config.area, 
-            config.eta_a)
-        config.sefd = sefd
+            self._calculation_inputs.area,
+            self._calculation_inputs.eta_a)
+        calculation_params.sefd = sefd
 
-        return config
+        return calculation_params
 
 

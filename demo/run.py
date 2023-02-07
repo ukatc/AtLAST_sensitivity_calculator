@@ -7,6 +7,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # Initialise the input parameters from Config
 calculator = Calculator(Config.from_yaml("input_data", "user_inputs.yaml"))
+print('whats in the calculator', calculator.config.__dict__)
 
 # Store the parameters input to this calculation instance in the variable "config"
 config = calculator.config

@@ -45,9 +45,6 @@ class Config:
         :param setup: The required telescope setup. Default value 'standard'
         """
 
-        # TODO: do we want to keep this and make it part of the object?
-        calculation_input = inputs.CalculationInput(**user_input)
-
         if setup == STANDARD_SETUP:
             config_path = STANDARD_CONFIG_PATH
         elif setup == BENCHMARKING_JCMT:
@@ -63,16 +60,23 @@ class Config:
             # TODO need some error handling/data validation
             pass
 
+        # TODO: remove conversion from yaml. This object should be initialised with dicts
+        #       that have already been converted from yamls
+        inputs_dict = {}
+        # Build up the dictionary of inputs in the order: defaults, setup, user input
+        if default_inputs_file:
+            inputs_dict = self._dict_from_yaml(config_path, default_inputs_file)
+        if setup_inputs_file:
+            inputs_dict = inputs_dict | self._dict_from_yaml(config_path, setup_inputs_file)
+        inputs_dict = inputs_dict | user_input
+
+        # TODO: do we want to keep this and make it part of the object?
+        self.calculation_inputs = inputs.CalculationInput(**inputs_dict)
+
+        self._user_input = self.enforce_units(user_input)
         self._setup_input = self.enforce_units(self._dict_from_yaml(config_path, setup_inputs_file))
         self._fixed_input = self.enforce_units(self._dict_from_yaml(config_path, fixed_inputs_file))
         self._default = self.enforce_units(self._dict_from_yaml(config_path, default_inputs_file))
-
-        # TODO provide input to the get_params method
-        user_defined_params = \
-            self.get_params([])
-        setup_params = self.get_params([])
-        # TODO get rid of this and put fixed params in a constants file
-        fixed_params = self.get_params([], False)
 
 
         # TODO: provide accessor methods for all of these properties (and make them properties!)
@@ -106,9 +110,6 @@ class Config:
         # TODO: this should be configured as a constant. No point reading a single, fixed value from a file
         self.T_cmb = self._fixed_input.get('T_cmb')
 
-    def get_params(self, param_names, have_defaults=True):
-        return {param_name: self._user_input.get(param_name, self._default.get(param_name))
-                for param_name in param_names}
 
     @classmethod
     def from_yaml(cls, path, file_name):

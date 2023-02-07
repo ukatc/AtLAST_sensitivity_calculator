@@ -77,3 +77,6 @@ class CalculationInput(DefaultInput, InstrumentSetup):
     default_input: DefaultInput = DefaultInput()
     instrument_setup: InstrumentSetup = InstrumentSetup()
     T_cmb: ValueWithUnits = ValueWithUnits(value=2.73, unit="K")
+
+
+# TODO Create models for Calculation Params: Atmosphere, Efficiencies, System Temperature, and SEFD
