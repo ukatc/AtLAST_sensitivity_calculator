@@ -45,12 +45,8 @@ class Config:
         :param setup: The required telescope setup. Default value 'standard'
         """
 
-        my_val = inputs.ValueWithUnits(value=70, unit="blah")
-        print(my_val)
-        calculation_input = inputs.CalculationInput(**{"t_int": {"value": 0, "unit": "s"}})
-        print(calculation_input.t_int)
-
-        self._user_input = self.enforce_units(user_input)
+        # TODO: do we want to keep this and make it part of the object?
+        calculation_input = inputs.CalculationInput(**user_input)
 
         if setup == STANDARD_SETUP:
             config_path = STANDARD_CONFIG_PATH
@@ -175,6 +171,8 @@ class Config:
 
     def to_yaml(self, path):
         with open(path, "w") as f:
+            # TODO: be explicit about the variables that are written to file.
+            #       Should not be iterating over every instance member
             for attr in vars(self):
                 if type(getattr(self, attr)) == dict:
                     pass
