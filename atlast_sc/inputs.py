@@ -74,9 +74,68 @@ class InstrumentSetup(BaseModel):
 
 
 class CalculationInput(DefaultInput, InstrumentSetup):
+    """
+    Input parameters used for the sensitivity calculation
+    """
+
     default_input: DefaultInput = DefaultInput()
     instrument_setup: InstrumentSetup = InstrumentSetup()
     T_cmb: ValueWithUnits = ValueWithUnits(value=2.73, unit="K")
 
+    @root_validator()
+    @classmethod
+    def extract_values(cls, field_values):
+        """
+        Simplify the structure by only returning the value
+        """
+        simplified_field_values = {key: val.value for key, val in field_values.items()
+                                   if hasattr(val, "value")}
+        return simplified_field_values
 
-# TODO Create models for Calculation Params: Atmosphere, Efficiencies, System Temperature, and SEFD
+
+class CalculatedParams(BaseModel):
+    """
+    Calculated parameters used for the sensitivity calculation
+    """
+
+    # Atmospheric opacity
+    tau_atm: float
+    # Atmospheric temperature
+    T_atm: Quantity
+    # Dish efficiency
+    eta_a: float
+    # System efficiency
+    eta_s: float
+    # System temperature
+    T_sys: Quantity
+    # Source equivalent flux density
+    sefd: Quantity
+    # Dish area
+    area: Quantity
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    # TODO add validator for Quantity
+
+
+class SensitivityCalculatorParameters(BaseModel):
+    """
+    All parameters used in the sensitivity calculation
+    """
+
+    calculation_inputs: CalculationInput
+    calculated_params: CalculatedParams
+
+    @root_validator()
+    @classmethod
+    def extract_params(cls, field_values):
+        """
+        Simplify the structure by extracting the parameters from the CalculationInput
+        and CalculatedParams objects
+        """
+        extracted_params = {}
+        for values in field_values.values():
+            extracted_params = extracted_params | {key: value for key, value in values._iter()}
+
+        return extracted_params
