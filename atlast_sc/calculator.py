@@ -4,15 +4,17 @@ from atlast_sc.atmosphere_params import AtmosphereParams
 from atlast_sc.sefd import SEFD
 from atlast_sc.system_temperature import SystemTemperature
 from atlast_sc.efficiencies import Efficiencies
-from atlast_sc.inputs import CalculatedParams, SensitivityCalculatorParameters
+from atlast_sc.inputs import CalculatedParams, SensitivityCalculatorParameters, InstrumentSetup
+from atlast_sc.config import Config
 
 
 class Calculator:
     """ Calculator class that does the core calculation to get the output sensitivity or integration time. """
-    def __init__(self, config):
+    def __init__(self, inputs):
         # TODO: the calculator should instantiate the Config object and accept inputs
         #       to the calculation as arguments
 
+        config = Config(inputs)
         calculation_inputs = config.calculation_inputs
         calculated_params = self.calculate_parameters(calculation_inputs)
 
@@ -20,6 +22,8 @@ class Calculator:
         self._sensitivity_calc_params = \
             SensitivityCalculatorParameters(calculation_inputs=calculation_inputs,
                                             calculated_params=calculated_params)
+
+        self.sensitivity = 1
 
     def calculate_sensitivity(self, t_int):
         """
@@ -31,11 +35,11 @@ class Calculator:
         :rtype: astropy.units.Quantity
         """
         sensitivity = (
-            self._sensitivity_calc_params.sefd
-            / (self._sensitivity_calc_params.eta_s
-               * np.sqrt(self._sensitivity_calc_params.n_pol
-                         * self._sensitivity_calc_params.bandwidth * t_int))
-            * np.exp(self._sensitivity_calc_params.tau_atm)
+            self._sensitivity_calc_params.calculated_params.sefd
+            / (self._sensitivity_calc_params.calculated_params.eta_s
+               * np.sqrt(self._sensitivity_calc_params.calculation_inputs.n_pol
+                         * self._sensitivity_calc_params.calculation_inputs.bandwidth * t_int))
+            * np.exp(self._sensitivity_calc_params.calculated_params.tau_atm)
         )
         return sensitivity.to(u.Jy)
 
@@ -48,21 +52,33 @@ class Calculator:
         :return: integration time in seconds
         :rtype: astropy.units.Quantity
         """
-        t_int = ((self._sensitivity_calc_params.sefd
-                  * np.exp(self._sensitivity_calc_params.tau_atm))
-                 / (sensitivity * self._sensitivity_calc_params.eta_s)) ** 2 / \
-                (self._sensitivity_calc_params.n_pol
-                 * self._sensitivity_calc_params.bandwidth)
+        t_int = ((self._sensitivity_calc_params.calculated_params.sefd
+                  * np.exp(self._sensitivity_calc_params.calculated_params.tau_atm))
+                 / (sensitivity * self._sensitivity_calc_params.calculated_params.eta_s)) ** 2 / \
+                (self._sensitivity_calc_params.calculation_inputs.n_pol
+                 * self._sensitivity_calc_params.calculation_inputs.bandwidth)
 
         return t_int.to(u.s)
 
     @property
     def t_int(self):
-        return self._sensitivity_calc_params.t_int
+        return self._sensitivity_calc_params.calculation_inputs.t_int
+
+    # TODO setter not working. Investigate
+    @t_int.setter
+    def t_int(self, value):
+        # TODO: Setting this value in the on the inputs feels wrong. This may be a calculated param
+        self._sensitivity_calc_params.calculation_inputs.t_int = value
 
     @property
     def sensitivity(self):
-        return self._sensitivity_calc_params.sensitivity
+        return self._sensitivity_calc_params.calculation_inputs.sensitivity
+
+    # TODO setter not working. Investigate
+    @sensitivity.setter
+    def sensitivity(self, value):
+        # TODO: Setting this value in the on the inputs feels wrong. This may be a calculated param
+        self._sensitivity_calc_params.calculation_inputs.sensitivity = value
 
     @property
     def sensitivity_calc_params(self):

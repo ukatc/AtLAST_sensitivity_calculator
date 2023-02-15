@@ -127,15 +127,9 @@ class SensitivityCalculatorParameters(BaseModel):
     calculation_inputs: CalculationInput
     calculated_params: CalculatedParams
 
-    @root_validator()
-    @classmethod
-    def extract_params(cls, field_values):
+    def calculator_params(self):
         """
-        Simplify the structure by extracting the parameters from the CalculationInput
-        and CalculatedParams objects
+        Flatten the structure of the object and return properties as a single-level dictionary
         """
-        extracted_params = {}
-        for values in field_values.values():
-            extracted_params = extracted_params | {key: value for key, value in values._iter()}
 
-        return extracted_params
+        return dict((x, y) for x, y in self.calculation_inputs) | dict((x, y) for x, y in self.calculated_params)

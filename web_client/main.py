@@ -3,7 +3,6 @@ import logging
 from flask import Flask, render_template, request, jsonify
 
 import astropy.units as u
-from atlast_sc.config import Config
 from atlast_sc.calculator import Calculator
 
 app = Flask(__name__)
@@ -13,13 +12,16 @@ app.logger.addHandler(handler)
 app.logger.propagate = False
 app.logger.level = logging.DEBUG
 
+
 @app.route('/', methods=('GET', 'POST'))
 def template():
     return render_template('SensitivityCalculator.html')
 
+
 @app.route('/hello')
 def hello():
     return "Hello2 World"
+
 
 @app.route('/documentation')
 def docs():
@@ -52,17 +54,19 @@ def sensitivity():
 
     app.logger.debug(inputs)
 
-    config = Config(inputs)
-    calculator = Calculator(config)
+    # config = Config(inputs)
+    calculator = Calculator(inputs)
 
     result_dict = {}
+    # TODO: the requirement that exactly one of sensitivity and int time should have a value is causing and error.
+    #       Remove this requirement. It's not adding anything useful.
     if 'integration_time' in request.args:
-        result = calculator.sensitivity(config.t_int).to(u.mJy) 
+        result = calculator.calculate_sensitivity(calculator.t_int).to(u.mJy)
         app.logger.debug('calculator.sensitivity')
         app.logger.debug(result)
         result_dict["sensitivity"] = f"{result:0.03f}"
     elif 'sensitivity' in request.args:
-        result = calculator.t_integration(config.sensitivity).to(u.s) 
+        result = calculator.calculate_t_integration(calculator.sensitivity)
         app.logger.debug('calculator.t_integration')
         app.logger.debug(result)
         result_dict["integration_time"] = f"{result:0.03f}"

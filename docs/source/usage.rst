@@ -46,12 +46,12 @@ To begin we initialise the input parameters from the configuration file ``user_i
 
 .. code-block:: python
 
-    from atlast_sc.calculator import Calculator
-    from atlast_sc.config import Config
     import astropy.units as u
+    from atlast_sc.calculator import Calculator
+    from atlast_sc import utils
 
-    # Initialise the input parameters from Config
-    calculator = Calculator(Config.from_yaml("user_inputs.yaml"))
+    # Initialise the Calculator with user inputs
+    calculator = Calculator(utils.from_yaml("input_data", "user_inputs.yaml"))
 
 
 To obtain a sensitivity given an integration time:
@@ -59,7 +59,7 @@ To obtain a sensitivity given an integration time:
 .. code-block:: python
 
     integration_time = 100 * u.s
-    calculated_sensitivity = calculator.sensitivity(integration_time).to(u.mJy) 
+    calculated_sensitivity = calculator.calculate_sensitivity(integration_time).to(u.mJy)
     print("Sensitivity: {:0.2f} for an integration time of {:0.2f} ".format(calculated_sensitivity, integration_time))
 
 And conversely, to obtain the integration time required for a given sensitivity:
@@ -68,7 +68,7 @@ And conversely, to obtain the integration time required for a given sensitivity:
 .. code-block:: python
 
     sensitivity = 10 * u.mJy
-    calculated_t_int = calculator.t_integration(sensitivity)
+    calculated_t_int = calculator.calculate_t_integration(sensitivity)
     print("Integration time: {:0.2f} to obtain a sensitivity of {:0.2f}".format(calculated_t_int, sensitivity))
 
 
@@ -76,8 +76,8 @@ To re-run the same calculation, we can store the input sensitivity and/or integr
 
 .. code-block:: python
 
-    config.t_int = integration_time
-    config.sensitivity = sensitivity
+    calculator.t_int = integration_time
+    calculator.sensitivity = sensitivity
 
 And then print the full configuration input parameters to a log file:
 
