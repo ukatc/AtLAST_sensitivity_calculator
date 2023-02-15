@@ -15,5 +15,6 @@ dependencies:
   - sphinx_rtd_theme=1.1
   - nbsphinx==0.8
   - python-dotenv=0.21
+  - pydantic=1.10
   - pandoc
   - build

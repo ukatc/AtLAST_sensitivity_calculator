@@ -13,7 +13,7 @@ backend
 .. automodule:: atlast_sc.sefd
    :members:
 
-.. automodule:: atlast_sc.sensitivity
+.. automodule:: atlast_sc.calculator
    :members:
 
 .. automodule:: atlast_sc.system_temperature

@@ -2,85 +2,113 @@ Usage
 =====
 
 Beyond the browser interface, the sensitivity calculator may be used as a standalone python package that can be incorporated into your python code.
-This is described in the proceeding sections. See the Public API documentation for more details.
+This is described in the following sections. See the Public API documentation for more details.
 
 Configuration
 -------------
 
-To configure the inputs to the calculation, users may edit the file ``user_inputs.yaml``.
-This is a .yaml config file which offers a structured input for the variables and their respective units, in the format:
+To configure the inputs to the calculation, create a ``yaml`` file containing each of the input parameters along with
+their respective values and units. An example ``yaml`` file is shown below.
 
 .. code-block:: yaml
 
     ---
-    t_int       : {value: 0,   unit: s}  
-    sensitivity : {value: 0,   unit: mJy} 
+    t_int       : {value: 100, unit: s}
+    sensitivity : {value: 0.3, unit: mJy}
     bandwidth   : {value: 7.5, unit: GHz}
-    obs_freq    : {value: 350, unit: GHz}
+    obs_freq    : {value: 100, unit: GHz}
     n_pol       : {value: 2,   unit: none} 
     weather     : {value: 50,  unit: none}
     elevation   : {value: 30,  unit: deg} 
 
-By default, the integration time ``t_int`` and the sensitivity ``sensitivity`` are both set to zero; upon running the software the user will encounter an error if neither or both of these parameters are given a value. Other user configurable parameters are provided with default example values.
-The user can modify these input parameters to match the observational setup required.
+You may also use the calculator without specifying these input parameters. In this case, the values shown above will
+be used by default (see the next section).
 
-To modify the telescope setup, there are further configurable values in files stored in ``src/configs/``. These contain values such as the efficiency factors of the telescope system. However these are not intended to be configurable for users and can be ignored unless intrinsic telescope parameters should be adjusted.
+Using the calculator
+--------------------
 
+First, import the required Python packages:
 
-Running the calculator
-----------------------
+.. code-block:: python
 
-A simple script ``run.py`` is provided in the ``demo`` directory, demonstrating the functionality of the calculator.
+    import astropy.units as u
+    from atlast_sc.calculator import Calculator
+    from atlast_sc import utils
+
+Next, we read the input parameters from our configuration file ``user_inputs.yaml`` and initialise the calculator.
+
+**Note**: Here we are assuming that the ``yaml`` file is in a directory ``input_data``, which is a subdirectory of our
+current location.
+
+.. code-block:: python
+
+    # Read the user input from a yaml file
+    user_input = utils.from_yaml('input_data', 'user_inputs.yaml')
+    # Initialise the Calculator with user inputs dictionary
+    calculator = Calculator(user_input)
+
+Alternatively, you may initialise the calculator with the default values.
+
+.. code-block:: python
+
+    calculator = Calculator()
+
+To obtain a sensitivity for a given integration time:
+
+.. code-block:: python
+
+    # Specify an integration time and pass this to the calculator
+    integration_time = 100 * u.s
+    calculated_sensitivity = calculator.calculate_sensitivity(integration_time).to(u.mJy)
+
+Alternatively, you may use the integration time configured in the calculator from your input file:
+
+.. code-block:: python
+
+    calculated_sensitivity = calculator.calculate_sensitivity(calculator.t_int).to(u.mJy)
+
+Conversely, to obtain the integration time required for a given sensitivity:
+
+.. code-block:: python
+
+    # Specify a sensitivity and pass this to the calculator
+    sensitivity = 10 * u.mJy
+    calculated_t_int = calculator.calculate_t_integration(sensitivity)
+
+Alternatively, you may use the sensitivity configured in the calculator from your input file:
+
+.. code-block:: python
+
+    calculated_t_int = calculator.calculate_t_integration(calculator.sensitivity)
+
+We can store the input sensitivity and/or integration time in the calculator like so:
+
+.. code-block:: python
+
+    calculator.t_int = integration_time
+    calculator.sensitivity = sensitivity
+
+The output can be written to a text file as follows:
+
+.. code-block:: python
+
+    utils.to_file(calculator.calculator_params, "logs/output_parameters.txt")
+
+You can also write the output to a ``yaml`` file:
+
+.. code-block:: python
+
+    utils.to_yaml(calculator.calculator_params, "logs/output_parameters.yaml")
+
+Running the demo
+----------------
+
+If you have cloned the GitHub repository, you can use the ``run.py`` script in the ``demo`` directory to
+play with and learn how the calculator works.
 
 Development of this demo is currently a work in progress. For now, the demo can be run by navigating to the root
-directory of the repository and run the following:
+directory of the repository and running the following:
 
 .. code-block:: python
 
     python -m demo.run
-
-How it works
-************
-
-To begin we initialise the input parameters from the configuration file ``user_inputs.yaml``:
-
-.. code-block:: python
-
-    from atlast_sc.sensitivity import Sensitivity
-    from atlast_sc.configs.config import Config
-    import astropy.units as u
-
-    # Initialise the input parameters from Config
-    calculator = Sensitivity(Config.from_yaml("user_inputs.yaml"))
-
-
-To obtain a sensitivity given an integration time:
-
-.. code-block:: python
-
-    integration_time = 100 * u.s
-    calculated_sensitivity = calculator.sensitivity(integration_time).to(u.mJy) 
-    print("Sensitivity: {:0.2f} for an integration time of {:0.2f} ".format(calculated_sensitivity, integration_time))
-
-And conversely, to obtain the integration time required for a given sensitivity:
-
-
-.. code-block:: python
-
-    sensitivity = 10 * u.mJy
-    calculated_t_int = calculator.t_integration(sensitivity)
-    print("Integration time: {:0.2f} to obtain a sensitivity of {:0.2f}".format(calculated_t_int, sensitivity))
-
-
-To re-run the same calculation, we can store the input sensitivity and/or integration time to the config like so:
-
-.. code-block:: python
-
-    config.t_int = integration_time
-    config.sensitivity = sensitivity
-
-And then print the full configuration input parameters to a log file:
-
-.. code-block:: python
-
-    config.to_file("logs/log_output_parameters.txt")

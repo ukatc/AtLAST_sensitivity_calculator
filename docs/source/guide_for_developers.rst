@@ -104,11 +104,11 @@ Next, add the following two variables to your local `.env` file (in the `web_cli
 The are two targets in the `makefile` for building and pushing the container image:
 
 * `buildwebclientimage`: This builds the image and tags it with the name of your current git branch (e.g., `main`). The
-current branch name is also passed as an argument to the build process. This is then used to install the Python package
-in the container *from that branch*. Note - this means that your branch must exist in the remote repository, and be
-up-to-date.
+  current branch name is also passed as an argument to the build process. This is then used to install the Python package
+  in the container *from that branch*. Note - this means that your branch must exist in the remote repository, and be
+  up-to-date.
 * `pushwebclientimage`: This first executes the `buildwebclientimage` target, then pushes the built image to the GitHub
-Container Registry.
+  Container Registry.
 
 
 

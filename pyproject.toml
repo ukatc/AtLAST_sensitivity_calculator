@@ -22,7 +22,8 @@ dependencies = [
     "astropy == 5.1.*",
     "numpy == 1.23.*",
     "scipy == 1.9.*",
-    "pyyaml == 6.0.*"
+    "pyyaml == 6.0.*",
+    "pydantic == 1.10.*"
 ]
 
 [project.urls]
