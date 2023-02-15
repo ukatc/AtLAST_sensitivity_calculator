@@ -11,21 +11,19 @@ from atlast_sc.config import Config
 class Calculator:
     """ Calculator class that does the core calculation to get the output sensitivity or integration time. """
     def __init__(self, inputs=None):
-        # TODO: the calculator should instantiate the Config object and accept inputs
-        #       to the calculation as arguments
 
         # TODO: provide accessor methods for properties
         # TODO: get a list of properties that are editable and provide setters
 
         config = Config(inputs)
-        calculation_inputs = config.calculation_inputs
-        calculated_params = self.calculate_parameters(calculation_inputs)
-
+        # Store a the input parameters used to initialise the calculator
         self._calculator_inputs = config.calculation_inputs
+        # Use the input parameters to calculate parameters used in the calculation
+        calculated_params = self._calculate_parameters(self._calculator_inputs)
 
-        # Store all the input and calculated param used for the sensitivity calculater
+        # Store all the inputs and calculated params used in the sensitivity and int time calculations
         self._calculator_params = \
-            SensitivityCalculatorParameters(calculation_inputs=calculation_inputs,
+            SensitivityCalculatorParameters(calculation_inputs=self._calculator_inputs,
                                             calculated_params=calculated_params)
 
     def calculate_sensitivity(self, t_int):
@@ -55,6 +53,9 @@ class Calculator:
         :return: integration time in seconds
         :rtype: astropy.units.Quantity
         """
+
+        # TODO: is it better to access these params as a standard dict, or would it be better to figure out a clean
+        #       and consistent way to use the Pydantic model?
         t_int = ((self._calculator_params.calculated_params.sefd
                   * np.exp(self._calculator_params.calculated_params.tau_atm))
                  / (sensitivity * self._calculator_params.calculated_params.eta_s)) ** 2 / \
@@ -67,7 +68,6 @@ class Calculator:
     def t_int(self):
         return self._calculator_params.calculation_inputs.t_int
 
-    # TODO setter not working. Investigate
     @t_int.setter
     def t_int(self, value):
         # TODO: Setting this value in the on the inputs feels wrong. This may be a calculated param
@@ -77,7 +77,6 @@ class Calculator:
     def sensitivity(self):
         return self._calculator_params.calculation_inputs.sensitivity
 
-    # TODO setter not working. Investigate
     @sensitivity.setter
     def sensitivity(self, value):
         # TODO: Setting this value in the on the inputs feels wrong. This may be a calculated param
@@ -98,7 +97,7 @@ class Calculator:
         return self._calculator_inputs
 
     @classmethod
-    def calculate_parameters(cls, calculation_inputs):
+    def _calculate_parameters(cls, calculation_inputs):
         """
         Performs the calculations required to produce the final set of parameters
         required for the sensitivity calculation,
