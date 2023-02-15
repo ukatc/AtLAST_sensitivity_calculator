@@ -1,4 +1,4 @@
-from pydantic import BaseModel, BaseSettings, validator, root_validator
+from pydantic import BaseModel, root_validator
 from astropy.units import Unit, Quantity
 
 
@@ -37,8 +37,8 @@ class DefaultInput(BaseModel):
     The user is expected to provide some or all of this input during normal usage.
     Default values are provided for convenience.
     """
-    t_int: ValueWithUnits = ValueWithUnits(value=70, unit="s")
-    sensitivity: ValueWithUnits = ValueWithUnits(value=0, unit="mJy")
+    t_int: ValueWithUnits = ValueWithUnits(value=100, unit="s")
+    sensitivity: ValueWithUnits = ValueWithUnits(value=0.3, unit="mJy")
     bandwidth: ValueWithUnits = ValueWithUnits(value=7.5, unit="GHz")
     obs_freq: ValueWithUnits = ValueWithUnits(value=100, unit="GHz")
     n_pol: ValueWithoutUnits = ValueWithoutUnits(value=2)
@@ -49,11 +49,10 @@ class DefaultInput(BaseModel):
     @classmethod
     def validate_one_field_has_value(cls, field_values):
         """
-        Exactly one of 't_int' and 'sensitivity' should be initialised
+        At least one of 't_int' and 'sensitivity' should be initialised
         """
-        if (field_values["t_int"].value != 0 and field_values["sensitivity"].value != 0) \
-                or (field_values["t_int"].value == 0 and field_values["sensitivity"].value == 0):
-            raise ValueError("Please add either a sensitivity *or* an integration time to your input.")
+        if field_values["t_int"].value == 0 and field_values["sensitivity"].value == 0:
+            raise ValueError("Please add either a sensitivity or an integration time to your input.")
         return field_values
 
 
