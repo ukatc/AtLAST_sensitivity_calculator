@@ -8,6 +8,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 # Initialise the Calculator with user inputs
 # TODO: simplify this interface further. The user should not have to interact directly with the utils module
 calculator = Calculator(utils.from_yaml("input_data", "user_inputs.yaml"))
+# calculator = Calculator()
 
 # Calculate sensitivity or t_int depending on input
 print("-----------")

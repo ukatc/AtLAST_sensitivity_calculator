@@ -30,7 +30,7 @@ def docs():
 @app.route('/v1/sensitivity')
 def sensitivity():
     app.logger.debug('sensitivity1')
-
+    print('received request', request)
     inputs = {}
     inputs['bandwidth'] = {'value': float(request.args.get('bandwidth')), 'unit':'GHz'}
     inputs['obs_freq'] = {'value': float(request.args.get('obs_freq')), 'unit':'GHz'}
@@ -46,7 +46,6 @@ def sensitivity():
     # inputs['eta_ill'] = {'value': float(request.args.get('eta_ill')), 'unit': 'none'}
     # inputs['eta_q'] = {'value': float(request.args.get('eta_g')), 'unit': 'none'}
 
-    
     if 'integration_time' in request.args:
         inputs['t_int'] = {'value': float(request.args.get('integration_time')), 'unit':'s'}
     if 'sensitivity' in request.args:

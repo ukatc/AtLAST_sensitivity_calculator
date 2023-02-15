@@ -10,9 +10,12 @@ from atlast_sc.config import Config
 
 class Calculator:
     """ Calculator class that does the core calculation to get the output sensitivity or integration time. """
-    def __init__(self, inputs):
+    def __init__(self, inputs=None):
         # TODO: the calculator should instantiate the Config object and accept inputs
         #       to the calculation as arguments
+
+        # TODO: provide accessor methods for properties
+        # TODO: get a list of properties that are editable and provide setters
 
         config = Config(inputs)
         calculation_inputs = config.calculation_inputs
@@ -22,8 +25,6 @@ class Calculator:
         self._sensitivity_calc_params = \
             SensitivityCalculatorParameters(calculation_inputs=calculation_inputs,
                                             calculated_params=calculated_params)
-
-        self.sensitivity = 1
 
     def calculate_sensitivity(self, t_int):
         """
