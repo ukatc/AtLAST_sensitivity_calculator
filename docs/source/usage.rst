@@ -92,13 +92,13 @@ The output can be written to a text file as follows:
 
 .. code-block:: python
 
-    utils.to_file(calculator.sensitivity_calc_params.calculator_params(), "logs/output_parameters.txt")
+    utils.to_file(calculator.calculator_params, "logs/output_parameters.txt")
 
 You can also write the output to a ``yaml`` file:
 
 .. code-block:: python
 
-    utils.to_yaml(calculator.sensitivity_calc_params.calculator_params(), "logs/output_parameters.yaml")
+    utils.to_yaml(calculator.calculator_params, "logs/output_parameters.yaml")
 
 Running the demo
 ----------------

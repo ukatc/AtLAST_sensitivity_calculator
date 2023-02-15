@@ -21,8 +21,10 @@ class Calculator:
         calculation_inputs = config.calculation_inputs
         calculated_params = self.calculate_parameters(calculation_inputs)
 
+        self._calculator_inputs = config.calculation_inputs
+
         # Store all the input and calculated param used for the sensitivity calculater
-        self._sensitivity_calc_params = \
+        self._calculator_params = \
             SensitivityCalculatorParameters(calculation_inputs=calculation_inputs,
                                             calculated_params=calculated_params)
 
@@ -36,11 +38,11 @@ class Calculator:
         :rtype: astropy.units.Quantity
         """
         sensitivity = (
-            self._sensitivity_calc_params.calculated_params.sefd
-            / (self._sensitivity_calc_params.calculated_params.eta_s
-               * np.sqrt(self._sensitivity_calc_params.calculation_inputs.n_pol
-                         * self._sensitivity_calc_params.calculation_inputs.bandwidth * t_int))
-            * np.exp(self._sensitivity_calc_params.calculated_params.tau_atm)
+            self._calculator_params.calculated_params.sefd
+            / (self._calculator_params.calculated_params.eta_s
+               * np.sqrt(self._calculator_params.calculation_inputs.n_pol
+                         * self._calculator_params.calculation_inputs.bandwidth * t_int))
+            * np.exp(self._calculator_params.calculated_params.tau_atm)
         )
         return sensitivity.to(u.Jy)
 
@@ -53,37 +55,47 @@ class Calculator:
         :return: integration time in seconds
         :rtype: astropy.units.Quantity
         """
-        t_int = ((self._sensitivity_calc_params.calculated_params.sefd
-                  * np.exp(self._sensitivity_calc_params.calculated_params.tau_atm))
-                 / (sensitivity * self._sensitivity_calc_params.calculated_params.eta_s)) ** 2 / \
-                (self._sensitivity_calc_params.calculation_inputs.n_pol
-                 * self._sensitivity_calc_params.calculation_inputs.bandwidth)
+        t_int = ((self._calculator_params.calculated_params.sefd
+                  * np.exp(self._calculator_params.calculated_params.tau_atm))
+                 / (sensitivity * self._calculator_params.calculated_params.eta_s)) ** 2 / \
+                (self._calculator_params.calculation_inputs.n_pol
+                 * self._calculator_params.calculation_inputs.bandwidth)
 
         return t_int.to(u.s)
 
     @property
     def t_int(self):
-        return self._sensitivity_calc_params.calculation_inputs.t_int
+        return self._calculator_params.calculation_inputs.t_int
 
     # TODO setter not working. Investigate
     @t_int.setter
     def t_int(self, value):
         # TODO: Setting this value in the on the inputs feels wrong. This may be a calculated param
-        self._sensitivity_calc_params.calculation_inputs.t_int = value
+        self._calculator_params.calculation_inputs.t_int = value
 
     @property
     def sensitivity(self):
-        return self._sensitivity_calc_params.calculation_inputs.sensitivity
+        return self._calculator_params.calculation_inputs.sensitivity
 
     # TODO setter not working. Investigate
     @sensitivity.setter
     def sensitivity(self, value):
         # TODO: Setting this value in the on the inputs feels wrong. This may be a calculated param
-        self._sensitivity_calc_params.calculation_inputs.sensitivity = value
+        self._calculator_params.calculation_inputs.sensitivity = value
 
     @property
-    def sensitivity_calc_params(self):
-        return self._sensitivity_calc_params
+    def calculator_params(self):
+        """
+        Parameters used to perform the calculation (input params and calculated params)
+        """
+        return self._calculator_params.calculator_params()
+
+    @property
+    def calculation_inputs(self):
+        """
+        The parameters used to initialise the calculator
+        """
+        return self._calculator_inputs
 
     @classmethod
     def calculate_parameters(cls, calculation_inputs):

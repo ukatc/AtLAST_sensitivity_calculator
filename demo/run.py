@@ -33,5 +33,5 @@ print("-----------")
 # TODO: the user should not have to interact with the utils module directly. Creator a wrapper to access this
 #       functionality via the Calculator object.
 # TODO: provide a wrapper for the calculator_params function in the Calculator class
-utils.to_file(calculator.sensitivity_calc_params.calculator_params(), "logs/output_parameters.txt")
-utils.to_yaml(calculator.sensitivity_calc_params.calculator_params(), "logs/output_parameters.yaml")
+utils.to_file(calculator.calculator_params, "logs/output_parameters.txt")
+utils.to_yaml(calculator.calculator_params, "logs/output_parameters.yaml")
