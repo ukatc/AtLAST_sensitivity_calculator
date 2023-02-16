@@ -1,6 +1,0 @@
-# Dependencies 
-
-astropy
-numpy
-scipy
-pathlib
