@@ -18,3 +18,4 @@ dependencies:
   - pydantic=1.10
   - pandoc
   - build
+  - flake8

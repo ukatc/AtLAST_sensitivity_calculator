@@ -1,4 +1,4 @@
-include web_client/secrets/.env
+-include web_client/secrets/.env
 .PHONY: test
 
 test:
