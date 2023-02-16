@@ -5,10 +5,14 @@ from yaml import load, Loader
 
 def from_yaml(path, file_name):
     """
-    Read input from a .yaml file and return a dictionary
+    Read input from a yaml file with parameters described in the
+    format <param_name>: {<value>:<param_value>, <unit>:<param_unit>}
+    and return a dictionary
 
-    :param path: the .yaml file with parameters described as param_name: {value:param_value, unit:param_unit}
-    :type path: str (file path)
+    :param path: the path to the yaml file
+    :type path: str
+    :param file_name: the name of the yaml file
+    :type file_name: str
     """
 
     file_path = os.path.join(path, file_name)
@@ -49,8 +53,8 @@ def to_yaml(params, path):
         for key, value in params.items():
             if hasattr(value, "unit"):
                 unit = value.unit
-                f.write(f"{key: <16}: {{value: {value: >10}, unit: {unit}}} \n")
+                f.write(f"{key: <16}: {{value: {value: >10}, "
+                        f"unit: {unit}}} \n")
             else:
                 # TODO: do we need 'none' for unit?
                 f.write(f"{key: <16}: {{value: {value: >10}, unit: none}} \n")
-

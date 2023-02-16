@@ -8,8 +8,8 @@ def test_init():
     pwv = 50
     elevation = 20 * u.deg
     atm = AtmosphereParams(obs_freq, pwv, elevation)
-    assert atm.tau_atm_table[0,0] == 30
-    assert atm.T_atm_table[0,0] == 30
+    assert atm.tau_atm_table[0, 0] == 30
+    assert atm.T_atm_table[0, 0] == 30
 
 
 def test_tau_atm():
@@ -19,7 +19,8 @@ def test_tau_atm():
     atm = AtmosphereParams(obs_freq, pwv, elevation)
     zenith = 90.0 * u.deg - elevation
 
-    assert (atm.tau_atm().value < 1.0419/np.cos(zenith)) and (atm.tau_atm().value > 1.040/np.cos(zenith))
+    assert (atm.tau_atm().value < 1.0419/np.cos(zenith)) \
+           and (atm.tau_atm().value > 1.040/np.cos(zenith))
 
 
 def test_T_atm():

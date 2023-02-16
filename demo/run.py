@@ -13,25 +13,32 @@ calculator = Calculator(user_input)
 # Calculate sensitivity or t_int depending on input
 print("-----------")
 
-# Calculate the sensitivity for a given integration time (here, specified in user_input.yaml)
+# Calculate the sensitivity for a given integration time
+# (here, specified in user_input.yaml)
 # TODO: is there a reason for not converting the sensitivity to mJy by default?
-calculated_sensitivity = calculator.calculate_sensitivity(calculator.t_int).to(u.mJy)
-print("Sensitivity: {:0.2f} for an integration time of {:0.2f} ".format(calculated_sensitivity, calculator.t_int))
-# TODO: How to store the calculated sensitivity? (Writing it to the calculator object is not a good idea)
+calculated_sensitivity = \
+    calculator.calculate_sensitivity(calculator.t_int).to(u.mJy)
+print("Sensitivity: {:0.2f} for an integration time of {:0.2f} "
+      .format(calculated_sensitivity, calculator.t_int))
+# TODO: How to store the calculated sensitivity?
+#  (Writing it to the calculator object is not a good idea)
 calculator.sensitivity = calculated_sensitivity
 
 # Calculate the integration time for a given sensitivity
-calculated_t_int = calculator.calculate_t_integration(calculator.sensitivity)
-print("Integration time: {:0.2f} to obtain a sensitivity of {:0.2f}".format(calculated_t_int,
-                                                                            calculator.sensitivity.to(u.mJy)))
-# TODO: How to store the calculated integration time? (Writing it to the calculator object is not a good idea)
+calculated_t_int = \
+    calculator.calculate_t_integration(calculator.sensitivity)
+print("Integration time: {:0.2f} to obtain a sensitivity of {:0.2f}"
+      .format(calculated_t_int, calculator.sensitivity.to(u.mJy)))
+# TODO: How to store the calculated integration time?
+#  (Writing it to the calculator object is not a good idea)
 calculator.t_int = calculated_t_int
 
 print("-----------")
 
 # Print all parameters to a log file
-# TODO: the user should not have to interact with the utils module directly. Creator a wrapper to access this
-#       functionality via the Calculator object.
-# TODO: provide a wrapper for the calculator_params function in the Calculator class
+# TODO: the user should not have to interact with the utils module directly.
+#  Create a wrapper to access this functionality via the Calculator object.
+# TODO: provide a wrapper for the calculator_params function in
+#  the Calculator class
 utils.to_file(calculator.calculator_params, "logs/output_parameters.txt")
 utils.to_yaml(calculator.calculator_params, "logs/output_parameters.yaml")

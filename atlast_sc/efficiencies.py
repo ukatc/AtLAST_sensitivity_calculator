@@ -23,8 +23,8 @@ class Efficiencies:
 
     def eta_a(self, obs_freq, surface_rms):
         """
-        Return the dish efficiency eta_a that needs to go into the SEFD calculation
-        Using Ruze formula.
+        Return the dish efficiency eta_a that needs to go into the SEFD
+        calculation Using Ruze formula.
 
         :param obs_freq: the observing frequency in GHz
         :type obs_freq: astropy.units.Quantity
@@ -34,13 +34,15 @@ class Efficiencies:
         :rtype: astropy.units quantity
         """
         wavelength = (constants.c / obs_freq).to(u.m)
-        return self.eta_ill * self.eta_spill * self.eta_r * self.eta_pol * self.eta_block * \
+        return self.eta_ill * self.eta_spill * self.eta_r * self.eta_pol * \
+            self.eta_block * \
             np.exp(-(4 * np.pi * surface_rms / wavelength)**2)
 
     @classmethod
     def eta_s(cls):
         """
-        Return the system efficiency eta_s that goes into the sensitivity calculation
+        Return the system efficiency eta_s that goes into the sensitivity
+        calculation
         PLACEHOLDER - more/different efficiencies may need to be added
 
         :return: system efficiency

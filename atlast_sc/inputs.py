@@ -34,7 +34,8 @@ class ValueWithoutUnits(BaseModel):
 class DefaultInput(BaseModel):
     """
     Definition of the default input to the sensitivity calculation.
-    The user is expected to provide some or all of this input during normal usage.
+    The user is expected to provide some or all of this input during normal
+    usage.
     Default values are provided for convenience.
     """
     t_int: ValueWithUnits = ValueWithUnits(value=100, unit="s")
@@ -51,8 +52,10 @@ class DefaultInput(BaseModel):
         """
         At least one of 't_int' and 'sensitivity' should be initialised
         """
-        if field_values["t_int"].value == 0 and field_values["sensitivity"].value == 0:
-            raise ValueError("Please add either a sensitivity or an integration time to your input.")
+        if field_values["t_int"].value == 0 and \
+                field_values["sensitivity"].value == 0:
+            raise ValueError("Please add either a sensitivity or an "
+                             "integration time to your input.")
         return field_values
 
 
@@ -87,7 +90,8 @@ class CalculationInput(DefaultInput, InstrumentSetup):
         """
         Simplify the structure by only returning the value
         """
-        simplified_field_values = {key: val.value for key, val in field_values.items()
+        simplified_field_values = {key: val.value for key, val
+                                   in field_values.items()
                                    if hasattr(val, "value")}
         return simplified_field_values
 
@@ -128,7 +132,11 @@ class SensitivityCalculatorParameters(BaseModel):
 
     def calculator_params(self):
         """
-        Flatten the structure of the object and return properties as a single-level dictionary
+        Flatten the structure of the object and return properties as a
+        single-level dictionary
         """
 
-        return dict((x, y) for x, y in self.calculation_inputs) | dict((x, y) for x, y in self.calculated_params)
+        return dict((x, y) for x, y in
+                    self.calculation_inputs) | dict((x, y)
+                                                    for x, y
+                                                    in self.calculated_params)

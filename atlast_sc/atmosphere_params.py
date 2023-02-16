@@ -1,7 +1,7 @@
 from pathlib import Path
-import astropy.units as u
-from scipy.interpolate import interp2d 
+from scipy.interpolate import interp2d
 import numpy as np
+import astropy.units as u
 
 # Plan is to use the AM model to produce a grid of T_atm and tau_atm
 # This code can then interpolate over that grid to get correct values
@@ -18,8 +18,8 @@ class AtmosphereParams:
     """ Class used to retrieve atmospheric parameters from a model. """
 
     def __init__(self, obs_freq, weather, elevation):
-        """ AtmosphereParams class constructor. 
-        
+        """ AtmosphereParams class constructor.
+
         :param obs_freq: the central observing frequency
         :type obs_freq: astropy.units.Quantity
         :param weather: the precipitable water vapour
@@ -30,12 +30,14 @@ class AtmosphereParams:
         self.elevation = elevation
         self.T_atm_table = np.genfromtxt(T_ATM_PATH)
         self.tau_atm_table = np.genfromtxt(TAU_ATM_PATH)
-        self.interp_T_atm = interp2d(self.T_atm_table[:, 0], WEATHER, self.T_atm_table[:, 1:].T)
-        self.interp_tau_atm = interp2d(self.tau_atm_table[:, 0], WEATHER, self.tau_atm_table[:, 1:].T)
+        self.interp_T_atm = interp2d(self.T_atm_table[:, 0],
+                                     WEATHER, self.T_atm_table[:, 1:].T)
+        self.interp_tau_atm = interp2d(self.tau_atm_table[:, 0],
+                                       WEATHER, self.tau_atm_table[:, 1:].T)
 
     def tau_atm(self):
         """
-        Return atmospheric transmittance tau_atm 
+        Return atmospheric transmittance tau_atm
 
         :return: Atmospheric transmittance
         :rtype: astropy.units.Quantity
@@ -48,7 +50,7 @@ class AtmosphereParams:
 
     def T_atm(self):
         """
-        Return atmospheric temperature T_atm 
+        Return atmospheric temperature T_atm
 
         :return: Atmospheric temperature
         :rtype: astropy.units.Quantity

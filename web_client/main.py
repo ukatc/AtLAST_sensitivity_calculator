@@ -25,31 +25,50 @@ def hello():
 
 @app.route('/documentation')
 def docs():
-    return "To build the html version of the documentation, start from the main package directory and type ``cd docs; make html'. Read the documentation by pointing your browser at ``{}/docs/build/html/index.html".format(app.root_path)
+    return "To build the html version of the documentation, " \
+           "start from the main package directory " \
+           "and type ``cd docs; make html'. Read the documentation" \
+           " by pointing your browser at " \
+           "``{}/docs/build/html/index.html".format(app.root_path)
+
 
 @app.route('/v1/sensitivity')
 def sensitivity():
     app.logger.debug('sensitivity1')
     print('received request', request)
+
     inputs = {}
-    inputs['bandwidth'] = {'value': float(request.args.get('bandwidth')), 'unit':'GHz'}
-    inputs['obs_freq'] = {'value': float(request.args.get('obs_freq')), 'unit':'GHz'}
-    inputs['n_pol'] = {'value': int(request.args.get('npol')), 'unit':'none'}
-    inputs['weather'] = {'value': float(request.args.get('pwv')), 'unit': 'none'}
-    inputs['elevation'] = {'value': float(request.args.get('elevation')), 'unit': 'deg'}
-    # inputs['g'] = {'value': float(request.args.get('g')), 'unit': 'none'}
-    # inputs['surface_rms'] = {'value': 25, 'unit': 'micron'}
-    # inputs['dish_radius'] = {'value': 25, 'unit': 'm'}
-    # inputs['T_amb'] = {'value': float(request.args.get('Tamb')), 'unit': 'K'}
-    # inputs['T_rx'] = {'value': float(request.args.get('Trx')), 'unit': 'K'}
-    # inputs['eta_eff'] = {'value': float(request.args.get('eta_eff')), 'unit': 'none'}
-    # inputs['eta_ill'] = {'value': float(request.args.get('eta_ill')), 'unit': 'none'}
-    # inputs['eta_q'] = {'value': float(request.args.get('eta_g')), 'unit': 'none'}
+    inputs['bandwidth'] = {
+        'value': float(request.args.get('bandwidth')),
+        'unit': 'GHz'
+    }
+    inputs['obs_freq'] = {
+        'value': float(request.args.get('obs_freq')),
+        'unit': 'GHz'
+    }
+    inputs['n_pol'] = {
+        'value': int(request.args.get('npol')),
+        'unit': 'none'
+    }
+    inputs['weather'] = {
+        'value': float(request.args.get('pwv')),
+        'unit': 'none'
+    }
+    inputs['elevation'] = {
+        'value': float(request.args.get('elevation')),
+        'unit': 'deg'
+    }
 
     if 'integration_time' in request.args:
-        inputs['t_int'] = {'value': float(request.args.get('integration_time')), 'unit':'s'}
+        inputs['t_int'] = {
+            'value': float(request.args.get('integration_time')),
+            'unit': 's'
+        }
     if 'sensitivity' in request.args:
-        inputs['sensitivity'] = {'value': float(request.args.get('sensitivity')), 'unit':'mJy'}
+        inputs['sensitivity'] = {
+            'value': float(request.args.get('sensitivity')),
+            'unit': 'mJy'
+        }
 
     app.logger.debug(inputs)
 
@@ -57,7 +76,8 @@ def sensitivity():
     calculator = Calculator(inputs)
 
     result_dict = {}
-    # TODO: the requirement that exactly one of sensitivity and int time should have a value is causing and error.
+    # TODO: the requirement that exactly one of sensitivity and int time
+    #  should have a value is causing and error.
     #       Remove this requirement. It's not adding anything useful.
     if 'integration_time' in request.args:
         result = calculator.calculate_sensitivity(calculator.t_int).to(u.mJy)

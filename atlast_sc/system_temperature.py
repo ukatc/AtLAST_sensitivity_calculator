@@ -3,7 +3,8 @@ import numpy as np
 
 class SystemTemperature:
     """
-    Contains all the relevant temperatures that input to the total system temperature, T_sys
+    Contains all the relevant temperatures that input to the total system
+    temperature, T_sys
     """
 
     def __init__(self, T_rx, T_cmb, T_atm, T_amb, tau_atm):
@@ -16,7 +17,7 @@ class SystemTemperature:
         self.T_amb = T_amb
         self.tau_atm = tau_atm
         self.transmittance = np.exp(-self.tau_atm)
-        self.T_sky = self.T_atm*(1 - self.transmittance) + self.T_cmb
+        self.T_sky = self.T_atm * (1 - self.transmittance) + self.T_cmb
 
     def system_temperature(self, g, eta_eff):
         """
@@ -29,4 +30,7 @@ class SystemTemperature:
         :return: system temperature in Kelvin
         :rtype: astropy.units.Quantity
         """
-        return((1 + g) / eta_eff * self.transmittance) * self.T_rx + (eta_eff * self.T_sky) + ((1 - eta_eff) * self.T_amb)
+        return ((1 + g) / eta_eff * self.transmittance) \
+            * self.T_rx \
+            + (eta_eff * self.T_sky) + \
+            ((1 - eta_eff) * self.T_amb)

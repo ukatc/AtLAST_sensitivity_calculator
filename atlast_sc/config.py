@@ -13,14 +13,16 @@ class Config:
     Methods
     -------
     """
-    def __init__(self, user_input=None, setup='standard', file_path=None, setup_inputs_file=None,
-                 default_inputs_file=None):
+    def __init__(self, user_input=None, setup='standard', file_path=None,
+                 setup_inputs_file=None, default_inputs_file=None):
         """
         Initialises all the required parameters from various input sources
-        setup_input, fixed_input and the default can be found in .yaml files in the configs directory
-        User input is here read as dict but class methods allow reading various file types.
+        setup_input, fixed_input and the default can be found in .yaml files
+        in the configs directory User input is here read as dict but class
+        methods allow reading various file types.
 
-        :param user_input: A dictionary of user inputs of structure {'param_name':{'value': <value>, 'unit': <unit>}}
+        :param user_input: A dictionary of user inputs of structure
+        {'param_name':{'value': <value>, 'unit': <unit>}}
         :type user_input: dict
         :param setup: The required telescope setup. Default value 'standard'
         """
@@ -39,8 +41,9 @@ class Config:
                         inputs_path = constants.BENCHMARKING_JCMT_PATH
                     case constants.BENCHMARKING_APEX:
                         inputs_path = constants.BENCHMARKING_APEX_PATH
-            # TODO: do we want to support custom input? That is, is there a use case whereby the user would want to
-            #       specify their own instrument setup params? I'm guessing no - confirm.
+            # TODO: do we want to support custom input? That is, is there a
+            #  use case whereby the user would want to specify their own
+            #  instrument setup params? I'm guessing no - confirm.
             case constants.CUSTOM_SETUP:
                 inputs_path = file_path
             case _:
@@ -48,11 +51,13 @@ class Config:
                 return
 
         inputs_dict = {}
-        # Build up the dictionary of inputs in the order: defaults, setup, user input
+        # Build up the dictionary of inputs in the order: defaults, setup,
+        # user input
         if default_inputs_file:
             inputs_dict = utils.from_yaml(inputs_path, default_inputs_file)
         if setup_inputs_file:
-            inputs_dict = inputs_dict | utils.from_yaml(inputs_path, setup_inputs_file)
+            inputs_dict = inputs_dict | utils.from_yaml(inputs_path,
+                                                        setup_inputs_file)
         if user_input:
             inputs_dict = inputs_dict | user_input
 

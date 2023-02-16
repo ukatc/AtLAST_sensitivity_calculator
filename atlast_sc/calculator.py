@@ -4,44 +4,58 @@ from atlast_sc.atmosphere_params import AtmosphereParams
 from atlast_sc.sefd import SEFD
 from atlast_sc.system_temperature import SystemTemperature
 from atlast_sc.efficiencies import Efficiencies
-from atlast_sc.inputs import CalculatedParams, SensitivityCalculatorParameters, InstrumentSetup
+from atlast_sc.inputs import CalculatedParams
+from atlast_sc.inputs import SensitivityCalculatorParameters
 from atlast_sc.config import Config
 
 
 class Calculator:
-    """ Calculator class that does the core calculation to get the output sensitivity or integration time. """
-    def __init__(self, inputs=None):
+    """
+    Calculator class that provides an interface to the main
+    calculator functionality and performs the core calculations
+    to determine the output sensitivity or integration time.
+    """
 
+    def __init__(self, inputs=None):
         # TODO: provide accessor methods for properties
         # TODO: get a list of properties that are editable and provide setters
 
         config = Config(inputs)
-        # Store a the input parameters used to initialise the calculator
+        # Store the input parameters used to initialise the calculator
         self._calculator_inputs = config.calculation_inputs
-        # Use the input parameters to calculate parameters used in the calculation
+        # Use the input values to calculate the parameters
+        # used in the calculation
         calculated_params = self._calculate_parameters(self._calculator_inputs)
 
-        # Store all the inputs and calculated params used in the sensitivity and int time calculations
+        # Store all the inputs and calculated params used
+        # in the sensitivity and integration time calculations
         self._calculator_params = \
-            SensitivityCalculatorParameters(calculation_inputs=self._calculator_inputs,
-                                            calculated_params=calculated_params)
+            SensitivityCalculatorParameters(
+                calculation_inputs=self._calculator_inputs,
+                calculated_params=calculated_params
+            )
 
     def calculate_sensitivity(self, t_int):
         """
-        Return sensitivity of telescope (Jansky) for a given integration time t_int
+        Return sensitivity of telescope (Jansky) for a
+        given integration time t_int
 
-        :param t_int: integration time 
+        :param t_int: integration time
         :type t_int: astropy.units.Quantity
         :return: sensitivity in Janksy
         :rtype: astropy.units.Quantity
         """
         sensitivity = (
-            self._calculator_params.calculated_params.sefd
-            / (self._calculator_params.calculated_params.eta_s
-               * np.sqrt(self._calculator_params.calculation_inputs.n_pol
-                         * self._calculator_params.calculation_inputs.bandwidth * t_int))
-            * np.exp(self._calculator_params.calculated_params.tau_atm)
+                self.calculator_params['sefd']
+                / (self.calculator_params['eta_s']
+                   * np.sqrt(
+                    self.calculator_params['n_pol']
+                    * self.calculator_params['bandwidth']
+                    * t_int
+                ))
+                * np.exp(self.calculator_params['tau_atm'])
         )
+
         return sensitivity.to(u.Jy)
 
     def calculate_t_integration(self, sensitivity):
@@ -54,13 +68,11 @@ class Calculator:
         :rtype: astropy.units.Quantity
         """
 
-        # TODO: is it better to access these params as a standard dict, or would it be better to figure out a clean
-        #       and consistent way to use the Pydantic model?
-        t_int = ((self._calculator_params.calculated_params.sefd
-                  * np.exp(self._calculator_params.calculated_params.tau_atm))
-                 / (sensitivity * self._calculator_params.calculated_params.eta_s)) ** 2 / \
-                (self._calculator_params.calculation_inputs.n_pol
-                 * self._calculator_params.calculation_inputs.bandwidth)
+        t_int = ((self.calculator_params['sefd']
+                  * np.exp(self.calculator_params['tau_atm']))
+                 / (sensitivity * self.calculator_params['eta_s'])) ** 2 \
+            / (self.calculator_params['n_pol']
+               * self.calculator_params['bandwidth'])
 
         return t_int.to(u.s)
 
@@ -70,7 +82,8 @@ class Calculator:
 
     @t_int.setter
     def t_int(self, value):
-        # TODO: Setting this value in the on the inputs feels wrong. This may be a calculated param
+        # TODO: Setting this value in the on the inputs feels wrong.
+        #  This may be a calculated param
         self._calculator_params.calculation_inputs.t_int = value
 
     @property
@@ -79,13 +92,15 @@ class Calculator:
 
     @sensitivity.setter
     def sensitivity(self, value):
-        # TODO: Setting this value in the on the inputs feels wrong. This may be a calculated param
+        # TODO: Setting this value in the on the inputs feels wrong.
+        #  This may be a calculated param
         self._calculator_params.calculation_inputs.sensitivity = value
 
     @property
     def calculator_params(self):
         """
-        Parameters used to perform the calculation (input params and calculated params)
+        Parameters used to perform the calculation
+        (input params and calculated params)
         """
         return self._calculator_params.calculator_params()
 
@@ -99,20 +114,22 @@ class Calculator:
     @classmethod
     def _calculate_parameters(cls, calculation_inputs):
         """
-        Performs the calculations required to produce the final set of parameters
-        required for the sensitivity calculation,
-        and outputs the sensitivity / integration time as required.
+        Performs the calculations required to produce the
+        final set of parameters required for the sensitivity
+        calculation, and outputs the sensitivity or integration
+        time as required.
 
-        :return: 
+        :return:
         """
 
         # TODO: can do better with this...
 
         # Perform atmospheric model calculation
-        atm = AtmosphereParams( 
+        atm = AtmosphereParams(
             calculation_inputs.obs_freq,
             calculation_inputs.weather,
-            calculation_inputs.elevation)
+            calculation_inputs.elevation
+        )
 
         T_atm = atm.T_atm()
         tau_atm = atm.tau_atm()
@@ -124,9 +141,11 @@ class Calculator:
             calculation_inputs.eta_spill,
             calculation_inputs.eta_block,
             calculation_inputs.eta_pol,
-            calculation_inputs.eta_r)
+            calculation_inputs.eta_r
+        )
 
-        eta_a = eta.eta_a(calculation_inputs.obs_freq, calculation_inputs.surface_rms)
+        eta_a = eta.eta_a(calculation_inputs.obs_freq,
+                          calculation_inputs.surface_rms)
         eta_s = eta.eta_s()
 
         # Calculate the system temperature
@@ -136,9 +155,9 @@ class Calculator:
             T_atm,
             calculation_inputs.T_amb,
             tau_atm
-            ).system_temperature(
-                calculation_inputs.g,
-                calculation_inputs.eta_eff)
+        ).system_temperature(
+            calculation_inputs.g,
+            calculation_inputs.eta_eff)
 
         # Calculate the dish area
         area = np.pi * calculation_inputs.dish_radius ** 2

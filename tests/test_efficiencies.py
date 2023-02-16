@@ -31,14 +31,13 @@ def test_eta_a():
 
 def test_ones():
     """
-    can write a test here that if all efficiencies are set to 1, the resulting efficiency should be 1
+    can write a test here that if all efficiencies are set to 1,
+    the resulting efficiency should be 1
     """
 
 
 def test_zero():
     """
-    can write a test here that if any efficience is 0, the resulting efficiency should be zero
+    can write a test here that if any efficience is 0, the resulting
+    efficiency should be zero
     """
-    
-
-    
