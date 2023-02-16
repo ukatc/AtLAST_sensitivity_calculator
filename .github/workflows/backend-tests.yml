@@ -31,4 +31,5 @@ jobs:
     - name: Test with pytest
       run: |
         $CONDA/bin/conda env update --file environment.yml
+        $CONDA/bin/conda activate sens-calc
         $CONDA/bin/pytest
