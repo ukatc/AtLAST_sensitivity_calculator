@@ -4,8 +4,8 @@ from atlast_sc.atmosphere_params import AtmosphereParams
 from atlast_sc.sefd import SEFD
 from atlast_sc.system_temperature import SystemTemperature
 from atlast_sc.efficiencies import Efficiencies
-from atlast_sc.inputs import CalculatedParams
-from atlast_sc.inputs import SensitivityCalculatorParameters
+from atlast_sc.models import CalculatedParams
+from atlast_sc.models import SensitivityCalculatorParameters
 from atlast_sc.config import Config
 
 

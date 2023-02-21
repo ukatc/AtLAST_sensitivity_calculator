@@ -1,4 +1,4 @@
-from atlast_sc import inputs
+from atlast_sc import models
 from atlast_sc import constants
 from atlast_sc import utils
 
@@ -61,7 +61,7 @@ class Config:
         if user_input:
             inputs_dict = inputs_dict | user_input
 
-        self._calculation_inputs = inputs.CalculationInput(**inputs_dict)
+        self._calculation_inputs = models.CalculationInput(**inputs_dict)
 
     @property
     def calculation_inputs(self):
