@@ -16,11 +16,13 @@ class Calculator:
     to determine the output sensitivity or integration time.
     """
 
-    def __init__(self, inputs=None):
+    def __init__(self, inputs=None, setup='standard', file_path=None,
+                 setup_inputs_file=None, default_inputs_file=None):
         # TODO: provide accessor methods for properties
         # TODO: get a list of properties that are editable and provide setters
 
-        config = Config(inputs)
+        config = Config(inputs, setup, file_path, setup_inputs_file,
+                        default_inputs_file)
         # Store the input parameters used to initialise the calculator
         self._calculator_inputs = config.calculation_inputs
         # Use the input values to calculate the parameters
