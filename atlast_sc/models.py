@@ -31,12 +31,11 @@ class ValueWithoutUnits(BaseModel):
     value: float
 
 
-class DefaultInput(BaseModel):
+class UserInput(BaseModel):
     """
     Definition of the default input to the sensitivity calculation.
     The user is expected to provide some or all of this input during normal
-    usage.
-    Default values are provided for convenience.
+    usage. Default values are provided for convenience.
     """
     t_int: ValueWithUnits = ValueWithUnits(value=100, unit="s")
     sensitivity: ValueWithUnits = ValueWithUnits(value=0.3, unit="mJy")
@@ -75,12 +74,12 @@ class InstrumentSetup(BaseModel):
     eta_r: ValueWithoutUnits = ValueWithoutUnits(value=1)
 
 
-class CalculationInput(DefaultInput, InstrumentSetup):
+class CalculationInput(UserInput, InstrumentSetup):
     """
     Input parameters used for the sensitivity calculation
     """
 
-    default_input: DefaultInput = DefaultInput()
+    user_input: UserInput = UserInput()
     instrument_setup: InstrumentSetup = InstrumentSetup()
     T_cmb: ValueWithUnits = ValueWithUnits(value=2.73, unit="K")
 

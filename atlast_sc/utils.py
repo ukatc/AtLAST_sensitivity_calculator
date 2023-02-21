@@ -1,4 +1,5 @@
 import os
+import functools
 import json
 from yaml import load, Loader
 
@@ -58,3 +59,34 @@ def to_yaml(params, path):
             else:
                 # TODO: do we need 'none' for unit?
                 f.write(f"{key: <16}: {{value: {value: >10}, unit: none}} \n")
+
+
+def update_input_param(func):
+    # If the new value is different from the current value,
+    # recalculate the other parameters used in the calculation
+
+    @functools.wraps(func)
+    def update_param(*args, **kwargs):
+        obj = args[0]
+        value = args[1]
+        attribute = getattr(obj, func.__name__)
+
+        # Make sure the new value is of the correct type
+        # TODO: this assert might not be necessary if I can enforce
+        #       data validation at the point where the parameters is set
+        #       to the new value
+        assert isinstance(value, type(attribute))
+        # Determine if the old and new values differ
+        dirty = (attribute != value)
+
+        # Update the parameter
+        func(*args, **kwargs)
+
+        # Recalculate other parameters, if necessary
+        if dirty:
+            # TODO: be intelligent about this - only update affected params?
+            # TODO: check the data validation is happening when this func is
+            #  called
+            obj.generate_calculation_params()
+
+    return update_param
