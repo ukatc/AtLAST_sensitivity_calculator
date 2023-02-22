@@ -1,27 +1,37 @@
 from pydantic import BaseModel, root_validator
 from astropy.units import Unit, Quantity
+from atlast_sc.exceptions import UnitException, ValueOutOfRangeException,\
+    ValueNotAllowedException
+from atlast_sc.data import IntegrationTime, Sensitivity, Bandwidth, \
+    ObsFrequency, NPol, Weather, Elevation
 
 
 class ValueWithUnits(BaseModel):
     value: float
     unit: str
+    quantity: Quantity = None
 
     @root_validator()
     @classmethod
-    def to_quantity(cls, values):
+    def validate_fields(cls, field_values):
+        # TODO: this validation is happening twice for user input. Once for
+        #  the defaults, and then again for the user-supplied values.
+        #  Can we prevent validation of defaults?
         """
         Validate the unit and convert the value to an astropy Quantity object
         """
 
         # Ensure the unit string can be converted to a valid astropy Unit
         try:
-            Unit(values["unit"])
+            Unit(field_values["unit"])
         except ValueError as e:
             raise ValueError(e)
 
         # Convert the value to an astropy Quantity object
-        values["value"] = values["value"] * Unit(values["unit"])
-        return values
+        field_values["quantity"] = \
+            field_values["value"] * Unit(field_values["unit"])
+
+        return field_values
 
     class Config:
         arbitrary_types_allowed = True
@@ -37,24 +47,81 @@ class UserInput(BaseModel):
     The user is expected to provide some or all of this input during normal
     usage. Default values are provided for convenience.
     """
-    t_int: ValueWithUnits = ValueWithUnits(value=100, unit="s")
-    sensitivity: ValueWithUnits = ValueWithUnits(value=0.3, unit="mJy")
-    bandwidth: ValueWithUnits = ValueWithUnits(value=7.5, unit="GHz")
-    obs_freq: ValueWithUnits = ValueWithUnits(value=100, unit="GHz")
-    n_pol: ValueWithoutUnits = ValueWithoutUnits(value=2)
-    weather: ValueWithoutUnits = ValueWithoutUnits(value=50)
-    elevation: ValueWithUnits = ValueWithUnits(value=30, unit="deg")
+
+    t_int: ValueWithUnits = \
+        ValueWithUnits(value=IntegrationTime.DEFAULT_VALUE.value,
+                       unit=IntegrationTime.DEFAULT_UNIT.value)
+    sensitivity: ValueWithUnits = \
+        ValueWithUnits(value=Sensitivity.DEFAULT_VALUE.value,
+                       unit=Sensitivity.DEFAULT_UNIT.value)
+    bandwidth: ValueWithUnits = \
+        ValueWithUnits(value=Bandwidth.DEFAULT_VALUE.value,
+                       unit=Bandwidth.DEFAULT_UNIT.value)
+    obs_freq: ValueWithUnits = \
+        ValueWithUnits(value=ObsFrequency.DEFAULT_VALUE.value,
+                       unit=ObsFrequency.DEFAULT_UNIT.value)
+    n_pol: ValueWithoutUnits = \
+        ValueWithoutUnits(value=NPol.DEFAULT_VALUE.value)
+    weather: ValueWithoutUnits = \
+        ValueWithoutUnits(value=Weather.DEFAULT_VALUE.value)
+    elevation: ValueWithUnits = \
+        ValueWithUnits(value=Elevation.DEFAULT_VALUE.value,
+                       unit=Elevation.DEFAULT_UNIT.value)
 
     @root_validator()
     @classmethod
-    def validate_one_field_has_value(cls, field_values):
-        """
-        At least one of 't_int' and 'sensitivity' should be initialised
-        """
+    def validate_fields(cls, field_values):
+
+        # Validate that at least one of 't_int' and 'sensitivity'
+        # has been initialised
         if field_values["t_int"].value == 0 and \
                 field_values["sensitivity"].value == 0:
             raise ValueError("Please add either a sensitivity or an "
                              "integration time to your input.")
+
+        # Validate units and values
+        for key, val in field_values.items():
+            # TODO: this is clunky. Can it be improved?
+            match key:
+                case 't_int':
+                    data_type = IntegrationTime
+                case 'sensitivity':
+                    data_type = Sensitivity
+                case 'bandwidth':
+                    data_type = Bandwidth
+                case 'obs_freq':
+                    data_type = ObsFrequency
+                case 'n_pol':
+                    data_type = NPol
+                case 'weather':
+                    data_type = Weather
+                case 'elevation':
+                    data_type = Elevation
+                case _:
+                    # we don't care; move on
+                    continue
+            print(data_type)
+            # TODO: see here on reusing validators from outer scope
+            #  https://docs.pydantic.dev/usage/validators/#reuse-validators
+            # # Validate units on values with units
+            # if isinstance(val, ValueWithUnits):
+            #     try:
+            #         cls.validate_units(val.units, data_type)
+            #     except UnitException as e:
+            #         raise e
+            #
+            # # Validate value ia allowed
+            # try:
+            #     validate_allowed_values(val.value, data_type)
+            # except ValueNotAllowedException as e:
+            #     raise e
+            #
+            # # Validate value is in permitted range
+            # try:
+            #     validate_in_range(val.value, data_type)
+            # except ValueOutOfRangeException as e:
+            #     raise e
+
         return field_values
 
 
@@ -65,7 +132,8 @@ class InstrumentSetup(BaseModel):
     T_amb: ValueWithUnits = ValueWithUnits(value=270, unit="K")
     T_rx: ValueWithUnits = ValueWithUnits(value=50, unit="K")
     eta_eff: ValueWithoutUnits = ValueWithoutUnits(value=0.80)
-    # TODO: Docs say that eta_ill "defaults to value 0.63") What's the correct default?
+    # TODO: Docs say that eta_ill "defaults to value 0.63") What's the correct
+    #  default?
     eta_ill: ValueWithoutUnits = ValueWithoutUnits(value=0.80)
     # TODO: What is eta_q and what default value should it have?
     eta_q: ValueWithoutUnits = ValueWithoutUnits(value=0.96)
@@ -88,11 +156,21 @@ class CalculationInput(UserInput, InstrumentSetup):
     @classmethod
     def extract_values(cls, field_values):
         """
-        Simplify the structure by only returning the value
+        Simplify the structure by only returning the value or quantity as
+        appropriate
         """
-        simplified_field_values = {key: val.value for key, val
-                                   in field_values.items()
-                                   if hasattr(val, "value")}
+        simplified_field_values = {}
+        for key, val in field_values.items():
+            # use the quantity, if it exists
+            if hasattr(val, "quantity"):
+                simplified_field_values[key] = val.quantity
+            # or just use the unit-less value
+            elif hasattr(val, "value"):
+                simplified_field_values[key] = val.value
+            else:
+                # do nothing with this attribute
+                continue
+
         return simplified_field_values
 
 
@@ -140,3 +218,89 @@ class SensitivityCalculatorParameters(BaseModel):
                     self.calculation_inputs) | dict((x, y)
                                                     for x, y
                                                     in self.calculated_params)
+
+
+def validate_units(unit, data_type):
+
+    # Don't need to check the units if the data type is unit-less
+    if not hasattr(data_type, 'UNITS'):
+        return
+
+    if unit not in data_type.UNITS.value:
+        raise UnitException(data_type.PARAM_LABEL.value, data_type.UNITS.value)
+
+
+def validate_in_range(value, data_type):
+
+    # Don't need to check the value is in the permitted range if
+    #   there is no range specified
+    if not hasattr(data_type, 'LOWER_VALUE'):
+        return
+
+    # Check there's also an UPPER_VALUE
+    assert hasattr(data_type, 'UPPER_VALUE')
+
+    if not (data_type.LOWER_VALUE.value <=
+            value <=
+            data_type.UPPER_VALUE.value):
+        raise ValueOutOfRangeException(data_type.PARAM_LABEL.value,
+                                       data_type.LOWER_VALUE.value,
+                                       data_type.UPPER_VALUE.value,
+                                       data_type.UNITS.value)
+
+
+def validate_allowed_values(value, data_type):
+
+    # Don't need to check the value is allowed if there are no
+    # allowed values specified
+    if not hasattr(data_type, 'ALLOWED_VALUES'):
+        return
+
+    if value not in data_type.ALLOWED_VALUES:
+        raise ValueNotAllowedException(data_type.PARAM_LABEL,
+                                       data_type.ALLOWED_VALUES,
+                                       data_type.UNITS)
+# class ModelValidator:
+#
+#     @staticmethod
+#     def validate_units(unit, data_type):
+#
+#         # Don't need to check the units if the data type is unit-less
+#         if not hasattr(data_type, 'UNITS'):
+#             return
+#
+#         if unit not in data_type.UNITS.value:
+#             raise UnitException(data_type.PARAM_LABEL.value,
+#             data_type.UNITS.value)
+#
+#     @staticmethod
+#     def validate_in_range(value, data_type):
+#
+#         # Don't need to check the value is in the permitted range if
+#         #   there is no range specified
+#         if not hasattr(data_type, 'LOWER_VALUE'):
+#             return
+#
+#         # Check there's also an UPPER_VALUE
+#         assert hasattr(data_type, 'UPPER_VALUE')
+#
+#         if not (data_type.LOWER_VALUE.value <=
+#                 value <=
+#                 data_type.UPPER_VALUE.value):
+#             raise ValueOutOfRangeException(data_type.PARAM_LABEL.value,
+#                                            data_type.LOWER_VALUE.value,
+#                                            data_type.UPPER_VALUE.value,
+#                                            data_type.UNITS.value)
+#
+#     @staticmethod
+#     def validate_allowed_values(value, data_type):
+#
+#         # Don't need to check the value is allowed if there are no
+#         # allowed values specified
+#         if not hasattr(data_type, 'ALLOWED_VALUES'):
+#             return
+#
+#         if value not in data_type.ALLOWED_VALUES:
+#             raise ValueNotAllowedException(data_type.PARAM_LABEL,
+#                                            data_type.ALLOWED_VALUES,
+#                                            data_type.UNITS)

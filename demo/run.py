@@ -9,6 +9,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 user_input = utils.from_yaml('input_data', 'user_inputs.yaml')
 # Initialise the Calculator with user inputs dictionary
 calculator = Calculator(user_input)
+# calculator = Calculator()
 
 # Calculate sensitivity or t_int depending on input
 print("-----------")

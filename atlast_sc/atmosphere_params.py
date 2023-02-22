@@ -35,7 +35,6 @@ class AtmosphereParams:
         #       /scipy.interpolate.interp2d.html
         self.interp_T_atm = interp2d(self.T_atm_table[:, 0],
                                      WEATHER, self.T_atm_table[:, 1:].T)
-        print(self.interp_T_atm)
         self.interp_tau_atm = interp2d(self.tau_atm_table[:, 0],
                                        WEATHER, self.tau_atm_table[:, 1:].T)
 
