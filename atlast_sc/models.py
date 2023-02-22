@@ -65,6 +65,7 @@ class InstrumentSetup(BaseModel):
     T_amb: ValueWithUnits = ValueWithUnits(value=270, unit="K")
     T_rx: ValueWithUnits = ValueWithUnits(value=50, unit="K")
     eta_eff: ValueWithoutUnits = ValueWithoutUnits(value=0.80)
+    # TODO: Docs say that eta_ill "defaults to value 0.63") What's the correct default?
     eta_ill: ValueWithoutUnits = ValueWithoutUnits(value=0.80)
     # TODO: What is eta_q and what default value should it have?
     eta_q: ValueWithoutUnits = ValueWithoutUnits(value=0.96)
