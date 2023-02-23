@@ -33,7 +33,8 @@ class ValueOutOfRangeException(ValueError):
             if message\
             else f"The parameter '{parameter}' " \
                  f"must be in the range {lower_value} " \
-                 f"to {upper_value}{'.' if not units else ' ' + units + '.'}"
+                 f"to {upper_value}" \
+                 f"{'.' if not units else ' ' + str(units) + '.'}"
 
         super().__init__(self.message)
 
@@ -52,6 +53,6 @@ class ValueNotAllowedException(ValueError):
             if message\
             else f"The parameter '{parameter}' " \
                  f"must have one of the following values: {allowed_values} " \
-                 f"{'.' if not units else ' ' + units + '.'}"
+                 f"{'.' if not units else ' ' + str(units) + '.'}"
 
         super().__init__(self.message)

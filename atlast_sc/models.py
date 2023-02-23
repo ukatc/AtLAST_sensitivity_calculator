@@ -26,32 +26,32 @@ def validate_in_range(value, param, data_type):
 
     # Don't need to check the value is in the permitted range if
     #   there is no range specified
-    if not hasattr(data_type, 'LOWER_VALUE'):
+    if 'LOWER_VALUE' not in data_type:
         return
 
     # Check there's also an UPPER_VALUE
-    assert hasattr(data_type, 'UPPER_VALUE')
+    assert 'UPPER_VALUE' in data_type
 
-    if not (data_type.LOWER_VALUE <=
+    if not (data_type['LOWER_VALUE'] <=
             value <=
-            data_type.UPPER_VALUE):
+            data_type['UPPER_VALUE']):
         raise ValueOutOfRangeException(param,
-                                       data_type.LOWER_VALUE,
-                                       data_type.UPPER_VALUE,
-                                       data_type.UNITS)
+                                       data_type['LOWER_VALUE'],
+                                       data_type['UPPER_VALUE'],
+                                       data_type['UNITS'])
 
 
 def validate_allowed_values(value, param, data_type):
 
     # Don't need to check the value is allowed if there are no
     # allowed values specified
-    if not hasattr(data_type, 'ALLOWED_VALUES'):
+    if 'ALLOWED_VALUES' not in data_type:
         return
 
-    if value not in data_type.ALLOWED_VALUES:
+    if value not in data_type['ALLOWED_VALUES']:
         raise ValueNotAllowedException(param,
-                                       data_type.ALLOWED_VALUES,
-                                       data_type.UNITS)
+                                       data_type['ALLOWED_VALUES'],
+                                       data_type['UNITS'])
 
 
 class ValueWithUnits(BaseModel):
@@ -138,6 +138,8 @@ class UserInput(BaseModel):
             #   is happening more than once, and also why it contains these
             #   unexpected parameters
             try:
+                if key == 'elevation':
+                    print('about to validate elevation')
                 # Get the dictionary representation of the data type
                 # corresponding to the current field being validated
                 data_type_dict = param_data_type_dicts[key]

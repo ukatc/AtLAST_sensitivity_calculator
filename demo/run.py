@@ -19,7 +19,7 @@ print("-----------")
 # Calculate the sensitivity for a given integration time
 # (here, specified in user_input.yaml)
 # calculator.bandwidth = 10.5*u.GHz
-# calculator.elevation = 10*u.deg
+# calculator.elevation = 3*u.deg
 # calculator.obs_frequency = 1*u.GHz
 # print('using params', calculator.calculation_params)
 
