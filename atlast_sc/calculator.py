@@ -187,8 +187,17 @@ class Calculator:
         """
         Parameters used to perform the calculation
         (input params and calculated params)
+        This function returns the parameters as a
+        flattened dictionary for convenience
         """
         return self._calculation_params.calculator_params()
+
+    @property
+    def calculation_inputs(self):
+        """
+        The user inputs to the calculation
+        """
+        return self._calculation_params.calculation_inputs
 
     @staticmethod
     def _calculate_parameters(calculation_inputs):

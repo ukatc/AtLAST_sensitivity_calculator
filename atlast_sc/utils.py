@@ -2,6 +2,8 @@ import os
 import functools
 import json
 from yaml import load, Loader
+from astropy.units import Quantity
+from atlast_sc.models import ValueWithUnits, ValueWithoutUnits
 
 
 def from_yaml(path, file_name):
@@ -72,10 +74,21 @@ def update_input_param(func):
         attribute = getattr(obj, func.__name__)
 
         # Make sure the new value is of the correct type
-        # TODO: this assert might not be necessary if I can enforce
-        #       data validation at the point where the parameters is set
-        #       to the new value
         assert isinstance(value, type(attribute))
+
+        # Validate the new value. First need to create a model of the
+        # appropriate type - ValueWithUnits, or ValueWithoutUnits
+        if isinstance(value, Quantity):
+            val_to_validate = \
+                ValueWithUnits(value=value.value, unit=str(value.unit))
+        else:
+            val_to_validate = ValueWithoutUnits(value=value.value)
+        try:
+            obj.calculation_inputs.validate_update(func.__name__,
+                                                   val_to_validate)
+        except ValueError as e:
+            raise e
+
         # Determine if the old and new values differ
         dirty = (attribute != value)
 

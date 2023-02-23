@@ -14,12 +14,11 @@ from atlast_sc.data import IntegrationTime, Sensitivity, Bandwidth, \
 def validate_units(unit, param, data_type):
 
     # Don't need to check the units if the data type is unit-less
-    if not hasattr(data_type, 'UNITS'):
+    if 'UNITS' not in data_type:
         return
 
-    print('here and about to validate units...')
-    if unit not in data_type.UNITS:
-        raise UnitException(param, data_type.UNITS)
+    if unit not in data_type['UNITS']:
+        raise UnitException(param, data_type['UNITS'])
 
 
 def validate_in_range(value, param, data_type):
@@ -118,14 +117,18 @@ class UserInput(BaseModel):
 
     @root_validator()
     @classmethod
-    def validate_fields(cls, field_values):
-
+    def validate_t_int_or_sens_liinitiased(cls, field_values):
         # Validate that at least one of 't_int' and 'sensitivity'
         # has been initialised
         if field_values["t_int"].value == 0 and \
                 field_values["sensitivity"].value == 0:
             raise ValueError("Please add either a sensitivity or an "
                              "integration time to your input.")
+        return field_values
+
+    @root_validator()
+    @classmethod
+    def validate_fields(cls, field_values):
 
         print('field values:', field_values)
 
@@ -138,8 +141,6 @@ class UserInput(BaseModel):
             #   is happening more than once, and also why it contains these
             #   unexpected parameters
             try:
-                if key == 'elevation':
-                    print('about to validate elevation')
                 # Get the dictionary representation of the data type
                 # corresponding to the current field being validated
                 data_type_dict = param_data_type_dicts[key]
@@ -166,6 +167,21 @@ class UserInput(BaseModel):
                 raise e
 
         return field_values
+
+    def validate_update(self, value_to_update, new_value):
+        """
+        Custom validator called manually (i.e., not as part of the Pydantic
+        framework), e.g., when one of the user input values is updated.
+        """
+        # TODO: will probably move this so that InstrumentSetup can call
+        #       it and raise an error if an attempt is made to update one of the
+        #       non-updatable fields
+
+        try:
+            self.validate_fields({value_to_update: new_value})
+        except ValueError as e:
+            raise e
+        return self
 
 
 class InstrumentSetup(BaseModel):
