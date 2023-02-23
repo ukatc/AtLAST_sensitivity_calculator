@@ -66,7 +66,7 @@ class Config:
         self._calculation_inputs = models.CalculationInput(**inputs_dict)
 
         # Make a deep copy of the calculation inputs to enable the
-        # calculator to be reset to it's initial setup
+        # calculator to be reset to its initial setup
         self._original_inputs = copy.deepcopy(self._calculation_inputs)
 
     @property

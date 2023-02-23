@@ -2,8 +2,56 @@ from pydantic import BaseModel, root_validator
 from astropy.units import Unit, Quantity
 from atlast_sc.exceptions import UnitException, ValueOutOfRangeException,\
     ValueNotAllowedException
+from atlast_sc.data import param_data_type_dicts
 from atlast_sc.data import IntegrationTime, Sensitivity, Bandwidth, \
     ObsFrequency, NPol, Weather, Elevation
+
+
+################################
+# Custom validation functions  #
+################################
+
+def validate_units(unit, param, data_type):
+
+    # Don't need to check the units if the data type is unit-less
+    if not hasattr(data_type, 'UNITS'):
+        return
+
+    print('here and about to validate units...')
+    if unit not in data_type.UNITS:
+        raise UnitException(param, data_type.UNITS)
+
+
+def validate_in_range(value, param, data_type):
+
+    # Don't need to check the value is in the permitted range if
+    #   there is no range specified
+    if not hasattr(data_type, 'LOWER_VALUE'):
+        return
+
+    # Check there's also an UPPER_VALUE
+    assert hasattr(data_type, 'UPPER_VALUE')
+
+    if not (data_type.LOWER_VALUE <=
+            value <=
+            data_type.UPPER_VALUE):
+        raise ValueOutOfRangeException(param,
+                                       data_type.LOWER_VALUE,
+                                       data_type.UPPER_VALUE,
+                                       data_type.UNITS)
+
+
+def validate_allowed_values(value, param, data_type):
+
+    # Don't need to check the value is allowed if there are no
+    # allowed values specified
+    if not hasattr(data_type, 'ALLOWED_VALUES'):
+        return
+
+    if value not in data_type.ALLOWED_VALUES:
+        raise ValueNotAllowedException(param,
+                                       data_type.ALLOWED_VALUES,
+                                       data_type.UNITS)
 
 
 class ValueWithUnits(BaseModel):
@@ -20,7 +68,7 @@ class ValueWithUnits(BaseModel):
         """
         Validate the unit and convert the value to an astropy Quantity object
         """
-
+        print('validating field values', field_values)
         # Ensure the unit string can be converted to a valid astropy Unit
         try:
             Unit(field_values["unit"])
@@ -79,48 +127,41 @@ class UserInput(BaseModel):
             raise ValueError("Please add either a sensitivity or an "
                              "integration time to your input.")
 
+        print('field values:', field_values)
+
         # Validate units and values
         for key, val in field_values.items():
-            # TODO: this is clunky. Can it be improved?
-            match key:
-                case 't_int':
-                    data_type = IntegrationTime
-                case 'sensitivity':
-                    data_type = Sensitivity
-                case 'bandwidth':
-                    data_type = Bandwidth
-                case 'obs_freq':
-                    data_type = ObsFrequency
-                case 'n_pol':
-                    data_type = NPol
-                case 'weather':
-                    data_type = Weather
-                case 'elevation':
-                    data_type = Elevation
-                case _:
-                    # we don't care; move on
-                    continue
-            print(data_type)
-            # TODO: see here on reusing validators from outer scope
-            #  https://docs.pydantic.dev/usage/validators/#reuse-validators
-            # # Validate units on values with units
-            # if isinstance(val, ValueWithUnits):
-            #     try:
-            #         cls.validate_units(val.units, data_type)
-            #     except UnitException as e:
-            #         raise e
-            #
-            # # Validate value ia allowed
-            # try:
-            #     validate_allowed_values(val.value, data_type)
-            # except ValueNotAllowedException as e:
-            #     raise e
-            #
-            # # Validate value is in permitted range
-            # try:
-            #     validate_in_range(val.value, data_type)
-            # except ValueOutOfRangeException as e:
-            #     raise e
+            # TODO: Figure out what's going on here. The try-except is required
+            #   because this validation is happening twice, and the second
+            #   time round, field_values contains fields from the
+            #   InstrumentSetup model. Need to understand why the validation
+            #   is happening more than once, and also why it contains these
+            #   unexpected parameters
+            try:
+                # Get the dictionary representation of the data type
+                # corresponding to the current field being validated
+                data_type_dict = param_data_type_dicts[key]
+            except KeyError:
+                continue
+
+            # Validate units on values with units
+            if isinstance(val, ValueWithUnits):
+                try:
+                    validate_units(val.unit, key, data_type_dict)
+                except UnitException as e:
+                    raise e
+
+            # Validate value ia allowed
+            try:
+                validate_allowed_values(val.value, key, data_type_dict)
+            except ValueNotAllowedException as e:
+                raise e
+
+            # Validate value is in permitted range
+            try:
+                validate_in_range(val.value, key, data_type_dict)
+            except ValueOutOfRangeException as e:
+                raise e
 
         return field_values
 
@@ -128,8 +169,11 @@ class UserInput(BaseModel):
 class InstrumentSetup(BaseModel):
     g: ValueWithoutUnits = ValueWithoutUnits(value=1)
     surface_rms: ValueWithUnits = ValueWithUnits(value=25, unit="micron")
+    # TODO: might want to all users to modify radius
     dish_radius: ValueWithUnits = ValueWithUnits(value=25, unit="m")
     T_amb: ValueWithUnits = ValueWithUnits(value=270, unit="K")
+    # TODO: might want to allow users to modify T_rx
+    # TODO: T_rx should be calculated, not set (dependend of obs_freq))
     T_rx: ValueWithUnits = ValueWithUnits(value=50, unit="K")
     eta_eff: ValueWithoutUnits = ValueWithoutUnits(value=0.80)
     # TODO: Docs say that eta_ill "defaults to value 0.63") What's the correct
@@ -218,89 +262,3 @@ class SensitivityCalculatorParameters(BaseModel):
                     self.calculation_inputs) | dict((x, y)
                                                     for x, y
                                                     in self.calculated_params)
-
-
-def validate_units(unit, data_type):
-
-    # Don't need to check the units if the data type is unit-less
-    if not hasattr(data_type, 'UNITS'):
-        return
-
-    if unit not in data_type.UNITS.value:
-        raise UnitException(data_type.PARAM_LABEL.value, data_type.UNITS.value)
-
-
-def validate_in_range(value, data_type):
-
-    # Don't need to check the value is in the permitted range if
-    #   there is no range specified
-    if not hasattr(data_type, 'LOWER_VALUE'):
-        return
-
-    # Check there's also an UPPER_VALUE
-    assert hasattr(data_type, 'UPPER_VALUE')
-
-    if not (data_type.LOWER_VALUE.value <=
-            value <=
-            data_type.UPPER_VALUE.value):
-        raise ValueOutOfRangeException(data_type.PARAM_LABEL.value,
-                                       data_type.LOWER_VALUE.value,
-                                       data_type.UPPER_VALUE.value,
-                                       data_type.UNITS.value)
-
-
-def validate_allowed_values(value, data_type):
-
-    # Don't need to check the value is allowed if there are no
-    # allowed values specified
-    if not hasattr(data_type, 'ALLOWED_VALUES'):
-        return
-
-    if value not in data_type.ALLOWED_VALUES:
-        raise ValueNotAllowedException(data_type.PARAM_LABEL,
-                                       data_type.ALLOWED_VALUES,
-                                       data_type.UNITS)
-# class ModelValidator:
-#
-#     @staticmethod
-#     def validate_units(unit, data_type):
-#
-#         # Don't need to check the units if the data type is unit-less
-#         if not hasattr(data_type, 'UNITS'):
-#             return
-#
-#         if unit not in data_type.UNITS.value:
-#             raise UnitException(data_type.PARAM_LABEL.value,
-#             data_type.UNITS.value)
-#
-#     @staticmethod
-#     def validate_in_range(value, data_type):
-#
-#         # Don't need to check the value is in the permitted range if
-#         #   there is no range specified
-#         if not hasattr(data_type, 'LOWER_VALUE'):
-#             return
-#
-#         # Check there's also an UPPER_VALUE
-#         assert hasattr(data_type, 'UPPER_VALUE')
-#
-#         if not (data_type.LOWER_VALUE.value <=
-#                 value <=
-#                 data_type.UPPER_VALUE.value):
-#             raise ValueOutOfRangeException(data_type.PARAM_LABEL.value,
-#                                            data_type.LOWER_VALUE.value,
-#                                            data_type.UPPER_VALUE.value,
-#                                            data_type.UNITS.value)
-#
-#     @staticmethod
-#     def validate_allowed_values(value, data_type):
-#
-#         # Don't need to check the value is allowed if there are no
-#         # allowed values specified
-#         if not hasattr(data_type, 'ALLOWED_VALUES'):
-#             return
-#
-#         if value not in data_type.ALLOWED_VALUES:
-#             raise ValueNotAllowedException(data_type.PARAM_LABEL,
-#                                            data_type.ALLOWED_VALUES,
-#                                            data_type.UNITS)
