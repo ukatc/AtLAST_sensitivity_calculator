@@ -19,10 +19,10 @@ print("-----------")
 # Calculate the sensitivity for a given integration time
 # (here, specified in user_input.yaml)
 # calculator.bandwidth = 10.5*u.GHz
-calculator.elevation = 5*u.deg
+# calculator.elevation = 5*u.deg
+calculator.dish_radius = 100*u.m
 # calculator.obs_frequency = 1*u.GHz
 # print('using params', calculator.calculation_params)
-
 # TODO: is there a reason for not converting the sensitivity to mJy by default?
 calculated_sensitivity = \
     calculator.calculate_sensitivity(calculator.t_int).to(u.mJy)
@@ -30,6 +30,7 @@ print("Sensitivity: {:0.2f} for an integration time of {:0.2f} "
       .format(calculated_sensitivity, calculator.t_int))
 # TODO: How to store the calculated sensitivity?
 #  (Writing it to the calculator object is not a good idea)
+print(calculator.sensitivity)
 calculator.sensitivity = calculated_sensitivity
 
 # Calculate the integration time for a given sensitivity

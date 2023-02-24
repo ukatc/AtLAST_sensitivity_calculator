@@ -4,12 +4,13 @@ from atlast_sc.exceptions import UnitException, ValueOutOfRangeException,\
     ValueNotAllowedException
 from atlast_sc.data import param_data_type_dicts
 from atlast_sc.data import IntegrationTime, Sensitivity, Bandwidth, \
-    ObsFrequency, NPol, Weather, Elevation
+    ObsFrequency, NPol, Weather, Elevation, G, SurfaceRMS, DishRadius, TAmb, \
+    TRx, EtaEff, EtaIll, EtaSpill, EtaBlock, EtaPol, EtaR, EtaQ, TCmb
 
 
-################################
-# Custom validation functions  #
-################################
+###################################################
+# Custom validation and transformation functions  #
+###################################################
 
 def validate_units(unit, param, data_type):
 
@@ -53,6 +54,23 @@ def validate_allowed_values(value, param, data_type):
                                        data_type['UNITS'])
 
 
+def get_value_or_quantity(model_val):
+    # Get the value or the quantity from a model value
+
+    # use the quantity, if it exists
+    if hasattr(model_val, "quantity"):
+        return model_val.quantity
+    # or just use the unit-less value
+    elif hasattr(model_val, "value"):
+        return model_val.value
+    # if neither of these attributes exist, throw an error
+    else:
+        raise ValueError(f'Invalid model. '
+                         f'Expected ValueWithUnits or '
+                         f'ValueWithoutUnits. '
+                         f'Received {type(model_val)}.')
+
+
 class ValueWithUnits(BaseModel):
     value: float
     unit: str
@@ -67,6 +85,7 @@ class ValueWithUnits(BaseModel):
         """
         Validate the unit and convert the value to an astropy Quantity object
         """
+        print('in Value with units')
         print('validating field values', field_values)
         # Ensure the unit string can be converted to a valid astropy Unit
         try:
@@ -117,7 +136,7 @@ class UserInput(BaseModel):
 
     @root_validator()
     @classmethod
-    def validate_t_int_or_sens_liinitiased(cls, field_values):
+    def validate_t_int_or_sens_initialised(cls, field_values):
         # Validate that at least one of 't_int' and 'sensitivity'
         # has been initialised
         if field_values["t_int"].value == 0 and \
@@ -130,6 +149,7 @@ class UserInput(BaseModel):
     @classmethod
     def validate_fields(cls, field_values):
 
+        print('in UserInput validate_fields')
         print('field values:', field_values)
 
         # Validate units and values
@@ -185,60 +205,74 @@ class UserInput(BaseModel):
 
 
 class InstrumentSetup(BaseModel):
-    g: ValueWithoutUnits = ValueWithoutUnits(value=1)
-    surface_rms: ValueWithUnits = ValueWithUnits(value=25, unit="micron")
-    # TODO: might want to all users to modify radius
-    dish_radius: ValueWithUnits = ValueWithUnits(value=25, unit="m")
-    T_amb: ValueWithUnits = ValueWithUnits(value=270, unit="K")
-    # TODO: might want to allow users to modify T_rx
-    # TODO: T_rx should be calculated, not set (dependend of obs_freq))
-    T_rx: ValueWithUnits = ValueWithUnits(value=50, unit="K")
-    eta_eff: ValueWithoutUnits = ValueWithoutUnits(value=0.80)
-    # TODO: Docs say that eta_ill "defaults to value 0.63") What's the correct
-    #  default?
-    eta_ill: ValueWithoutUnits = ValueWithoutUnits(value=0.80)
-    # TODO: What is eta_q and what default value should it have?
-    eta_q: ValueWithoutUnits = ValueWithoutUnits(value=0.96)
-    eta_spill: ValueWithoutUnits = ValueWithoutUnits(value=0.95)
-    eta_block: ValueWithoutUnits = ValueWithoutUnits(value=0.94)
-    eta_pol: ValueWithoutUnits = ValueWithoutUnits(value=0.99)
-    eta_r: ValueWithoutUnits = ValueWithoutUnits(value=1)
+    g: ValueWithoutUnits = ValueWithoutUnits(value=G.DEFAULT_VALUE.value)
+    surface_rms: ValueWithUnits = \
+        ValueWithUnits(value=SurfaceRMS.DEFAULT_VALUE.value,
+                       unit=SurfaceRMS.DEFAULT_UNIT.value)
+    dish_radius: ValueWithUnits = \
+        ValueWithUnits(value=DishRadius.DEFAULT_VALUE.value,
+                       unit=DishRadius.DEFAULT_UNIT.value)
+    T_amb: ValueWithUnits = \
+        ValueWithUnits(value=TAmb.DEFAULT_VALUE.value,
+                       unit=TAmb.DEFAULT_UNIT.value)
+    T_rx: ValueWithUnits = ValueWithUnits(value=TRx.DEFAULT_VALUE.value,
+                                          unit=TRx.DEFAULT_UNIT.value)
+    eta_eff: ValueWithoutUnits = \
+        ValueWithoutUnits(value=EtaEff.DEFAULT_VALUE.value)
+    eta_ill: ValueWithoutUnits = \
+        ValueWithoutUnits(value=EtaIll.DEFAULT_VALUE.value)
+    eta_q: ValueWithoutUnits = \
+        ValueWithoutUnits(value=EtaQ.DEFAULT_VALUE.value)
+    eta_spill: ValueWithoutUnits = \
+        ValueWithoutUnits(value=EtaSpill.DEFAULT_VALUE.value)
+    eta_block: ValueWithoutUnits = \
+        ValueWithoutUnits(value=EtaBlock.DEFAULT_VALUE.value)
+    eta_pol: ValueWithoutUnits = \
+        ValueWithoutUnits(value=EtaPol.DEFAULT_VALUE.value)
+    eta_r: ValueWithoutUnits = \
+        ValueWithoutUnits(value=EtaR.DEFAULT_VALUE.value)
 
 
-class CalculationInput(UserInput, InstrumentSetup):
+# class CalculationInput(UserInput, InstrumentSetup):
+class CalculationInput(BaseModel):
     """
     Input parameters used for the sensitivity calculation
     """
 
     user_input: UserInput = UserInput()
     instrument_setup: InstrumentSetup = InstrumentSetup()
-    T_cmb: ValueWithUnits = ValueWithUnits(value=2.73, unit="K")
+    T_cmb: ValueWithUnits = \
+        ValueWithUnits(value=TCmb.DEFAULT_VALUE.value,
+                       unit=TCmb.DEFAULT_UNIT.value)
 
     @root_validator()
     @classmethod
-    def extract_values(cls, field_values):
+    def flatten_values(cls, field_values):
         """
-        Simplify the structure by only returning the value or quantity as
-        appropriate
+        Flatten the model so that it returns on parameters and their
+        quantity/value as key-value pairs.
+        NB: because this is a validator, it will modify the view of the
+            data, although the underlying representation is still nested.
         """
+
+        user_input = field_values['user_input']
+        instrument_setup = field_values['instrument_setup']
+
         simplified_field_values = {}
-        for key, val in field_values.items():
-            # use the quantity, if it exists
-            if hasattr(val, "quantity"):
-                simplified_field_values[key] = val.quantity
-            # or just use the unit-less value
-            elif hasattr(val, "value"):
-                simplified_field_values[key] = val.value
-            else:
-                # do nothing with this attribute
-                continue
+        for elem in user_input:
+            simplified_field_values[elem[0]] = get_value_or_quantity(elem[1])
+        for elem in instrument_setup:
+            simplified_field_values[elem[0]] = get_value_or_quantity(elem[1])
+        simplified_field_values['T_cmb'] = \
+            get_value_or_quantity(field_values['T_cmb'])
 
         return simplified_field_values
 
 
-class CalculatedParams(BaseModel):
+class DerivedParams(BaseModel):
     """
-    Calculated parameters used for the sensitivity calculation
+    Derived parameters, calculated from user input and instrument setup
+    parameters.
     """
 
     # Atmospheric opacity
@@ -268,9 +302,9 @@ class SensitivityCalculatorParameters(BaseModel):
     """
 
     calculation_inputs: CalculationInput
-    calculated_params: CalculatedParams
+    derived_params: DerivedParams
 
-    def calculator_params(self):
+    def calculator_params_as_dict(self):
         """
         Flatten the structure of the object and return properties as a
         single-level dictionary
@@ -279,4 +313,4 @@ class SensitivityCalculatorParameters(BaseModel):
         return dict((x, y) for x, y in
                     self.calculation_inputs) | dict((x, y)
                                                     for x, y
-                                                    in self.calculated_params)
+                                                    in self.derived_params)

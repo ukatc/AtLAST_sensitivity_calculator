@@ -74,7 +74,11 @@ def update_input_param(func):
         attribute = getattr(obj, func.__name__)
 
         # Make sure the new value is of the correct type
-        assert isinstance(value, type(attribute))
+        if not isinstance(value, type(attribute)):
+            raise ValueError(f'Value {value} for parameter {func.__name__} '
+                             f'is of invalid type. '
+                             f'Expected {type(attribute)}. '
+                             f'Received {type(value)}.')
 
         # Validate the new value. First need to create a model of the
         # appropriate type - ValueWithUnits, or ValueWithoutUnits

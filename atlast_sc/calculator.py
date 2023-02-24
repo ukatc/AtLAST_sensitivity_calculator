@@ -4,7 +4,7 @@ from atlast_sc.atmosphere_params import AtmosphereParams
 from atlast_sc.sefd import SEFD
 from atlast_sc.system_temperature import SystemTemperature
 from atlast_sc.efficiencies import Efficiencies
-from atlast_sc.models import CalculatedParams
+from atlast_sc.models import DerivedParams
 from atlast_sc.models import SensitivityCalculatorParameters
 from atlast_sc.config import Config
 from atlast_sc.utils import update_input_param
@@ -17,16 +17,18 @@ class Calculator:
     to determine the output sensitivity or integration time.
     """
 
-    def __init__(self, inputs=None, setup='standard', file_path=None,
-                 setup_inputs_file=None, default_inputs_file=None):
+    # def __init__(self, inputs=None, setup='standard', file_path=None,
+    #              setup_inputs_file=None, default_inputs_file=None):
+    def __init__(self, user_input={}, instrument_setup={}):
         # TODO: provide accessor methods for properties
         # TODO: get a list of properties that are editable and provide setters
 
         self._calculation_params = None
 
         # Store the input parameters used to initialise the calculator
-        self._config = Config(inputs, setup, file_path, setup_inputs_file,
-                              default_inputs_file)
+        self._config = Config(user_input, instrument_setup)
+        self._calculation_inputs = self._config.calculation_inputs
+        # self._calculation_inputs.user_input.sensitivity = 0.1
 
         # Calculate and store the remaining parameters used in the
         # calculation
@@ -47,15 +49,16 @@ class Calculator:
         :return: sensitivity in Janksy
         :rtype: astropy.units.Quantity
         """
+
         sensitivity = (
-                self.calculation_params['sefd']
-                / (self.calculation_params['eta_s']
+                self.sefd
+                / (self.eta_s
                    * np.sqrt(
-                    self.calculation_params['n_pol']
-                    * self.calculation_params['bandwidth']
+                    self.n_pol
+                    * self.bandwidth
                     * t_int
                 ))
-                * np.exp(self.calculation_params['tau_atm'])
+                * np.exp(self.tau_atm)
         )
 
         return sensitivity.to(u.Jy)
@@ -70,11 +73,12 @@ class Calculator:
         :rtype: astropy.units.Quantity
         """
 
-        t_int = ((self.calculation_params['sefd']
-                  * np.exp(self.calculation_params['tau_atm']))
-                 / (sensitivity * self.calculation_params['eta_s'])) ** 2 \
-            / (self.calculation_params['n_pol']
-                * self.calculation_params['bandwidth'])
+        t_int = ((self.sefd
+                  * np.exp(self.tau_atm))
+                 / (sensitivity *
+                    self.eta_s)) ** 2 \
+            / (self.n_pol
+                * self.bandwidth)
 
         return t_int.to(u.s)
 
@@ -84,9 +88,9 @@ class Calculator:
         calculation_inputs = calculation_inputs \
             if calculation_inputs\
             else self._calculation_params.calculation_inputs
-        # Use the input values to calculate the remaining parameters
+        # Use the input values to calculate the derived parameters
         # used in the calculation
-        calculated_params = \
+        derived_params = \
             self._calculate_parameters(calculation_inputs)
 
         # Store all the inputs and calculated params used
@@ -94,7 +98,7 @@ class Calculator:
         self._calculation_params = \
             SensitivityCalculatorParameters(
                 calculation_inputs=calculation_inputs,
-                calculated_params=calculated_params)
+                derived_params=derived_params)
 
     def reset_calculator(self):
         # Reset the config calculation inputs to their original values
@@ -102,11 +106,18 @@ class Calculator:
         # Regenerate the calculation parameters from the original inputs
         self.generate_calculation_params(self._config.original_inputs)
 
+    # TODO: move these getters and setters to Config object?
+
     ###################################################
     # Getters and setters for user input parameters   #
     ###################################################
-    # TODO: move these getters and setters to Config object?
 
+    # TODO t_int and sensitivity are a special case. They can be both
+    #   set and calculated. Special care needs to be taken on setting them:
+    #   they will have to be validated if they're set, but not calculated.
+    #   Also, if they're set, the user needs to be warned if they then try
+    #   to use Calculator values with redoing the senstivity/integration time
+    #   calculation
     @property
     def t_int(self):
         return self._calculation_params.calculation_inputs.t_int
@@ -120,13 +131,14 @@ class Calculator:
         #  store or use those stored values.
         #  Need separate "outputs" properties that are used for
         #  subsequent calculations and/or storing results?
-        self._calculation_params.calculation_inputs.t_int = value
+        self._calculation_params.t_int = value
 
     @property
     def sensitivity(self):
         return self._calculation_params.calculation_inputs.sensitivity
 
     @sensitivity.setter
+    @update_input_param
     def sensitivity(self, value):
         # TODO: Setting this value in the on the inputs feels wrong.
         #  This may be a calculated param. Allowing the user to change it
@@ -135,6 +147,10 @@ class Calculator:
         #  store or use those stored values.
         #  Need separate "outputs" properties that are used for
         #  subsequent calculations and/or storing results?
+
+        print(hasattr(self._calculation_params.calculation_inputs,
+                      'sensitivity'))
+        # TODO: pick up from here. The line below is failing
         self._calculation_params.calculation_inputs.sensitivity = value
 
     @property
@@ -182,6 +198,99 @@ class Calculator:
     def elevation(self, value):
         self._calculation_params.calculation_inputs.elevation = value
 
+    ####################################################################
+    # Getters and a couple of setters for instrument setup parameters  #
+    ####################################################################
+
+    @property
+    def g(self):
+        return self._calculation_params.calculation_inputs.g
+
+    @property
+    def surface_rms(self):
+        return self._calculation_params.calculation_inputs.surface_rms
+
+    @property
+    def dish_radius(self):
+        return self._calculation_params.calculation_inputs.dish_radius
+
+    @dish_radius.setter
+    @update_input_param
+    def dish_radius(self, value):
+        # TODO Flag to the user somehow that they are varying an instrument
+        #   setup parameter
+        # TODO: the update function will fail because the InstrumetSetup
+        #       model doesn't contain the field validator
+        self._calculation_params.calculation_inputs.dish_radius = value
+
+    @property
+    def T_amb(self):
+        return self._calculation_params.calculation_inputs.T_amb
+
+    @property
+    def T_rx(self):
+        return self._calculation_params.calculation_inputs.T_rx
+
+    @property
+    def eta_eff(self):
+        return self._calculation_params.calculation_inputs.eta_eff
+
+    @property
+    def eta_ill(self):
+        return self._calculation_params.calculation_inputs.eta_ill
+
+    @property
+    def eta_q(self):
+        return self._calculation_params.calculation_inputs.eta_q
+
+    @property
+    def eta_spill(self):
+        return self._calculation_params.calculation_inputs.eta_spill
+
+    @property
+    def eta_block(self):
+        return self._calculation_params.calculation_inputs.eta_block
+
+    @property
+    def eta_pol(self):
+        return self._calculation_params.calculation_inputs.eta_pol
+
+    @property
+    def eta_r(self):
+        return self._calculation_params.calculation_inputs.eta_r
+
+    ###################################
+    # Getters for derived parameters  #
+    ###################################
+
+    @property
+    def tau_atm(self):
+        return self._calculation_params.derived_params.tau_atm
+
+    @property
+    def T_atm(self):
+        return self._calculation_params.derived_params.T_atm
+
+    @property
+    def eta_a(self):
+        return self._calculation_params.derived_params.eta_a
+
+    @property
+    def eta_s(self):
+        return self._calculation_params.derived_params.eta_s
+
+    @property
+    def T_sys(self):
+        return self._calculation_params.derived_params.T_sys
+
+    @property
+    def sefd(self):
+        return self._calculation_params.derived_params.sefd
+
+    @property
+    def area(self):
+        return self._calculation_params.area
+
     @property
     def calculation_params(self):
         """
@@ -190,12 +299,12 @@ class Calculator:
         This function returns the parameters as a
         flattened dictionary for convenience
         """
-        return self._calculation_params.calculator_params()
+        return self._calculation_params.calculator_params_as_dict()
 
     @property
     def calculation_inputs(self):
         """
-        The user inputs to the calculation
+        The inputs to the calculation
         """
         return self._calculation_params.calculation_inputs
 
@@ -252,5 +361,5 @@ class Calculator:
         # Calculate source equivalent flux density
         sefd = SEFD.calculate(T_sys, area, eta_a)
 
-        return CalculatedParams(tau_atm=tau_atm, T_atm=T_atm, eta_a=eta_a,
-                                eta_s=eta_s, T_sys=T_sys, sefd=sefd, area=area)
+        return DerivedParams(tau_atm=tau_atm, T_atm=T_atm, eta_a=eta_a,
+                             eta_s=eta_s, T_sys=T_sys, sefd=sefd, area=area)
