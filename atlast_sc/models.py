@@ -76,17 +76,13 @@ class ValueWithUnits(BaseModel):
     unit: str
     quantity: Quantity = None
 
-    @root_validator()
+    @root_validator
     @classmethod
     def validate_fields(cls, field_values):
-        # TODO: this validation is happening twice for user input. Once for
-        #  the defaults, and then again for the user-supplied values.
-        #  Can we prevent validation of defaults?
         """
         Validate the unit and convert the value to an astropy Quantity object
         """
-        print('in Value with units')
-        print('validating field values', field_values)
+
         # Ensure the unit string can be converted to a valid astropy Unit
         try:
             Unit(field_values["unit"])
@@ -134,9 +130,10 @@ class UserInput(BaseModel):
         ValueWithUnits(value=Elevation.DEFAULT_VALUE.value,
                        unit=Elevation.DEFAULT_UNIT.value)
 
-    @root_validator()
+    @root_validator
     @classmethod
     def validate_t_int_or_sens_initialised(cls, field_values):
+        print('doing the t_int or sens initialised validation')
         # Validate that at least one of 't_int' and 'sensitivity'
         # has been initialised
         if field_values["t_int"].value == 0 and \
@@ -144,64 +141,6 @@ class UserInput(BaseModel):
             raise ValueError("Please add either a sensitivity or an "
                              "integration time to your input.")
         return field_values
-
-    @root_validator()
-    @classmethod
-    def validate_fields(cls, field_values):
-
-        print('in UserInput validate_fields')
-        print('field values:', field_values)
-
-        # Validate units and values
-        for key, val in field_values.items():
-            # TODO: Figure out what's going on here. The try-except is required
-            #   because this validation is happening twice, and the second
-            #   time round, field_values contains fields from the
-            #   InstrumentSetup model. Need to understand why the validation
-            #   is happening more than once, and also why it contains these
-            #   unexpected parameters
-            try:
-                # Get the dictionary representation of the data type
-                # corresponding to the current field being validated
-                data_type_dict = param_data_type_dicts[key]
-            except KeyError:
-                continue
-
-            # Validate units on values with units
-            if isinstance(val, ValueWithUnits):
-                try:
-                    validate_units(val.unit, key, data_type_dict)
-                except UnitException as e:
-                    raise e
-
-            # Validate value ia allowed
-            try:
-                validate_allowed_values(val.value, key, data_type_dict)
-            except ValueNotAllowedException as e:
-                raise e
-
-            # Validate value is in permitted range
-            try:
-                validate_in_range(val.value, key, data_type_dict)
-            except ValueOutOfRangeException as e:
-                raise e
-
-        return field_values
-
-    def validate_update(self, value_to_update, new_value):
-        """
-        Custom validator called manually (i.e., not as part of the Pydantic
-        framework), e.g., when one of the user input values is updated.
-        """
-        # TODO: will probably move this so that InstrumentSetup can call
-        #       it and raise an error if an attempt is made to update one of the
-        #       non-updatable fields
-
-        try:
-            self.validate_fields({value_to_update: new_value})
-        except ValueError as e:
-            raise e
-        return self
 
 
 class InstrumentSetup(BaseModel):
@@ -245,28 +184,111 @@ class CalculationInput(BaseModel):
         ValueWithUnits(value=TCmb.DEFAULT_VALUE.value,
                        unit=TCmb.DEFAULT_UNIT.value)
 
-    @root_validator()
+    @root_validator
     @classmethod
-    def flatten_values(cls, field_values):
+    def convert_to_quantity_or_lit(cls, field_values):
         """
-        Flatten the model so that it returns on parameters and their
-        quantity/value as key-value pairs.
-        NB: because this is a validator, it will modify the view of the
-            data, although the underlying representation is still nested.
+        Convert the field values to a quantity or literal value
+        (these are the data types used in calculations)
         """
 
-        user_input = field_values['user_input']
-        instrument_setup = field_values['instrument_setup']
+        converted_field_values = {}
+        for key, field_value in field_values.items():
+            if isinstance(field_value, UserInput):
+                for elem in field_value:
+                    converted_field_values[elem[0]] = \
+                        get_value_or_quantity(elem[1])
+            elif isinstance(field_value, InstrumentSetup):
+                for elem in field_value:
+                    converted_field_values[elem[0]] = \
+                        get_value_or_quantity(elem[1])
+            else:
+                converted_field_values[key] = get_value_or_quantity(field_value)
 
-        simplified_field_values = {}
-        for elem in user_input:
-            simplified_field_values[elem[0]] = get_value_or_quantity(elem[1])
-        for elem in instrument_setup:
-            simplified_field_values[elem[0]] = get_value_or_quantity(elem[1])
-        simplified_field_values['T_cmb'] = \
-            get_value_or_quantity(field_values['T_cmb'])
+        return field_values | converted_field_values
 
-        return simplified_field_values
+    @root_validator
+    @classmethod
+    def validate_fields(cls, field_values):
+
+        # # TODO: don't need to flatten. Can access values directly
+        # # Flatten the field values for convenience
+        # user_input = field_values['user_input']
+        # instrument_setup = field_values['instrument_setup']
+        #
+        # flattened_field_values = {}
+        # for elem in user_input:
+        #     flattened_field_values[elem[0]] = get_value_or_quantity(elem[1])
+        # for elem in instrument_setup:
+        #     flattened_field_values[elem[0]] = get_value_or_quantity(elem[1])
+        # flattened_field_values['T_cmb'] = \
+        #     get_value_or_quantity(field_values['T_cmb'])
+
+        # Validate units and values
+        # (no need to also validate the nested models)
+        for key, val in field_values.items():
+            if isinstance(val, UserInput) or isinstance(val, InstrumentSetup):
+                continue
+
+            data_type_dict = param_data_type_dicts[key]
+
+            # Validate units on Quantities
+            if isinstance(val, Quantity):
+                try:
+                    validate_units(val.unit, key, data_type_dict)
+                except UnitException as e:
+                    raise e
+
+            # Validate value is allowed
+            value_to_validate = val \
+                if not isinstance(val, Quantity) \
+                else val.value
+            try:
+                validate_allowed_values(value_to_validate,
+                                        key, data_type_dict)
+            except ValueNotAllowedException as e:
+                raise e
+
+            # Validate value is in permitted range
+            try:
+                validate_in_range(value_to_validate,
+                                  key, data_type_dict)
+            except ValueOutOfRangeException as e:
+                raise e
+
+        print('all fields validated')
+        return field_values
+
+    def validate_update(self, value_to_update, new_value):
+        """
+        Custom validator called manually (i.e., not as part of the Pydantic
+        framework), e.g., when one of the user input values is updated.
+        """
+
+        try:
+            self.validate_fields({value_to_update: new_value})
+        except ValueError as e:
+            raise e
+
+        print('validated the updated value')
+        return self
+
+    def flatten_model(self):
+        # TODO: remove this. Don't need it
+        """
+        Create a flattened view of the model to simplify accessing fields.
+        Returns a parameters and their quantity/value as key/value pairs
+        """
+
+        flattened_field_values = {}
+        for elem in self.user_input:
+            flattened_field_values[elem[0]] = get_value_or_quantity(elem[1])
+        for elem in self.instrument_setup:
+            flattened_field_values[elem[0]] = get_value_or_quantity(elem[1])
+        flattened_field_values['T_cmb'] = \
+            get_value_or_quantity(self.T_cmb)
+
+        return flattened_field_values
 
 
 class DerivedParams(BaseModel):

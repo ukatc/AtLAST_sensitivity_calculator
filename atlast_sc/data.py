@@ -175,4 +175,5 @@ param_data_type_dicts = {
     'eta_pol': EtaPol.to_dict(),
     'eta_r': EtaR.to_dict(),
     'eta_q': EtaQ.to_dict(),
+    'T_cmb': TCmb.to_dict(),
 }

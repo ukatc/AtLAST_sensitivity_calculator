@@ -52,15 +52,19 @@ def to_file(params, path):
 
 def to_yaml(params, path):
     # TODO: docstring
+    # TODO: skipping user input and instrument setup using try block is very inelegant. Find another way
     with open(path, "w") as f:
         for key, value in params.items():
-            if hasattr(value, "unit"):
-                unit = value.unit
-                f.write(f"{key: <16}: {{value: {value: >10}, "
-                        f"unit: {unit}}} \n")
-            else:
-                # TODO: do we need 'none' for unit?
-                f.write(f"{key: <16}: {{value: {value: >10}, unit: none}} \n")
+            try:
+                if hasattr(value, "unit"):
+                    unit = value.unit
+                    f.write(f"{key: <16}: {{value: {value: >10}, "
+                            f"unit: {unit}}} \n")
+                else:
+                    # TODO: do we need 'none' for unit?
+                    f.write(f"{key: <16}: {{value: {value: >10}, unit: none}} \n")
+            except:
+                continue
 
 
 def update_input_param(func):
@@ -80,16 +84,10 @@ def update_input_param(func):
                              f'Expected {type(attribute)}. '
                              f'Received {type(value)}.')
 
-        # Validate the new value. First need to create a model of the
-        # appropriate type - ValueWithUnits, or ValueWithoutUnits
-        if isinstance(value, Quantity):
-            val_to_validate = \
-                ValueWithUnits(value=value.value, unit=str(value.unit))
-        else:
-            val_to_validate = ValueWithoutUnits(value=value.value)
+        # Validate the new value
         try:
             obj.calculation_inputs.validate_update(func.__name__,
-                                                   val_to_validate)
+                                                   value)
         except ValueError as e:
             raise e
 

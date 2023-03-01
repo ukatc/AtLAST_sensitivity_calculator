@@ -1,5 +1,5 @@
 import copy
-
+from pydantic import BaseModel
 from atlast_sc import models
 from atlast_sc import constants
 from atlast_sc import utils
@@ -67,22 +67,20 @@ class Config:
         self._user_input = models.UserInput(**user_input)
         self._instrument_setup = models.InstrumentSetup(**instrument_setup)
 
-        # # TODO: pick up from here. This step might explain why UserInput has
-        # #   fields from InstrumentSetup during validation
         self._calculation_inputs = \
             models.CalculationInput(user_input=self._user_input,
                                     instrument_setup=self._instrument_setup)
-        # self._calculation_inputs = \
-        #     models.CalculationInput(user_input=inputs_dict)
-        # print(self._calculation_inputs.__dict__)
 
         # Make a deep copy of the calculation inputs to enable the
         # calculator to be reset to its initial setup
         self._original_inputs = copy.deepcopy(self._calculation_inputs)
 
+    def calculation_inputs_as_dict(self):
+        return dict(self.calculation_inputs.user_input) \
+               | dict(self._calculation_inputs.instrument_setup)
+
     @property
     def calculation_inputs(self):
-        #
         return self._calculation_inputs
 
     @calculation_inputs.setter
@@ -90,5 +88,5 @@ class Config:
         self._calculation_inputs = value
 
     @property
-    def original_inputs(self):
+    def original_calculation_inputs(self):
         return self._original_inputs
