@@ -11,15 +11,21 @@ from yaml import load, Loader
 def params_updater(func):
     """
     Decorator to support setter methods on calculations input parameters.
-    The returned function first validates the type, value and units
-    of the new value before updating the parameter. If the new value is
-    different from the old, derived parameters are recalculated.
+
+    :param func: function that updates the calculation input parameter
+    :type func: property setter function
     """
-    # If the new value is different from the current value,
-    # recalculate the other parameters used in the calculation
 
     @functools.wraps(func)
     def update_param(*args, **kwargs):
+        """
+        Validates the type, value and units of the new value before
+        updating the calculation input parameter. If the new value is
+        different from the old, derived parameters are recalculated.
+
+        :arg str arg0: The Calculator object
+        :arg str arg1: The new value
+        """
         calculator = args[0]
         value = args[1]
         attribute = getattr(calculator, func.__name__)
@@ -53,13 +59,28 @@ def params_updater(func):
 
 
 class FileHelper:
-    # TODO: Sort out the inconsistency between supported reader types and
-    #   supported writer types
+    """
+    Class that provides support for reading input parameters from a file
+    and writing outputs to a file.
+    Supported file formats are `yaml`, `txt`, and `json`.
+    """
 
     SUPPORTED_FILE_EXTENSIONS = ['yaml', 'yml', 'txt', 'json']
 
     @staticmethod
     def read_from_file(path, file_name):
+        """
+        Reads the file with name `file_name` located in directory `path`
+        and returns a dictionary. The file type (e.g., `yaml`) is
+        determined from the file extension in`file_name`.
+
+        :param path: The directory where the file is located.
+        :type path: string
+        :param file_name: The name of the file, including the file extension.
+        :type file_name: string
+        :return: Dictionary of input parameters.
+        :rtype: dictionary
+        """
         file_reader = FileHelper._get_reader(file_name)
 
         file_path = os.path.join(path, file_name)
@@ -70,8 +91,39 @@ class FileHelper:
         return inputs
 
     @staticmethod
-    def _get_reader(file_name):
+    def write_to_file(params, path, file_name, file_type):
+        """
+        Writes the values in `params` to a file with name `file_name` and
+        extension `file_type` to location `path`.
 
+        :param params: A dictionary of calculation parameters.
+        :type params: dictionary
+        :param path: The location where the file is saved.
+        :type path: string
+        :param file_name: The name of the file to write. Note this should not
+                            include the file extension.
+        :type file_name: string
+        :param file_type: The file type (e.g., `yaml`).
+        :type file_type: string
+        """
+        file_writer = FileHelper._get_writer(file_type)
+
+        file_path = f'{os.path.join(path, file_name)}.{file_type}'
+
+        with open(file_path, "w") as f:
+            file_writer(f, params)
+
+    @staticmethod
+    def _get_reader(file_name):
+        """
+        Factory method that returns the file reader for the
+        file type indicated by the extension in `file_name`.
+
+        :param file_name: The name of file to read.
+        :type file_name: string
+        :return: A file reader function
+        :rtype: function
+        """
         # Extract the extension from the file name
         # and remove the leading '.'
         extension = os.path.splitext(file_name)[1].lstrip('.').lower()
@@ -91,14 +143,12 @@ class FileHelper:
     @staticmethod
     def _dict_from_yaml(file):
         """
-        Read input from a yaml file with parameters described in the
-        format <param_name>: {<value>:<param_value>, <unit>:<param_unit>}
-        and return a dictionary
+        Read data from a yaml file.
 
-        :param path: the path to the yaml file
-        :type path: str
-        :param file_name: the name of the yaml file
-        :type file_name: str
+        :param file: the yaml file
+        :type file: buffered text stream (TextIOWrapper)
+        :return: a dictionary of parameters
+        :rtype: dictionary
         """
         inputs = load(file, Loader=Loader)
 
@@ -107,10 +157,12 @@ class FileHelper:
     @staticmethod
     def _dict_from_json(file):
         """
-        Takes a .json input file of user inputs and returns a dictionary
+        Read data from a json file.
 
-        :param path: the path of the input json file
-        :type path: str
+        :param file: the json file
+        :type file: buffered text stream (TextIOWrapper)
+        :return: a dictionary of parameters
+        :rtype: dictionary
         """
         inputs = json.load(file)
 
@@ -118,6 +170,15 @@ class FileHelper:
 
     @staticmethod
     def _dict_from_txt(file):
+        """
+        Read data from a txt file.
+
+        :param file: the txt file
+        :type file: buffered text stream (TextIOWrapper)
+        :return: a dictionary of parameters
+        :rtype: dictionary
+        """
+
         def _parse_line(line_to_parse):
             try:
                 # parse the parameter name, which appears before '='
@@ -153,17 +214,16 @@ class FileHelper:
         return inputs
 
     @staticmethod
-    def write_to_file(params, path, file_name, file_type):
-
-        file_writer = FileHelper._get_writer(file_type)
-
-        file_path = f'{os.path.join(path, file_name)}.{file_type}'
-
-        with open(file_path, "w") as f:
-            file_writer(f, params)
-
-    @staticmethod
     def _get_writer(file_type):
+        """
+        Factory method that returns the file writer for the
+        specified `file_type`.
+
+        :param file_type: The type of file to write (e.g., `yaml`).
+        :type file_type: string
+        :return: A file writer function
+        :rtype: function
+        """
         match file_type:
             case 'yaml' | 'yml':
                 return FileHelper._to_yaml
@@ -179,19 +239,26 @@ class FileHelper:
     @staticmethod
     def _to_txt(file, params):
         """
-        Write config parameters to file
+        Writes a dictionary to a txt file.
 
-        :param path: the path of the output log file
-        :type path: str
+        :param file: The txt file
+        :type file: buffered text stream (TextIOWrapper)
+        :param params: A dictionary of parameters to write.
+        :type params: dictionary
         """
-
         for key, value in params.items():
             file.write(f"{key} = {value} \n")
 
     @staticmethod
     def _to_yaml(file, params):
-        # TODO: docstring
+        """
+        Writes a dictionary to a yaml file.
 
+        :param file: The yaml file
+        :type file: buffered text stream (TextIOWrapper)
+        :param params: A dictionary of parameters to write.
+        :type params: dictionary
+        """
         for key, value in params.items():
             if hasattr(value, "unit"):
                 unit = value.unit
@@ -204,7 +271,14 @@ class FileHelper:
 
     @staticmethod
     def _to_json(file, params):
+        """
+        Writes a dictionary to a json file.
 
+        :param file: The json file
+        :type file: buffered text stream (TextIOWrapper)
+        :param params: A dictionary of parameters to write.
+        :type params: dictionary
+        """
         outputs = {}
         for key, value in params.items():
             if hasattr(value, "unit"):
