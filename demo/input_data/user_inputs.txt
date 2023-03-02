@@ -1,0 +1,7 @@
+t_int = 100 s
+sensitivity = 0 mJy
+bandwidth = 7.5 GHz
+obs_freq = 100 GHz
+n_pol = 2
+weather = 50
+elevation = 30 deg
