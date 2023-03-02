@@ -247,16 +247,14 @@ class Calculator:
         :rtype: astropy.units.Quantity
         """
 
-        sensitivity = (
-                self.sefd
-                / (self.eta_s
-                   * np.sqrt(
-                    self.n_pol
-                    * self.bandwidth
-                    * t_int
-                ))
-                * np.exp(self.tau_atm)
-        )
+        sensitivity = \
+            (self.sefd /
+                (self.eta_s *
+                    np.sqrt(self.n_pol *
+                            self.bandwidth *
+                            t_int)
+                 ) * np.exp(self.tau_atm)
+             )
 
         return sensitivity.to(u.Jy)
 
@@ -346,8 +344,8 @@ class Calculator:
 
         return output_dict
 
-    def write_to_file(self, path, file_name="output_parameters",
-                      file_type="yml"):
+    def output_to_file(self, path, file_name="output_parameters",
+                       file_type="yml"):
 
         output_as_dict = self.calculation_params_as_dict()
 

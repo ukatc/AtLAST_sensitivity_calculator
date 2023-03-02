@@ -55,19 +55,23 @@ class FileHelper:
     @staticmethod
     def read_from_file(path, file_name):
         file_reader = FileHelper._get_reader(file_name)
-        # TODO: pick up from here and fill in file reading
+
+        file_path = os.path.join(path, file_name)
+
+        return file_reader(file_path)
 
     @staticmethod
     def _get_reader(file_name):
 
         # Extract the extension from the file name
-        extension = os.path.splitext[1]
+        # and remove the leading '.'
+        extension = os.path.splitext(file_name)[1].lstrip('.')
 
         match extension:
             case 'yaml' | 'yml':
-                return FileHelper._from_yaml
+                return FileHelper._dict_from_yaml
             case 'json':
-                return FileHelper._from_json
+                return FileHelper._dict_from_json
             case 'txt':
                 raise ValueError('TXT not yet supported')
             case _:
@@ -75,7 +79,7 @@ class FileHelper:
                                  f'"json", "yaml", or "yml"')
 
     @staticmethod
-    def _from_yaml(path, file_name):
+    def _dict_from_yaml(file_path):
         """
         Read input from a yaml file with parameters described in the
         format <param_name>: {<value>:<param_value>, <unit>:<param_unit>}
@@ -87,20 +91,20 @@ class FileHelper:
         :type file_name: str
         """
 
-        file_path = os.path.join(path, file_name)
         with open(file_path, "r") as yaml_file:
             inputs = load(yaml_file, Loader=Loader)
 
         return inputs
 
     @staticmethod
-    def _from_json(path):
+    def _dict_from_json(path, file_name):
         """
-        Takes a .json input file of user inputs and returns an instance of Config
+        Takes a .json input file of user inputs and returns a dictionary
 
         :param path: the path of the input json file
         :type path: str
         """
+        # TODO: NOT TESTED
         with open(path, "r") as json_file:
             inputs = json.load(json_file)
         return inputs
@@ -124,7 +128,7 @@ class FileHelper:
             case 'txt':
                 return FileHelper._to_txt
             case 'json':
-                raise ValueError(f'JSON not yet supported')
+                raise ValueError('JSON not yet supported')
             case _:
                 raise ValueError(f'Unsupported file type {file_type}. Must be '
                                  f'"txt", "yaml", or "yml"')

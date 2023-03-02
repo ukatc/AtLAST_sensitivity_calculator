@@ -2,11 +2,11 @@ from pathlib import Path
 import pytest
 import astropy.units as u
 from atlast_sc.calculator import Calculator
-from atlast_sc import utils
+from atlast_sc.utils import FileHelper
 
 CONFIG_PATH = Path(__file__).resolve().parents[0]
 
-user_input = utils.from_yaml(CONFIG_PATH, "test_user_inputs.yaml")
+user_input = FileHelper.read_from_file(CONFIG_PATH, "test_user_inputs.yaml")
 
 calculator = Calculator(user_input)
 

@@ -27,7 +27,6 @@ class Config:
 
         self._user_input = models.UserInput(**user_input)
         self._instrument_setup = models.InstrumentSetup(**instrument_setup)
-        print('instantiating calculation input')
         self._calculation_inputs = \
             models.CalculationInput(user_input=self._user_input,
                                     instrument_setup=self._instrument_setup)

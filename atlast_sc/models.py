@@ -31,14 +31,14 @@ class Validator:
             else val.value
         try:
             Validator.validate_allowed_values(value_to_validate,
-                                    key, data_type)
+                                              key, data_type)
         except ValueNotAllowedException as e:
             raise e
 
         # Validate value is in permitted range
         try:
             Validator.validate_in_range(value_to_validate,
-                              key, data_type)
+                                        key, data_type)
         except ValueOutOfRangeException as e:
             raise e
 
@@ -199,8 +199,6 @@ class CalculationInput(BaseModel):
     @root_validator
     @classmethod
     def validate_fields(cls, field_values):
-        print('Validating calculation input')
-        print('have fields', field_values)
         # Flatten the field values for convenience
         user_input = field_values['user_input']
         instrument_setup = field_values['instrument_setup']
