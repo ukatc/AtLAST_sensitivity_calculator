@@ -322,7 +322,14 @@ class Calculator:
         # Regenerate the calculation parameters
         self.calculate_derived_parameters()
 
-    def calculation_params_as_dict(self):
+    def output_to_file(self, path, file_name="output_parameters",
+                       file_type="yml"):
+
+        output_as_dict = self._calculation_params_as_dict()
+
+        FileHelper.write_to_file(output_as_dict, path, file_name, file_type)
+
+    def _calculation_params_as_dict(self):
         """
         Convert the calculation inputs (user inputs and instrument setup)
         and derived parameters to a dictionary
@@ -343,10 +350,3 @@ class Calculator:
             output_dict[field[0]] = field[1]
 
         return output_dict
-
-    def output_to_file(self, path, file_name="output_parameters",
-                       file_type="yml"):
-
-        output_as_dict = self.calculation_params_as_dict()
-
-        FileHelper.write_to_file(output_as_dict, path, file_name, file_type)

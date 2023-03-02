@@ -6,7 +6,7 @@ from atlast_sc.utils import FileHelper
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # Read the user input from a yaml file
-user_input = FileHelper.read_from_file('input_data', 'user_inputs.yaml')
+user_input = FileHelper.read_from_file('input_data', 'user_inputs.txt')
 # Initialise the Calculator with user inputs dictionary
 calculator = Calculator(user_input)
 # calculator = Calculator()
@@ -20,7 +20,7 @@ print("-----------")
 # (here, specified in user_input.yaml)
 # calculator.bandwidth = 10.5*u.GHz
 # calculator.elevation = 5*u.deg
-calculator.dish_radius = 100*u.m
+# calculator.dish_radius = 100*u.m
 # calculator.obs_frequency = 1*u.GHz
 # print('using params', calculator.calculation_params)
 # TODO: is there a reason for not converting the sensitivity to mJy by default?
@@ -47,7 +47,7 @@ print("-----------")
 
 # Write all parameters to a log file
 calculator.output_to_file("logs", "output_parameters")
-calculator.output_to_file("logs", "output_parameters", "txt")
+calculator.output_to_file("logs", "output_parameters", "yml")
 
 # reset the calculator
 print('before resetting', calculator.calculation_inputs)
