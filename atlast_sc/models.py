@@ -8,73 +8,86 @@ from atlast_sc.data import IntegrationTime, Sensitivity, Bandwidth, \
     TRx, EtaEff, EtaIll, EtaSpill, EtaBlock, EtaPol, EtaR, EtaQ, TCmb
 
 
-###################################################
-# Custom validation and transformation functions  #
-###################################################
+class Validator:
+    """
+    Class providing custom validation functions
+    """
 
-def validate_units(unit, param, data_type):
+    @staticmethod
+    def validate_field(key, val):
 
-    # Don't need to check the units if the data type is unit-less
-    if 'UNITS' not in data_type:
-        return
+        data_type = param_data_type_dicts[key]
 
-    if unit not in data_type['UNITS']:
-        raise UnitException(param, data_type['UNITS'])
+        # Validate units on Quantities
+        if isinstance(val, Quantity):
+            try:
+                Validator.validate_units(val.unit, key, data_type)
+            except UnitException as e:
+                raise e
 
+        # Validate value is allowed
+        value_to_validate = val \
+            if not isinstance(val, Quantity) \
+            else val.value
+        try:
+            Validator.validate_allowed_values(value_to_validate,
+                                    key, data_type)
+        except ValueNotAllowedException as e:
+            raise e
 
-def validate_in_range(value, param, data_type):
+        # Validate value is in permitted range
+        try:
+            Validator.validate_in_range(value_to_validate,
+                              key, data_type)
+        except ValueOutOfRangeException as e:
+            raise e
 
-    # Don't need to check the value is in the permitted range if
-    #   there is no range specified
-    if 'LOWER_VALUE' not in data_type:
-        return
+    @staticmethod
+    def validate_units(unit, param, data_type):
 
-    # Check there's also an UPPER_VALUE
-    assert 'UPPER_VALUE' in data_type
+        # Don't need to check the units if the data type is unit-less
+        if 'UNITS' not in data_type:
+            return
 
-    if not (data_type['LOWER_VALUE'] <=
-            value <=
-            data_type['UPPER_VALUE']):
-        raise ValueOutOfRangeException(param,
-                                       data_type['LOWER_VALUE'],
-                                       data_type['UPPER_VALUE'],
-                                       data_type['UNITS'])
+        if unit not in data_type['UNITS']:
+            raise UnitException(param, data_type['UNITS'])
 
+    @staticmethod
+    def validate_in_range(value, param, data_type):
 
-def validate_allowed_values(value, param, data_type):
+        # Don't need to check the value is in the permitted range if
+        #   there is no range specified
+        if 'LOWER_VALUE' not in data_type:
+            return
 
-    # Don't need to check the value is allowed if there are no
-    # allowed values specified
-    if 'ALLOWED_VALUES' not in data_type:
-        return
+        # Check there's also an UPPER_VALUE
+        assert 'UPPER_VALUE' in data_type
 
-    if value not in data_type['ALLOWED_VALUES']:
-        raise ValueNotAllowedException(param,
-                                       data_type['ALLOWED_VALUES'],
-                                       data_type['UNITS'])
+        if not (data_type['LOWER_VALUE'] <=
+                value <=
+                data_type['UPPER_VALUE']):
+            raise ValueOutOfRangeException(param,
+                                           data_type['LOWER_VALUE'],
+                                           data_type['UPPER_VALUE'],
+                                           data_type['UNITS'])
 
+    @staticmethod
+    def validate_allowed_values(value, param, data_type):
 
-def get_value_or_quantity(model_val):
-    # Get the value or the quantity from a model value
+        # Don't need to check the value is allowed if there are no
+        # allowed values specified
+        if 'ALLOWED_VALUES' not in data_type:
+            return
 
-    # use the quantity, if it exists
-    if hasattr(model_val, "quantity"):
-        return model_val.quantity
-    # or just use the unit-less value
-    elif hasattr(model_val, "value"):
-        return model_val.value
-    # if neither of these attributes exist, throw an error
-    else:
-        raise ValueError(f'Invalid model. '
-                         f'Expected ValueWithUnits or '
-                         f'ValueWithoutUnits. '
-                         f'Received {type(model_val)}.')
+        if value not in data_type['ALLOWED_VALUES']:
+            raise ValueNotAllowedException(param,
+                                           data_type['ALLOWED_VALUES'],
+                                           data_type['UNITS'])
 
 
 class ValueWithUnits(BaseModel):
     value: float
     unit: str
-    quantity: Quantity = None
 
     @root_validator
     @classmethod
@@ -89,8 +102,9 @@ class ValueWithUnits(BaseModel):
         except ValueError as e:
             raise ValueError(e)
 
-        # Convert the value to an astropy Quantity object
-        field_values["quantity"] = \
+        # Convert the value to an astropy Quantity object to simplify
+        #   access
+        field_values["value"] = \
             field_values["value"] * Unit(field_values["unit"])
 
         return field_values
@@ -133,7 +147,6 @@ class UserInput(BaseModel):
     @root_validator
     @classmethod
     def validate_t_int_or_sens_initialised(cls, field_values):
-        print('doing the t_int or sens initialised validation')
         # Validate that at least one of 't_int' and 'sensitivity'
         # has been initialised
         if field_values["t_int"].value == 0 and \
@@ -172,7 +185,6 @@ class InstrumentSetup(BaseModel):
         ValueWithoutUnits(value=EtaR.DEFAULT_VALUE.value)
 
 
-# class CalculationInput(UserInput, InstrumentSetup):
 class CalculationInput(BaseModel):
     """
     Input parameters used for the sensitivity calculation
@@ -186,77 +198,27 @@ class CalculationInput(BaseModel):
 
     @root_validator
     @classmethod
-    def convert_to_quantity_or_lit(cls, field_values):
-        """
-        Convert the field values to a quantity or literal value
-        (these are the data types used in calculations)
-        """
-
-        converted_field_values = {}
-        for key, field_value in field_values.items():
-            if isinstance(field_value, UserInput):
-                for elem in field_value:
-                    converted_field_values[elem[0]] = \
-                        get_value_or_quantity(elem[1])
-            elif isinstance(field_value, InstrumentSetup):
-                for elem in field_value:
-                    converted_field_values[elem[0]] = \
-                        get_value_or_quantity(elem[1])
-            else:
-                converted_field_values[key] = get_value_or_quantity(field_value)
-
-        return field_values | converted_field_values
-
-    @root_validator
-    @classmethod
     def validate_fields(cls, field_values):
+        print('Validating calculation input')
+        print('have fields', field_values)
+        # Flatten the field values for convenience
+        user_input = field_values['user_input']
+        instrument_setup = field_values['instrument_setup']
 
-        # # TODO: don't need to flatten. Can access values directly
-        # # Flatten the field values for convenience
-        # user_input = field_values['user_input']
-        # instrument_setup = field_values['instrument_setup']
-        #
-        # flattened_field_values = {}
-        # for elem in user_input:
-        #     flattened_field_values[elem[0]] = get_value_or_quantity(elem[1])
-        # for elem in instrument_setup:
-        #     flattened_field_values[elem[0]] = get_value_or_quantity(elem[1])
-        # flattened_field_values['T_cmb'] = \
-        #     get_value_or_quantity(field_values['T_cmb'])
+        flattened_field_values = {}
+        for elem in user_input:
+            flattened_field_values[elem[0]] = elem[1].value
+        for elem in instrument_setup:
+            flattened_field_values[elem[0]] = elem[1].value
+        flattened_field_values['T_cmb'] = field_values['T_cmb'].value
 
-        # Validate units and values
-        # (no need to also validate the nested models)
-        for key, val in field_values.items():
-            if isinstance(val, UserInput) or isinstance(val, InstrumentSetup):
-                continue
-
-            data_type_dict = param_data_type_dicts[key]
-
-            # Validate units on Quantities
-            if isinstance(val, Quantity):
-                try:
-                    validate_units(val.unit, key, data_type_dict)
-                except UnitException as e:
-                    raise e
-
-            # Validate value is allowed
-            value_to_validate = val \
-                if not isinstance(val, Quantity) \
-                else val.value
+        # Validate units and values on each field
+        for key, val in flattened_field_values.items():
             try:
-                validate_allowed_values(value_to_validate,
-                                        key, data_type_dict)
-            except ValueNotAllowedException as e:
-                raise e
-
-            # Validate value is in permitted range
-            try:
-                validate_in_range(value_to_validate,
-                                  key, data_type_dict)
+                Validator.validate_field(key, val)
             except ValueOutOfRangeException as e:
                 raise e
 
-        print('all fields validated')
         return field_values
 
     def validate_update(self, value_to_update, new_value):
@@ -266,29 +228,11 @@ class CalculationInput(BaseModel):
         """
 
         try:
-            self.validate_fields({value_to_update: new_value})
+            Validator.validate_field(value_to_update, new_value)
         except ValueError as e:
             raise e
 
-        print('validated the updated value')
         return self
-
-    def flatten_model(self):
-        # TODO: remove this. Don't need it
-        """
-        Create a flattened view of the model to simplify accessing fields.
-        Returns a parameters and their quantity/value as key/value pairs
-        """
-
-        flattened_field_values = {}
-        for elem in self.user_input:
-            flattened_field_values[elem[0]] = get_value_or_quantity(elem[1])
-        for elem in self.instrument_setup:
-            flattened_field_values[elem[0]] = get_value_or_quantity(elem[1])
-        flattened_field_values['T_cmb'] = \
-            get_value_or_quantity(self.T_cmb)
-
-        return flattened_field_values
 
 
 class DerivedParams(BaseModel):
@@ -316,23 +260,3 @@ class DerivedParams(BaseModel):
         arbitrary_types_allowed = True
 
     # TODO add validator for Quantity
-
-
-class SensitivityCalculatorParameters(BaseModel):
-    """
-    All parameters used in the sensitivity calculation
-    """
-
-    calculation_inputs: CalculationInput
-    derived_params: DerivedParams
-
-    def calculator_params_as_dict(self):
-        """
-        Flatten the structure of the object and return properties as a
-        single-level dictionary
-        """
-
-        return dict((x, y) for x, y in
-                    self.calculation_inputs) | dict((x, y)
-                                                    for x, y
-                                                    in self.derived_params)
