@@ -1,27 +1,113 @@
 from pydantic import BaseModel, root_validator
 from astropy.units import Unit, Quantity
+from atlast_sc.exceptions import UnitException, ValueOutOfRangeException,\
+    ValueNotAllowedException
+from atlast_sc.data import param_data_type_dicts
+from atlast_sc.data import IntegrationTime, Sensitivity, Bandwidth, \
+    ObsFrequency, NPol, Weather, Elevation, G, SurfaceRMS, DishRadius, TAmb, \
+    TRx, EtaEff, EtaIll, EtaSpill, EtaBlock, EtaPol, EtaR, EtaQ, TCmb
+
+
+class Validator:
+    """
+    Class providing custom validation functions
+    """
+
+    @staticmethod
+    def validate_field(key, val):
+
+        data_type = param_data_type_dicts[key]
+
+        # Validate units on Quantities
+        if isinstance(val, Quantity):
+            try:
+                Validator.validate_units(val.unit, key, data_type)
+            except UnitException as e:
+                raise e
+
+        # Validate value is allowed
+        value_to_validate = val \
+            if not isinstance(val, Quantity) \
+            else val.value
+        try:
+            Validator.validate_allowed_values(value_to_validate,
+                                              key, data_type)
+        except ValueNotAllowedException as e:
+            raise e
+
+        # Validate value is in permitted range
+        try:
+            Validator.validate_in_range(value_to_validate,
+                                        key, data_type)
+        except ValueOutOfRangeException as e:
+            raise e
+
+    @staticmethod
+    def validate_units(unit, param, data_type):
+
+        # Don't need to check the units if the data type is unit-less
+        if 'UNITS' not in data_type:
+            return
+
+        if unit not in data_type['UNITS']:
+            raise UnitException(param, data_type['UNITS'])
+
+    @staticmethod
+    def validate_in_range(value, param, data_type):
+
+        # Don't need to check the value is in the permitted range if
+        #   there is no range specified
+        if 'LOWER_VALUE' not in data_type:
+            return
+
+        # Check there's also an UPPER_VALUE
+        assert 'UPPER_VALUE' in data_type
+
+        if not (data_type['LOWER_VALUE'] <=
+                value <=
+                data_type['UPPER_VALUE']):
+            raise ValueOutOfRangeException(param,
+                                           data_type['LOWER_VALUE'],
+                                           data_type['UPPER_VALUE'],
+                                           data_type['UNITS'])
+
+    @staticmethod
+    def validate_allowed_values(value, param, data_type):
+
+        # Don't need to check the value is allowed if there are no
+        # allowed values specified
+        if 'ALLOWED_VALUES' not in data_type:
+            return
+
+        if value not in data_type['ALLOWED_VALUES']:
+            raise ValueNotAllowedException(param,
+                                           data_type['ALLOWED_VALUES'],
+                                           data_type['UNITS'])
 
 
 class ValueWithUnits(BaseModel):
     value: float
     unit: str
 
-    @root_validator()
+    @root_validator
     @classmethod
-    def to_quantity(cls, values):
+    def validate_fields(cls, field_values):
         """
         Validate the unit and convert the value to an astropy Quantity object
         """
 
         # Ensure the unit string can be converted to a valid astropy Unit
         try:
-            Unit(values["unit"])
+            Unit(field_values["unit"])
         except ValueError as e:
             raise ValueError(e)
 
-        # Convert the value to an astropy Quantity object
-        values["value"] = values["value"] * Unit(values["unit"])
-        return values
+        # Convert the value to an astropy Quantity object to simplify
+        #   access
+        field_values["value"] = \
+            field_values["value"] * Unit(field_values["unit"])
+
+        return field_values
 
     class Config:
         arbitrary_types_allowed = True
@@ -31,27 +117,38 @@ class ValueWithoutUnits(BaseModel):
     value: float
 
 
-class DefaultInput(BaseModel):
+class UserInput(BaseModel):
     """
     Definition of the default input to the sensitivity calculation.
     The user is expected to provide some or all of this input during normal
-    usage.
-    Default values are provided for convenience.
+    usage. Default values are provided for convenience.
     """
-    t_int: ValueWithUnits = ValueWithUnits(value=100, unit="s")
-    sensitivity: ValueWithUnits = ValueWithUnits(value=0.3, unit="mJy")
-    bandwidth: ValueWithUnits = ValueWithUnits(value=7.5, unit="GHz")
-    obs_freq: ValueWithUnits = ValueWithUnits(value=100, unit="GHz")
-    n_pol: ValueWithoutUnits = ValueWithoutUnits(value=2)
-    weather: ValueWithoutUnits = ValueWithoutUnits(value=50)
-    elevation: ValueWithUnits = ValueWithUnits(value=30, unit="deg")
 
-    @root_validator()
+    t_int: ValueWithUnits = \
+        ValueWithUnits(value=IntegrationTime.DEFAULT_VALUE.value,
+                       unit=IntegrationTime.DEFAULT_UNIT.value)
+    sensitivity: ValueWithUnits = \
+        ValueWithUnits(value=Sensitivity.DEFAULT_VALUE.value,
+                       unit=Sensitivity.DEFAULT_UNIT.value)
+    bandwidth: ValueWithUnits = \
+        ValueWithUnits(value=Bandwidth.DEFAULT_VALUE.value,
+                       unit=Bandwidth.DEFAULT_UNIT.value)
+    obs_freq: ValueWithUnits = \
+        ValueWithUnits(value=ObsFrequency.DEFAULT_VALUE.value,
+                       unit=ObsFrequency.DEFAULT_UNIT.value)
+    n_pol: ValueWithoutUnits = \
+        ValueWithoutUnits(value=NPol.DEFAULT_VALUE.value)
+    weather: ValueWithoutUnits = \
+        ValueWithoutUnits(value=Weather.DEFAULT_VALUE.value)
+    elevation: ValueWithUnits = \
+        ValueWithUnits(value=Elevation.DEFAULT_VALUE.value,
+                       unit=Elevation.DEFAULT_UNIT.value)
+
+    @root_validator
     @classmethod
-    def validate_one_field_has_value(cls, field_values):
-        """
-        At least one of 't_int' and 'sensitivity' should be initialised
-        """
+    def validate_t_int_or_sens_initialised(cls, field_values):
+        # Validate that at least one of 't_int' and 'sensitivity'
+        # has been initialised
         if field_values["t_int"].value == 0 and \
                 field_values["sensitivity"].value == 0:
             raise ValueError("Please add either a sensitivity or an "
@@ -60,45 +157,86 @@ class DefaultInput(BaseModel):
 
 
 class InstrumentSetup(BaseModel):
-    g: ValueWithoutUnits = ValueWithoutUnits(value=1)
-    surface_rms: ValueWithUnits = ValueWithUnits(value=25, unit="micron")
-    dish_radius: ValueWithUnits = ValueWithUnits(value=25, unit="m")
-    T_amb: ValueWithUnits = ValueWithUnits(value=270, unit="K")
-    T_rx: ValueWithUnits = ValueWithUnits(value=50, unit="K")
-    eta_eff: ValueWithoutUnits = ValueWithoutUnits(value=0.80)
-    eta_ill: ValueWithoutUnits = ValueWithoutUnits(value=0.80)
-    # TODO: What is eta_q and what default value should it have?
-    eta_q: ValueWithoutUnits = ValueWithoutUnits(value=0.96)
-    eta_spill: ValueWithoutUnits = ValueWithoutUnits(value=0.95)
-    eta_block: ValueWithoutUnits = ValueWithoutUnits(value=0.94)
-    eta_pol: ValueWithoutUnits = ValueWithoutUnits(value=0.99)
-    eta_r: ValueWithoutUnits = ValueWithoutUnits(value=1)
+    g: ValueWithoutUnits = ValueWithoutUnits(value=G.DEFAULT_VALUE.value)
+    surface_rms: ValueWithUnits = \
+        ValueWithUnits(value=SurfaceRMS.DEFAULT_VALUE.value,
+                       unit=SurfaceRMS.DEFAULT_UNIT.value)
+    dish_radius: ValueWithUnits = \
+        ValueWithUnits(value=DishRadius.DEFAULT_VALUE.value,
+                       unit=DishRadius.DEFAULT_UNIT.value)
+    T_amb: ValueWithUnits = \
+        ValueWithUnits(value=TAmb.DEFAULT_VALUE.value,
+                       unit=TAmb.DEFAULT_UNIT.value)
+    T_rx: ValueWithUnits = ValueWithUnits(value=TRx.DEFAULT_VALUE.value,
+                                          unit=TRx.DEFAULT_UNIT.value)
+    eta_eff: ValueWithoutUnits = \
+        ValueWithoutUnits(value=EtaEff.DEFAULT_VALUE.value)
+    eta_ill: ValueWithoutUnits = \
+        ValueWithoutUnits(value=EtaIll.DEFAULT_VALUE.value)
+    eta_q: ValueWithoutUnits = \
+        ValueWithoutUnits(value=EtaQ.DEFAULT_VALUE.value)
+    eta_spill: ValueWithoutUnits = \
+        ValueWithoutUnits(value=EtaSpill.DEFAULT_VALUE.value)
+    eta_block: ValueWithoutUnits = \
+        ValueWithoutUnits(value=EtaBlock.DEFAULT_VALUE.value)
+    eta_pol: ValueWithoutUnits = \
+        ValueWithoutUnits(value=EtaPol.DEFAULT_VALUE.value)
+    eta_r: ValueWithoutUnits = \
+        ValueWithoutUnits(value=EtaR.DEFAULT_VALUE.value)
 
 
-class CalculationInput(DefaultInput, InstrumentSetup):
+class CalculationInput(BaseModel):
     """
     Input parameters used for the sensitivity calculation
     """
 
-    default_input: DefaultInput = DefaultInput()
+    user_input: UserInput = UserInput()
     instrument_setup: InstrumentSetup = InstrumentSetup()
-    T_cmb: ValueWithUnits = ValueWithUnits(value=2.73, unit="K")
+    T_cmb: ValueWithUnits = \
+        ValueWithUnits(value=TCmb.DEFAULT_VALUE.value,
+                       unit=TCmb.DEFAULT_UNIT.value)
 
-    @root_validator()
+    @root_validator
     @classmethod
-    def extract_values(cls, field_values):
+    def validate_fields(cls, field_values):
+        # Flatten the field values for convenience
+        user_input = field_values['user_input']
+        instrument_setup = field_values['instrument_setup']
+
+        flattened_field_values = {}
+        for elem in user_input:
+            flattened_field_values[elem[0]] = elem[1].value
+        for elem in instrument_setup:
+            flattened_field_values[elem[0]] = elem[1].value
+        flattened_field_values['T_cmb'] = field_values['T_cmb'].value
+
+        # Validate units and values on each field
+        for key, val in flattened_field_values.items():
+            try:
+                Validator.validate_field(key, val)
+            except ValueOutOfRangeException as e:
+                raise e
+
+        return field_values
+
+    def validate_update(self, value_to_update, new_value):
         """
-        Simplify the structure by only returning the value
+        Custom validator called manually (i.e., not as part of the Pydantic
+        framework), e.g., when one of the user input values is updated.
         """
-        simplified_field_values = {key: val.value for key, val
-                                   in field_values.items()
-                                   if hasattr(val, "value")}
-        return simplified_field_values
+
+        try:
+            Validator.validate_field(value_to_update, new_value)
+        except ValueError as e:
+            raise e
+
+        return self
 
 
-class CalculatedParams(BaseModel):
+class DerivedParams(BaseModel):
     """
-    Calculated parameters used for the sensitivity calculation
+    Derived parameters, calculated from user input and instrument setup
+    parameters.
     """
 
     # Atmospheric opacity
@@ -120,23 +258,3 @@ class CalculatedParams(BaseModel):
         arbitrary_types_allowed = True
 
     # TODO add validator for Quantity
-
-
-class SensitivityCalculatorParameters(BaseModel):
-    """
-    All parameters used in the sensitivity calculation
-    """
-
-    calculation_inputs: CalculationInput
-    calculated_params: CalculatedParams
-
-    def calculator_params(self):
-        """
-        Flatten the structure of the object and return properties as a
-        single-level dictionary
-        """
-
-        return dict((x, y) for x, y in
-                    self.calculation_inputs) | dict((x, y)
-                                                    for x, y
-                                                    in self.calculated_params)

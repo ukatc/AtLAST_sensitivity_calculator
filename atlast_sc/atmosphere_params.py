@@ -30,6 +30,9 @@ class AtmosphereParams:
         self.elevation = elevation
         self.T_atm_table = np.genfromtxt(T_ATM_PATH)
         self.tau_atm_table = np.genfromtxt(TAU_ATM_PATH)
+        # TODO: interp2d is deprecated:
+        #   see https://docs.scipy.org/doc/scipy/reference/generated
+        #       /scipy.interpolate.interp2d.html
         self.interp_T_atm = interp2d(self.T_atm_table[:, 0],
                                      WEATHER, self.T_atm_table[:, 1:].T)
         self.interp_tau_atm = interp2d(self.tau_atm_table[:, 0],

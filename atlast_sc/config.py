@@ -1,6 +1,5 @@
+import copy
 from atlast_sc import models
-from atlast_sc import constants
-from atlast_sc import utils
 
 
 class Config:
@@ -13,8 +12,7 @@ class Config:
     Methods
     -------
     """
-    def __init__(self, user_input=None, setup='standard', file_path=None,
-                 setup_inputs_file=None, default_inputs_file=None):
+    def __init__(self, user_input={}, instrument_setup={}):
         """
         Initialises all the required parameters from various input sources
         setup_input, fixed_input and the default can be found in .yaml files
@@ -27,42 +25,28 @@ class Config:
         :param setup: The required telescope setup. Default value 'standard'
         """
 
-        match setup:
-            case constants.STANDARD_SETUP:
-                inputs_path = constants.STANDARD_INPUTS_PATH
-            case constants.BENCHMARKING_JCMT | constants.BENCHMARKING_APEX:
-                # Setup and default inputs are read from yaml files
-                setup_inputs_file = constants.SETUP_INPUTS_FILE
-                default_inputs_file = constants.DEFAULT_INPUTS_FILE
+        self._user_input = models.UserInput(**user_input)
+        self._instrument_setup = models.InstrumentSetup(**instrument_setup)
+        self._calculation_inputs = \
+            models.CalculationInput(user_input=self._user_input,
+                                    instrument_setup=self._instrument_setup)
 
-                # Set the path where the input files are located
-                match setup:
-                    case constants.BENCHMARKING_JCMT:
-                        inputs_path = constants.BENCHMARKING_JCMT_PATH
-                    case constants.BENCHMARKING_APEX:
-                        inputs_path = constants.BENCHMARKING_APEX_PATH
-            # TODO: do we want to support custom input? That is, is there a
-            #  use case whereby the user would want to specify their own
-            #  instrument setup params? I'm guessing no - confirm.
-            case constants.CUSTOM_SETUP:
-                inputs_path = file_path
-            case _:
-                # TODO: need some proper error handling
-                return
-
-        inputs_dict = {}
-        # Build up the dictionary of inputs in the order: defaults, setup,
-        # user input
-        if default_inputs_file:
-            inputs_dict = utils.from_yaml(inputs_path, default_inputs_file)
-        if setup_inputs_file:
-            inputs_dict = inputs_dict | utils.from_yaml(inputs_path,
-                                                        setup_inputs_file)
-        if user_input:
-            inputs_dict = inputs_dict | user_input
-
-        self._calculation_inputs = models.CalculationInput(**inputs_dict)
+        # Make a deep copy of the calculation inputs to enable the
+        # calculator to be reset to its initial setup
+        self._original_inputs = copy.deepcopy(self._calculation_inputs)
 
     @property
     def calculation_inputs(self):
         return self._calculation_inputs
+
+    @calculation_inputs.setter
+    def calculation_inputs(self, value):
+        self._calculation_inputs = value
+
+    @property
+    def original_calculation_inputs(self):
+        return self._original_inputs
+
+    def calculation_inputs_as_dict(self):
+        return dict(self.calculation_inputs.user_input) \
+               | dict(self._calculation_inputs.instrument_setup)
