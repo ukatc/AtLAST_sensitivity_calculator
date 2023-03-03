@@ -1,0 +1,2 @@
+t_int = 100 s
+sensitivity = 0mJy

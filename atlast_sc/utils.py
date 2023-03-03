@@ -66,6 +66,9 @@ class FileHelper:
     """
 
     SUPPORTED_FILE_EXTENSIONS = ['yaml', 'yml', 'txt', 'json']
+    UNSUPPORTED_FILE_TYPE_ERROR_MSG = \
+        'Unsupported file type "{file_type}". ' \
+        'Must be one of: {supported_extensions}'
 
     @staticmethod
     def read_from_file(path, file_name):
@@ -88,6 +91,16 @@ class FileHelper:
         with open(file_path, "r") as file:
             inputs = file_reader(file)
 
+        # Try to convert values to floats
+        for key, param in inputs.items():
+            try:
+                param['value'] = float(param['value'])
+            except ValueError:
+                # Raise a TypeError with a pretty message
+                raise TypeError(f'Value "{param["value"]}" is invalid '
+                                f'for parameter "{key}". '
+                                f'Parameter values must be numeric.')
+
         return inputs
 
     @staticmethod
@@ -106,6 +119,8 @@ class FileHelper:
         :param file_type: The file type (e.g., `yaml`).
         :type file_type: string
         """
+
+        file_type = file_type.lower()
         file_writer = FileHelper._get_writer(file_type)
 
         file_path = f'{os.path.join(path, file_name)}.{file_type}'
@@ -136,9 +151,10 @@ class FileHelper:
             case 'txt':
                 return FileHelper._dict_from_txt
             case _:
-                raise ValueError(f'Unsupported file type {extension}. Must be '
-                                 f'one of: '
-                                 f'{FileHelper.SUPPORTED_FILE_EXTENSIONS}')
+                raise ValueError(FileHelper.UNSUPPORTED_FILE_TYPE_ERROR_MSG
+                                 .format(file_type=extension,
+                                         supported_extensions=FileHelper
+                                         .SUPPORTED_FILE_EXTENSIONS))
 
     @staticmethod
     def _dict_from_yaml(file):
@@ -164,7 +180,19 @@ class FileHelper:
         :return: a dictionary of parameters
         :rtype: dictionary
         """
-        inputs = json.load(file)
+
+        def _remove_none_values(d):
+            """
+            Remove 'None' values from a dictionary `d`.
+            This is used when reading input data from a json file
+            in which unit-less values are provided. Not strictly
+            necessary, but does make the resulting dictionary
+            consistent with those produced when reading from a yaml
+            or txt file.
+            """
+            return {key: val for key, val in d.items() if val is not None}
+
+        inputs = json.load(file, object_hook=_remove_none_values)
 
         return inputs
 
@@ -207,9 +235,10 @@ class FileHelper:
         for line in file.read().splitlines():
             parsed_values = _parse_line(line)
             inputs[parsed_values[0]] = {
-                'value': parsed_values[1],
-                'unit': parsed_values[2]
+                'value': parsed_values[1]
             }
+            if parsed_values[2]:
+                inputs[parsed_values[0]]['unit'] = parsed_values[2]
 
         return inputs
 
@@ -224,6 +253,10 @@ class FileHelper:
         :return: A file writer function
         :rtype: function
         """
+
+        # Sanity check - make sure the file type is lowercase
+        file_type = file_type.lower()
+
         match file_type:
             case 'yaml' | 'yml':
                 return FileHelper._to_yaml
@@ -232,9 +265,10 @@ class FileHelper:
             case 'json':
                 return FileHelper._to_json
             case _:
-                raise ValueError(f'Unsupported file type {file_type}. '
-                                 f'Must be one of '
-                                 f'{FileHelper.SUPPORTED_FILE_EXTENSIONS}')
+                raise ValueError(FileHelper.UNSUPPORTED_FILE_TYPE_ERROR_MSG
+                                 .format(file_type=file_type,
+                                         supported_extensions=FileHelper
+                                         .SUPPORTED_FILE_EXTENSIONS))
 
     @staticmethod
     def _to_txt(file, params):

@@ -46,7 +46,7 @@ calculator.t_int = calculated_t_int
 print("-----------")
 
 # Write all parameters to a log file
-calculator.output_to_file("logs", "output_parameters")
+# calculator.output_to_file("logs", "output_parameters")
 calculator.output_to_file("logs", "output_parameters", "yml")
 
 # reset the calculator
