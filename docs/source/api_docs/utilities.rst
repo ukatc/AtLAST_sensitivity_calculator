@@ -1,7 +1,7 @@
 .. _utilities:
 
 *********
-utilities
+Utilities
 *********
 
 .. autoclass:: atlast_sc.utils.FileHelper

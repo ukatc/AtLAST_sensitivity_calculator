@@ -17,6 +17,12 @@ class Calculator:
     Calculator class that provides an interface to the main
     calculator functionality and performs the core calculations
     to determine the output sensitivity or integration time.
+
+    :param user_input: Dictionary containing user-defined input parameters
+    :type user_input: dict
+    :param instrument_setup: Dictionary containing instrument setup parameters.
+        **NB: usage not tested, and may not be supported in future.**
+    :type instrument_setup: dict
     """
 
     def __init__(self, user_input={}, instrument_setup={}):
@@ -30,7 +36,7 @@ class Calculator:
         self._config = Config(user_input, instrument_setup)
 
         # Calculate and derived parameters used in the calculation
-        self.calculate_derived_parameters()
+        self._calculate_derived_parameters()
 
     # TODO: move these getters and setters to Config object?
     ###################################################
@@ -45,7 +51,7 @@ class Calculator:
     #   calculation
     @property
     def t_int(self):
-        return self.calculation_inputs.user_input.t_int.value
+        return self._calculation_inputs.user_input.t_int.value
 
     @t_int.setter
     @params_updater
@@ -57,11 +63,11 @@ class Calculator:
         #  store or use those stored values.
         #  Need separate "outputs" properties that are used for
         #  subsequent calculations and/or storing results?
-        self.calculation_inputs.user_input.t_int.value = value
+        self._calculation_inputs.user_input.t_int.value = value
 
     @property
     def sensitivity(self):
-        return self.calculation_inputs.user_input.sensitivity.value
+        return self._calculation_inputs.user_input.sensitivity.value
 
     @sensitivity.setter
     @params_updater
@@ -73,56 +79,56 @@ class Calculator:
         #  store or use those stored values.
         #  Need separate "outputs" properties that are used for
         #  subsequent calculations and/or storing results?
-        self.calculation_inputs.user_input.sensitivity.value = value
-        self.calculation_inputs.user_input.sensitivity.unit = value.unit
+        self._calculation_inputs.user_input.sensitivity.value = value
+        self._calculation_inputs.user_input.sensitivity.unit = value.unit
 
     @property
     def bandwidth(self):
-        return self.calculation_inputs.user_input.bandwidth.value
+        return self._calculation_inputs.user_input.bandwidth.value
 
     @bandwidth.setter
     @params_updater
     def bandwidth(self, value):
-        self.calculation_inputs.user_input.bandwidth.value = value
-        self.calculation_inputs.user_input.bandwidth.unit = value.unit
+        self._calculation_inputs.user_input.bandwidth.value = value
+        self._calculation_inputs.user_input.bandwidth.unit = value.unit
 
     @property
     def obs_frequency(self):
-        return self.calculation_inputs.user_input.obs_freq.value
+        return self._calculation_inputs.user_input.obs_freq.value
 
     @obs_frequency.setter
     @params_updater
     def obs_frequency(self, value):
-        self.calculation_inputs.user_input.obs_freq.value = value
-        self.calculation_inputs.user_input.obs_freq.unit = value.unit
+        self._calculation_inputs.user_input.obs_freq.value = value
+        self._calculation_inputs.user_input.obs_freq.unit = value.unit
 
     @property
     def n_pol(self):
-        return self.calculation_inputs.user_input.n_pol.value
+        return self._calculation_inputs.user_input.n_pol.value
 
     @n_pol.setter
     @params_updater
     def n_pol(self, value):
-        self.calculation_inputs.user_input.n_pol.value = value
+        self._calculation_inputs.user_input.n_pol.value = value
 
     @property
     def weather(self):
-        return self.calculation_inputs.user_input.weather.value
+        return self._calculation_inputs.user_input.weather.value
 
     @weather.setter
     @params_updater
     def weather(self, value):
-        self.calculation_inputs.user_input.weather.value = value
+        self._calculation_inputs.user_input.weather.value = value
 
     @property
     def elevation(self):
-        return self.calculation_inputs.user_input.elevation.value
+        return self._calculation_inputs.user_input.elevation.value
 
     @elevation.setter
     @params_updater
     def elevation(self, value):
-        self.calculation_inputs.user_input.elevation.value = value
-        self.calculation_inputs.user_input.elevation.unit = value.unit
+        self._calculation_inputs.user_input.elevation.value = value
+        self._calculation_inputs.user_input.elevation.unit = value.unit
 
     ####################################################################
     # Getters and a couple of setters for instrument setup parameters  #
@@ -130,59 +136,59 @@ class Calculator:
 
     @property
     def g(self):
-        return self.calculation_inputs.instrument_setup.g.value
+        return self._calculation_inputs.instrument_setup.g.value
 
     @property
     def surface_rms(self):
-        return self.calculation_inputs.instrument_setup.surface_rms.value
+        return self._calculation_inputs.instrument_setup.surface_rms.value
 
     @property
     def dish_radius(self):
-        return self.calculation_inputs.instrument_setup.dish_radius.value
+        return self._calculation_inputs.instrument_setup.dish_radius.value
 
     @dish_radius.setter
     @params_updater
     def dish_radius(self, value):
         # TODO Flag to the user somehow that they are varying an instrument
         #   setup parameter
-        self.calculation_inputs.instrument_setup.dish_radius.value = value
-        self.calculation_inputs.instrument_setup.dish_radius.unit = value.unit
+        self._calculation_inputs.instrument_setup.dish_radius.value = value
+        self._calculation_inputs.instrument_setup.dish_radius.unit = value.unit
 
     @property
     def T_amb(self):
-        return self.calculation_inputs.instrument_setup.T_amb.value
+        return self._calculation_inputs.instrument_setup.T_amb.value
 
     @property
     def T_rx(self):
-        return self.calculation_inputs.instrument_setup.T_rx.value
+        return self._calculation_inputs.instrument_setup.T_rx.value
 
     @property
     def eta_eff(self):
-        return self.calculation_inputs.instrument_setup.eta_eff.value
+        return self._calculation_inputs.instrument_setup.eta_eff.value
 
     @property
     def eta_ill(self):
-        return self.calculation_inputs.instrument_setup.eta_ill.value
+        return self._calculation_inputs.instrument_setup.eta_ill.value
 
     @property
     def eta_q(self):
-        return self.calculation_inputs.instrument_setup.eta_q.value
+        return self._calculation_inputs.instrument_setup.eta_q.value
 
     @property
     def eta_spill(self):
-        return self.calculation_inputs.instrument_setup.eta_spill.value
+        return self._calculation_inputs.instrument_setup.eta_spill.value
 
     @property
     def eta_block(self):
-        return self.calculation_inputs.instrument_setup.eta_block.value
+        return self._calculation_inputs.instrument_setup.eta_block.value
 
     @property
     def eta_pol(self):
-        return self.calculation_inputs.instrument_setup.eta_pol.value
+        return self._calculation_inputs.instrument_setup.eta_pol.value
 
     @property
     def eta_r(self):
-        return self.calculation_inputs.instrument_setup.eta_r.value
+        return self._calculation_inputs.instrument_setup.eta_r.value
 
     #########################
     # Getters for constants #
@@ -190,7 +196,7 @@ class Calculator:
 
     @property
     def T_cmb(self):
-        return self.calculation_inputs.T_cmb.value
+        return self._calculation_inputs.T_cmb.value
 
     ###################################
     # Getters for derived parameters  #
@@ -225,7 +231,20 @@ class Calculator:
         return self._derived_params.area
 
     @property
-    def calculation_inputs(self):
+    def calculation_parameters(self):
+        """
+        TODO: might remove this. Not sure it's useful, and may cause some
+            confusion.
+        Returns the parameters used in the calculation (user input, instrument
+        setup, and derived parameters).
+
+        :return: Dictionary of parameters used in the calculation
+        :rtype: dict
+        """
+        return self._calculation_params_as_dict()
+
+    @property
+    def _calculation_inputs(self):
         """
         The inputs to the calculation (user input and instrument setup)
         """
@@ -238,8 +257,8 @@ class Calculator:
 
     def calculate_sensitivity(self, t_int):
         """
-        Return sensitivity of telescope (Jansky) for a
-        given integration time t_int
+        Calculates the telescope sensitivity (Jansky) for a
+        given integration time `t_int`.
 
         :param t_int: integration time
         :type t_int: astropy.units.Quantity
@@ -260,7 +279,8 @@ class Calculator:
 
     def calculate_t_integration(self, sensitivity):
         """
-        Return integration time required for some sensitivity to be reached.
+        Calculates the integration time required for a given `sensitivity`
+        to be reached.
 
         :param sensitivity: required sensitivity in Jansky
         :type sensitivity: astropy.units.Quantity
@@ -277,14 +297,38 @@ class Calculator:
 
         return t_int.to(u.s)
 
-    def calculate_derived_parameters(self):
+    def reset_calculator(self):
+        """
+        Resets all calculators parameters to their initial values.
+        """
+        # Reset the config calculation inputs to their original values
+        self._config.calculation_inputs = \
+            self._config.original_calculation_inputs
+        # Recalculate the derived parameters
+        self._calculate_derived_parameters()
+
+    def output_to_file(self, path, file_name="output_parameters",
+                       file_type="yml"):
+        """
+        Writes the calculator parameters to a file. An existing file
+        with the same name path, file_name and file_type will be overwritten.
+
+        :param path: The directory where the file is written
+        :type path: str
+        :param file_name: The name of the file (excluding the file extension)
+        :type file_name: str
+        :param file_type: The file format
+        :type file_type: str
+        """
+        output_as_dict = self._calculation_params_as_dict()
+
+        FileHelper.write_to_file(output_as_dict, path, file_name, file_type)
+
+    def _calculate_derived_parameters(self):
         """
         Performs the calculations required to produce the
         final set of parameters required for the sensitivity
-        calculation, and outputs the sensitivity or integration
-        time as required.
-
-        :return:
+        calculation.
         """
 
         # Perform atmospheric model calculation
@@ -315,20 +359,6 @@ class Calculator:
             DerivedParams(tau_atm=tau_atm, T_atm=T_atm, eta_a=eta_a,
                           eta_s=eta_s, T_sys=T_sys, sefd=sefd, area=area)
 
-    def reset_calculator(self):
-        # Reset the config calculation inputs to their original values
-        self._config.calculation_inputs = \
-            self._config.original_calculation_inputs
-        # Regenerate the calculation parameters
-        self.calculate_derived_parameters()
-
-    def output_to_file(self, path, file_name="output_parameters",
-                       file_type="yml"):
-
-        output_as_dict = self._calculation_params_as_dict()
-
-        FileHelper.write_to_file(output_as_dict, path, file_name, file_type)
-
     def _calculation_params_as_dict(self):
         """
         Convert the calculation inputs (user inputs and instrument setup)
@@ -337,7 +367,7 @@ class Calculator:
 
         # Convert the calculation inputs to a dictionary
         output_dict = {}
-        for field in self.calculation_inputs:
+        for field in self._calculation_inputs:
             if isinstance(field[1], UserInput) \
                     or isinstance(field[1], InstrumentSetup):
                 for values in field[1]:

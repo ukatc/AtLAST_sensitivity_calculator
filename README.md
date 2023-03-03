@@ -17,10 +17,10 @@ Eventually this calculator will be hosted on a server and made publicly availabl
 For the time being it can be installed or downloaded from this repository.
 
 Documentation on how to install and use the Sensitivity Calculater can be found
-in the [``Installation Guide``](docs/source/installation.rst).
+in the [``Installation Guide``](docs/source/user_guide/installation.rst).
 
 
 Guide for Developers
 ====================
 Information on setting up your development environment, building, running, and deploying the application, running tests,
-and generating the docs is provided in the [``Guide for Developers``](docs/source/guide_for_developers.rst).
+and generating the docs is provided in the [``Guide for Developers``](docs/source/developer_guide/guide_for_developers.rst).

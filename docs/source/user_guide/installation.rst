@@ -11,6 +11,8 @@ Please contact `Fiona Kirton`_ if you require access to the repository.
 
 Instructions are provided below.
 
+.. _installing from git
+
 Installing the Python package from Git
 --------------------------------------
 

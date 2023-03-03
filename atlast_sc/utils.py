@@ -39,7 +39,7 @@ def params_updater(func):
 
         # Validate the new value
         try:
-            calculator.calculation_inputs.\
+            calculator._calculation_inputs.\
                 validate_update(func.__name__, value)
         except ValueError as e:
             raise e
@@ -53,7 +53,7 @@ def params_updater(func):
         # Recalculate derived parameters, if necessary
         if dirty:
             # TODO: be intelligent about this - only update affected params?
-            calculator.calculate_derived_parameters()
+            calculator._calculate_derived_parameters()
 
     return update_param
 

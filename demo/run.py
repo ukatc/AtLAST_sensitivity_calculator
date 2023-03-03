@@ -50,7 +50,7 @@ print("-----------")
 calculator.output_to_file("logs", "output_parameters", "yml")
 
 # reset the calculator
-print('before resetting', calculator.calculation_inputs)
+print('before resetting', calculator.calculation_parameters)
 calculator.reset_calculator()
-print('after resetting', calculator.calculation_inputs)
+print('after resetting', calculator.calculation_parameters)
 # TODO: add something here to demonstrate that the calculator has been reset
