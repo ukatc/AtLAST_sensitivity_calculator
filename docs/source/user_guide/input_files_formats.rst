@@ -1,5 +1,5 @@
 Input Files and Formats
-=======================
+-----------------------
 
 The Sensitivity Calculator can read input data from a plain-text,
 `YAML <https://en.wikipedia.org/wiki/YAML>`__,
@@ -7,7 +7,7 @@ or `JSON <https://en.wikipedia.org/wiki/JSON>`__ formatted file.
 These are described in more detail below.
 
 Plain-text files
-----------------
+^^^^^^^^^^^^^^^^
 Plain-text files should have the extension ``.txt`` or ``.TXT``. Each line of
 the file should be of the following format:
 
@@ -30,7 +30,7 @@ An example file might contain the following lines:
 - Spaces around "=" are optional.
 
 YAML files
-----------
+^^^^^^^^^^
 
 YAML files should have the extension ``yaml``, ``yml``, ``YAML``, or ``YML``.
 
@@ -46,7 +46,7 @@ An example YAML file might contain the following:
 
 
 JSON files
------------
+^^^^^^^^^^
 JSON files should have the extension ``json`` or ``JSON``.
 
 An example JSON file might contain the following:

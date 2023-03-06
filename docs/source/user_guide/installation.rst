@@ -7,11 +7,11 @@ available as a standalone python package, hosted on a publicly available server.
 For the time being, both can be installed from the UKATC AtLast Sensitivity Calculator GitHub repository and
 run in your local environment.
 
-Please contact `Fiona Kirton`_ if you require access to the repository.
+Please contact `Pamela Klaassen`_ if you require access to the repository.
 
 Instructions are provided below.
 
-.. _installing from git
+.. _installing from git:
 
 Installing the Python package from Git
 --------------------------------------
@@ -186,4 +186,4 @@ You can now build and run the Docker container as follows:
 3. Point your browser at http://127.0.0.1:5000/. You should now see the sensitivity calculator web client.
 
 
-.. _Fiona Kirton: fiona.kirton@stfc.ac.uk
+.. _Pamela Klaassen: pamela.klaassen@stfc.ac.uk

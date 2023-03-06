@@ -1,5 +1,3 @@
-.. _utilities:
-
 *********
 Utilities
 *********

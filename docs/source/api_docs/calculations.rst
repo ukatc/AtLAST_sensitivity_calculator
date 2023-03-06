@@ -1,5 +1,3 @@
-.. _calculations:
-
 ************
 Calculations
 ************
