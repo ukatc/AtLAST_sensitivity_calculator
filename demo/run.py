@@ -28,8 +28,6 @@ calculated_sensitivity = \
     calculator.calculate_sensitivity(calculator.t_int).to(u.mJy)
 print("Sensitivity: {:0.2f} for an integration time of {:0.2f} "
       .format(calculated_sensitivity, calculator.t_int))
-# TODO: what's happened to the decimal places in sensitivity here??
-print("{:0.2f}".format(calculator.sensitivity))
 # TODO: How to store the calculated sensitivity?
 #  (Writing it to the calculator object is not a good idea)
 calculator.sensitivity = calculated_sensitivity

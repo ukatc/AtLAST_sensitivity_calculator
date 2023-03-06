@@ -24,7 +24,6 @@ def test_eta_a():
     surface_rms = 25 * u.micron
     eff = Efficiencies(0.7, 1, 1, 1, 1, 1)
     eta_a = eff.eta_a(obs_freq, surface_rms)
-    print(eta_a)
     # assert eta_a.value == pytest.approx(0.9211434072170483)
     assert eta_a.value <= 1
 

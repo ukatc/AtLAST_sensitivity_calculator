@@ -2,7 +2,7 @@ import astropy.units as u
 import numpy as np
 from atlast_sc.atmosphere_params import AtmosphereParams
 from atlast_sc.sefd import SEFD
-from atlast_sc.system_temperature import SystemTemperature
+from atlast_sc.temperature import Temperature
 from atlast_sc.efficiencies import Efficiencies
 from atlast_sc.models import DerivedParams
 from atlast_sc.models import UserInput
@@ -32,7 +32,6 @@ class Calculator:
         self._derived_params = None
 
         # Store the input parameters used to initialise the calculator
-        print('creating new calculation input with user config')
         self._config = Config(user_input, instrument_setup)
 
         # Calculate and derived parameters used in the calculation
@@ -158,9 +157,9 @@ class Calculator:
     def T_amb(self):
         return self._calculation_inputs.instrument_setup.T_amb.value
 
-    @property
-    def T_rx(self):
-        return self._calculation_inputs.instrument_setup.T_rx.value
+    # @property
+    # def T_rx(self):
+    #     return self._calculation_inputs.instrument_setup.T_rx.value
 
     @property
     def eta_eff(self):
@@ -346,9 +345,8 @@ class Calculator:
         eta_s = eta.eta_s()
 
         # Calculate the system temperature
-        T_sys = SystemTemperature(self.T_rx, self.T_cmb, T_atm, self.T_amb,
-                                  tau_atm).system_temperature(self.g,
-                                                              self.eta_eff)
+        T_sys = Temperature(self.obs_frequency, self.T_cmb, T_atm, self.T_amb,
+                            tau_atm).system_temperature(self.g, self.eta_eff)
 
         # Calculate the dish area
         area = np.pi * self.dish_radius ** 2

@@ -5,7 +5,7 @@ from atlast_sc.exceptions import UnitException, ValueOutOfRangeException,\
 from atlast_sc.data import param_data_type_dicts
 from atlast_sc.data import IntegrationTime, Sensitivity, Bandwidth, \
     ObsFrequency, NPol, Weather, Elevation, G, SurfaceRMS, DishRadius, TAmb, \
-    TRx, EtaEff, EtaIll, EtaSpill, EtaBlock, EtaPol, EtaR, EtaQ, TCmb
+    EtaEff, EtaIll, EtaSpill, EtaBlock, EtaPol, EtaR, EtaQ, TCmb
 
 
 class Validator:
@@ -167,8 +167,6 @@ class InstrumentSetup(BaseModel):
     T_amb: ValueWithUnits = \
         ValueWithUnits(value=TAmb.DEFAULT_VALUE.value,
                        unit=TAmb.DEFAULT_UNIT.value)
-    T_rx: ValueWithUnits = ValueWithUnits(value=TRx.DEFAULT_VALUE.value,
-                                          unit=TRx.DEFAULT_UNIT.value)
     eta_eff: ValueWithoutUnits = \
         ValueWithoutUnits(value=EtaEff.DEFAULT_VALUE.value)
     eta_ill: ValueWithoutUnits = \
@@ -232,7 +230,7 @@ class CalculationInput(BaseModel):
 
         return self
 
-
+# TODO: do we want to add T_rx to the list of derived parameters?
 class DerivedParams(BaseModel):
     """
     Derived parameters, calculated from user input and instrument setup
