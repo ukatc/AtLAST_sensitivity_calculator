@@ -9,14 +9,26 @@ from yaml import load, Loader
 ########################
 
 def params_updater(func):
-    # If the new value is different from the current value,
-    # recalculate the other parameters used in the calculation
+    """
+    Decorator to support setter methods on calculations input parameters.
+
+    :param func: function that updates the calculation input parameter
+    :type func: property setter function
+    """
 
     @functools.wraps(func)
     def update_param(*args, **kwargs):
-        obj = args[0]
+        """
+        Validates the type, value and units of the new value before
+        updating the calculation input parameter. If the new value is
+        different from the old, derived parameters are recalculated.
+
+        :arg str arg0: The Calculator object
+        :arg str arg1: The new value
+        """
+        calculator = args[0]
         value = args[1]
-        attribute = getattr(obj, func.__name__)
+        attribute = getattr(calculator, func.__name__)
 
         # Make sure the new value is of the correct type
         if not isinstance(value, type(attribute)):
@@ -27,8 +39,8 @@ def params_updater(func):
 
         # Validate the new value
         try:
-            obj.calculation_inputs.validate_update(func.__name__,
-                                                   value)
+            calculator._calculation_inputs.\
+                validate_update(func.__name__, value)
         except ValueError as e:
             raise e
 
@@ -38,34 +50,98 @@ def params_updater(func):
         # Update the parameter
         func(*args, **kwargs)
 
-        # Recalculate other parameters, if necessary
+        # Recalculate derived parameters, if necessary
         if dirty:
             # TODO: be intelligent about this - only update affected params?
-            # TODO: check the data validation is happening when this func is
-            #  called
-            obj.calculate_derived_parameters()
+            calculator._calculate_derived_parameters()
 
     return update_param
 
 
 class FileHelper:
-    # TODO: Sort out the inconsistency between supported reader types and
-    #   supported writer types
+    """
+    Class that provides support for reading input parameters from a file
+    and writing outputs to a file.
+    Supported file formats are `yaml`, `txt`, and `json`.
+    """
+
+    SUPPORTED_FILE_EXTENSIONS = ['yaml', 'yml', 'txt', 'json']
+    UNSUPPORTED_FILE_TYPE_ERROR_MSG = \
+        'Unsupported file type "{file_type}". ' \
+        'Must be one of: {supported_extensions}'
 
     @staticmethod
     def read_from_file(path, file_name):
+        """
+        Reads the file with name `file_name` located in directory `path`
+        and returns a dictionary. The file type (e.g., `yaml`) is
+        determined from the file extension in`file_name`.
+
+        :param path: The directory where the file is located.
+        :type path: string
+        :param file_name: The name of the file, including the file extension.
+        :type file_name: string
+        :return: Dictionary of input parameters.
+        :rtype: dictionary
+        """
         file_reader = FileHelper._get_reader(file_name)
 
         file_path = os.path.join(path, file_name)
 
-        return file_reader(file_path)
+        with open(file_path, "r") as file:
+            inputs = file_reader(file)
+
+        # Try to convert values to floats
+        for key, param in inputs.items():
+            try:
+                param['value'] = float(param['value'])
+            except ValueError:
+                # Raise a TypeError with a pretty message
+                raise TypeError(f'Value "{param["value"]}" is invalid '
+                                f'for parameter "{key}". '
+                                f'Parameter values must be numeric.')
+
+        return inputs
+
+    @staticmethod
+    def write_to_file(params, path, file_name, file_type):
+        """
+        Writes the values in `params` to a file with name `file_name` and
+        extension `file_type` to location `path`.
+
+        :param params: A dictionary of calculation parameters.
+        :type params: dictionary
+        :param path: The location where the file is saved.
+        :type path: string
+        :param file_name: The name of the file to write. Note this should not
+                            include the file extension.
+        :type file_name: string
+        :param file_type: The file type (e.g., `yaml`).
+        :type file_type: string
+        """
+
+        file_type = file_type.lower()
+        file_writer = FileHelper._get_writer(file_type)
+
+        file_path = f'{os.path.join(path, file_name)}.{file_type}'
+
+        with open(file_path, "w") as f:
+            file_writer(f, params)
 
     @staticmethod
     def _get_reader(file_name):
+        """
+        Factory method that returns the file reader for the
+        file type indicated by the extension in `file_name`.
 
+        :param file_name: The name of file to read.
+        :type file_name: string
+        :return: A file reader function
+        :rtype: function
+        """
         # Extract the extension from the file name
         # and remove the leading '.'
-        extension = os.path.splitext(file_name)[1].lstrip('.')
+        extension = os.path.splitext(file_name)[1].lstrip('.').lower()
 
         match extension:
             case 'yaml' | 'yml':
@@ -73,89 +149,177 @@ class FileHelper:
             case 'json':
                 return FileHelper._dict_from_json
             case 'txt':
-                raise ValueError('TXT not yet supported')
+                return FileHelper._dict_from_txt
             case _:
-                raise ValueError(f'Unsupported file type {extension}. Must be '
-                                 f'"json", "yaml", or "yml"')
+                raise ValueError(FileHelper.UNSUPPORTED_FILE_TYPE_ERROR_MSG
+                                 .format(file_type=extension,
+                                         supported_extensions=FileHelper
+                                         .SUPPORTED_FILE_EXTENSIONS))
 
     @staticmethod
-    def _dict_from_yaml(file_path):
+    def _dict_from_yaml(file):
         """
-        Read input from a yaml file with parameters described in the
-        format <param_name>: {<value>:<param_value>, <unit>:<param_unit>}
-        and return a dictionary
+        Read data from a yaml file.
 
-        :param path: the path to the yaml file
-        :type path: str
-        :param file_name: the name of the yaml file
-        :type file_name: str
+        :param file: the yaml file
+        :type file: buffered text stream (TextIOWrapper)
+        :return: a dictionary of parameters
+        :rtype: dictionary
         """
-
-        with open(file_path, "r") as yaml_file:
-            inputs = load(yaml_file, Loader=Loader)
+        inputs = load(file, Loader=Loader)
 
         return inputs
 
     @staticmethod
-    def _dict_from_json(path, file_name):
+    def _dict_from_json(file):
         """
-        Takes a .json input file of user inputs and returns a dictionary
+        Read data from a json file.
 
-        :param path: the path of the input json file
-        :type path: str
+        :param file: the json file
+        :type file: buffered text stream (TextIOWrapper)
+        :return: a dictionary of parameters
+        :rtype: dictionary
         """
-        # TODO: NOT TESTED
-        with open(path, "r") as json_file:
-            inputs = json.load(json_file)
+
+        def _remove_none_values(d):
+            """
+            Remove 'None' values from a dictionary `d`.
+            This is used when reading input data from a json file
+            in which unit-less values are provided. Not strictly
+            necessary, but does make the resulting dictionary
+            consistent with those produced when reading from a yaml
+            or txt file.
+            """
+            return {key: val for key, val in d.items() if val is not None}
+
+        inputs = json.load(file, object_hook=_remove_none_values)
+
         return inputs
 
     @staticmethod
-    def write_to_file(params, path, file_name, file_type):
+    def _dict_from_txt(file):
+        """
+        Read data from a txt file.
 
-        file_writer = FileHelper._get_writer(file_type)
+        :param file: the txt file
+        :type file: buffered text stream (TextIOWrapper)
+        :return: a dictionary of parameters
+        :rtype: dictionary
+        """
 
-        file_path = f'{os.path.join(path, file_name)}.{file_type}'
+        def _parse_line(line_to_parse):
+            try:
+                # parse the parameter name, which appears before '='
+                ind = line_to_parse.index('=')
+                param_name = line_to_parse[:ind].strip()
 
-        with open(file_path, "w") as f:
-            for key, value in params.items():
-                file_writer(f, key, value)
+                # parse the value, which appears between '=' and
+                # the space before the unit, if there is one
+                # (there may or not be a space between '=' and the value)
+                sub_str = line_to_parse[ind + 1:].strip()
+                ind = sub_str.find(' ')
+                if ind != -1:
+                    value = sub_str[:ind].strip()
+                    # parse the unit, if there is one
+                    unit = sub_str[ind:].strip()
+                else:
+                    value = sub_str.strip()
+                    unit = None
+
+            except ValueError as e:
+                raise e
+
+            return param_name, value, unit
+
+        inputs = {}
+        for line in file.read().splitlines():
+            parsed_values = _parse_line(line)
+            inputs[parsed_values[0]] = {
+                'value': parsed_values[1]
+            }
+            if parsed_values[2]:
+                inputs[parsed_values[0]]['unit'] = parsed_values[2]
+
+        return inputs
 
     @staticmethod
     def _get_writer(file_type):
+        """
+        Factory method that returns the file writer for the
+        specified `file_type`.
+
+        :param file_type: The type of file to write (e.g., `yaml`).
+        :type file_type: string
+        :return: A file writer function
+        :rtype: function
+        """
+
+        # Sanity check - make sure the file type is lowercase
+        file_type = file_type.lower()
+
         match file_type:
             case 'yaml' | 'yml':
                 return FileHelper._to_yaml
             case 'txt':
                 return FileHelper._to_txt
             case 'json':
-                raise ValueError('JSON not yet supported')
+                return FileHelper._to_json
             case _:
-                raise ValueError(f'Unsupported file type {file_type}. Must be '
-                                 f'"txt", "yaml", or "yml"')
+                raise ValueError(FileHelper.UNSUPPORTED_FILE_TYPE_ERROR_MSG
+                                 .format(file_type=file_type,
+                                         supported_extensions=FileHelper
+                                         .SUPPORTED_FILE_EXTENSIONS))
 
     @staticmethod
-    def _to_txt(f, key, value):
+    def _to_txt(file, params):
         """
-        Write config parameters to file
+        Writes a dictionary to a txt file.
 
-        :param path: the path of the output log file
-        :type path: str
+        :param file: The txt file
+        :type file: buffered text stream (TextIOWrapper)
+        :param params: A dictionary of parameters to write.
+        :type params: dictionary
         """
-        # TODO update docstring
-        # with open(file_path, "w") as f:
-        #     for key, value in params.items():
-        f.write(f"{key} = {value} \n")
+        for key, value in params.items():
+            file.write(f"{key} = {value} \n")
 
     @staticmethod
-    def _to_yaml(f, key, value):
-        # TODO: docstring
-        # with open(file_path, "w") as f:
-        #     for key, val in params.items():
-        if hasattr(value, "unit"):
-            unit = value.unit
-            value = value.value
-            f.write(f"{key: <16}: {{value: {value: >10}, "
-                    f"unit: {unit}}} \n")
-        else:
-            # TODO: do we need 'none' for unit?
-            f.write(f"{key: <16}: {{value: {value: >10}, unit: none}} \n")
+    def _to_yaml(file, params):
+        """
+        Writes a dictionary to a yaml file.
+
+        :param file: The yaml file
+        :type file: buffered text stream (TextIOWrapper)
+        :param params: A dictionary of parameters to write.
+        :type params: dictionary
+        """
+        for key, value in params.items():
+            if hasattr(value, "unit"):
+                unit = value.unit
+                value = value.value
+                file.write(f"{key: <16}: {{value: {value: >10}, "
+                           f"unit: {unit}}} \n")
+            else:
+                file.write(f"{key: <16}: "
+                           f"{{value: {value: >10}}} \n")
+
+    @staticmethod
+    def _to_json(file, params):
+        """
+        Writes a dictionary to a json file.
+
+        :param file: The json file
+        :type file: buffered text stream (TextIOWrapper)
+        :param params: A dictionary of parameters to write.
+        :type params: dictionary
+        """
+        outputs = {}
+        for key, value in params.items():
+            if hasattr(value, "unit"):
+                unit = str(value.unit)
+                value = value.value
+                outputs[key] = {'value': value, 'unit': unit}
+            else:
+                outputs[key] = {'value': value}
+
+        json.dump(outputs, file, indent=2)

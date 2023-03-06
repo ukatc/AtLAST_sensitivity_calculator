@@ -1,0 +1,4 @@
+---
+t_int       : {value: 100,   unit: s}
+sensitivity : {value: 0,   unit: mJy}
+n_pol        : {value: 2}

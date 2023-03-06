@@ -1,8 +1,9 @@
-.. _backend:
+************
+Calculations
+************
 
-*********
-backend
-*********
+.. automodule:: atlast_sc.calculator
+   :members:
 
 .. automodule:: atlast_sc.atmosphere_params
    :members:
@@ -11,9 +12,6 @@ backend
    :members:
 
 .. automodule:: atlast_sc.sefd
-   :members:
-
-.. automodule:: atlast_sc.calculator
    :members:
 
 .. automodule:: atlast_sc.system_temperature

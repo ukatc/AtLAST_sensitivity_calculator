@@ -3,6 +3,6 @@ t_int       : {value: 100,   unit: s}
 sensitivity : {value: 0,   unit: mJy}
 bandwidth   : {value: 7.5, unit: GHz}
 obs_freq    : {value: 100, unit: GHz}
-n_pol       : {value: 2,   unit: none} 
-weather     : {value: 50,  unit: none}
+n_pol       : {value: 2}
+weather     : {value: 50}
 elevation   : {value: 30,  unit: deg}

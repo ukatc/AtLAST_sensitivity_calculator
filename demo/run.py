@@ -20,7 +20,7 @@ print("-----------")
 # (here, specified in user_input.yaml)
 # calculator.bandwidth = 10.5*u.GHz
 # calculator.elevation = 5*u.deg
-calculator.dish_radius = 100*u.m
+# calculator.dish_radius = 100*u.m
 # calculator.obs_frequency = 1*u.GHz
 # print('using params', calculator.calculation_params)
 # TODO: is there a reason for not converting the sensitivity to mJy by default?
@@ -46,11 +46,11 @@ calculator.t_int = calculated_t_int
 print("-----------")
 
 # Write all parameters to a log file
-calculator.output_to_file("logs", "output_parameters")
-calculator.output_to_file("logs", "output_parameters", "txt")
+# calculator.output_to_file("logs", "output_parameters")
+calculator.output_to_file("logs", "output_parameters", "yml")
 
 # reset the calculator
-print('before resetting', calculator.calculation_inputs)
+print('before resetting', calculator.calculation_parameters)
 calculator.reset_calculator()
-print('after resetting', calculator.calculation_inputs)
+print('after resetting', calculator.calculation_parameters)
 # TODO: add something here to demonstrate that the calculator has been reset

@@ -1,4 +1,4 @@
-The sensitivity calculation
+The Sensitivity Calculation
 ===========================
 
 The following is a description of the underlying calculations that the software performs.

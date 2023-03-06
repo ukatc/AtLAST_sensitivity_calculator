@@ -47,7 +47,7 @@ class ValueNotAllowedException(ValueError):
     def __init__(self, parameter, allowed_values, units=None,
                  message=None):
         self.parameter = parameter
-        self.allowed_values
+        self.allowed_values = allowed_values
         self.units = units
         self.message = message \
             if message\
