@@ -230,7 +230,7 @@ class CalculationInput(BaseModel):
 
         return self
 
-# TODO: do we want to add T_rx to the list of derived parameters?
+
 class DerivedParams(BaseModel):
     """
     Derived parameters, calculated from user input and instrument setup
@@ -241,6 +241,8 @@ class DerivedParams(BaseModel):
     tau_atm: float
     # Atmospheric temperature
     T_atm: Quantity
+    # Receiver temperature
+    T_rx: Quantity
     # Dish efficiency
     eta_a: float
     # System efficiency

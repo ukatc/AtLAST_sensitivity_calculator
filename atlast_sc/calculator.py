@@ -2,7 +2,7 @@ import astropy.units as u
 import numpy as np
 from atlast_sc.atmosphere_params import AtmosphereParams
 from atlast_sc.sefd import SEFD
-from atlast_sc.temperature import Temperature
+from atlast_sc.temperatures import Temperatures
 from atlast_sc.efficiencies import Efficiencies
 from atlast_sc.models import DerivedParams
 from atlast_sc.models import UserInput
@@ -344,9 +344,10 @@ class Calculator:
         eta_a = eta.eta_a(self.obs_frequency, self.surface_rms)
         eta_s = eta.eta_s()
 
-        # Calculate the system temperature
-        T_sys = Temperature(self.obs_frequency, self.T_cmb, T_atm, self.T_amb,
-                            tau_atm).system_temperature(self.g, self.eta_eff)
+        # Calculate the temperatures
+        temps = Temperatures(self.obs_frequency, self.T_cmb, T_atm, self.T_amb,
+                            tau_atm)
+        T_sys = temps.system_temperature(self.g, self.eta_eff)
 
         # Calculate the dish area
         area = np.pi * self.dish_radius ** 2
@@ -354,8 +355,9 @@ class Calculator:
         sefd = SEFD.calculate(T_sys, area, eta_a)
 
         self._derived_params = \
-            DerivedParams(tau_atm=tau_atm, T_atm=T_atm, eta_a=eta_a,
-                          eta_s=eta_s, T_sys=T_sys, sefd=sefd, area=area)
+            DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
+                          eta_a=eta_a, eta_s=eta_s, T_sys=T_sys, sefd=sefd,
+                          area=area)
 
     def _calculation_params_as_dict(self):
         """

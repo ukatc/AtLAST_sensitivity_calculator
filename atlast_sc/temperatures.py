@@ -4,7 +4,7 @@ from astropy.constants import h
 from astropy import units as u
 
 
-class Temperature:
+class Temperatures:
     """
     Contains all the relevant temperatures that input to the total system
     temperature, T_sys
@@ -12,11 +12,11 @@ class Temperature:
 
     def __init__(self, obs_freq, T_cmb, T_atm, T_amb, tau_atm):
         self._T_cmb = T_cmb
-        self._T_rx = Temperature._calculate_receiver_temperature(obs_freq)
+        self._T_rx = Temperatures._calculate_receiver_temperature(obs_freq)
         self._T_amb = T_amb
         self._T_atm = T_atm
         self._tau_atm = tau_atm
-        self._transmittance = Temperature._calculate_transmittance(tau_atm)
+        self._transmittance = Temperatures._calculate_transmittance(tau_atm)
         self._T_sky = self._calculate_sky_temperature()
 
     @property
