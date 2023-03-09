@@ -24,15 +24,13 @@ class Calculator:
     :type instrument_setup: dict
     """
     def __init__(self, user_input={}, instrument_setup={}):
-        # TODO: provide accessor methods for properties
-        # TODO: get a list of properties that are editable and provide setters
 
         self._derived_params = None
 
         # Store the input parameters used to initialise the calculator
         self._config = Config(user_input, instrument_setup)
 
-        # Calculate and derived parameters used in the calculation
+        # Calculate the derived parameters used in the calculation
         self._calculate_derived_parameters()
 
     # TODO: move these getters and setters to Config object?
@@ -230,9 +228,12 @@ class Calculator:
     @property
     def calculation_parameters_as_dict(self):
         """
-        TODO: might remove this. Not sure it's useful, and may cause some confusion.
         Returns the parameters used in the calculation (user input, instrument
-        setup, and derived parameters).
+        setup, and derived parameters) as a dictionary.
+
+        Dictionary keys are the parameter names; values are either a float (
+        values without units), or an astropy Quantity object with a value and
+        unit.
 
         :return: Dictionary of parameters used in the calculation
         :rtype: dict
@@ -303,6 +304,10 @@ class Calculator:
 
         return t_int.to(u.s)
 
+    ###################
+    # Utility methods #
+    ###################
+
     def reset_calculator(self):
         """
         Resets all calculators parameters to their initial values.
@@ -329,6 +334,10 @@ class Calculator:
         output_as_dict = self._calculation_params_as_dict()
 
         FileHelper.write_to_file(output_as_dict, path, file_name, file_type)
+
+    #####################
+    # Protected methods #
+    #####################
 
     def _calculate_derived_parameters(self):
         """
