@@ -48,7 +48,7 @@ print("-----------")
 calculator.output_to_file("logs", "output_parameters", "yml")
 
 # reset the calculator
-print('before resetting', calculator.calculation_parameters)
+print('before resetting', calculator.calculation_parameters_as_dict)
 calculator.reset_calculator()
-print('after resetting', calculator.calculation_parameters)
+print('after resetting', calculator.calculation_parameters_as_dict)
 # TODO: add something here to demonstrate that the calculator has been reset

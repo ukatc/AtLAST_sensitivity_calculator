@@ -20,11 +20,9 @@ class Calculator:
 
     :param user_input: Dictionary containing user-defined input parameters
     :type user_input: dict
-    :param instrument_setup: Dictionary containing instrument setup parameters.
-        **NB: usage not tested, and may not be supported in future.**
+    :param instrument_setup: Dictionary containing instrument setup parameters. **NB: usage not tested, and may not be supported in future.**
     :type instrument_setup: dict
     """
-
     def __init__(self, user_input={}, instrument_setup={}):
         # TODO: provide accessor methods for properties
         # TODO: get a list of properties that are editable and provide setters
@@ -230,10 +228,9 @@ class Calculator:
         return self._derived_params.area
 
     @property
-    def calculation_parameters(self):
+    def calculation_parameters_as_dict(self):
         """
-        TODO: might remove this. Not sure it's useful, and may cause some
-            confusion.
+        TODO: might remove this. Not sure it's useful, and may cause some confusion.
         Returns the parameters used in the calculation (user input, instrument
         setup, and derived parameters).
 
@@ -254,16 +251,21 @@ class Calculator:
     # integration time calculations                 #
     #################################################
 
-    def calculate_sensitivity(self, t_int):
+    def calculate_sensitivity(self, t_int=None):
         """
         Calculates the telescope sensitivity (Jansky) for a
         given integration time `t_int`.
 
-        :param t_int: integration time
+        :param t_int: integration time. Optional. Defaults to the internally
+            stored value
         :type t_int: astropy.units.Quantity
         :return: sensitivity in Janksy
         :rtype: astropy.units.Quantity
         """
+
+        # Use the internally stored integration time if t_int is not
+        #   supplied
+        t_int = t_int if t_int is None else self.t_int
 
         sensitivity = \
             (self.sefd /
@@ -276,16 +278,21 @@ class Calculator:
 
         return sensitivity.to(u.Jy)
 
-    def calculate_t_integration(self, sensitivity):
+    def calculate_t_integration(self, sensitivity=None):
         """
         Calculates the integration time required for a given `sensitivity`
         to be reached.
 
-        :param sensitivity: required sensitivity in Jansky
+        :param sensitivity: required sensitivity in Jansky. Optional. Defaults
+            to the internally stored value
         :type sensitivity: astropy.units.Quantity
         :return: integration time in seconds
         :rtype: astropy.units.Quantity
         """
+
+        # Use the internally stored sensitivity if this value is not
+        #   supplied.
+        sensitivity = sensitivity if sensitivity is None else self.sensitivity
 
         t_int = ((self.sefd
                   * np.exp(self.tau_atm))

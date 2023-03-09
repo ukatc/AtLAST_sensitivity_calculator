@@ -5,7 +5,7 @@ class SEFD:
     """
     Class that calculates the source equivalent flux density, SEFD
     TODO: do we really need this class. A method in the calculatr class is
-        probably enough
+    probably enough
     """
 
     @staticmethod
