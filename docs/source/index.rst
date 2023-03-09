@@ -13,6 +13,7 @@ AtLAST Sensitivity Calculator
 
    calculator_info/sensitivity
    calculator_info/calculation_inputs
+   calculator_info/weather
 
 .. User Guide section
    Hidden toctree to manage the sidebar navigation.

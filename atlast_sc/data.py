@@ -54,7 +54,7 @@ class Bandwidth(BaseDataType):
 
 
 class ObsFrequency(BaseDataType):
-    DEFAULT_VALUE = 100
+    DEFAULT_VALUE = 200
     DEFAULT_UNIT = str(u.GHz)
     LOWER_VALUE = 35
     UPPER_VALUE = 950
@@ -70,11 +70,9 @@ class NPol(BaseDataType):
 
 
 class Weather(BaseDataType):
-    DEFAULT_VALUE = 50
-    LOWER_RANGE = 0
-    # TODO: web client requests a value between 0 and 100%, but data
-    #       validation restricts values to between 0 and 10. Clarify.
-    UPPER_RANGE = 10
+    DEFAULT_VALUE = 25
+    LOWER_RANGE = 5
+    UPPER_RANGE = 95
 
 
 class Elevation(BaseDataType):
@@ -106,13 +104,6 @@ class DishRadius(BaseDataType):
 
 class TAmb(BaseDataType):
     DEFAULT_VALUE = 270
-    DEFAULT_UNIT = str(u.K)
-
-
-class TRx(BaseDataType):
-    # TODO: this value should be calculated rather than set to a fixed value
-    #   (function of obs_freq)
-    DEFAULT_VALUE = 50
     DEFAULT_UNIT = str(u.K)
 
 
@@ -167,7 +158,6 @@ param_data_type_dicts = {
     'surface_rms': SurfaceRMS.to_dict(),
     'dish_radius': DishRadius.to_dict(),
     'T_amb': TAmb.to_dict(),
-    'T_rx': TRx.to_dict(),
     'eta_eff': EtaEff.to_dict(),
     'eta_ill': EtaIll.to_dict(),
     'eta_spill': EtaSpill.to_dict(),

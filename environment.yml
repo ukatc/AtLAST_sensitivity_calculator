@@ -19,3 +19,4 @@ dependencies:
   - pandoc
   - build
   - flake8
+  - sphinx-copybutton

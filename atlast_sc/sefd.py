@@ -4,8 +4,11 @@ from astropy.constants import k_B
 class SEFD:
     """
     Class that calculates the source equivalent flux density, SEFD
+    TODO: do we really need this class. A method in the calculatr class is
+    probably enough
     """
 
+    @staticmethod
     def calculate(T_sys, area, eta_A):
         """
         Calculate SEFD from the system temperature T_sys, the dish area and

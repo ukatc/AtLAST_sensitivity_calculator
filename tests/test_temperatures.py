@@ -1,32 +1,26 @@
 import pytest
-import astropy.units as u
-from atlast_sc.system_temperature import SystemTemperature
 
 
-def test_temperatures():
-    T_rx = 50 * u.K
-    T_cmb = 2.73 * u.K
-    T_atm = 255 * u.K
-    T_amb = 270 * u.K
-    tau_atm = 0.8
+def test_system_temperatures(temperatures, g, eta_eff):
 
-    g = 1
-    eta_eff = 0.9
+    sys_temp = temperatures.system_temperature(g, eta_eff)
 
-    t = SystemTemperature(T_rx, T_cmb, T_atm, T_amb, tau_atm)
-    assert t.system_temperature(g, eta_eff).value \
-           == pytest.approx(205.761, 0.001)
+    # TODO: need a more robust way of testing the values are correct
+    # Check the system temperature is correct
+    assert sys_temp.value \
+           == pytest.approx(222.431, 0.001)
+
+    # Check the system temperature has the correct units
+    assert sys_temp.unit == 'K'
 
 
-def test_units():
-    T_rx = 50 * u.K
-    T_cmb = 2.73 * u.K
-    T_atm = 255 * u.K
-    T_amb = 270 * u.K
-    tau_atm = 0.8
+def test_receiver_temperature(temperatures):
 
-    g = 1
-    eta_eff = 0.9
+    t_rx = temperatures.T_rx
 
-    t = SystemTemperature(T_rx, T_cmb, T_atm, T_amb, tau_atm)
-    assert t.system_temperature(g, eta_eff).unit == "K"
+    # TODO: need a more robust way of testing the values are correct
+    # Check the temperature is correct
+    assert t_rx.value == pytest.approx(50, 0.1)
+
+    # Check the receiver temperature has the correct units
+    assert t_rx.unit == 'K'

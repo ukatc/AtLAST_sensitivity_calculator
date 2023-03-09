@@ -7,3 +7,7 @@ plain-text, `YAML <https://en.wikipedia.org/wiki/YAML>`__,
 or `JSON <https://en.wikipedia.org/wiki/JSON>`__ formatted file.
 
 **TODO: finish writing this doc**
+
+.. code-block:: python
+
+    calculator.output_to_file("logs", "output_parameters", "yml")

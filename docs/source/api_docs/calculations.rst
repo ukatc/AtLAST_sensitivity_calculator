@@ -14,5 +14,5 @@ Calculations
 .. automodule:: atlast_sc.sefd
    :members:
 
-.. automodule:: atlast_sc.system_temperature
+.. automodule:: atlast_sc.temperatures
    :members:
