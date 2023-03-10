@@ -123,7 +123,7 @@ function validateBandwidth(field, bandwidth) {
     }
 }
 
-// Validate a H20 input, making sure it is not empty and is a number between 0 and 10.
+// Validate a H20 input, making sure it is not empty and is a number between 5 and 95.
 function validatePwv(field, pwv) {
     var pwv_feedback = document.getElementById(field + "-invalid");
     var pwv_input = document.getElementById(field + "-input");
@@ -133,8 +133,8 @@ function validatePwv(field, pwv) {
         pwv_input.setCustomValidity("Invalid Field.");
         return false;
     }
-    if (!validateNumberMinMax(field, pwv, 0, 10)){
-        pwv_feedback.textContent = "Please enter a valid number between 0 and 10";
+    if (!validateNumberMinMax(field, pwv, 5, 95)){
+        pwv_feedback.textContent = "Please enter a valid number between 5 and 95";
         pwv_feedback.style.display = "block";
         pwv_input.setCustomValidity("Invalid Field.");
         return false;
@@ -609,18 +609,23 @@ function setInputs(name) {
     var sens_input = document.getElementById("sensitivity-input");
     var time_row = document.getElementById("row-integration-time");
     var time_input = document.getElementById("integration-time-input");
+
     switch (name) {
-        case 'integration':
+        case 'sensitivity':
+            // TODO: use css to control element properties
             sens_input.disabled = true;
-            sens_row.style.display = "none";
+            sens_input.style.color = "lightgrey";
             time_input.disabled = false;
+            time_input.style.color = "black";
+            console.log(time_input.style);
             time_row.style.display = "flex";
             break;
-        case 'sensitivity':
+        case 'integration':
             sens_input.disabled = false;
+            sens_input.style.color = "black";
             sens_row.style.display = "flex";
             time_input.disabled = true;
-            time_row.style.display = "none";
+            time_input.style.color = "lightgrey";
             break;
         default:
             console.log('oops');

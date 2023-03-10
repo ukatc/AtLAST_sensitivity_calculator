@@ -1,7 +1,6 @@
 Weather Calculations
 --------------------
 
-
 A grid of atmospheric temperature and opacity were calculated using *am* models for the Atacama Plateau,
 and are interpolated to the observing frequency and water column requested in the sensitivity calculator.
 
