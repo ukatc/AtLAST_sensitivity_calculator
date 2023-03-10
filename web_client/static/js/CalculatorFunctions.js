@@ -123,7 +123,7 @@ function validateBandwidth(field, bandwidth) {
     }
 }
 
-// Validate a H20 input, making sure it is not empty and is a number between 0 and 10.
+// Validate a H20 input, making sure it is not empty and is a number between 5 and 95.
 function validatePwv(field, pwv) {
     var pwv_feedback = document.getElementById(field + "-invalid");
     var pwv_input = document.getElementById(field + "-input");
@@ -133,8 +133,8 @@ function validatePwv(field, pwv) {
         pwv_input.setCustomValidity("Invalid Field.");
         return false;
     }
-    if (!validateNumberMinMax(field, pwv, 0, 10)){
-        pwv_feedback.textContent = "Please enter a valid number between 0 and 10";
+    if (!validateNumberMinMax(field, pwv, 5, 95)){
+        pwv_feedback.textContent = "Please enter a valid number between 5 and 95";
         pwv_feedback.style.display = "block";
         pwv_input.setCustomValidity("Invalid Field.");
         return false;
