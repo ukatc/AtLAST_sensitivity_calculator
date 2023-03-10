@@ -4,58 +4,95 @@ import json
 from yaml import load, Loader
 
 
-########################
-# Decorator functions  #
-########################
-
-def params_updater(func):
+class Decorators:
     """
-    Decorator to support setter methods on calculations input parameters.
-
-    :param func: function that updates the calculation input parameter
-    :type func: property setter function
+    Decorator functions
     """
 
-    @functools.wraps(func)
-    def update_param(*args, **kwargs):
+    @staticmethod
+    def validate_update(func):
         """
-        Validates the type, value and units of the new value before
-        updating the calculation input parameter. If the new value is
-        different from the old, derived parameters are recalculated.
+        Decorator to support setter methods on calculations input parameters.
+        Validates the value for the
+        target parameter.
+        """
+        @functools.wraps(func)
+        def do_validation(calculator, value, **kwargs):
+            """
+            Validates the type, value and units of the value for the target
+            parameter.
 
-        :arg str arg0: The Calculator object
-        :arg str arg1: The new value
+            :param calculator: The Calculator object
+            :type calculator: Calculator
+            :param value: The new value
+            :type value: int, float or Quantity
+            """
+
+            # Validate the new value
+            Decorators._do_validation(calculator, func.__name__, value)
+
+            # Update the parameter
+            func(calculator, value, **kwargs)
+
+        return do_validation
+
+    @staticmethod
+    def validate_and_update_params(func):
         """
-        calculator = args[0]
-        value = args[1]
-        attribute = getattr(calculator, func.__name__)
+        Decorator to support setter methods on calculations input parameters
+        that input to the derived parameters. Validates the value for the
+        target parameter and recalculates derived parameters where necessary.
+
+        :param func: function that updates the calculation input parameter
+        :type func: property setter function
+        """
+
+        @functools.wraps(func)
+        def do_update(calculator, value, **kwargs):
+            """
+            Validates the type, value and units of the value for the target
+            parameter. If the new value is different from the old, derived
+            parameters are recalculated.
+
+            :param calculator: The Calculator object
+            :type calculator: Calculator
+            :param value: The new value
+            :type value: int, float or Quantity
+            """
+
+            # Validate the new value
+            Decorators._do_validation(calculator, func.__name__, value)
+
+            # Determine if the old and new values differ
+            attribute = getattr(calculator, func.__name__)
+            dirty = (attribute != value)
+
+            # Update the parameter
+            func(calculator, value, **kwargs)
+
+            # Recalculate derived parameters, if necessary
+            if dirty:
+                calculator._calculate_derived_parameters()
+
+        return do_update
+
+    @staticmethod
+    def _do_validation(calculator, param_name, value):
+        attribute = getattr(calculator, param_name)
 
         # Make sure the new value is of the correct type
         if not isinstance(value, type(attribute)):
-            raise ValueError(f'Value {value} for parameter {func.__name__} '
+            raise ValueError(f'Value {value} for parameter {param_name} '
                              f'is of invalid type. '
                              f'Expected {type(attribute)}. '
                              f'Received {type(value)}.')
 
         # Validate the new value
         try:
-            calculator._calculation_inputs.\
-                validate_update(func.__name__, value)
+            calculator._calculation_inputs. \
+                validate_update(param_name, value)
         except ValueError as e:
             raise e
-
-        # Determine if the old and new values differ
-        dirty = (attribute != value)
-
-        # Update the parameter
-        func(*args, **kwargs)
-
-        # Recalculate derived parameters, if necessary
-        if dirty:
-            # TODO: be intelligent about this - only update affected params?
-            calculator._calculate_derived_parameters()
-
-    return update_param
 
 
 class FileHelper:
