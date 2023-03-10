@@ -609,18 +609,23 @@ function setInputs(name) {
     var sens_input = document.getElementById("sensitivity-input");
     var time_row = document.getElementById("row-integration-time");
     var time_input = document.getElementById("integration-time-input");
+
     switch (name) {
-        case 'integration':
+        case 'sensitivity':
+            // TODO: use css to control element properties
             sens_input.disabled = true;
-            sens_row.style.display = "none";
+            sens_input.style.color = "lightgrey";
             time_input.disabled = false;
+            time_input.style.color = "black";
+            console.log(time_input.style);
             time_row.style.display = "flex";
             break;
-        case 'sensitivity':
+        case 'integration':
             sens_input.disabled = false;
+            sens_input.style.color = "black";
             sens_row.style.display = "flex";
             time_input.disabled = true;
-            time_row.style.display = "none";
+            time_input.style.color = "lightgrey";
             break;
         default:
             console.log('oops');

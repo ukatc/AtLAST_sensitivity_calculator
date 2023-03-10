@@ -90,7 +90,7 @@
         <div class="col-sm-3">
           <label for="obs-freq-input">Observing frequency (GHz):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" id="obs-freq-input" placeholder="Enter value..." name="obs-freq-input" value="450.0" oninput="updateForm(); highlight_recalculate();">
+            <input type="text" class="form-control" id="obs-freq-input" placeholder="Enter value..." name="obs-freq-input" value="200.0" oninput="updateForm(); highlight_recalculate();">
             <div class="invalid-feedback" id="obs-freq-invalid">Please enter valid number, between 35 and 950</div>
           </div>
         </div>
@@ -141,6 +141,34 @@
         </div>
       </div>
 
+      <div class="row" id="row-integration-time">
+        <div class="col-sm-3">
+          <label for="integration-time-input">Integration time (s):</label>
+          <div class="input-group mb-3">
+            <input style="color:lightgrey;" type="text" class="form-control" id="integration-time-input" placeholder="Enter value..." name="integration-tim-input" value="100" oninput="updateForm(); highlight_recalculate();" disabled>
+            <div class="invalid-feedback" id="integration-time-invalid">Please enter valid number; > 0</div>
+          </div>
+        </div>
+        <div class="col-sm-4 align-self-center info-col">
+          <br>
+          <p class="notes">Integration time (s)</p>
+        </div>
+      </div>
+
+      <div class="row" id="row-sensitivity">
+        <div class="col-sm-3">
+          <label for="sensitivity-input">Sensitivity (mJy):</label>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" id="sensitivity-input" placeholder="Enter value..." name="sensitivity-input" value="0.31" oninput="updateForm(); highlight_recalculate();"  >
+            <div class="invalid-feedback" id="sensitivity-invalid">Please enter valid number; > 0</div>
+          </div>
+        </div>
+        <div class="col-sm-4 align-self-center info-col">
+          <br>
+          <p class="notes">Sensitivity (mJy)</p>
+        </div>
+      </div>
+
       <div class="row mb-3">
         <div class="col-sm-3">
           <label for="input-switch-radio">Calculate integration time or sensitivity?</label>
@@ -156,34 +184,6 @@
           </div>
         </div>
         <div class="col-sm-4"></div>
-      </div>
-
-      <div class="row" id="row-integration-time">
-        <div class="col-sm-3">
-          <label for="integration-time-input">Integration time (s):</label>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" id="integration-time-input" placeholder="Enter value..." name="integration-tim-input" value="15" oninput="updateForm(); highlight_recalculate();">
-            <div class="invalid-feedback" id="integration-time-invalid">Please enter valid number; > 0</div>
-          </div>
-        </div>
-        <div class="col-sm-4 align-self-center info-col">
-          <br>
-          <p class="notes">Integration time (s)</p>
-        </div>
-      </div>
-
-      <div class="row" id="row-sensitivity" style="display: none;">
-        <div class="col-sm-3">
-          <label for="sensitivity-input">Sensitivity (mJy):</label>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" id="sensitivity-input" placeholder="Enter value..." name="sensitivity-input" value="15" oninput="updateForm(); highlight_recalculate();" disabled  >
-            <div class="invalid-feedback" id="sensitivity-invalid">Please enter valid number; > 0</div>
-          </div>
-        </div>
-        <div class="col-sm-4 align-self-center info-col">
-          <br>
-          <p class="notes">Sensitivity (mJy)</p>
-        </div>
       </div>
 
       <div class="row">
