@@ -8,7 +8,8 @@ from atlast_sc.models import DerivedParams
 from atlast_sc.models import UserInput
 from atlast_sc.models import InstrumentSetup
 from atlast_sc.config import Config
-from atlast_sc.utils import params_updater
+from atlast_sc.utils import Decorators
+# from atlast_sc.utils import params_updater
 from atlast_sc.utils import FileHelper
 
 
@@ -24,15 +25,13 @@ class Calculator:
     :type instrument_setup: dict
     """
     def __init__(self, user_input={}, instrument_setup={}):
-        # TODO: provide accessor methods for properties
-        # TODO: get a list of properties that are editable and provide setters
 
         self._derived_params = None
 
         # Store the input parameters used to initialise the calculator
         self._config = Config(user_input, instrument_setup)
 
-        # Calculate and derived parameters used in the calculation
+        # Calculate the derived parameters used in the calculation
         self._calculate_derived_parameters()
 
     # TODO: move these getters and setters to Config object?
@@ -51,7 +50,7 @@ class Calculator:
         return self._calculation_inputs.user_input.t_int.value
 
     @t_int.setter
-    @params_updater
+    @Decorators.validate_update
     def t_int(self, value):
         # TODO: Setting this value in the on the inputs feels wrong.
         #  This may be a calculated param. Allowing the user to change it
@@ -67,7 +66,7 @@ class Calculator:
         return self._calculation_inputs.user_input.sensitivity.value
 
     @sensitivity.setter
-    @params_updater
+    @Decorators.validate_update
     def sensitivity(self, value):
         # TODO: Setting this value in the on the inputs feels wrong.
         #  This may be a calculated param. Allowing the user to change it
@@ -84,7 +83,7 @@ class Calculator:
         return self._calculation_inputs.user_input.bandwidth.value
 
     @bandwidth.setter
-    @params_updater
+    @Decorators.validate_and_update_params
     def bandwidth(self, value):
         self._calculation_inputs.user_input.bandwidth.value = value
         self._calculation_inputs.user_input.bandwidth.unit = value.unit
@@ -94,7 +93,7 @@ class Calculator:
         return self._calculation_inputs.user_input.obs_freq.value
 
     @obs_frequency.setter
-    @params_updater
+    @Decorators.validate_and_update_params
     def obs_frequency(self, value):
         self._calculation_inputs.user_input.obs_freq.value = value
         self._calculation_inputs.user_input.obs_freq.unit = value.unit
@@ -104,7 +103,7 @@ class Calculator:
         return self._calculation_inputs.user_input.n_pol.value
 
     @n_pol.setter
-    @params_updater
+    @Decorators.validate_and_update_params
     def n_pol(self, value):
         self._calculation_inputs.user_input.n_pol.value = value
 
@@ -113,7 +112,7 @@ class Calculator:
         return self._calculation_inputs.user_input.weather.value
 
     @weather.setter
-    @params_updater
+    @Decorators.validate_and_update_params
     def weather(self, value):
         self._calculation_inputs.user_input.weather.value = value
 
@@ -122,7 +121,7 @@ class Calculator:
         return self._calculation_inputs.user_input.elevation.value
 
     @elevation.setter
-    @params_updater
+    @Decorators.validate_and_update_params
     def elevation(self, value):
         self._calculation_inputs.user_input.elevation.value = value
         self._calculation_inputs.user_input.elevation.unit = value.unit
@@ -144,7 +143,7 @@ class Calculator:
         return self._calculation_inputs.instrument_setup.dish_radius.value
 
     @dish_radius.setter
-    @params_updater
+    @Decorators.validate_and_update_params
     def dish_radius(self, value):
         # TODO Flag to the user somehow that they are varying an instrument
         #   setup parameter
@@ -154,10 +153,6 @@ class Calculator:
     @property
     def T_amb(self):
         return self._calculation_inputs.instrument_setup.T_amb.value
-
-    # @property
-    # def T_rx(self):
-    #     return self._calculation_inputs.instrument_setup.T_rx.value
 
     @property
     def eta_eff(self):
@@ -208,6 +203,10 @@ class Calculator:
         return self._derived_params.T_atm
 
     @property
+    def T_rx(self):
+        return self._calculation_inputs.instrument_setup.T_rx
+
+    @property
     def eta_a(self):
         return self._derived_params.eta_a
 
@@ -230,9 +229,12 @@ class Calculator:
     @property
     def calculation_parameters_as_dict(self):
         """
-        TODO: might remove this. Not sure it's useful, and may cause some confusion.
         Returns the parameters used in the calculation (user input, instrument
-        setup, and derived parameters).
+        setup, and derived parameters) as a dictionary.
+
+        Dictionary keys are the parameter names; values are either a float (
+        values without units), or an astropy Quantity object with a value and
+        unit.
 
         :return: Dictionary of parameters used in the calculation
         :rtype: dict
@@ -251,7 +253,7 @@ class Calculator:
     # integration time calculations                 #
     #################################################
 
-    def calculate_sensitivity(self, t_int=None):
+    def calculate_sensitivity(self, t_int=None, update_calculator=True):
         """
         Calculates the telescope sensitivity (Jansky) for a
         given integration time `t_int`.
@@ -259,6 +261,10 @@ class Calculator:
         :param t_int: integration time. Optional. Defaults to the internally
             stored value
         :type t_int: astropy.units.Quantity
+        :param update_calculator: True if the sensitivity stored in the
+            calculator should be updated with the new value. Optional.
+            Defaults to True
+        :type update_calculator: bool
         :return: sensitivity in Janksy
         :rtype: astropy.units.Quantity
         """
@@ -267,18 +273,25 @@ class Calculator:
         #   supplied
         t_int = t_int if t_int is None else self.t_int
 
+        # Return an error if t_int is zero
+        if t_int == 0:
+            raise ValueError('Integration time must be non-zero.')
+
         sensitivity = \
             (self.sefd /
-                (self.eta_s *
-                    np.sqrt(self.n_pol *
-                            self.bandwidth *
-                            t_int)
-                 ) * np.exp(self.tau_atm)
+                (self.eta_s * np.sqrt(self.n_pol * self.bandwidth * t_int))
+             * np.exp(self.tau_atm)
              )
+        sensitivity = sensitivity.to(u.Jy)
 
-        return sensitivity.to(u.Jy)
+        # Update the sensitivity stored in the calculator
+        if update_calculator:
+            self.sensitivity = sensitivity
 
-    def calculate_t_integration(self, sensitivity=None):
+        return sensitivity
+
+    def calculate_t_integration(self, sensitivity=None,
+                                update_calculator=True):
         """
         Calculates the integration time required for a given `sensitivity`
         to be reached.
@@ -286,6 +299,10 @@ class Calculator:
         :param sensitivity: required sensitivity in Jansky. Optional. Defaults
             to the internally stored value
         :type sensitivity: astropy.units.Quantity
+        :param update_calculator: True if the integration time stored in the
+            calculator should be updated with the new value. Optional.
+            Defaults to True
+        :type update_calculator: bool
         :return: integration time in seconds
         :rtype: astropy.units.Quantity
         """
@@ -294,14 +311,24 @@ class Calculator:
         #   supplied.
         sensitivity = sensitivity if sensitivity is None else self.sensitivity
 
-        t_int = ((self.sefd
-                  * np.exp(self.tau_atm))
-                 / (sensitivity *
-                    self.eta_s)) ** 2 \
-            / (self.n_pol
-                * self.bandwidth)
+        # Return an error if t_int is zero
+        if sensitivity == 0:
+            raise ValueError('Sensitivity must be non-zero.')
 
-        return t_int.to(u.s)
+        t_int = ((self.sefd * np.exp(self.tau_atm))
+                 / (sensitivity * self.eta_s)) ** 2 \
+            / (self.n_pol * self.bandwidth)
+        t_int = t_int.to(u.s)
+
+        # Update the integration time stored in the calculator
+        if update_calculator:
+            self.t_int = t_int
+
+        return t_int
+
+    ###################
+    # Utility methods #
+    ###################
 
     def reset_calculator(self):
         """
@@ -329,6 +356,10 @@ class Calculator:
         output_as_dict = self._calculation_params_as_dict()
 
         FileHelper.write_to_file(output_as_dict, path, file_name, file_type)
+
+    #####################
+    # Protected methods #
+    #####################
 
     def _calculate_derived_parameters(self):
         """

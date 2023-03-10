@@ -19,110 +19,110 @@ def tmp_output_dir(tmp_path_factory):
 @pytest.fixture(scope='session')
 def t_int():
     # Return the default integration time
-    return get_param(data.IntegrationTime)
+    return _get_param(data.IntegrationTime)
 
 
 @pytest.fixture(scope='session')
 def sensitivity():
     # Return the default sensitivity
-    return get_param(data.Sensitivity)
+    return _get_param(data.Sensitivity)
 
 
 @pytest.fixture(scope='session')
 def bandwidth():
     # Return the default bandwidth
-    return get_param(data.Bandwidth)
+    return _get_param(data.Bandwidth)
 
 
 @pytest.fixture(scope='session')
 def n_pol():
     # Return the default number of polarizations
-    return get_param(data.NPol)
+    return _get_param(data.NPol)
 
 
 @pytest.fixture(scope='session')
 def obs_freq():
     # Return the default observing frequency
-    return get_param(data.ObsFrequency)
+    return _get_param(data.ObsFrequency)
 
 
 @pytest.fixture(scope='session')
 def weather():
     # Return the default weather value
-    return get_param(data.Weather)
+    return _get_param(data.Weather)
 
 
 @pytest.fixture(scope='session')
 def elevation():
     # Return the default elevation
-    return get_param(data.Elevation)
+    return _get_param(data.Elevation)
 
 
 @pytest.fixture(scope='session')
 def t_cmb():
     # Return the CMB temperature
-    return get_param(data.TCmb)
+    return _get_param(data.TCmb)
 
 
 @pytest.fixture(scope='session')
 def t_amb():
     # Return the default ambient temperature
-    return get_param(data.TAmb)
+    return _get_param(data.TAmb)
 
 
 @pytest.fixture(scope='session')
 def g():
     # Return the default sideband ratio
-    return get_param(data.G)
+    return _get_param(data.G)
 
 
 @pytest.fixture(scope='session')
 def eta_eff():
     # Return the default forward efficiency
-    return get_param(data.EtaEff)
+    return _get_param(data.EtaEff)
 
 
 @pytest.fixture(scope='session')
 def eta_ill():
     # Return the default illumination efficiency
-    return get_param(data.EtaIll)
+    return _get_param(data.EtaIll)
 
 
 @pytest.fixture(scope='session')
 def eta_spill():
     # Return the default spillover efficiency
-    return get_param(data.EtaSpill)
+    return _get_param(data.EtaSpill)
 
 
 @pytest.fixture(scope='session')
 def eta_q():
     # Return the default quantisation efficiency
-    return get_param(data.EtaQ)
+    return _get_param(data.EtaQ)
 
 
 @pytest.fixture(scope='session')
 def eta_block():
     # Return the default block efficiency
-    return get_param(data.EtaBlock)
+    return _get_param(data.EtaBlock)
 
 
 @pytest.fixture(scope='session')
 def eta_pol():
     # Return the default polarization efficiency
-    return get_param(data.EtaPol)
+    return _get_param(data.EtaPol)
 
 
 @pytest.fixture(scope='session')
 def eta_r():
     # Return the default ?? efficiency
     # TODO: What is this efficiency?
-    return get_param(data.EtaR)
+    return _get_param(data.EtaR)
 
 
 @pytest.fixture(scope='session')
 def dish_radius():
     # Return the default dish radius
-    return get_param(data.DishRadius)
+    return _get_param(data.DishRadius)
 
 
 @pytest.fixture(scope='session')
@@ -134,7 +134,7 @@ def area(dish_radius):
 @pytest.fixture(scope='session')
 def surface_rms():
     # Return the default surface RMS
-    return get_param(data.SurfaceRMS)
+    return _get_param(data.SurfaceRMS)
 
 
 @pytest.fixture(scope='session')
@@ -181,7 +181,7 @@ def user_input_params(t_int, sensitivity, bandwidth, obs_freq, n_pol,
     return input_params
 
 
-def get_param(param):
+def _get_param(param):
     if hasattr(param, 'DEFAULT_UNIT'):
         return param.DEFAULT_VALUE.value * u.Unit(param.DEFAULT_UNIT.value)
 

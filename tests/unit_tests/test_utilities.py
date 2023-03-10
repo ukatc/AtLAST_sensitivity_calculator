@@ -3,7 +3,7 @@ import os
 from astropy import units as u
 from atlast_sc.utils import FileHelper
 
-TEST_FILES_PATH = os.path.join(os.path.dirname(__file__), 'test_files')
+TEST_FILES_PATH = os.path.join(os.path.dirname(__file__), '../test_files')
 
 
 class TestFileHelper:
