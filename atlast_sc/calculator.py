@@ -262,8 +262,8 @@ class Calculator:
             stored value
         :type t_int: astropy.units.Quantity
         :param update_calculator: True if the sensitivity stored in the
-        calculator should be updated with the new value. Optional. Defaults to
-        True
+            calculator should be updated with the new value. Optional.
+            Defaults to True
         :type update_calculator: bool
         :return: sensitivity in Janksy
         :rtype: astropy.units.Quantity
@@ -300,8 +300,8 @@ class Calculator:
             to the internally stored value
         :type sensitivity: astropy.units.Quantity
         :param update_calculator: True if the integration time stored in the
-        calculator should be updated with the new value. Optional. Defaults to
-        True
+            calculator should be updated with the new value. Optional.
+            Defaults to True
         :type update_calculator: bool
         :return: integration time in seconds
         :rtype: astropy.units.Quantity
