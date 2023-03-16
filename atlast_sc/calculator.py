@@ -9,7 +9,6 @@ from atlast_sc.models import UserInput
 from atlast_sc.models import InstrumentSetup
 from atlast_sc.config import Config
 from atlast_sc.utils import Decorators
-# from atlast_sc.utils import params_updater
 from atlast_sc.utils import FileHelper
 
 
@@ -21,7 +20,8 @@ class Calculator:
 
     :param user_input: Dictionary containing user-defined input parameters
     :type user_input: dict
-    :param instrument_setup: Dictionary containing instrument setup parameters. **NB: usage not tested, and may not be supported in future.**
+    :param instrument_setup: Dictionary containing instrument setup parameters.
+     **NB: usage not tested, and may not be supported in future.**
     :type instrument_setup: dict
     """
     def __init__(self, user_input={}, instrument_setup={}):
@@ -271,11 +271,7 @@ class Calculator:
 
         # Use the internally stored integration time if t_int is not
         #   supplied
-        t_int = t_int if t_int is None else self.t_int
-
-        # Return an error if t_int is zero
-        if t_int == 0:
-            raise ValueError('Integration time must be non-zero.')
+        t_int = t_int if t_int is not None else self.t_int
 
         sensitivity = \
             (self.sefd /
@@ -309,11 +305,8 @@ class Calculator:
 
         # Use the internally stored sensitivity if this value is not
         #   supplied.
-        sensitivity = sensitivity if sensitivity is None else self.sensitivity
-
-        # Return an error if t_int is zero
-        if sensitivity == 0:
-            raise ValueError('Sensitivity must be non-zero.')
+        sensitivity = sensitivity if sensitivity is not None \
+            else self.sensitivity
 
         t_int = ((self.sefd * np.exp(self.tau_atm))
                  / (sensitivity * self.eta_s)) ** 2 \
@@ -384,7 +377,7 @@ class Calculator:
 
         # Calculate the temperatures
         temps = Temperatures(self.obs_frequency, self.T_cmb, T_atm, self.T_amb,
-                            tau_atm)
+                             tau_atm)
         T_sys = temps.system_temperature(self.g, self.eta_eff)
 
         # Calculate the dish area

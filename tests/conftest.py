@@ -170,7 +170,8 @@ def user_input_params(t_int, sensitivity, bandwidth, obs_freq, n_pol,
 
     input_params = {
         't_int': {'value': t_int.value, 'unit': str(t_int.unit)},
-        'sensitivity': {'value': sensitivity.value, 'unit': str(sensitivity.unit)},
+        'sensitivity': {'value': sensitivity.value,
+                        'unit': str(sensitivity.unit)},
         'bandwidth': {'value': bandwidth.value, 'unit': str(bandwidth.unit)},
         'obs_freq': {'value': obs_freq.value, 'unit': str(obs_freq.unit)},
         'n_pol': {'value': n_pol},
@@ -186,4 +187,3 @@ def _get_param(param):
         return param.DEFAULT_VALUE.value * u.Unit(param.DEFAULT_UNIT.value)
 
     return param.DEFAULT_VALUE.value
-

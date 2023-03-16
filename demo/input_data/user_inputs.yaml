@@ -1,8 +1,8 @@
 ---
 t_int       : {value: 100,   unit: s}
-sensitivity : {value: 0,   unit: mJy}
-bandwidth   : {value: 7.5, unit: GHz}
-obs_freq    : {value: 200, unit: GHz}
+sensitivity : {value: 0.3,   unit: mJy}
+bandwidth   : {value: 100, unit: MHz}
+obs_freq    : {value: 100, unit: GHz}
 n_pol       : {value: 2}
 weather     : {value: 25}
-elevation   : {value: 30,  unit: deg}
+elevation   : {value: 45,  unit: deg}

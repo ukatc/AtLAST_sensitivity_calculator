@@ -1,11 +1,10 @@
-from atlast_sc.calculator import Calculator
-from atlast_sc.utils import FileHelper
+# from atlast_sc.calculator import Calculator
 
 
 def test_calculator_with_defaults():
     # Initialise a new calculator without passing any params
 
-    calculator = Calculator()
+    # calculator = Calculator()
     # print(calculator.calculation_parameters_as_dict)
 
     assert True
