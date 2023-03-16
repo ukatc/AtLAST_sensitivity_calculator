@@ -70,8 +70,8 @@ function validateElevation(field, elevation) {
         elevation_input.setCustomValidity("Invalid Field.");
         return false;
     }
-    if (!validateNumberMinMax(field, elevation, 5, 90)){
-        elevation_feedback.textContent = "Please enter a valid number between 5 and 90 degrees";
+    if (!validateNumberMinMax(field, elevation, 25, 85)){
+        elevation_feedback.textContent = "Please enter a valid number between 25 and 85 degrees";
         elevation_feedback.style.display = "block";
         elevation_input.setCustomValidity("Invalid Field.");
         return false;
