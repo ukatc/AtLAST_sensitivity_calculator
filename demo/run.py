@@ -22,9 +22,10 @@ print("-----------")
 # calculator.elevation = 5*u.deg
 # calculator.dish_radius = 100*u.m
 # calculator.dish_radius = 'nonsense'
-calculator.obs_frequency = 100*u.GHz
-# calculator.t_int = 1*u.h
-# calculator.sensitivity = 0*u.Jy
+# calculator.obs_freq = 100*u.s
+# calculator.t_int = 1*u.s
+# calculator.sensitivity = float('inf')*u.Jy
+calculator.n_pol = 1
 # print('using params', calculator.calculation_params)
 # TODO: is there a reason for not converting the sensitivity to mJy by default?
 # calculated_sensitivity = \
@@ -36,8 +37,8 @@ calculator.obs_frequency = 100*u.GHz
 # # Calculate the integration time for a given sensitivity
 calculated_t_int = \
     calculator.calculate_t_integration()
-# print("Integration time: {:0.2f} to obtain a sensitivity of {:0.2f}"
-#       .format(calculated_t_int, calculator.sensitivity.to(u.mJy)))
+print("Integration time: {:0.2f} to obtain a sensitivity of {:0.2f}"
+      .format(calculated_t_int, calculator.sensitivity.to(u.mJy)))
 # calculator.t_int = calculated_t_int
 
 print("-----------")

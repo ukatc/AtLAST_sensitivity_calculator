@@ -28,6 +28,7 @@ class IntegrationTime(BaseDataType):
     DEFAULT_UNIT = str(u.s)
     LOWER_VALUE = 1
     UPPER_VALUE = float('inf')
+    UPPER_VALUE_IS_CEIL = True
     UNITS = [str(u.s), str(u.min), str(u.h)]
 
 
@@ -67,8 +68,8 @@ class NPol(BaseDataType):
 
 class Weather(BaseDataType):
     DEFAULT_VALUE = 25
-    LOWER_RANGE = 5
-    UPPER_RANGE = 95
+    LOWER_VALUE = 5
+    UPPER_VALUE = 95
 
 
 class Elevation(BaseDataType):

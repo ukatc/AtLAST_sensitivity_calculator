@@ -1,5 +1,4 @@
 
-
 class UnitException(ValueError):
     """
     Exception raised when a parameter is provided with invalid units
@@ -9,10 +8,9 @@ class UnitException(ValueError):
 
         self.parameter = parameter
         self.expected_units = expected_units
-        self.message = message \
-            if message \
-            else f"The parameter '{parameter}' " \
-                 f"must have one of the following units: {expected_units}."
+        self.message = message if message else \
+            f"The parameter '{parameter}' must have one of the following " \
+            f"units: {expected_units}."
 
         super().__init__(self.message)
 
