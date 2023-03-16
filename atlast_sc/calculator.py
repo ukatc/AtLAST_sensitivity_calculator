@@ -1,5 +1,3 @@
-import math
-
 import astropy.units as u
 import numpy as np
 from atlast_sc.atmosphere_params import AtmosphereParams

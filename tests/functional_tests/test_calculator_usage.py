@@ -103,17 +103,17 @@ class TestDataValidation:
     def test_data_validation_on_init(self, input_data, expect_raises,
                                      exception_name):
         # Ensure that parameters can only be initialised with data within the
-        # permitted range (inclusive or exclusive), or with one of the permitted
-        # values, and with incorrect units where applicable
+        # permitted range (inclusive or exclusive), or with one of the
+        # permitted values, and with incorrect units where applicable
 
         with expect_raises as e:
             Calculator(input_data)
 
         if exception_name:
-            # TODO: the details of the custom exception are buried somewhere in
-            #   the guts of the pydantic ValidationError, so this check (and
-            #   others like it) are a bit of a clunky hack. Would be nice to find
-            #   a more elegant solution
+            # TODO: the details of the custom exception are buried somewhere
+            #  in the guts of the pydantic ValidationError, so this check (and
+            #   others like it) are a bit of a clunky hack. Would be nice to
+            #   find a more elegant solution
             assert exception_name in str(e.value)
 
     validation_input_data_for_update = [
@@ -194,7 +194,7 @@ class TestDataValidation:
         # Initialise the calculator with default values
         calculator = Calculator()
 
-        with expect_raises as e:
+        with expect_raises:
             for key, val in input_data.items():
                 if 'unit' in val:
                     value = val['value'] * Unit(val["unit"])
