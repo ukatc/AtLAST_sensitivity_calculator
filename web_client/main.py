@@ -80,8 +80,9 @@ def sensitivity():
     #  should have a value is causing and error.
     #       Remove this requirement. It's not adding anything useful.
     if 'integration_time' in request.args:
-        result = calculator.calculate_sensitivity(calculator.t_int,
-                                                  update_calculator=False).to(u.mJy)
+        result = \
+            calculator.calculate_sensitivity(calculator.t_int,
+                                             update_calculator=False).to(u.mJy)
         app.logger.debug('calculator.calculate_sensitivity')
         app.logger.debug(result)
         result_dict["sensitivity"] = f"{result:0.03f}"

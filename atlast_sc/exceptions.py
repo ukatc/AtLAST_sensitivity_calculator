@@ -1,5 +1,4 @@
 
-
 class UnitException(ValueError):
     """
     Exception raised when a parameter is provided with invalid units
@@ -9,10 +8,9 @@ class UnitException(ValueError):
 
         self.parameter = parameter
         self.expected_units = expected_units
-        self.message = message \
-            if message \
-            else f"The parameter '{parameter}' " \
-                 f"must have one of the following units: {expected_units}."
+        self.message = message if message else \
+            f"The parameter '{parameter}' must have one of the following " \
+            f"units: {expected_units}."
 
         super().__init__(self.message)
 
@@ -30,13 +28,36 @@ class ValueOutOfRangeException(ValueError):
         self.upper_value = upper_value
         self.units = units
         self.message = message \
-            if message\
+            if message \
             else f"The parameter '{parameter}' " \
                  f"must be in the range {lower_value} " \
                  f"to {upper_value}" \
                  f"{'.' if not units else ' ' + str(units) + '.'}"
 
         super().__init__(self.message)
+
+
+class ValueTooLowException(ValueOutOfRangeException):
+
+    def __init__(self, parameter, lower_value, units=None, message=None):
+
+        self.message = message if message \
+            else f"The parameter '{parameter}' " \
+                 f"must be greater than {lower_value}" \
+                 f"{'.' if not units else ' ' + str(units) + '.'}"
+
+        super().__init__(parameter, lower_value, None, units, self.message)
+
+
+class ValueTooHighException(ValueOutOfRangeException):
+
+    def __init__(self, parameter, upper_value, units=None, message=None):
+        self.message = message if message \
+            else f"The parameter '{parameter}' " \
+                 f"must be less than {upper_value}" \
+                 f"{'.' if not units else ' ' + str(units) + '.'}"
+
+        super().__init__(parameter, None, upper_value, units, self.message)
 
 
 class ValueNotAllowedException(ValueError):

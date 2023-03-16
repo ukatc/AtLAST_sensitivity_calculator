@@ -1,5 +1,3 @@
-import astropy.units as u
-
 
 def test_eta_s(efficiencies):
     eta_s = efficiencies.eta_s()

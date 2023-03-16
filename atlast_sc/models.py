@@ -1,7 +1,9 @@
+import math
+
 from pydantic import BaseModel, root_validator
 from astropy.units import Unit, Quantity
 from atlast_sc.exceptions import UnitException, ValueOutOfRangeException,\
-    ValueNotAllowedException
+    ValueNotAllowedException, ValueTooHighException, ValueTooLowException
 from atlast_sc.data import param_data_type_dicts
 from atlast_sc.data import IntegrationTime, Sensitivity, Bandwidth, \
     ObsFrequency, NPol, Weather, Elevation, G, SurfaceRMS, DishRadius, TAmb, \
@@ -26,9 +28,14 @@ class Validator:
                 raise e
 
         # Validate value is allowed
-        value_to_validate = val \
-            if not isinstance(val, Quantity) \
-            else val.value
+        if isinstance(val, Quantity):
+            # Convert the value to the default units and extract the value
+            # to be validated
+            value_to_validate = \
+                val.to(Unit(data_type['DEFAULT_UNIT'])).value
+        else:
+            value_to_validate = val
+
         try:
             Validator.validate_allowed_values(value_to_validate,
                                               key, data_type)
@@ -63,16 +70,46 @@ class Validator:
         # Check there's also an UPPER_VALUE
         assert 'UPPER_VALUE' in data_type
 
+        # Get the default unit, if there is one
+        unit = None if 'DEFAULT_UNIT' \
+                       not in data_type else data_type['DEFAULT_UNIT']
+
+        # If the lower value is a floor value, make sure the provided value
+        # is greater than
+        if 'LOWER_VALUE_IS_FLOOR' in data_type \
+                and data_type['LOWER_VALUE_IS_FLOOR']:
+            if value <= data_type['LOWER_VALUE']:
+                raise ValueTooLowException(param, data_type['LOWER_VALUE'],
+                                           unit)
+
+        # If the upper value is a ceiling value, make sure the provided value
+        # is less than
+        if 'UPPER_VALUE_IS_CEIL' in data_type and \
+                data_type['UPPER_VALUE_IS_CEIL']:
+            if value >= data_type['UPPER_VALUE']:
+                raise ValueTooHighException(param, data_type['UPPER_VALUE'],
+                                            unit)
+
+        # Do a special check for infinity (unlikely scenario, but not
+        # impossible...)
+        if math.isinf(value):
+            raise ValueTooHighException(param, data_type['UPPER_VALUE'],
+                                        unit)
+
         if not (data_type['LOWER_VALUE'] <=
                 value <=
                 data_type['UPPER_VALUE']):
             raise ValueOutOfRangeException(param,
                                            data_type['LOWER_VALUE'],
                                            data_type['UPPER_VALUE'],
-                                           data_type['UNITS'])
+                                           unit)
 
     @staticmethod
     def validate_allowed_values(value, param, data_type):
+
+        # Get the default unit, if there is one
+        unit = None if 'DEFAULT_UNIT' \
+                       not in data_type else data_type['DEFAULT_UNIT']
 
         # Don't need to check the value is allowed if there are no
         # allowed values specified
@@ -82,7 +119,7 @@ class Validator:
         if value not in data_type['ALLOWED_VALUES']:
             raise ValueNotAllowedException(param,
                                            data_type['ALLOWED_VALUES'],
-                                           data_type['UNITS'])
+                                           unit)
 
 
 class ValueWithUnits(BaseModel):

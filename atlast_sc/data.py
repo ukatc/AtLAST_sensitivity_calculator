@@ -26,41 +26,38 @@ class BaseDataType(Enum):
 class IntegrationTime(BaseDataType):
     DEFAULT_VALUE = 100
     DEFAULT_UNIT = str(u.s)
-    # TODO get sensible range
-    LOWER_VALUE = 0
+    LOWER_VALUE = 1
     UPPER_VALUE = float('inf')
-    # TODO: do we want to allow other time units?
-    UNITS = [str(u.s)]
+    UPPER_VALUE_IS_CEIL = True
+    UNITS = [str(u.s), str(u.min), str(u.h)]
 
 
 class Sensitivity(BaseDataType):
     DEFAULT_VALUE = 0.3
     DEFAULT_UNIT = str(u.mJy)
-    # TODO get sensible range
     LOWER_VALUE = 0
+    LOWER_VALUE_IS_FLOOR = True
     UPPER_VALUE = float('inf')
-    # TODO confirm these allowable units are okay (additions?)
+    UPPER_VALUE_IS_CEIL = True
     UNITS = [str(unit) for unit in [u.uJy, u.mJy, u.Jy]]
 
 
 class Bandwidth(BaseDataType):
-    DEFAULT_VALUE = 7.5
-    DEFAULT_UNIT = str(u.GHz)
-    # TODO get sensible range
+    DEFAULT_VALUE = 100
+    DEFAULT_UNIT = str(u.MHz)
     LOWER_VALUE = 0
+    LOWER_VALUE_IS_FLOOR = True
     UPPER_VALUE = float('inf')
-    # TODO confirm these allowable units are okay (additions?)
+    UPPER_VALUE_IS_CEIL = True
+    # TODO: include km/s. Will have to provide suitable conversion logic
     UNITS = [str(unit) for unit in [u.Hz, u.kHz, u.MHz, u.GHz]]
 
 
 class ObsFrequency(BaseDataType):
-    DEFAULT_VALUE = 200
+    DEFAULT_VALUE = 100
     DEFAULT_UNIT = str(u.GHz)
     LOWER_VALUE = 35
     UPPER_VALUE = 950
-    # TODO: Web client validation requests value in range 35-950 GHz, but do
-    #  we want allow users to provide a value within the same range,
-    #  but in different units?
     UNITS = [str(u.GHz)]
 
 
@@ -71,15 +68,15 @@ class NPol(BaseDataType):
 
 class Weather(BaseDataType):
     DEFAULT_VALUE = 25
-    LOWER_RANGE = 5
-    UPPER_RANGE = 95
+    LOWER_VALUE = 5
+    UPPER_VALUE = 95
 
 
 class Elevation(BaseDataType):
-    DEFAULT_VALUE = 30
+    DEFAULT_VALUE = 45
     DEFAULT_UNIT = str(u.deg)
-    LOWER_VALUE = 5
-    UPPER_VALUE = 90
+    LOWER_VALUE = 25
+    UPPER_VALUE = 85
     UNITS = [str(u.deg)]
 
 
@@ -95,10 +92,8 @@ class SurfaceRMS(BaseDataType):
 class DishRadius(BaseDataType):
     DEFAULT_VALUE = 25
     DEFAULT_UNIT = str(u.m)
-    # TODO get sensible range
-    LOWER_VALUE = 0
-    UPPER_VALUE = float('inf')
-    # TODO: do we want to allow other length units?
+    LOWER_VALUE = 1
+    UPPER_VALUE = 100
     UNITS = [str(u.m)]
 
 
@@ -112,8 +107,6 @@ class EtaEff(BaseDataType):
 
 
 class EtaIll(BaseDataType):
-    # TODO: Docs say that eta_ill "defaults to value 0.63") What's the correct
-    #  default?
     DEFAULT_VALUE = 0.8
 
 
@@ -134,8 +127,6 @@ class EtaR(BaseDataType):
 
 
 class EtaQ(BaseDataType):
-    # TODO: What is eta_q and what default value should it have?
-    #   Isn't documented and doesn't seem to be used anywhere
     DEFAULT_VALUE = 0.96
 
 

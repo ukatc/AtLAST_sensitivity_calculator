@@ -9,7 +9,6 @@ from atlast_sc.models import UserInput
 from atlast_sc.models import InstrumentSetup
 from atlast_sc.config import Config
 from atlast_sc.utils import Decorators
-# from atlast_sc.utils import params_updater
 from atlast_sc.utils import FileHelper
 
 
@@ -21,7 +20,8 @@ class Calculator:
 
     :param user_input: Dictionary containing user-defined input parameters
     :type user_input: dict
-    :param instrument_setup: Dictionary containing instrument setup parameters. **NB: usage not tested, and may not be supported in future.**
+    :param instrument_setup: Dictionary containing instrument setup parameters.
+     **NB: usage not tested, and may not be supported in future.**
     :type instrument_setup: dict
     """
     def __init__(self, user_input={}, instrument_setup={}):
@@ -89,12 +89,12 @@ class Calculator:
         self._calculation_inputs.user_input.bandwidth.unit = value.unit
 
     @property
-    def obs_frequency(self):
+    def obs_freq(self):
         return self._calculation_inputs.user_input.obs_freq.value
 
-    @obs_frequency.setter
+    @obs_freq.setter
     @Decorators.validate_and_update_params
-    def obs_frequency(self, value):
+    def obs_freq(self, value):
         self._calculation_inputs.user_input.obs_freq.value = value
         self._calculation_inputs.user_input.obs_freq.unit = value.unit
 
@@ -146,7 +146,7 @@ class Calculator:
     @Decorators.validate_and_update_params
     def dish_radius(self, value):
         # TODO Flag to the user somehow that they are varying an instrument
-        #   setup parameter
+        #   setup parameter?
         self._calculation_inputs.instrument_setup.dish_radius.value = value
         self._calculation_inputs.instrument_setup.dish_radius.unit = value.unit
 
@@ -271,11 +271,7 @@ class Calculator:
 
         # Use the internally stored integration time if t_int is not
         #   supplied
-        t_int = t_int if t_int is None else self.t_int
-
-        # Return an error if t_int is zero
-        if t_int == 0:
-            raise ValueError('Integration time must be non-zero.')
+        t_int = t_int if t_int is not None else self.t_int
 
         sensitivity = \
             (self.sefd /
@@ -309,11 +305,8 @@ class Calculator:
 
         # Use the internally stored sensitivity if this value is not
         #   supplied.
-        sensitivity = sensitivity if sensitivity is None else self.sensitivity
-
-        # Return an error if t_int is zero
-        if sensitivity == 0:
-            raise ValueError('Sensitivity must be non-zero.')
+        sensitivity = sensitivity if sensitivity is not None \
+            else self.sensitivity
 
         t_int = ((self.sefd * np.exp(self.tau_atm))
                  / (sensitivity * self.eta_s)) ** 2 \
@@ -369,7 +362,7 @@ class Calculator:
         """
 
         # Perform atmospheric model calculation
-        atm = AtmosphereParams(self.obs_frequency, self.weather,
+        atm = AtmosphereParams(self.obs_freq, self.weather,
                                self.elevation)
 
         T_atm = atm.T_atm()
@@ -379,12 +372,12 @@ class Calculator:
         eta = Efficiencies(self.eta_ill, self.eta_q, self.eta_spill,
                            self.eta_block, self.eta_pol, self.eta_r)
 
-        eta_a = eta.eta_a(self.obs_frequency, self.surface_rms)
+        eta_a = eta.eta_a(self.obs_freq, self.surface_rms)
         eta_s = eta.eta_s()
 
         # Calculate the temperatures
-        temps = Temperatures(self.obs_frequency, self.T_cmb, T_atm, self.T_amb,
-                            tau_atm)
+        temps = Temperatures(self.obs_freq, self.T_cmb, T_atm, self.T_amb,
+                             tau_atm)
         T_sys = temps.system_temperature(self.g, self.eta_eff)
 
         # Calculate the dish area

@@ -9,6 +9,7 @@ dependencies:
   - flask-wtf=1.0
   - numpy=1.23
   - pytest=7.2
+  - pytest-mock=3.10
   - PyYAML=6.0
   - scipy=1.9
   - setuptools=65.5
