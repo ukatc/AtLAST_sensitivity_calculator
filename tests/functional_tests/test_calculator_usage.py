@@ -188,8 +188,7 @@ class TestDataValidation:
 
     @pytest.mark.parametrize('input_data,expect_raises',
                              validation_input_data_for_update)
-    def test_data_validation_on_update(self, input_data, expect_raises,
-                                       mocker):
+    def test_data_validation_on_update(self, input_data, expect_raises):
 
         # Initialise the calculator with default values
         calculator = Calculator()
