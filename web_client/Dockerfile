@@ -1,4 +1,4 @@
-FROM tiangolo/uwsgi-nginx-flask:python3.9
+FROM tiangolo/uwsgi-nginx-flask:python3.10
 # See https://hub.docker.com/r/tiangolo/uwsgi-nginx-flask for info on this image
 
 ARG BRANCH=main
