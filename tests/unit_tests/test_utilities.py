@@ -1,7 +1,8 @@
 import pytest
 import os
-from astropy import units as u
 from atlast_sc.utils import FileHelper
+from atlast_sc.calculator import Calculator
+
 
 TEST_FILES_PATH = os.path.join(os.path.dirname(__file__), '../test_files')
 
@@ -20,6 +21,7 @@ class TestFileHelper:
         and _dict_from_txt.
         """
         result = FileHelper.read_from_file(TEST_FILES_PATH, test_file)
+
         expected_result = {
             'sensitivity': {
                 'value': 0,
@@ -126,13 +128,9 @@ class TestFileHelper:
         and _to_txt.
         """
 
-        test_data = {
-            "param1": 1*u.m,
-            'param2': 10*u.GHz,
-            'param3': 2
-        }
+        calculator = Calculator()
 
-        FileHelper.write_to_file(test_data, tmp_output_dir,
+        FileHelper.write_to_file(calculator, tmp_output_dir,
                                  file_name, file_type)
 
         # Make sure the file has been written
@@ -142,24 +140,23 @@ class TestFileHelper:
         # Make sure the file has been written in a format that allows it
         # to be read by the FileHelper to produce an appropriately formatted
         # dictionary that could be used by the Calculator.
-        expected_dict = {
-            'param1': {
-                'value': 1,
-                'unit': 'm'
-            },
-            'param2': {
-                'value': 10,
-                'unit': 'GHz'
-            },
-            'param3': {
-                'value': 2
-            }
-        }
+        expected_params = ['t_int', 'sensitivity', 'bandwidth', 'n_pol',
+                           'obs_fre', 'weather', 'elevation', 'dish_radius',
+                           'area', 'surface_rms', 'g', 'T_amb', 'eta_eff',
+                           'eta_ill', 'eta_spill', 'eta_block', 'eta_q',
+                           'eta_pol', 'eta_r', 'T_cmb', 'tau_atm', 'T_atm',
+                           'T_rx', 'eta_a', 'eta_s', 'T_sys', 'sefd']
 
         result_dict = \
             FileHelper.read_from_file(tmp_output_dir,
                                       expected_file_name)
-        assert result_dict == expected_dict
+
+        assert list(result_dict.keys()).sort() == expected_params.sort()
+
+        new_calculator = Calculator(result_dict)
+
+        assert new_calculator.calculation_parameters_as_dict ==\
+               calculator.calculation_parameters_as_dict
 
     file_types = [
         ('yaml', FileHelper._to_yaml),

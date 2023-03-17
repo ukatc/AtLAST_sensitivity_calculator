@@ -9,7 +9,6 @@ from atlast_sc.models import UserInput
 from atlast_sc.models import InstrumentSetup
 from atlast_sc.config import Config
 from atlast_sc.utils import Decorators
-from atlast_sc.utils import FileHelper
 
 
 class Calculator:
@@ -323,32 +322,15 @@ class Calculator:
     # Utility methods #
     ###################
 
-    def reset_calculator(self):
+    def reset(self):
         """
-        Resets all calculators parameters to their initial values.
+        Resets all calculator parameters to their initial values.
         """
         # Reset the config calculation inputs to their original values
         self._config.calculation_inputs = \
             self._config.original_calculation_inputs
         # Recalculate the derived parameters
         self._calculate_derived_parameters()
-
-    def output_to_file(self, path, file_name="output_parameters",
-                       file_type="yml"):
-        """
-        Writes the calculator parameters to a file. An existing file
-        with the same name path, file_name and file_type will be overwritten.
-
-        :param path: The directory where the file is written
-        :type path: str
-        :param file_name: The name of the file (excluding the file extension)
-        :type file_name: str
-        :param file_type: The file format
-        :type file_type: str
-        """
-        output_as_dict = self._calculation_params_as_dict()
-
-        FileHelper.write_to_file(output_as_dict, path, file_name, file_type)
 
     #####################
     # Protected methods #

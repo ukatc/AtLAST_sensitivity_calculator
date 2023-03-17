@@ -31,5 +31,29 @@ representations of `astropy units <https://docs.astropy.org/en/stable/units/inde
       - bandwidth
       - 100
       - MHz
-      - Any
+      - > 0
       - Hz, kHz, MHz, GHz
+    * - Observing frequency
+      - obs_freq
+      - 100
+      - GHz
+      - 35 - 950
+      - GHz
+    * - Number of polarizations
+      - n_pol
+      - 2
+      - N/A
+      - 1, 2
+      - N/A
+    * - Percentile water column in the atmosphere
+      - weather
+      - 25
+      - N/A
+      - 5 - 95
+      - N/A
+    * - Elevation
+      - elevation
+      - 45
+      - deg
+      - 25 - 85
+      - deg

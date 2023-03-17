@@ -1,0 +1,7 @@
+/*
+Override the table no-wrap
+See here: https://stackoverflow.com/questions/16570087/multiple-lines-of-text-in-single-cell-of-simple-table
+*/
+.wy-table-responsive table td, .wy-table-responsive table th {
+    white-space: normal;
+}
