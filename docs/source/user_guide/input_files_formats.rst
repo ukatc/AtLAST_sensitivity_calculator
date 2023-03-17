@@ -1,8 +1,9 @@
 Input Files and Formats
 -----------------------
 
-The Sensitivity Calculator can read input data from a plain-text,
-`YAML <https://en.wikipedia.org/wiki/YAML>`__,
+The :meth:`read_from_file <atlast_sc.utils.FileHelper.read_from_file>` method of
+the :class:`FileHelper <atlast_sc.utils.FileHelper>` class can read input data
+from a plain-text, `YAML <https://en.wikipedia.org/wiki/YAML>`__,
 or `JSON <https://en.wikipedia.org/wiki/JSON>`__ formatted file.
 These are described in more detail below.
 
@@ -23,11 +24,11 @@ An example file might contain the following lines:
     bandwidth = 7.5 GHz
     n_pol = 2
 
-**Notes**:
+.. note::
 
-- There must a space between ``<value>`` and ``<unit>``.
-- ``<value>`` must be numeric.
-- Spaces around "=" are optional.
+    - There must a space between ``<value>`` and ``<unit>``.
+    - ``<value>`` must be numeric (integer or float).
+    - Spaces around "=" are optional.
 
 YAML files
 ^^^^^^^^^^

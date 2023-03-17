@@ -3,7 +3,8 @@ Using the Calculator
 
 Basic usage
 ^^^^^^^^^^^
-First, import the Python package:
+First, import the :class:`Calculator <atlast_sc.calculator.Calculator>` class from
+the :mod:`atlast_sc.calculator` module:
 
 .. code-block:: python
 
@@ -36,10 +37,11 @@ set the bandwidth after initializing the calculator:
     an error if the values you provide are invalid (e.g., are out of a specified
     range or have invalid units).
 
-**TODO: provide details of which parameters can be manually changed, and what
-their valid values and units are.**
+.. TODO: provide details of which parameters can be manually changed, and what
+    their valid values and units are.**
 
-To obtain the sensitivity (in Jansky):
+Call the :meth:`calculate_sensitivity <atlast_sc.calculator.Calculator.calculate_sensitivity>`
+method to obtain the sensitivity (in Jansky):
 
 .. code-block:: python
 
@@ -53,7 +55,8 @@ You can also specify an integration time to perform the sensitivity calculation:
     calculated_sensitivity = calculator.calculate_sensitivity(t_int)
 
 
-Conversely, to obtain the integration time required (in seconds):
+Conversely, to obtain the integration time required (in seconds), call
+:meth:`calculate_t_integration <atlast_sc.calculator.Calculator.calculate_t_integration>`:
 
 .. code-block:: python
 
@@ -70,8 +73,8 @@ You can also specify a sensitivity to perform the integration time calculation:
 .. note::
 
     When the sensitivity or integration time calculations are performed,
-    the values stored in the calculator are updated by default. To prevent this
-    behaviour, set the ``update_calculator`` parameter to ``False``, as shown below:
+    the corresponding parameters stored in the Calculator object are updated by default.
+    To prevent this behaviour, set the ``update_calculator`` parameter to ``False``, as shown below:
 
     .. code-block:: python
 
@@ -84,6 +87,28 @@ You can also specify a sensitivity to perform the integration time calculation:
         calculator.t_int = calculated_t_int
 
 
+Resetting the calculator
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can reset the parameters stored in the calculator to their initial values
+using the :meth:`reset <atlast_sc.calculator.Calculator.reset>` method:
+
+.. code-block:: python
+
+        # initialize the calculator with its default values
+        calculator = Calculator()
+
+        # change the value of one of the parameters
+        calculator.bandwidth = 150*u.MHz
+
+        # reset the calculator
+        calculator.reset()
+
+        # check the bandwidth value stored in the calculator
+        print('bandwidth', calculator.bandwidth)
+        # expected output
+        # bandwidth 100.0 MHz
+
 
 Providing input data to the calculator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -94,19 +119,3 @@ Writing parameters to file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. include:: writing_parameters_to_file.rst
-
-
-Running the demo
-----------------
-**TODO: remove this section and provide either static tutorial pages, or
-interactive notebooks**
-
-If you have cloned the GitHub repository, you can use the ``run.py`` script in the ``demo`` directory to
-play with and learn how the calculator works.
-
-Development of this demo is currently a work in progress. For now, the demo can be run by navigating to the root
-directory of the repository and running the following:
-
-.. code-block:: python
-
-    python -m demo.run

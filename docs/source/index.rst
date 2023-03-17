@@ -25,6 +25,7 @@ AtLAST Sensitivity Calculator
 
    user_guide/installation
    user_guide/usage
+   user_guide/input_and_output_files
 
 .. Developer Guide section
    Hidden toctree to manage the sidebar navigation.

@@ -145,13 +145,13 @@ class FileHelper:
         return inputs
 
     @staticmethod
-    def write_to_file(params, path, file_name, file_type):
+    def write_to_file(calculator, path, file_name, file_type):
         """
-        Writes the values in `params` to a file with name `file_name` and
-        extension `file_type` to location `path`.
+        Writes the values stored in `calculator` to a file with name
+        `file_name` and extension `file_type` to location `path`.
 
-        :param params: A dictionary of calculation parameters.
-        :type params: dictionary
+        :param calculator: A Calculator object.
+        :type calculator: atlast_sc.calculator.Calculator
         :param path: The location where the file is saved.
         :type path: string
         :param file_name: The name of the file to write. Note this should not
@@ -165,6 +165,8 @@ class FileHelper:
         file_writer = FileHelper._get_writer(file_type)
 
         file_path = f'{os.path.join(path, file_name)}.{file_type}'
+
+        params = calculator.calculation_parameters_as_dict
 
         with open(file_path, "w") as f:
             file_writer(f, params)

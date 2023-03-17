@@ -18,20 +18,20 @@ print("-----------")
 
 # Calculate the sensitivity for a given integration time
 # (here, specified in user_input.yaml)
-# calculator.bandwidth = 0*u.Hz
+# calculator.bandwidth = 150*u.MHz
 # calculator.elevation = 5*u.deg
 # calculator.dish_radius = 100*u.m
 # calculator.dish_radius = 'nonsense'
 # calculator.obs_freq = 100*u.s
 # calculator.t_int = 1*u.s
 # calculator.sensitivity = float('inf')*u.Jy
-calculator.n_pol = 1
+# calculator.n_pol = 1
 # print('using params', calculator.calculation_params)
 # TODO: is there a reason for not converting the sensitivity to mJy by default?
-# calculated_sensitivity = \
-#     calculator.calculate_sensitivity(calculator.t_int).to(u.mJy)
-# print("Sensitivity: {:0.2f} for an integration time of {:0.2f} "
-#       .format(calculated_sensitivity, calculator.t_int))
+calculated_sensitivity = \
+    calculator.calculate_sensitivity(calculator.t_int).to(u.mJy)
+print("Sensitivity: {:0.2f} for an integration time of {:0.2f} "
+      .format(calculated_sensitivity, calculator.t_int))
 # calculator.sensitivity = calculated_sensitivity
 
 # # Calculate the integration time for a given sensitivity
@@ -45,10 +45,11 @@ print("-----------")
 
 # Write all parameters to a log file
 # calculator.output_to_file("logs", "output_parameters")
-calculator.output_to_file("logs", "output_parameters", "yml")
+# calculator.output_to_file("logs", "output_parameters", "yml")
+FileHelper.write_to_file(calculator, "logs", "output_parameters", "yml")
 
 # reset the calculator
 print('before resetting', calculator.calculation_parameters_as_dict)
-calculator.reset_calculator()
+calculator.reset()
 print('after resetting', calculator.calculation_parameters_as_dict)
 # TODO: add something here to demonstrate that the calculator has been reset
