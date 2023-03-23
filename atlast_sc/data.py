@@ -4,9 +4,14 @@ for the parameters used by the sensitivity calculator.
 """
 
 from enum import Enum
+# from collections import namedtuple
 import astropy.units as u
 
-# TODO: check all of the defaults, ranges, and units
+# BaseDataType = namedtuple(
+#     'BaseDataType',
+#     ['default_value', 'default_unit', 'lower_value', 'upper_value',
+#
+# )
 
 
 class BaseDataType(Enum):
@@ -24,12 +29,12 @@ class BaseDataType(Enum):
 ####################################################################
 
 class IntegrationTime(BaseDataType):
+    UPPER_VALUE_IS_CEIL = "True"
     DEFAULT_VALUE = 100
     DEFAULT_UNIT = str(u.s)
     LOWER_VALUE = 1
-    UPPER_VALUE = float('inf')
-    UPPER_VALUE_IS_CEIL = True
     UNITS = [str(u.s), str(u.min), str(u.h)]
+    UPPER_VALUE = float('inf')
 
 
 class Sensitivity(BaseDataType):

@@ -1,8 +1,29 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from schemas import APIUserInput
 import crud
+import context_processors as cp
 
 app = FastAPI()
+
+
+templates = Jinja2Templates(directory="templates",
+                            context_processors=[cp.utility_processor,
+                                                cp.default_values_processor,
+                                                cp.default_units_processor,
+                                                cp.allowed_range_processor,
+                                                ])
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+@app.get("/", response_class=HTMLResponse)
+async def sensitivity_calculator(request: Request):
+
+    return templates.TemplateResponse("sensitivity_calculator.html",
+                                      {"request": request, "params_vals_units": crud.get_param_values_units()})
 
 
 @app.post("/v1/sensitivity")
