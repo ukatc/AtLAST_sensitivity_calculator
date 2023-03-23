@@ -21,3 +21,5 @@ dependencies:
   - build
   - flake8
   - sphinx-copybutton
+  - fastapi=0.94
+  - uvicorn=0.21

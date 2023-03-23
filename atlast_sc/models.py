@@ -1,5 +1,4 @@
 import math
-
 from pydantic import BaseModel, root_validator
 from astropy.units import Unit, Quantity
 from atlast_sc.exceptions import UnitException, ValueOutOfRangeException,\
