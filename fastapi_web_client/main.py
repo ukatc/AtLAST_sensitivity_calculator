@@ -10,7 +10,8 @@ app = FastAPI()
 
 
 templates = Jinja2Templates(directory="templates",
-                            context_processors=[cp.utility_processor,
+                            context_processors=[cp.placeholder_processor,
+                                                cp.invalid_massage_processor,
                                                 cp.default_values_processor,
                                                 cp.default_units_processor,
                                                 cp.allowed_range_processor,

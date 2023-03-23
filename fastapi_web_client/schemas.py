@@ -23,30 +23,30 @@ class APIUserInput(BaseModel):
         schema_extra = {
             "example": {
                 "t_int": {
-                    "value": data.IntegrationTime.DEFAULT_VALUE.value,
-                    "unit": data.IntegrationTime.DEFAULT_UNIT.value,
+                    "value": data.integration_time.default_value,
+                    "unit": data.integration_time.default_unit,
                 },
                 "sensitivity": {
-                    "value": data.Sensitivity.DEFAULT_VALUE.value,
-                    "unit": data.Sensitivity.DEFAULT_UNIT.value,
+                    "value": data.sensitivity.default_value,
+                    "unit": data.sensitivity.default_unit,
                 },
                 "bandwidth": {
-                    "value": data.Bandwidth.DEFAULT_VALUE.value,
-                    "unit": data.Bandwidth.DEFAULT_UNIT.value,
+                    "value": data.bandwidth.default_value,
+                    "unit": data.bandwidth.default_unit,
                 },
                 "obs_freq": {
-                    "value": data.ObsFrequency.DEFAULT_VALUE.value,
-                    "unit": data.ObsFrequency.DEFAULT_UNIT.value,
+                    "value": data.obs_frequency.default_value,
+                    "unit": data.obs_frequency.default_unit,
                 },
                 "elevation": {
-                    "value": data.Elevation.DEFAULT_VALUE.value,
-                    "unit": data.Elevation.DEFAULT_UNIT.value,
+                    "value": data.elevation.default_value,
+                    "unit": data.elevation.default_unit,
                 },
                 "weather": {
-                    "value": data.Weather.DEFAULT_VALUE.value,
+                    "value": data.weather.default_value,
                 },
                 "n_pol": {
-                    "value": data.NPol.DEFAULT_VALUE.value,
+                    "value": data.n_pol.default_value,
                 },
             }
         }

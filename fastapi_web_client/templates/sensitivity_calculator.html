@@ -50,9 +50,9 @@
         <li class="nav-item">
           <a class="nav-link" href="https://www.atlast.uio.no/" target="_blank">AtLAST</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="documentation" target="_blank">Documentation </a>
-        </li>
+<!--        <li class="nav-item">-->
+<!--          <a class="nav-link" href="documentation" target="_blank">Documentation </a>-->
+<!--        </li>-->
       </ul>
     </div>
   </nav>
@@ -70,12 +70,12 @@
           <label for="elev-input">Elevation ({{ default_unit('elevation') }}):</label>
           <div class="input-group mb-3">
             <input type="text" class="form-control" id="elev-input" placeholder="{{ placeholder }}" name="elev-input" value="{{ default_value('elevation') }}" oninput="updateForm(); highlight_recalculate()">
-            <div class="invalid-feedback" id="elev-invalid">Please enter valid number, between {{ hello }} and {{ upper }}</div>
+            <div class="invalid-feedback" id="elev-invalid">{{ invalid_message('elevation') }}</div>
           </div>
         </div>
         <div class="col-sm-4 align-self-center info-col">
           <br>
-          <p class="notes">Elevation in degrees ({{ allowed_range('elevation') }})</p>
+          <p class="notes">Elevation in {{ default_unit('elevation') }} ({{ allowed_range('elevation') }})</p>
         </div>
       </div>
 
@@ -84,7 +84,7 @@
           <label for="obs-freq-input">Observing frequency ({{ default_unit('obs_freq') }}):</label>
           <div class="input-group mb-3">
             <input type="text" class="form-control" id="obs-freq-input" placeholder="{{ placeholder }}"  name="obs-freq-input" value="{{ default_value('obs_freq') }}" oninput="updateForm(); highlight_recalculate();">
-            <div class="invalid-feedback" id="obs-freq-invalid">Please enter valid number, between 35 and 950</div>
+            <div class="invalid-feedback" id="obs-freq-invalid">{{ invalid_message('obs_freq') }}</div>
           </div>
         </div>
         <div class="col-sm-4 align-self-center info-col">
@@ -98,7 +98,7 @@
           <label for="bandwidth-input">Bandwidth ({{ default_unit('bandwidth') }}):</label>
           <div class="input-group mb-3">
             <input type="text" class="form-control" id="bandwidth-input" placeholder="{{ placeholder }}" name="bandwidth-input" value="{{ default_value('bandwidth') }}" oninput="updateForm(); highlight_recalculate();">
-            <div class="invalid-feedback" id="bandwidth-invalid">Please enter number greater than 0</div>
+            <div class="invalid-feedback" id="bandwidth-invalid">{{ invalid_message('bandwidth') }}</div>
           </div>
         </div>
         <div class="col-sm-4 align-self-center info-col">
@@ -112,7 +112,7 @@
       	  <label for="pwv-input">H2O profile percentile:</label>
           <div class="input-group mb-3">
             <input type="text" class="form-control" id="pwv-input" placeholder="{{ placeholder }}" name="pwv-input" value="{{ default_value('weather') }}" oninput="updateForm(); highlight_recalculate();">
-	    <div class="invalid-feedback" id="pwv-invalid">Please enter valid number.</div>
+	    <div class="invalid-feedback" id="pwv-invalid">{{ invalid_message('weather') }}</div>
           </div>
         </div>
         <div class="col-sm-8 align-self-center info-col">
@@ -139,12 +139,12 @@
           <label for="integration-time-input">Integration time ({{ default_unit('t_int') }}):</label>
           <div class="input-group mb-3">
             <input style="color:lightgrey;" type="text" class="form-control" id="integration-time-input" placeholder="{{ placeholder }}" name="integration-tim-input" value="{{ default_value('t_int') }}" oninput="updateForm(); highlight_recalculate();" disabled>
-            <div class="invalid-feedback" id="integration-time-invalid">Please enter valid number; > 1</div>
+            <div class="invalid-feedback" id="integration-time-invalid">{{ invalid_message('t_int') }}</div>
           </div>
         </div>
         <div class="col-sm-4 align-self-center info-col">
           <br>
-          <p class="notes">Integration time {{ default_unit('t_int') }} ({{ allowed_range('t_int') }})</p>
+          <p class="notes">Integration time in {{ default_unit('t_int') }} ({{ allowed_range('t_int') }})</p>
         </div>
       </div>
 
@@ -153,12 +153,12 @@
           <label for="sensitivity-input">Sensitivity ({{ default_unit('sensitivity') }}):</label>
           <div class="input-group mb-3">
             <input type="text" class="form-control" id="sensitivity-input" placeholder="{{ placeholder }}" name="sensitivity-input" value="{{ default_value('sensitivity') }}" oninput="updateForm(); highlight_recalculate();"  >
-            <div class="invalid-feedback" id="sensitivity-invalid">Please enter valid number; > 0</div>
+            <div class="invalid-feedback" id="sensitivity-invalid">{{ invalid_message('sensitivity') }}</div>
           </div>
         </div>
         <div class="col-sm-4 align-self-center info-col">
           <br>
-          <p class="notes">Sensitivity (mJy)</p>
+          <p class="notes">Sensitivity in {{ default_unit('sensitivity') }} ({{ allowed_range('sensitivity') }})</p>
         </div>
       </div>
 
