@@ -30,11 +30,10 @@ def do_calculation(user_input, calculation):
 
 
 def get_param_values_units():
-
     param_value_units = {}
-    for param in param_value_units:
-        param_value_units[param] = {"value": param.default_value,
-                                    "unit": param.default_unit}
+    for param in param_data_type_dicts:
+        param_value_units[param] = {"value": param_data_type_dicts[param].default_value,
+                                    "unit": param_data_type_dicts[param].default_unit}
 
     return json.dumps(param_value_units)
 

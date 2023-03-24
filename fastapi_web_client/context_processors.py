@@ -3,10 +3,6 @@ from fastapi import Request
 from atlast_sc.data import param_data_type_dicts
 
 
-def placeholder_processor(request: Request):
-    return {'placeholder': 'Enter a value...'}
-
-
 def invalid_massage_processor(request: Request):
     def invalid_message(param):
         param_values_units = param_data_type_dicts[param]

@@ -20,7 +20,19 @@
  * Used mainly when LESS files are included from a different folder.
  */
 
-/* stuff added by Jo */
+.atlast-navbar {
+    background-color: #2c3e50;
+}
+
+a.nav-link {
+    color: white !important;
+    font-weight: 500;
+}
+
+a.nav-link:hover {
+    color: #18bc9c !important;
+}
+
 .notes {
   font-weight: 600;
   color: #747474;
@@ -34,8 +46,6 @@
   text-align: center;
   min-height: 39px;
 }
-
-/* stuff that was here before: */
 
 @font-face {
   font-family: 'Roboto';
@@ -300,6 +310,9 @@ button a:hover {
   text-decoration: none;
 }
  #head-wrapper #head #header div.tagline {
+  border-top-width: 0px;
+  border-top-style: solid;
+  padding-top: 20px;
   top: 40px;
   position: absolute;
   left: 0;

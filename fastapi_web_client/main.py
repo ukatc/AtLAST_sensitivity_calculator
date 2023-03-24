@@ -10,14 +10,14 @@ app = FastAPI()
 
 
 templates = Jinja2Templates(directory="templates",
-                            context_processors=[cp.placeholder_processor,
-                                                cp.invalid_massage_processor,
+                            context_processors=[cp.invalid_massage_processor,
                                                 cp.default_values_processor,
                                                 cp.default_units_processor,
                                                 cp.allowed_range_processor,
                                                 ])
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/scripts", StaticFiles(directory="scripts"), name="scripts")
 
 
 @app.get("/", response_class=HTMLResponse)
