@@ -273,10 +273,9 @@ class Calculator:
         t_int = t_int if t_int is not None else self.t_int
 
         sensitivity = \
-            (self.sefd /
-                (self.eta_s * np.sqrt(self.n_pol * self.bandwidth * t_int))
-             * np.exp(self.tau_atm)
-             )
+            self.sefd / \
+            (self.eta_s * np.sqrt(self.n_pol * self.bandwidth * t_int))
+
         sensitivity = sensitivity.to(u.Jy)
 
         # Update the sensitivity stored in the calculator
@@ -307,8 +306,7 @@ class Calculator:
         sensitivity = sensitivity if sensitivity is not None \
             else self.sensitivity
 
-        t_int = ((self.sefd * np.exp(self.tau_atm))
-                 / (sensitivity * self.eta_s)) ** 2 \
+        t_int = (self.sefd / (sensitivity * self.eta_s)) ** 2 \
             / (self.n_pol * self.bandwidth)
         t_int = t_int.to(u.s)
 
