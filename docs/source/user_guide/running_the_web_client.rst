@@ -1,92 +1,39 @@
-Installation Guide
-==================
+Installing and Running the Web Client
+=====================================
 
-The web client and Python package can both be installed from the UKATC AtLast Sensitivity Calculator GitHub
-repository.
+The web client can be run on your computer in one of two ways - cloning
+the AtLast Sensitivity Calculator and running the Flask application directly, or
+using a Docker image hosted on the GitHub Container Registry.
 
-Instructions are provided below.
+Instructions for each method are provided below.
 
 .. note:: Please contact `Pamela Klaassen`_ if you require access to the repository.
 
 
 .. note:: At a future release, the web client will be hosted on a publicly
-    available server. The Python package will also be installable from a
-    publicly available repository.
-
-
-.. _installing from git:
-
-Installing the Python package from Git
---------------------------------------
-
-Before you begin
-^^^^^^^^^^^^^^^^
-
-It is strongly recommended that you create a separate environment for your work using your
-preferred environment management tool (e.g., `conda <https://docs.conda.io/en/latest/>`__,
-`venv <https://realpython.com/python-virtual-environments-a-primer/>`__,
-or `poetry <https://python-poetry.org/docs/>`__).
-
-The Sensitivity Calculator package requires Python >= 3.10. You can check your version of Python by
-typing:
-
-.. code-block:: bash
-
-    $ python -V
-
-If this returns ``2.x.x``, then try:
-
-.. code-block:: bash
-
-    $ python3 -V
-
-
-Installing the sensitivity calculator
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Once you have created and activated your environment, install the Sensitivity Calculator Python package from the
-``main`` branch using pip:
-
-.. code-block:: bash
-
-    $ pip install git+https://<GIT_USERNAME>:<GIT_PAT>@github.com/ukatc/AtLAST_sensitivity_calculator.git
-
-where ``<GIT_USERNAME>`` and ``<GIT_PAT>`` are the username and personal access token that you use to access the AtLast
-Sensitivity Calculator GitHub repository.
-
-You can install the package from a different branch by typing:
-
-.. code-block:: bash
-
-    $ pip install git+https://<GIT_USERNAME>:<GIT_PAT>@github.com/ukatc/AtLAST_sensitivity_calculator.git@<branch>
-
-where ``<branch>`` is the name of the target branch.
-
-Installing and running the web client
--------------------------------------
-At present, the web client can only be run locally, but will eventually be hosted on a publicly available server.
-
-The web client can be run directly in your development environment from the command line. Alternatively, it can be
-run in a docker container. Instructions for each method are provided below.
+    available server.
 
 Running the web client directly
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-First, you need to clone the Sensitivity Calculator GitHub repository:
+-------------------------------
+You will first have to to clone the Sensitivity Calculator GitHub repository:
 
 .. code-block:: bash
 
     $ git clone https://github.com/ukatc/AtLAST_sensitivity_calculator.git
 
-Next, set up your development environment as follows:
+The next step is to set up a developer conda environment using the `YAML` file
+provided in the repository:
 
-1. Create a conda environment:
+1. Navigate to the root directory of the repository (``AtLast_sensitivity_calculator``).
+
+2. Create a conda environment:
 
 .. code-block:: bash
 
    $ conda env create -f environment.yml
 
 
-2. Activate the conda environment
+3. Activate the conda environment
 
 .. code-block:: bash
 
@@ -106,12 +53,12 @@ Once you have set up your environment, run the web client as follows:
 
 
 Running the web client in a container
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------
 
 The web client can be run in a Docker container using an image hosted on the GitHub Container Registry.
 
 Pulling the Docker image
-++++++++++++++++++++++++
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Follow the steps below to pull the Docker image.
 
@@ -158,7 +105,7 @@ Follow the steps below to pull the Docker image.
 .. _building-the-container:
 
 Building and running the Docker container
-+++++++++++++++++++++++++++++++++++++++++
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A Dockerfile is provided in the repository that can be used to build and run the web client application.
 As part of the build process, the Dockerfile installs the Python application from the AtLast Sensitivity
