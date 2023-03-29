@@ -61,7 +61,6 @@ class Temperatures:
         return (1 + g) / (eta_eff * self.transmittance) * self.T_rx \
             + (eta_eff * self.T_sky) + ((1 - eta_eff) * self.T_amb)
 
-
     @staticmethod
     def _calculate_receiver_temperature(obs_freq):
         return (5 * h * obs_freq.to(u.Hz) / k_B).to(u.K)
