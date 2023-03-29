@@ -10,8 +10,9 @@ import context_processors as cp
 app = FastAPI()
 
 
+# TODO: pick up from here. Figure out how I can use these processors for validation
 templates = Jinja2Templates(directory="templates",
-                            context_processors=[cp.invalid_massage_processor,
+                            context_processors=[cp.invalid_message_processor,
                                                 cp.default_values_processor,
                                                 cp.default_units_processor,
                                                 cp.allowed_range_processor,
