@@ -1,5 +1,6 @@
+import uvicorn
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from schemas import APIUserInput
@@ -24,7 +25,9 @@ app.mount("/scripts", StaticFiles(directory="scripts"), name="scripts")
 async def sensitivity_calculator(request: Request):
 
     return templates.TemplateResponse("sensitivity_calculator.html",
-                                      {"request": request, "params_vals_units": crud.get_param_values_units()})
+                                      {"request": request,
+                                       "params_vals_units":
+                                           crud.get_param_values_units()})
 
 
 @app.post("/v1/sensitivity")
@@ -51,7 +54,7 @@ async def t_int(api_user_input: APIUserInput):
 
 @app.get("/v1/param-values-units")
 async def param_values_units():
-    return crud.get_param_values_units()
+    return JSONResponse(content=crud.get_param_values_units())
 
 
 def _unpack_api_user_input(api_user_input):
@@ -64,3 +67,7 @@ def _unpack_api_user_input(api_user_input):
         "weather": api_user_input.weather,
         "elevation": api_user_input.elevation,
     }
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

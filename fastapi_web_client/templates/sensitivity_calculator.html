@@ -16,7 +16,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js" type="text/javascript" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-  <script src="{{ url_for('scripts', path='calculator.js') }}"></script>
+  <script src="{{ url_for('scripts', path='calculator.js') }}" type="module"></script>
 
 </head>
 <body>
@@ -62,7 +62,7 @@
         <div class="col-sm-3">
           <label for="elev-input">Elevation ({{ default_unit('elevation') }}):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control param-input" id="elev-input" name="elev-input" value="{{ default_value('elevation') }}">
+            <input type="text" class="form-control param-input" id="elev-input" name="elevation" value="{{ default_value('elevation') }}">
             <div class="invalid-feedback" id="elev-invalid">{{ invalid_message('elevation') }}</div>
           </div>
         </div>
@@ -76,7 +76,7 @@
         <div class="col-sm-3">
           <label for="obs-freq-input">Observing frequency ({{ default_unit('obs_freq') }}):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control param-input" id="obs-freq-input" name="obs-freq-input" value="{{ default_value('obs_freq') }}">
+            <input type="text" class="form-control param-input" id="obs-freq-input" name="obs_freq" value="{{ default_value('obs_freq') }}">
             <div class="invalid-feedback" id="obs-freq-invalid">{{ invalid_message('obs_freq') }}</div>
           </div>
         </div>
@@ -90,7 +90,7 @@
         <div class="col-sm-3">
           <label for="bandwidth-input">Bandwidth ({{ default_unit('bandwidth') }}):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control param-input" id="bandwidth-input" name="bandwidth-input" value="{{ default_value('bandwidth') }}">
+            <input type="text" class="form-control param-input" id="bandwidth-input" name="bandwidth" value="{{ default_value('bandwidth') }}">
             <div class="invalid-feedback" id="bandwidth-invalid">{{ invalid_message('bandwidth') }}</div>
           </div>
         </div>
@@ -104,7 +104,7 @@
         <div class="col-sm-3">
       	  <label for="pwv-input">H2O profile percentile:</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control param-input" id="pwv-input" name="pwv-input" value="{{ default_value('weather') }}">
+            <input type="text" class="form-control param-input" id="pwv-input" name="weather" value="{{ default_value('weather') }}">
 	    <div class="invalid-feedback" id="pwv-invalid">{{ invalid_message('weather') }}</div>
           </div>
         </div>
@@ -119,7 +119,7 @@
         <div class="col-sm-3">
           <label for="npol-input">Number of polarizations:</label>
           <div class="input-group mb-3">
-            <select id="npol-input" name="npol" onchange="highlight_recalculate();">
+            <select id="npol-input" name="npol">
               <option value=1>1</option>
               <option value=2 selected="selected">2</option>
               </select>
@@ -131,7 +131,7 @@
         <div class="col-sm-3">
           <label for="integration-time-input">Integration time ({{ default_unit('t_int') }}):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control param-input" id="integration-time-input" name="integration-tim-input" value="{{ default_value('t_int') }}" disabled>
+            <input type="text" class="form-control param-input" id="integration-time-input" name="t_int" value="{{ default_value('t_int') }}" disabled>
             <div class="invalid-feedback" id="integration-time-invalid">{{ invalid_message('t_int') }}</div>
           </div>
         </div>
@@ -145,7 +145,7 @@
         <div class="col-sm-3">
           <label for="sensitivity-input">Sensitivity ({{ default_unit('sensitivity') }}):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control param-input" id="sensitivity-input" name="sensitivity-input" value="{{ default_value('sensitivity') }}">
+            <input type="text" class="form-control param-input" id="sensitivity-input" name="sensitivity" value="{{ default_value('sensitivity') }}">
             <div class="invalid-feedback" id="sensitivity-invalid">{{ invalid_message('sensitivity') }}</div>
           </div>
         </div>
@@ -160,10 +160,10 @@
           <label for="input-switch-radio">Calculate integration time or sensitivity?</label>
           <div class="form-group">
             <div class="btn-group btn-group-toggle" id="input-switch-radio" data-toggle="buttons">
-              <label class="btn btn-primary active" onclick="setInputs('integration'); highlight_recalculate();">
+              <label class="btn btn-primary active">
                 <input type="radio" name="options" id="option-sens" autocomplete="off" checked> Integration Time
               </label>
-              <label class="btn btn-primary" onclick="setInputs('sensitivity'); highlight_recalculate();">
+              <label class="btn btn-primary">
                 <input type="radio" name="options" id="option-time" autocomplete="off"> Sensitivity
               </label>
             </div>
@@ -174,7 +174,7 @@
 
       <div class="row">
         <div class="col-sm-2">
-          <button id="calculate" type="submit" class="btn btn-primary col-sm-12" onclick="recalculate()">Calculate</button>
+          <button id="calculate" type="submit" class="btn btn-primary col-sm-12">Calculate</button>
         </div>
         <div class="col-sm-2">
           <div class="card d-none" id="output"></div>

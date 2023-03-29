@@ -1,4 +1,6 @@
 import json
+import math
+from dataclasses import asdict
 from pydantic import ValidationError
 from atlast_sc.calculator import Calculator
 from atlast_sc.data import param_data_type_dicts
@@ -30,12 +32,18 @@ def do_calculation(user_input, calculation):
 
 
 def get_param_values_units():
-    param_value_units = {}
-    for param in param_data_type_dicts:
-        param_value_units[param] = {"value": param_data_type_dicts[param].default_value,
-                                    "unit": param_data_type_dicts[param].default_unit}
+    param_values_units = {
+        param: asdict(data) for param, data in param_data_type_dicts.items()
+    }
 
-    return json.dumps(param_value_units)
+    # convert 'inf' to very large number, otherwise the json encoder will
+    # complain
+    for param in param_values_units:
+        for key, val in param_values_units[param].items():
+            # print(key)
+            if type(val) == float and math.isinf(val):
+                param_values_units[param][key] = 100**10
+    return param_values_units
 
 
 def _create_calculater(user_input):

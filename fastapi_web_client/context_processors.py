@@ -52,9 +52,9 @@ def allowed_range_processor(request: Request):
         else:
             maximum = f"{param_data.upper_value}"
 
-        message = F"Min: {minimum}{'; Max: ' + str(maximum) if maximum else ''}"
+        message = \
+            F"Min: {minimum}{'; Max: ' + str(maximum) if maximum else ''}"
 
         return message
 
     return dict(allowed_range=allowed_range)
-

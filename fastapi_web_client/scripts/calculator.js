@@ -1,50 +1,47 @@
-// window.addEventListener("load", () => {
-//     console.log($);
-// });
+import {geParamValuesUnits} from './rest_calls.js';
+import {isNum} from './validators.js'
 
 $(document).ready(() => {
-   const validateInput = (param_input) => {
-       // TODO: validate the input
-       console.log('validating...', param_input.value);
-   }
 
-   const highlightRecalculate = () => {
-       // TODO: do I really want to do this?
-   }
+    const validateInput = (value, data) => {
+        if (!isNum(value)) {
+            // TODO handle the error
+            console.log(`${value} is not a valid number`);
+        }
+        // TODO do the rest of the validation
+    }
 
-   const do_calculation = () => {
-       // TODO: submit the request to do the calculation
-   }
+    const highlightRecalculate = () => {
+        // TODO: do I really want to do this?
+    }
 
-   // TODO: pick up from here/
-    //      Need to make sure we have all the values and units before enabling editing and validation
-   const get_param_values_units = () => {
-       // Get the defaults and allowed values/units for each param
-       $.ajax({ url: '/v1/param-values-units',
-           type: 'GET',
-           success: function (data) {
-                console.log('finished');
-               console.log(data);
-           }
-       });
-   }
+    const doCalculation = () => {
+        // TODO: submit the request to do the calculation
+    }
 
-   // window.addEventListener('load', () => {
-   get_param_values_units();
-   // Validate user input (and highlight recalc?) on all input
-   // fields
-   const allUserInput = document.querySelectorAll(".param-input");
-   console.log(allUserInput);
+    geParamValuesUnits()
+        .then((data) => {
+            // Set up the user input field on all input fields
+            const allUserInput = document.querySelectorAll(".param-input");
+            console.log(allUserInput);
 
-   allUserInput.forEach(input => {
-       // Add the placeholder text
-       input.setAttribute("placeholder", "Enter a value...");
+            allUserInput.forEach(input => {
+                // Add the placeholder text
+                input.setAttribute("placeholder", "Enter a value...");
 
-       input.addEventListener("input", e => {
-           if (input === e.target) {
-               validateInput(input);
-           }
-       })
-   });
-   // });
+                // Validate the initial input
+                validateInput(input.value, data[input.name]);
+
+                // Add an event listener to validate input when it changes
+                input.addEventListener("change", e => {
+                    if (input === e.target) {
+                        validateInput(input.value, data[input.name]);
+                    }
+                })
+            });
+        })
+        .catch((error) => {
+            // TODO handle the error
+            console.log('got an error', error);
+        });
 });
