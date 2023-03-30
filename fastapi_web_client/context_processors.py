@@ -9,14 +9,18 @@ def invalid_message_processor(request: Request):
 
         message = "Please enter a valid number "
 
+        # Not that the conditions below don't capture every possible
+        #   scenario, but they do cover the scenarios expected with the
+        #   parameters we have.
         if param_values_units.lower_value_is_floor:
             message = message + \
-                f"greater than {param_values_units.lower_value}"
-        # if param_values_units.upper_value_is_ceil:
-        #     less_than_message = f"less than {param_values_units.upper_value}"
+                f"> {param_values_units.lower_value}"
+        elif param_values_units.upper_value_is_ceil \
+                and math.isinf(param_values_units.upper_value):
+            message = message + f">= {param_values_units.lower_value}"
         else:
             message = message + f"between {param_values_units.lower_value} " \
-                                f"and {[param_values_units.upper_value]}"
+                                f"and {param_values_units.upper_value}"
 
         return message
 

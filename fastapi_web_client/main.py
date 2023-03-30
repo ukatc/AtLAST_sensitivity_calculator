@@ -10,7 +10,6 @@ import context_processors as cp
 app = FastAPI()
 
 
-# TODO: pick up from here. Figure out how I can use these processors for validation
 templates = Jinja2Templates(directory="templates",
                             context_processors=[cp.invalid_message_processor,
                                                 cp.default_values_processor,
@@ -51,6 +50,11 @@ async def t_int(api_user_input: APIUserInput):
         return crud.do_calculation(user_input, "integration_time")
     except crud.UserInputError as e:
         raise HTTPException(status_code=400, detail=e.message)
+
+
+@app.post("/v1/test")
+async def test(test_input: dict):
+    return test_input
 
 
 @app.get("/v1/param-values-units")

@@ -47,6 +47,17 @@ a.nav-link:hover {
   min-height: 39px;
 }
 
+input:invalid {
+  border: 2px solid red;
+}
+
+.invalid-message {
+    width:100%;
+    margin-top:.25rem;
+    font-size:.9em;
+    color:#e74c3c;
+}
+
 @font-face {
   font-family: 'Roboto';
   font-style: normal;
@@ -853,9 +864,3 @@ body .vrtx-facts-container.primary {
     padding-left: 15px;
   }
 }
-/*------------------------------------*\
-# colour
-\*------------------------------------*/
-/*------------------------------------*\
-# fonts
-\*------------------------------------*/
