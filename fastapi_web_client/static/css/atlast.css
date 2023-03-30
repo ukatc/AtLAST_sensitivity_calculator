@@ -47,8 +47,17 @@ a.nav-link:hover {
   min-height: 39px;
 }
 
+.card.recalculate {
+    background-color: pink;
+    color: pink;
+}
+
 input:invalid {
   border: 2px solid red;
+}
+
+input:disabled {
+    color: lightgrey;
 }
 
 .invalid-message {

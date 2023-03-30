@@ -126,11 +126,11 @@
         </div>
       </div>
 
-      <div class="row" id="row-integration-time">
+      <div class="row d-none" id="row-t-int">
         <div class="col-sm-3">
           <label for="integration-time-input">Integration time ({{ default_unit('t_int') }}):</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control param-input" id="integration-time-input" name="t_int" value="{{ default_value('t_int') }}" disabled>
+            <input type="text" class="form-control param-input" id="integration-time-input" name="t_int" value="{{ default_value('t_int') }}">
             <div class="invalid-message" id="integration-time-invalid">{{ invalid_message('t_int') }}</div>
           </div>
         </div>
@@ -158,7 +158,7 @@
         <div class="col-sm-3">
           <label for="calculation-options"><strong>Calculate integration time or sensitivity?</strong></label>
           <div class="btn-group" role="group" id="calculation-options">
-            <input type="radio" name="calc-options" id="btn-t-int" calculation="integration-time" autocomplete="off" checked>
+            <input type="radio" name="calc-options" id="btn-t-int" calculation="integration-time" autocomplete="off">
             <label class="btn" for="btn-t-int">Integration time</label>
 
             <input type="radio" name="calc-options" id="btn-sensitivity" calculation="sensitivity" autocomplete="off">
@@ -166,14 +166,14 @@
           </div>
 
         </div>
+        <div class="col-sm-2 align-self-end">
+          <div class="card" align-self="bottom" id="output"></div>
+        </div>
       </div>
 
       <div class="row">
         <div class="col-sm-2">
           <button id="calculate" type="submit" class="btn btn-primary col-sm-12">Calculate</button>
-        </div>
-        <div class="col-sm-2">
-          <div class="card d-none" id="output"></div>
         </div>
       </div>
 
