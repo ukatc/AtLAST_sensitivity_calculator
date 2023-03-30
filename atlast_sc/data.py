@@ -29,7 +29,7 @@ integration_time = DataType(
 )
 
 sensitivity = DataType(
-    default_value=0.3,
+    default_value=1.7,
     default_unit=str(u.mJy),
     lower_value=0,
     lower_value_is_floor=True,
@@ -131,118 +131,6 @@ t_cmb = DataType(
     default_value=2.73,
     default_unit=str(u.K)
 )
-
-# class IntegrationTime(BaseDataType):
-#     DEFAULT_VALUE = 100
-#     DEFAULT_UNIT = str(u.s)
-#     LOWER_VALUE = 1
-#     UPPER_VALUE = float('inf')
-#     UPPER_VALUE_IS_CEIL = True
-#     UNITS = [str(u.s), str(u.min), str(u.h)]
-#
-#
-# class Sensitivity(BaseDataType):
-#     DEFAULT_VALUE = 0.3
-#     DEFAULT_UNIT = str(u.mJy)
-#     LOWER_VALUE = 0
-#     LOWER_VALUE_IS_FLOOR = True
-#     UPPER_VALUE = float('inf')
-#     UPPER_VALUE_IS_CEIL = True
-#     UNITS = [str(unit) for unit in [u.uJy, u.mJy, u.Jy]]
-#
-#
-# class Bandwidth(BaseDataType):
-#     DEFAULT_VALUE = 100
-#     DEFAULT_UNIT = str(u.MHz)
-#     LOWER_VALUE = 0
-#     LOWER_VALUE_IS_FLOOR = True
-#     UPPER_VALUE = float('inf')
-#     UPPER_VALUE_IS_CEIL = True
-#     # TODO: include km/s. Will have to provide suitable conversion logic
-#     UNITS = [str(unit) for unit in [u.Hz, u.kHz, u.MHz, u.GHz]]
-#
-#
-# class ObsFrequency(BaseDataType):
-#     DEFAULT_VALUE = 100
-#     DEFAULT_UNIT = str(u.GHz)
-#     LOWER_VALUE = 35
-#     UPPER_VALUE = 950
-#     UNITS = [str(u.GHz)]
-#
-#
-# class NPol(BaseDataType):
-#     DEFAULT_VALUE = 2
-#     ALLOWED_VALUES = [1, 2]
-#
-#
-# class Weather(BaseDataType):
-#     DEFAULT_VALUE = 25
-#     LOWER_VALUE = 5
-#     UPPER_VALUE = 95
-#
-#
-# class Elevation(BaseDataType):
-#     DEFAULT_VALUE = 45
-#     DEFAULT_UNIT = str(u.deg)
-#     LOWER_VALUE = 25
-#     UPPER_VALUE = 85
-#     UNITS = [str(u.deg)]
-#
-#
-# class G(BaseDataType):
-#     DEFAULT_VALUE = 1
-#
-#
-# class SurfaceRMS(BaseDataType):
-#     DEFAULT_VALUE = 25
-#     DEFAULT_UNIT = str(u.micron)
-#
-#
-# class DishRadius(BaseDataType):
-#     DEFAULT_VALUE = 25
-#     DEFAULT_UNIT = str(u.m)
-#     LOWER_VALUE = 1
-#     UPPER_VALUE = 100
-#     UNITS = [str(u.m)]
-#
-#
-# class TAmb(BaseDataType):
-#     DEFAULT_VALUE = 270
-#     DEFAULT_UNIT = str(u.K)
-#
-#
-# class EtaEff(BaseDataType):
-#     DEFAULT_VALUE = 0.8
-#
-#
-# class EtaIll(BaseDataType):
-#     DEFAULT_VALUE = 0.8
-#
-#
-# class EtaSpill(BaseDataType):
-#     DEFAULT_VALUE = 0.95
-#
-#
-# class EtaBlock(BaseDataType):
-#     DEFAULT_VALUE = 0.94
-#
-#
-# class EtaPol(BaseDataType):
-#     DEFAULT_VALUE = 0.99
-#
-#
-# class EtaR(BaseDataType):
-#     DEFAULT_VALUE = 1
-#
-#
-# class EtaQ(BaseDataType):
-#     DEFAULT_VALUE = 0.96
-#
-#
-# class TCmb(BaseDataType):
-#     DEFAULT_VALUE = 2.73
-#     DEFAULT_UNIT = str(u.K)
-
 
 param_data_type_dicts = {
     't_int': integration_time,
