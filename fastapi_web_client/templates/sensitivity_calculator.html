@@ -169,7 +169,12 @@
       <div class="row">
         <div class="col-sm-2 submit-btn-col">
           <button id="calculate" type="submit" class="btn btn-primary col-sm-12">Calculate</button>
+          <button class="btn btn-primary col-sm-12 d-none" id="calculate-spinner" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Calculating...
+          </button>
         </div>
+
         <div class="col-sm-2 submit-btn-col">
           <button id="reset-ui" type="reset" class="btn btn-primary col-sm-12">Reset</button>
         </div>

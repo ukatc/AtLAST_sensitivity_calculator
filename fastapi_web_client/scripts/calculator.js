@@ -130,6 +130,8 @@ $(document).ready(() => {
 
 const doCalculation = (paramData) => {
 
+    CalculatorUI.toggleSpinner('calculate', false);
+
     const inputData = {};
 
     for (const param in paramData) {
@@ -154,6 +156,7 @@ const doCalculation = (paramData) => {
             .then((data) => {
                 CalculatorUI.showCalculatedValue(data.value, data.unit);
                 CalculatorUI.disableCalculateBtn(true);
+                CalculatorUI.toggleSpinner('calculate', true);
             })
             .catch((error) => {
                 // TODO handle the error

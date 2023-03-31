@@ -61,5 +61,17 @@ const initializeInputs = (formValidated) => {
     });
 }
 
+const toggleSpinner = (action, completed) => {
+    if (completed) {
+        document.getElementById(`${action}-spinner`)
+                .classList.add("d-none");
+        document.getElementById(`${action}`).classList.remove("d-none");
+    } else {
+        document.getElementById(`${action}-spinner`)
+                .classList.remove("d-none");
+        document.getElementById(`${action}`).classList.add("d-none");
+    }
+}
+
 export {setUIInitialState, hideInvalidMessages, showCalculatedValue,
-        disableCalculateBtn, initializeInputs, resetOutputBox}
+        disableCalculateBtn, initializeInputs, resetOutputBox, toggleSpinner}
