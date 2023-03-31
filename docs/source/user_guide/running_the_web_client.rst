@@ -2,7 +2,7 @@ Installing and Running the Web Client
 =====================================
 
 The web client can be run on your computer in one of two ways - cloning
-the AtLast Sensitivity Calculator and running the Flask application directly, or
+the AtLast Sensitivity Calculator and running the application directly, or
 using a Docker image hosted on the GitHub Container Registry.
 
 Instructions for each method are provided below.
@@ -39,17 +39,25 @@ provided in the repository:
 
    $ conda activate sens-calc
 
-Once you have set up your environment, run the web client as follows:
 
-1. Navigate to the ``web_client`` directory
-2. Start a server with Flask (note: this may take a minute to load)
+4. The web client application requires the Sensitivity Calculator Python package to
+be installed in the environment. To install the package:
 
 .. code-block:: bash
 
-   $ flask run
+   $ pip install -e ./
+
+Once you have set up your environment, run the web client as follows:
+
+1. Navigate to the ``web_client`` directory
+2. Start the application with the following command:
+
+.. code-block:: bash
+
+   $ python -m main
 
 
-3. Point your browser at http://127.0.0.1:5000/. You should now see the Sensitivity Calculator web client.
+3. Point your browser at http://127.0.0.1:8000/ . You should now see the Sensitivity Calculator web client.
 
 
 Running the web client in a container
@@ -96,9 +104,9 @@ Follow the steps below to pull the Docker image.
 
     .. code-block:: bash
 
-        $ docker run --rm -d -p 5000:80 --name atlast_sc ghcr.io/ukatc/atlast_sensitivity_calculator/atlast_sc_client:main
+        $ docker run --rm -d -p 8000:8000 --name atlast_sc ghcr.io/ukatc/atlast_sensitivity_calculator/atlast_sc_client:main
 
-5. If the container runs successfully, point your browser at http://127.0.0.1:5000/.
+5. If the container runs successfully, point your browser at http://127.0.0.1:8000/.
 
    You should now see the Sensitivity Calculator web client.
 
@@ -129,15 +137,15 @@ Docker build process. To do this:
 
     .. code-block:: bash
 
-        $ DOCKER_BUILDKIT=1 docker build -t atlast_sc_client:main --secret id=git_secrets,src=secrets/.env .
+        $ DOCKER_BUILDKIT=1 docker build -t atlast_sc_client:latest --secret id=git_secrets,src=secrets/.env .
 
 2. Run the container with the command:
 
     .. code-block:: bash
 
-        $ docker run --rm -d -p 5000:80 --name atlast_sc_client atlast_sc_client:main
+        $ docker run --rm -d -p 8000:8000 --name atlast_sc_client atlast_sc_client:latest
 
-3. Point your browser at http://127.0.0.1:5000/. You should now see the Sensitivity Calculator web client.
+3. Point your browser at http://127.0.0.1:8000/. You should now see the Sensitivity Calculator web client.
 
 
 .. _Pamela Klaassen: pamela.klaassen@stfc.ac.uk

@@ -20,50 +20,22 @@
  * Used mainly when LESS files are included from a different folder.
  */
 
-.atlast-navbar {
-    background-color: #2c3e50;
-}
-
-a.nav-link {
-    color: white !important;
-    font-weight: 500;
-}
-
-a.nav-link:hover {
-    color: #18bc9c !important;
-}
-
+/* stuff added by Jo */
 .notes {
   font-weight: 600;
   color: #747474;
 }
 
 .card {
+  background-color: #aceadd;
+  border-width: 0px;
   padding: 5px;
   font-weight: bold;
   text-align: center;
   min-height: 39px;
 }
 
-.card.calculated {
-  background-color: #aceadd;
-  border: 3px solid #4c9c8b;
-}
-
-input:invalid {
-  border: 2px solid red;
-}
-
-.submit-btn-col {
-    margin-top: 0.2rem;
-}
-
-.invalid-message {
-    width:100%;
-    margin-top:.25rem;
-    font-size:.9em;
-    color:#e74c3c;
-}
+/* stuff that was here before: */
 
 @font-face {
   font-family: 'Roboto';
@@ -328,9 +300,6 @@ button a:hover {
   text-decoration: none;
 }
  #head-wrapper #head #header div.tagline {
-  border-top-width: 0px;
-  border-top-style: solid;
-  padding-top: 20px;
   top: 40px;
   position: absolute;
   left: 0;
@@ -871,3 +840,9 @@ body .vrtx-facts-container.primary {
     padding-left: 15px;
   }
 }
+/*------------------------------------*\
+# colour
+\*------------------------------------*/
+/*------------------------------------*\
+# fonts
+\*------------------------------------*/

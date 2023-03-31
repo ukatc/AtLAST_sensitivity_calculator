@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>AtLAST Sensitivity Calculator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" type="image/png" href="/static/resources/favicon.ico"/>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/atlast.css') }}">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js" type="text/javascript" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="{{ url_for('scripts', path='calculator.js') }}" type="module"></script>
+
+</head>
+<body>
+
+  <div id="head-wrapper" role="banner">
+    <div id="head">
+      <div id="header">
+        <img id="logoimg" src="{{ url_for('static', path='resources/atlast-banner-foreground.png') }}" alt="AtLAST logo image">
+        <a id="logotext" href="#">
+          <span>AtLAST</span>
+          <div class="tagline">Towards an Atacama Large Aperture Submillimeter Telescope</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <nav class="atlast-navbar navbar navbar-expand-sm navbar-dark fixed-top" style="color:white;">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="https://www.atlast.uio.no/" target="_blank">AtLAST</a>
+        </li>
+<!--        <li class="nav-item">-->
+<!--          <a class="nav-link" href="documentation" target="_blank">Documentation </a>-->
+<!--        </li>-->
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <h1 class="mt-5">Sensitivity Calculator</h1>
+    <form method="POST" id="calculator-form" novalidate>
+      <div class="row" id="row-elevation">
+        <div class="col-sm-4">
+          <label for="elev-input">Elevation ({{ default_unit('elevation') }}):</label>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control param-input" id="elev-input" name="elevation" value="{{ default_value('elevation') }}">
+            <div class="invalid-message" id="elev-invalid">{{ invalid_message('elevation') }}</div>
+          </div>
+        </div>
+        <div class="col info-col">
+          <br>
+          <p class="notes">Elevation in {{ default_unit('elevation') }} ({{ allowed_range('elevation') }})</p>
+        </div>
+      </div>
+
+      <div class="row" id="obs-freq">
+        <div class="col-sm-4">
+          <label for="obs-freq-input">Observing frequency ({{ default_unit('obs_freq') }}):</label>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control param-input" id="obs-freq-input" name="obs_freq" value="{{ default_value('obs_freq') }}">
+            <div class="invalid-message" id="obs-freq-invalid">{{ invalid_message('obs_freq') }}</div>
+          </div>
+        </div>
+        <div class="col info-col">
+          <br>
+          <p class="notes">Observing frequency in {{ default_unit('obs_freq') }} ({{ allowed_range('obs_freq') }})</p>
+        </div>
+      </div>
+
+      <div class="row" id="row-bandwidth">
+        <div class="col-sm-4">
+          <label for="bandwidth-input">Bandwidth ({{ default_unit('bandwidth') }}):</label>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control param-input" id="bandwidth-input" name="bandwidth" value="{{ default_value('bandwidth') }}">
+            <div class="invalid-message" id="bandwidth-invalid">{{ invalid_message('bandwidth') }}</div>
+          </div>
+        </div>
+        <div class="col info-col">
+          <br>
+          <p class="notes">Bandwidth in {{ default_unit('bandwidth') }} ({{ allowed_range('bandwidth') }})</p>
+        </div>
+      </div>
+
+      <div class="row" id="row-pwv">
+        <div class="col-sm-4">
+      	  <label for="pwv-input">H2O profile percentile:</label>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control param-input" id="pwv-input" name="weather" value="{{ default_value('weather') }}">
+	        <div class="invalid-message" id="pwv-invalid">{{ invalid_message('weather') }}</div>
+          </div>
+        </div>
+        <div class="col info-col">
+          <br>
+          <p class="notes">The weather condition for observing, H2O profile percentile ({{ allowed_range('weather') }})</p>
+        </div>
+      </div>
+
+
+      <div class="row" id="row-npol">
+        <div class="col-sm-4">
+          <label for="npol-input">Number of polarizations:</label>
+          <div class="input-group mb-3">
+            <select id="npol-input" name="n_pol">
+              <option value=1>1</option>
+              <option value=2 selected="selected">2</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="row d-none" id="row-t-int">
+        <div class="col-sm-4">
+          <label for="integration-time-input">Integration time ({{ default_unit('t_int') }}):</label>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control param-input" id="integration-time-input" name="t_int" value="{{ default_value('t_int') }}">
+            <div class="invalid-message" id="integration-time-invalid">{{ invalid_message('t_int') }}</div>
+          </div>
+        </div>
+        <div class="col info-col">
+          <br>
+          <p class="notes">Integration time in {{ default_unit('t_int') }} ({{ allowed_range('t_int') }})</p>
+        </div>
+      </div>
+
+      <div class="row" id="row-sensitivity">
+        <div class="col-sm-4">
+          <label for="sensitivity-input">Sensitivity ({{ default_unit('sensitivity') }}):</label>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control param-input" id="sensitivity-input" name="sensitivity" value="{{ default_value('sensitivity') }}">
+            <div class="invalid-message" id="sensitivity-invalid">{{ invalid_message('sensitivity') }}</div>
+          </div>
+        </div>
+        <div class="col info-col">
+          <br>
+          <p class="notes">Sensitivity in {{ default_unit('sensitivity') }} ({{ allowed_range('sensitivity') }})</p>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-sm-4">
+          <label for="calculation-options"><strong>Calculate integration time or sensitivity?</strong></label>
+          <div class="btn-group" role="group" id="calculation-options">
+            <input type="radio" name="calc-options" id="btn-t-int" calculation="integration-time" autocomplete="off" checked>
+            <label class="btn" for="btn-t-int">Integration time</label>
+
+            <input type="radio" name="calc-options" id="btn-sensitivity" calculation="sensitivity" autocomplete="off">
+            <label class="btn" for="btn-sensitivity">Sensitivity</label>
+          </div>
+
+        </div>
+        <div class="col-sm-2 align-self-end">
+          <div class="card" id="output"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-2 submit-btn-col">
+          <button id="calculate" type="submit" class="btn btn-primary col-sm-12">Calculate</button>
+          <button class="btn btn-primary col-sm-12 d-none" id="calculate-spinner" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Calculating...
+          </button>
+        </div>
+
+        <div class="col-sm-2 submit-btn-col">
+          <button id="reset-ui" type="reset" class="btn btn-primary col-sm-12">Reset</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+<!--  <div style="min-height: 150px">-->
+
+<!--  </div>-->
+
+  <footer class="py-3 my-4">
+    <p class="text-center text-muted">This project has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 951815</p>
+    <p style="text-align:center;">
+      <img src="/static/resources/eu_flag.png" alt="The EU flag" style="width:60px"></p>
+  </footer>
+</body>
+</html>
