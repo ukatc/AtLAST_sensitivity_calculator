@@ -39,17 +39,15 @@ a.nav-link:hover {
 }
 
 .card {
-  background-color: #aceadd;
-  border-width: 0px;
   padding: 5px;
   font-weight: bold;
   text-align: center;
   min-height: 39px;
 }
 
-.card.recalculate {
-    background-color: pink;
-    color: pink;
+.card.calculated {
+  background-color: #aceadd;
+  border: 3px solid #4c9c8b;
 }
 
 input:invalid {

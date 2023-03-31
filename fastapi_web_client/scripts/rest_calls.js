@@ -15,7 +15,6 @@ const geParamValuesUnits = () => {
 }
 
 const calculate = (inputData, targetPath) => {
-//    console.log(inputData);
     return new Promise((resolve, reject) => {
         $.ajax({
             url: `/v1/${targetPath}`,
