@@ -56,8 +56,8 @@ input:invalid {
   border: 2px solid red;
 }
 
-input:disabled {
-    color: lightgrey;
+.submit-btn-col {
+    margin-top: 0.2rem;
 }
 
 .invalid-message {
