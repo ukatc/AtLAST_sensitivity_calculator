@@ -5,7 +5,48 @@ $(document).ready(() => {
 
     let calculationPerformed = false;
 
-    const setRecalculateState = () => {
+    const setUIInitialState = (paramData) => {
+        // Set all inputs to a valid state
+        const allUserInput = document.querySelectorAll(".param-input");
+        allUserInput.forEach(input => {
+            input.setCustomValidity("");
+        });
+
+        // Hide all the invalid messages
+        hideInvalidMessages(true);
+
+        // Set the state of the Calculate button
+        setCalculateBtnState();
+
+        // Show the Sensitivity input and hide the Integration time input
+        const sensitivityInput = document.getElementById("row-sensitivity");
+        sensitivityInput.classList.remove("d-none");
+        const intTimeInput = document.getElementById("row-t-int");
+        intTimeInput.classList.add("d-none");
+
+        doCalculation(paramData);
+    }
+
+    const hideInvalidMessages = (hidden) => {
+        const allInvalidMessages =
+            document.querySelectorAll(".invalid-message");
+        allInvalidMessages.forEach(input => {
+            input.hidden = hidden;
+        });
+    }
+
+    const setCalculateBtnState = () => {
+        // Change the text and style of the 'Calculate' button
+        const calculateBtn = document.getElementById("calculate");
+        calculateBtn.innerHTML = "Calculate";
+        calculateBtn.classList.remove("btn-danger");
+        calculateBtn.classList.add("btn-primary");
+
+        // Change the style of the output card
+        document.querySelector("#output").classList.remove("recalculate");
+    }
+
+    const setRecalculateBtnState = () => {
         // Change the text and style of the 'Calculate' button
         const calculateBtn = document.getElementById("calculate");
         calculateBtn.innerHTML = "Recalculate";
@@ -16,19 +57,21 @@ $(document).ready(() => {
         document.querySelector("#output").classList.add("recalculate");
     }
 
-    const doCalculation = (param_data) => {
+    const doCalculation = (paramData) => {
 
         const inputData = {};
 
-        for (const param in param_data) {
+        for (const param in paramData) {
             // Get the input element for the current param
             const elem = document.querySelector(`[name=${param}]`);
             if (elem) {
                 inputData[param] =
                     {'value': elem.value.trim(),
-                     'unit': param_data[param].default_unit};
+                     'unit': paramData[param].default_unit};
             }
         }
+
+        console.log('doing the calculation with input data', inputData);
 
         // Find which of the two calculation options are checked
         const calcOptions =
@@ -65,21 +108,12 @@ $(document).ready(() => {
     }
 
     // Hide all of the invalid-message divs
-    const allInvalidMessages =
-        document.querySelectorAll(".invalid-message");
-    allInvalidMessages.forEach(input => {
-        input.hidden = true;
-    });
+    hideInvalidMessages(true);
 
     // Initialize the calculation radio buttons (select integration time as
     //   the default)
     const calcOptions = document.querySelectorAll('input[name="calc-options"');
     for (const option of calcOptions) {
-        // Check integration time by default
-        if (option.id === "btn-t-int") {
-            option.checked = true;
-        }
-
         // Add an event listener to toggle the 'disabled' attribute of the
         //   radio button options
         option.addEventListener("click", (e) => {
@@ -99,11 +133,10 @@ $(document).ready(() => {
                 } else {
                     inputBoxRow.classList.remove("d-none");
                 }
-
-                // Set the 'recalculate' state of the UI
-                setRecalculateState();
             }
-        })
+            // Set the 'recalculate' state of the UI
+            setRecalculateBtnState();
+        });
     }
 
     geParamValuesUnits()
@@ -143,7 +176,21 @@ $(document).ready(() => {
                 if (formValidated) {
                     doCalculation(data);
                 }
-            })
+            });
+
+            // Add an event listener to the Reset button to reset the UI
+            // NB: overriding the default 'reset' event handler because we
+            //  have to wait for the DOM to be fully rendered before
+            //  redoing the calculation
+            const resetBtn = document.getElementById("reset-ui");
+            resetBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+
+                return new Promise((resolve, reject) => resolve(form.reset()))
+                .then(() => {
+                  setUIInitialState(data);
+                })
+            });
         })
         .catch((error) => {
             // TODO handle the error
