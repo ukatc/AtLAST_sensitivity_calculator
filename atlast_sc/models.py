@@ -192,8 +192,6 @@ class InstrumentSetup(BaseModel):
         ValueWithoutUnits(value=data.eta_eff.default_value)
     eta_ill: ValueWithoutUnits = \
         ValueWithoutUnits(value=data.eta_ill.default_value)
-    eta_q: ValueWithoutUnits = \
-        ValueWithoutUnits(value=data.eta_q.default_value)
     eta_spill: ValueWithoutUnits = \
         ValueWithoutUnits(value=data.eta_spill.default_value)
     eta_block: ValueWithoutUnits = \
