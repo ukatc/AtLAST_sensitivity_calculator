@@ -95,12 +95,6 @@ def eta_spill():
 
 
 @pytest.fixture(scope='session')
-def eta_q():
-    # Return the default quantisation efficiency
-    return _get_param(data.eta_q)
-
-
-@pytest.fixture(scope='session')
 def eta_block():
     # Return the default block efficiency
     return _get_param(data.eta_block)
@@ -152,8 +146,8 @@ def atmosphere_params(obs_freq, weather, elevation):
 
 
 @pytest.fixture(scope='session')
-def efficiencies(eta_ill, eta_q, eta_spill, eta_block, eta_pol, eta_r):
-    return Efficiencies(eta_ill, eta_q, eta_spill, eta_block, eta_pol, eta_r)
+def efficiencies(eta_ill, eta_spill, eta_block, eta_pol, eta_r):
+    return Efficiencies(eta_ill, eta_spill, eta_block, eta_pol, eta_r)
 
 
 @pytest.fixture(scope='session')
