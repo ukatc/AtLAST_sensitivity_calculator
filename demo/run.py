@@ -23,10 +23,10 @@ print("-----------")
 # calculator.dish_radius = 100*u.m
 # calculator.dish_radius = 'nonsense'
 # calculator.obs_freq = 100*u.s
-# calculator.t_int = 1*u.s
+# calculator.t_int = 2*u.s
 # calculator.sensitivity = float('inf')*u.Jy
 # calculator.n_pol = 1
-# print('using params', calculator.calculation_params)
+print('using params', calculator.calculation_parameters_as_dict)
 # TODO: is there a reason for not converting the sensitivity to mJy by default?
 calculated_sensitivity = \
     calculator.calculate_sensitivity(calculator.t_int).to(u.mJy)

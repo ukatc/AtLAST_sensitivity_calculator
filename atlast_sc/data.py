@@ -123,10 +123,6 @@ eta_r = DataType(
     default_value=1
 )
 
-eta_q = DataType(
-    default_value=0.96
-)
-
 t_cmb = DataType(
     default_value=2.73,
     default_unit=str(u.K)
@@ -150,6 +146,5 @@ param_data_type_dicts = {
     'eta_block': eta_block,
     'eta_pol': eta_pol,
     'eta_r': eta_r,
-    'eta_q': eta_q,
     'T_cmb': t_cmb,
 }

@@ -58,7 +58,14 @@ class Calculator:
         #  store or use those stored values.
         #  Need separate "outputs" properties that are used for
         #  subsequent calculations and/or storing results?
+        # TODO: We don't technically need to update the unit here (ditto other
+        #   values with units, because the value is set to a Quantity, which
+        #   contains the units. It's this quantity that is used throughout the
+        #   the application. However, not updating it feels odd, since it would
+        #   result in a discrepancy between the unit property and the unit
+        #   contained in the Quantity object. Think about this...
         self._calculation_inputs.user_input.t_int.value = value
+        self._calculation_inputs.user_input.t_int.unit = value.unit
 
     @property
     def sensitivity(self):
@@ -160,10 +167,6 @@ class Calculator:
     @property
     def eta_ill(self):
         return self._calculation_inputs.instrument_setup.eta_ill.value
-
-    @property
-    def eta_q(self):
-        return self._calculation_inputs.instrument_setup.eta_q.value
 
     @property
     def eta_spill(self):
@@ -349,7 +352,7 @@ class Calculator:
         tau_atm = atm.tau_atm()
 
         # Perform efficiencies calculation
-        eta = Efficiencies(self.eta_ill, self.eta_q, self.eta_spill,
+        eta = Efficiencies(self.eta_ill, self.eta_spill,
                            self.eta_block, self.eta_pol, self.eta_r)
 
         eta_a = eta.eta_a(self.obs_freq, self.surface_rms)

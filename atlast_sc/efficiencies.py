@@ -7,15 +7,19 @@ class Efficiencies:
     """
     All of the efficiency factors need to come in here...
     """
-    def __init__(self, eta_ill, eta_q, eta_spill, eta_block, eta_pol, eta_r):
+    def __init__(self, eta_ill, eta_spill, eta_block, eta_pol, eta_r):
         """
         At present, a placeholder method just to hold some efficiencies.
 
         :param eta_ill: the illumination factor
         :type eta_ill: float
+        :param eta_spill: spill-over factor
+        :type eta_spill: float
+        :param eta_block: blocking factor
+        :type eta_block: float
+
         """
         self.eta_ill = eta_ill
-        self.eta_q = eta_q
         self.eta_spill = eta_spill
         self.eta_block = eta_block
         self.eta_pol = eta_pol
