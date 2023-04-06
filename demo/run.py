@@ -22,7 +22,7 @@ print("-----------")
 # calculator.elevation = 5*u.deg
 # calculator.dish_radius = 100*u.m
 # calculator.dish_radius = 'nonsense'
-# calculator.obs_freq = 100*u.s
+# calculator.obs_freq = 140*u.GHz
 # calculator.t_int = 2*u.s
 # calculator.sensitivity = float('inf')*u.Jy
 # calculator.n_pol = 1
@@ -32,7 +32,7 @@ calculated_sensitivity = \
     calculator.calculate_sensitivity(calculator.t_int).to(u.mJy)
 print("Sensitivity: {:0.2f} for an integration time of {:0.2f} "
       .format(calculated_sensitivity, calculator.t_int))
-# calculator.sensitivity = calculated_sensitivity
+calculator.sensitivity = calculated_sensitivity
 
 # # Calculate the integration time for a given sensitivity
 calculated_t_int = \

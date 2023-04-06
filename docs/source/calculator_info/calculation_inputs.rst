@@ -23,7 +23,7 @@ representations of `astropy units <https://docs.astropy.org/en/stable/units/inde
       - s, min, h
     * - Sensitivity
       - sensitivity
-      - 0.3
+      - 3.0
       - mJy
       - > 0
       - uJy, mJy, Jy
