@@ -48,7 +48,6 @@ class AtmosphereParams:
         tau_z = self.interp_tau_atm(self.obs_freq, self.weather)
         zenith = 90.0 * u.deg - self.elevation
         tau_atm = tau_z / np.cos(zenith)
-        tau_atm[self.elevation <= 0.0 * u.deg] = -1.0
         return tau_atm[0]
 
     def T_atm(self):
