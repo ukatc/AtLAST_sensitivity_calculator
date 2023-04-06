@@ -27,9 +27,8 @@ print("-----------")
 # calculator.sensitivity = float('inf')*u.Jy
 # calculator.n_pol = 1
 print('using params', calculator.calculation_parameters_as_dict)
-# TODO: is there a reason for not converting the sensitivity to mJy by default?
 calculated_sensitivity = \
-    calculator.calculate_sensitivity(calculator.t_int).to(u.mJy)
+    calculator.calculate_sensitivity(calculator.t_int)
 print("Sensitivity: {:0.2f} for an integration time of {:0.2f} "
       .format(calculated_sensitivity, calculator.t_int))
 calculator.sensitivity = calculated_sensitivity
@@ -38,7 +37,7 @@ calculator.sensitivity = calculated_sensitivity
 calculated_t_int = \
     calculator.calculate_t_integration()
 print("Integration time: {:0.2f} to obtain a sensitivity of {:0.2f}"
-      .format(calculated_t_int, calculator.sensitivity.to(u.mJy)))
+      .format(calculated_t_int, calculator.sensitivity))
 # calculator.t_int = calculated_t_int
 
 print("-----------")

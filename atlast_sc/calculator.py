@@ -279,7 +279,9 @@ class Calculator:
             self.sefd / \
             (self.eta_s * np.sqrt(self.n_pol * self.bandwidth * t_int))
 
-        sensitivity = sensitivity.to(u.Jy)
+        # Convert the output to mJy
+        # TODO: we may want to make this configurable in future
+        sensitivity = sensitivity.to(u.mJy)
 
         # Update the sensitivity stored in the calculator
         if update_calculator:
