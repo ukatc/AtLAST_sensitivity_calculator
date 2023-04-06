@@ -25,6 +25,10 @@ class Calculator:
     """
     def __init__(self, user_input={}, instrument_setup={}):
 
+        # Make sure the user input doesn't contain any unexpected parameter
+        # names
+        Calculator._check_input(user_input)
+
         self._derived_params = None
 
         # Store the input parameters used to initialise the calculator
@@ -338,6 +342,21 @@ class Calculator:
     #####################
     # Protected methods #
     #####################
+
+    @staticmethod
+    def _check_input(user_input):
+        """
+        Validates the user input parameters (just the names; value validation
+        is handled by the model)
+        """
+
+        test_model = UserInput()
+
+        for param in user_input:
+            if param not in test_model.__dict__:
+                raise ValueError(f'"{param}" is not a valid input parameter')
+
+
 
     def _calculate_derived_parameters(self):
         """

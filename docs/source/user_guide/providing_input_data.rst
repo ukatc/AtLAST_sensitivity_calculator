@@ -24,19 +24,18 @@ First, create a dictionary with the input data you wish to use:
         'elevation': {'value': 25, 'unit': 'deg'}
     }
 
-.. note:: All values must be numeric (integer or float). Units must be valid string
-    representations of
-    `astropy units <https://docs.astropy.org/en/stable/units/index.html>`__.
-
-.. warning:: Check your input data carefully! If the Calculator receives an
-    unexpected parameter, it will ignore it. It will not produce an error or a
-    warning.
-
 Next, create a new Calculator object, passing the ``input_data`` dictionary.
 
 .. code-block:: python
 
     calculator = Calculator(input_data)
+
+.. note:: All values must be numeric (integer or float). Units must be valid string
+    representations of
+    `astropy units <https://docs.astropy.org/en/stable/units/index.html>`__.
+
+.. note:: The Calculator with throw an error if any of the input parameter names are
+    incorrect.
 
 .. note:: If any of the above parameters are missing from input data dictionary,
     the calculator will use the appropriate default values and units.
