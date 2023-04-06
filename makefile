@@ -2,7 +2,7 @@
 .PHONY: test
 
 test:
-	PYTHONPATH=. pytest -s
+	PYTHONPATH=. pytest -s -vv
 
 buildwebclientimage:
 	@echo "Building web client image for current branch '${GIT_BRANCH}'..."

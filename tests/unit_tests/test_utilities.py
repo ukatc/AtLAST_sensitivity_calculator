@@ -141,7 +141,7 @@ class TestFileHelper:
         # to be read by the FileHelper to produce an appropriately formatted
         # dictionary that could be used by the Calculator.
         expected_params = ['t_int', 'sensitivity', 'bandwidth', 'n_pol',
-                           'obs_fre', 'weather', 'elevation', 'dish_radius',
+                           'obs_freq', 'weather', 'elevation', 'dish_radius',
                            'area', 'surface_rms', 'g', 'T_amb', 'eta_eff',
                            'eta_ill', 'eta_spill', 'eta_block', 'eta_q',
                            'eta_pol', 'eta_r', 'T_cmb', 'tau_atm', 'T_atm',
@@ -153,7 +153,13 @@ class TestFileHelper:
 
         assert list(result_dict.keys()).sort() == expected_params.sort()
 
-        new_calculator = Calculator(result_dict)
+        # Create a new calculator with the subset of parameters from
+        # result_dict
+        input_params = {key: val for key, val in result_dict.items()
+                        if key in
+                        ['t_int', 'sensitivity', 'bandwidth', 'n_pol',
+                         'obs_freq', 'weather', 'elevation']}
+        new_calculator = Calculator(input_params)
 
         assert new_calculator.calculation_parameters_as_dict ==\
                calculator.calculation_parameters_as_dict
