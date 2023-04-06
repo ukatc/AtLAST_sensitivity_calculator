@@ -29,7 +29,7 @@ integration_time = DataType(
 )
 
 sensitivity = DataType(
-    default_value=1.7,
+    default_value=3.0,
     default_unit=str(u.mJy),
     lower_value=0,
     lower_value_is_floor=True,

@@ -6,12 +6,12 @@ The following is a description of the underlying calculations that the software 
 The sensitivity of a single dish telescope for an integration time :math:`t` is given by:
 
 .. math::
-    \Delta S = \frac{SEFD}{\eta_{s}\sqrt{n_{pol} \Delta \nu t}} \times \textrm{exp}^{\tau_{atm}}
+    \Delta S = \frac{SEFD}{\eta_{s}\sqrt{n_{pol} \Delta \nu t}}
 
 or conversely, to obtain the integration time required for a given sensitivity :math:`\Delta S`, 
 
 .. math::
-    t = \left(\frac{SEFD}{ \Delta S  \eta_s \textrm{exp}^{\tau_{atm}}}\right)^2 \times \frac{1}{n_{pol} \Delta \nu} 
+    t = \left(\frac{SEFD}{ \Delta S  \eta_s }\right)^2 \times \frac{1}{n_{pol} \Delta \nu}
 
 
 where 
@@ -20,7 +20,6 @@ where
 * :math:`\eta_{s}` is the system efficiency
 * :math:`n_{pol}` is the number of polarizations
 * :math:`\Delta \nu` is the bandwidth
-* :math:`\tau_{atm}` is the atmospheric opacity
 
 
 The system equivalent flux density is calculated as:
@@ -38,7 +37,7 @@ where
 The system temperature is calculated as:
 
 .. math::
-    T_{sys} = \frac{1+g}{\eta_{eff} \mathfrak{t}} \times T_{rx} + (\eta_{eff} T_{sky}) + (1-\eta_{eff}) T_{amb}
+    T_{sys} = \frac{1+g}{\eta_{eff} \mathfrak{t}} \times [T_{rx} + (\eta_{eff} T_{sky}) + (1-\eta_{eff}) T_{amb}]
 
 where
 

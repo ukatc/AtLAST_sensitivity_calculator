@@ -1,6 +1,6 @@
 ---
 t_int       : {value: 100,   unit: s}
-sensitivity : {value: 0.3,   unit: mJy}
+sensitivity : {value: 3.0,   unit: mJy}
 bandwidth   : {value: 100, unit: MHz}
 obs_freq    : {value: 100, unit: GHz}
 n_pol       : {value: 2}
