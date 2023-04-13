@@ -93,7 +93,7 @@ class Decorators:
 
         # Validate the new value
         try:
-            calculator._calculation_inputs. \
+            calculator.calculation_inputs. \
                 validate_update(param_name, value)
         except ValueError as e:
             raise e
@@ -166,7 +166,11 @@ class FileHelper:
 
         file_path = f'{os.path.join(path, file_name)}.{file_type}'
 
-        params = calculator.calculation_parameters_as_dict
+        # Create and concatenate dictionaries from the user input model and
+        # the derived parameters model
+        params = {param: val['value']
+                  for param, val in calculator.user_input.dict().items()} | \
+            calculator.derived_parameters.dict()
 
         with open(file_path, "w") as f:
             file_writer(f, params)

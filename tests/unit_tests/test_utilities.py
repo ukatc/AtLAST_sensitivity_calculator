@@ -137,32 +137,57 @@ class TestFileHelper:
         expected_file_name = file_name + '.' + file_type
         assert expected_file_name in os.listdir(tmp_output_dir)
 
+        # # Atmospheric opacity
+        # tau_atm: float
+        # # Atmospheric temperature
+        # T_atm: Quantity
+        # # Receiver temperature
+        # T_rx: Quantity
+        # # Dish efficiency
+        # eta_a: float
+        # # System efficiency
+        # eta_s: float
+        # # System temperature
+        # T_sys: Quantity
+        # # Source equivalent flux density
+        # sefd: Quantity
+        # # Dish area
+        # area: Quantity
+
         # Make sure the file has been written in a format that allows it
         # to be read by the FileHelper to produce an appropriately formatted
         # dictionary that could be used by the Calculator.
         expected_params = ['t_int', 'sensitivity', 'bandwidth', 'n_pol',
-                           'obs_freq', 'weather', 'elevation', 'dish_radius',
-                           'area', 'surface_rms', 'g', 'T_amb', 'eta_eff',
-                           'eta_ill', 'eta_spill', 'eta_block', 'eta_q',
-                           'eta_pol', 'eta_r', 'T_cmb', 'tau_atm', 'T_atm',
-                           'T_rx', 'eta_a', 'eta_s', 'T_sys', 'sefd']
+                           'obs_freq', 'weather', 'elevation', 'tau_atm',
+                           'T_atm', 'T_rx', 'eta_a', 'eta_s', 'T_sys',
+                           'sefd', 'area']
+        # sort the expected parameters
+        expected_params.sort()
 
         result_dict = \
             FileHelper.read_from_file(tmp_output_dir,
                                       expected_file_name)
+        # list and sort the results dictionary keys
+        result_dict_keys = list(result_dict.keys())
+        result_dict_keys.sort()
 
-        assert list(result_dict.keys()).sort() == expected_params.sort()
+        assert result_dict_keys == expected_params
 
         # Create a new calculator with the subset of parameters from
         # result_dict
+        # TODO: test providing invalid input
         input_params = {key: val for key, val in result_dict.items()
                         if key in
                         ['t_int', 'sensitivity', 'bandwidth', 'n_pol',
                          'obs_freq', 'weather', 'elevation']}
         new_calculator = Calculator(input_params)
 
-        assert new_calculator.calculation_parameters_as_dict ==\
-               calculator.calculation_parameters_as_dict
+        assert new_calculator.user_input == \
+               calculator.user_input
+        assert new_calculator.instrument_setup == \
+               calculator.instrument_setup
+        assert new_calculator.derived_parameters == \
+               calculator.derived_parameters
 
     file_types = [
         ('yaml', FileHelper._to_yaml),

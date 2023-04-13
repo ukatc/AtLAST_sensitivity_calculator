@@ -1,4 +1,4 @@
-Outputs Files and Formats
+Outputs files and formats
 -------------------------
 
 The :meth:`write_to_file <atlast_sc.utils.FileHelper.write_to_file>` method of

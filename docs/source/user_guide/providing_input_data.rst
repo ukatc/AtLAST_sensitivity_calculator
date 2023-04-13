@@ -1,6 +1,6 @@
 The Sensitivity Calculator is pre-configured with default values for all
-input parameters.
-See :doc:`Inputs to the Calculation <../calculator_info/calculation_inputs>` for
+user input parameters.
+See :doc:`User input <../calculator_info/user_input>` for
 more information on the input parameters and their default values.
 
 You may also initialize the calculator with your own input
@@ -46,7 +46,7 @@ Reading data from an input file
 
 The :class:`FileHelper <atlast_sc.utils.FileHelper>` class can be used to
 read data from a file and generate an input data dictionary.
-(See :doc:`Input Files and Formats <input_files_formats>`
+(See :doc:`Input files and formats <input_files_formats>`
 for more information on supported file formats and the required structure.)
 
 First, import the file helper class from the :mod:`utils <atlast_sc.utils>` module:

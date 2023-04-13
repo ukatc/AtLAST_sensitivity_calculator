@@ -106,6 +106,23 @@ class Validator:
                                            data_type.default_unit)
 
 
+def model_str_rep(model):
+    string_rep = ""
+    decimal_places = 6
+
+    for key in model.__dict__:
+        param = model.__dict__[key]
+
+        if type(param) == ValueWithUnits or type(param) == ValueWithoutUnits:
+            value = param.value
+        else:
+            value = param
+
+        formatted_value = format(value, f'.{decimal_places}g')
+        string_rep = string_rep + f'{key}: {formatted_value}\n'
+    return string_rep
+
+
 class ValueWithUnits(BaseModel):
     value: float
     unit: str
@@ -176,6 +193,9 @@ class UserInput(BaseModel):
                              "integration time to your input.")
         return field_values
 
+    def __str__(self):
+        return model_str_rep(self)
+
 
 class InstrumentSetup(BaseModel):
     g: ValueWithoutUnits = ValueWithoutUnits(value=data.g.default_value)
@@ -200,6 +220,9 @@ class InstrumentSetup(BaseModel):
         ValueWithoutUnits(value=data.eta_pol.default_value)
     eta_r: ValueWithoutUnits = \
         ValueWithoutUnits(value=data.eta_r.default_value)
+
+    def __str__(self):
+        return model_str_rep(self)
 
 
 class CalculationInput(BaseModel):
@@ -275,5 +298,8 @@ class DerivedParams(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+    def __str__(self):
+        return model_str_rep(self)
 
     # TODO add validator for Quantity

@@ -90,7 +90,7 @@ dish_radius = DataType(
     default_value=25,
     default_unit=str(u.m),
     lower_value=1,
-    upper_value=100,
+    upper_value=50,
     units=[str(u.m)]
 )
 

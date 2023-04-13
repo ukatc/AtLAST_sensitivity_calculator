@@ -1,11 +1,15 @@
-Input Files and Formats
+Input files and formats
 -----------------------
 
 The :meth:`read_from_file <atlast_sc.utils.FileHelper.read_from_file>` method of
-the :class:`FileHelper <atlast_sc.utils.FileHelper>` class can read input data
-from a plain-text, `YAML <https://en.wikipedia.org/wiki/YAML>`__,
+the :class:`FileHelper <atlast_sc.utils.FileHelper>` class can read input parameters
+from a file. See :doc:`User input <../calculator_info/user_input>` for
+more information on the expected input parameters. Any parameters not provided in the
+input file will be assigned their default value.
+
+The file reader supports plain-text, `YAML <https://en.wikipedia.org/wiki/YAML>`__,
 or `JSON <https://en.wikipedia.org/wiki/JSON>`__ formatted file.
-These are described in more detail below.
+The expected structure for each file type is described in more detail below.
 
 Plain-text files
 ^^^^^^^^^^^^^^^^
