@@ -1,9 +1,9 @@
-Input Files and Formats
+Input files and formats
 -----------------------
 
 The :meth:`read_from_file <atlast_sc.utils.FileHelper.read_from_file>` method of
 the :class:`FileHelper <atlast_sc.utils.FileHelper>` class can read input parameters
-from a file. See :doc:`Inputs to the Calculation <../calculator_info/calculation_inputs>` for
+from a file. See :doc:`User input <../calculator_info/user_input>` for
 more information on the expected input parameters. Any parameters not provided in the
 input file will be assigned their default value.
 
