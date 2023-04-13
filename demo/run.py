@@ -27,7 +27,7 @@ print("-----------")
 # calculator.t_int = 2*u.s
 # calculator.sensitivity = float('inf')*u.Jy
 # calculator.n_pol = 1
-print('using params', calculator.calculation_parameters_as_dict)
+# print('using params', calculator.calculation_parameters_as_dict)
 calculated_sensitivity = \
     calculator.calculate_sensitivity(calculator.t_int)
 print("Sensitivity: {:0.2f} for an integration time of {:0.2f} "
@@ -48,8 +48,11 @@ print("-----------")
 # calculator.output_to_file("logs", "output_parameters", "yml")
 FileHelper.write_to_file(calculator, "logs", "output_parameters", "yml")
 
-# reset the calculator
-print('before resetting', calculator.calculation_parameters_as_dict)
-calculator.reset()
-print('after resetting', calculator.calculation_parameters_as_dict)
+# print(calculator.instrument_setup)
+# print(calculator.user_input)
+# print(calculator.derived_parameters)
+# # reset the calculator
+# print('before resetting', calculator.calculation_parameters_as_dict)
+# calculator.reset()
+# print('after resetting', calculator.calculation_parameters_as_dict)
 # TODO: add something here to demonstrate that the calculator has been reset

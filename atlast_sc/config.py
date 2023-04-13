@@ -47,10 +47,6 @@ class Config:
     def instrument_setup(self):
         return self._instrument_setup
 
-    def calculation_inputs_as_dict(self):
-        return dict(self.calculation_inputs.user_input) \
-               | dict(self._calculation_inputs.instrument_setup)
-
     def reset(self):
         self._calculation_inputs = \
             self._original_inputs

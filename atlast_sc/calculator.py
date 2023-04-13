@@ -6,7 +6,6 @@ from atlast_sc.temperatures import Temperatures
 from atlast_sc.efficiencies import Efficiencies
 from atlast_sc.models import DerivedParams
 from atlast_sc.models import UserInput
-from atlast_sc.models import InstrumentSetup
 from atlast_sc.config import Config
 from atlast_sc.utils import Decorators
 
@@ -29,13 +28,11 @@ class Calculator:
         # names
         Calculator._check_input(user_input)
 
-        self._derived_params = None
-
         # Store the input parameters used to initialise the calculator
         self._config = Config(user_input, instrument_setup)
 
         # Calculate the derived parameters used in the calculation
-        self._calculate_derived_parameters()
+        self._derived_params = self._calculate_derived_parameters()
 
     # TODO: move these getters and setters to Config object?
     ###################################################
@@ -202,50 +199,50 @@ class Calculator:
 
     @property
     def tau_atm(self):
-        return self._derived_params.tau_atm
+        return self.derived_parameters.tau_atm
 
     @property
     def T_atm(self):
-        return self._derived_params.T_atm
+        return self.derived_parameters.T_atm
 
     @property
     def T_rx(self):
-        return self.calculation_inputs.instrument_setup.T_rx
+        return self.derived_parameters.T_rx
 
     @property
     def eta_a(self):
-        return self._derived_params.eta_a
+        return self.derived_parameters.eta_a
 
     @property
     def eta_s(self):
-        return self._derived_params.eta_s
+        return self.derived_parameters.eta_s
 
     @property
     def T_sys(self):
-        return self._derived_params.T_sys
+        return self.derived_parameters.T_sys
 
     @property
     def sefd(self):
-        return self._derived_params.sefd
+        return self.derived_parameters.sefd
 
     @property
     def area(self):
-        return self._derived_params.area
+        return self.derived_parameters.area
 
-    @property
-    def calculation_parameters_as_dict(self):
-        """
-        Returns the parameters used in the calculation (user input, instrument
-        setup, and derived parameters) as a dictionary.
-
-        Dictionary keys are the parameter names; values are either a float (
-        values without units), or an astropy Quantity object with a value and
-        unit.
-
-        :return: Dictionary of parameters used in the calculation
-        :rtype: dict
-        """
-        return self._calculation_params_as_dict()
+    # @property
+    # def calculation_parameters_as_dict(self):
+    #     """
+    #     Returns the parameters used in the calculation (user input, instrument
+    #     setup, and derived parameters) as a dictionary.
+    #
+    #     Dictionary keys are the parameter names; values are either a float (
+    #     values without units), or an astropy Quantity object with a value and
+    #     unit.
+    #
+    #     :return: Dictionary of parameters used in the calculation
+    #     :rtype: dict
+    #     """
+    #     return self._calculation_params_as_dict()
 
     @property
     def calculation_inputs(self):
@@ -253,6 +250,27 @@ class Calculator:
         The inputs to the calculation (user input and instrument setup)
         """
         return self._config.calculation_inputs
+
+    @property
+    def user_input(self):
+        """
+        User inputs to the calculation
+        """
+        return self._config.user_input
+
+    @property
+    def instrument_setup(self):
+        """
+        Instrument setup parameters
+        """
+        return self._config.instrument_setup
+
+    @property
+    def derived_parameters(self):
+        """
+        Parameters calculated from user input and instrument setup
+        """
+        return self._derived_params
 
     #################################################
     # Public methods for performing sensitivity and #
@@ -336,7 +354,7 @@ class Calculator:
         # Reset the config calculation inputs to their original values
         self._config.reset()
         # Recalculate the derived parameters
-        self._calculate_derived_parameters()
+        self._derived_params = self._calculate_derived_parameters()
 
     #####################
     # Protected methods #
@@ -386,29 +404,31 @@ class Calculator:
         # Calculate source equivalent flux density
         sefd = SEFD.calculate(T_sys, area, eta_a)
 
-        self._derived_params = \
-            DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
-                          eta_a=eta_a, eta_s=eta_s, T_sys=T_sys, sefd=sefd,
-                          area=area)
+        return DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
+                             eta_a=eta_a, eta_s=eta_s, T_sys=T_sys, sefd=sefd,
+                             area=area)
 
-    def _calculation_params_as_dict(self):
-        """
-        Convert the calculation inputs (user inputs and instrument setup)
-        and derived parameters to a dictionary
-        """
-
-        # Convert the calculation inputs to a dictionary
-        output_dict = {}
-        for field in self.calculation_inputs:
-            if isinstance(field[1], UserInput) \
-                    or isinstance(field[1], InstrumentSetup):
-                for values in field[1]:
-                    output_dict[values[0]] = values[1].value
-            else:
-                output_dict[field[0]] = field[1].value
-
-        # Append the derived parameters to the dictionary
-        for field in self._derived_params:
-            output_dict[field[0]] = field[1]
-
-        return output_dict
+    # def _calculation_params_as_dict(self):
+    #     """
+    #     Convert the calculation inputs (user inputs and instrument setup)
+    #     and derived parameters to a dictionary
+    #     """
+    #
+    #     # Convert the calculation inputs to a dictionary
+    #     output_dict = {}
+    #     for field in self.calculation_inputs:
+    #         if isinstance(field[1], UserInput) \
+    #                 or isinstance(field[1], InstrumentSetup):
+    #             for values in field[1]:
+    #                 output_dict[values[0]] = values[1].value
+    #         else:
+    #             print('how did I get here??')
+    #             print(field[0])
+    #             print(field[1])
+    #             output_dict[field[0]] = field[1].value
+    #
+    #     # Append the derived parameters to the dictionary
+    #     for field in self._derived_params:
+    #         output_dict[field[0]] = field[1]
+    #
+    #     return output_dict
