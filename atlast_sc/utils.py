@@ -93,7 +93,7 @@ class Decorators:
 
         # Validate the new value
         try:
-            calculator._calculation_inputs. \
+            calculator.calculation_inputs. \
                 validate_update(param_name, value)
         except ValueError as e:
             raise e

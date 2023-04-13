@@ -50,7 +50,7 @@ class Calculator:
     #   calculation
     @property
     def t_int(self):
-        return self._calculation_inputs.user_input.t_int.value
+        return self.calculation_inputs.user_input.t_int.value
 
     @t_int.setter
     @Decorators.validate_update
@@ -68,12 +68,12 @@ class Calculator:
         #   the application. However, not updating it feels odd, since it would
         #   result in a discrepancy between the unit property and the unit
         #   contained in the Quantity object. Think about this...
-        self._calculation_inputs.user_input.t_int.value = value
-        self._calculation_inputs.user_input.t_int.unit = value.unit
+        self.calculation_inputs.user_input.t_int.value = value
+        self.calculation_inputs.user_input.t_int.unit = value.unit
 
     @property
     def sensitivity(self):
-        return self._calculation_inputs.user_input.sensitivity.value
+        return self.calculation_inputs.user_input.sensitivity.value
 
     @sensitivity.setter
     @Decorators.validate_update
@@ -85,56 +85,56 @@ class Calculator:
         #  store or use those stored values.
         #  Need separate "outputs" properties that are used for
         #  subsequent calculations and/or storing results?
-        self._calculation_inputs.user_input.sensitivity.value = value
-        self._calculation_inputs.user_input.sensitivity.unit = value.unit
+        self.calculation_inputs.user_input.sensitivity.value = value
+        self.calculation_inputs.user_input.sensitivity.unit = value.unit
 
     @property
     def bandwidth(self):
-        return self._calculation_inputs.user_input.bandwidth.value
+        return self.calculation_inputs.user_input.bandwidth.value
 
     @bandwidth.setter
     @Decorators.validate_and_update_params
     def bandwidth(self, value):
-        self._calculation_inputs.user_input.bandwidth.value = value
-        self._calculation_inputs.user_input.bandwidth.unit = value.unit
+        self.calculation_inputs.user_input.bandwidth.value = value
+        self.calculation_inputs.user_input.bandwidth.unit = value.unit
 
     @property
     def obs_freq(self):
-        return self._calculation_inputs.user_input.obs_freq.value
+        return self.calculation_inputs.user_input.obs_freq.value
 
     @obs_freq.setter
     @Decorators.validate_and_update_params
     def obs_freq(self, value):
-        self._calculation_inputs.user_input.obs_freq.value = value
-        self._calculation_inputs.user_input.obs_freq.unit = value.unit
+        self.calculation_inputs.user_input.obs_freq.value = value
+        self.calculation_inputs.user_input.obs_freq.unit = value.unit
 
     @property
     def n_pol(self):
-        return self._calculation_inputs.user_input.n_pol.value
+        return self.calculation_inputs.user_input.n_pol.value
 
     @n_pol.setter
     @Decorators.validate_and_update_params
     def n_pol(self, value):
-        self._calculation_inputs.user_input.n_pol.value = value
+        self.calculation_inputs.user_input.n_pol.value = value
 
     @property
     def weather(self):
-        return self._calculation_inputs.user_input.weather.value
+        return self.calculation_inputs.user_input.weather.value
 
     @weather.setter
     @Decorators.validate_and_update_params
     def weather(self, value):
-        self._calculation_inputs.user_input.weather.value = value
+        self.calculation_inputs.user_input.weather.value = value
 
     @property
     def elevation(self):
-        return self._calculation_inputs.user_input.elevation.value
+        return self.calculation_inputs.user_input.elevation.value
 
     @elevation.setter
     @Decorators.validate_and_update_params
     def elevation(self, value):
-        self._calculation_inputs.user_input.elevation.value = value
-        self._calculation_inputs.user_input.elevation.unit = value.unit
+        self.calculation_inputs.user_input.elevation.value = value
+        self.calculation_inputs.user_input.elevation.unit = value.unit
 
     ####################################################################
     # Getters and a couple of setters for instrument setup parameters  #
@@ -142,51 +142,51 @@ class Calculator:
 
     @property
     def g(self):
-        return self._calculation_inputs.instrument_setup.g.value
+        return self.calculation_inputs.instrument_setup.g.value
 
     @property
     def surface_rms(self):
-        return self._calculation_inputs.instrument_setup.surface_rms.value
+        return self.calculation_inputs.instrument_setup.surface_rms.value
 
     @property
     def dish_radius(self):
-        return self._calculation_inputs.instrument_setup.dish_radius.value
+        return self.calculation_inputs.instrument_setup.dish_radius.value
 
     @dish_radius.setter
     @Decorators.validate_and_update_params
     def dish_radius(self, value):
         # TODO Flag to the user somehow that they are varying an instrument
         #   setup parameter?
-        self._calculation_inputs.instrument_setup.dish_radius.value = value
-        self._calculation_inputs.instrument_setup.dish_radius.unit = value.unit
+        self.calculation_inputs.instrument_setup.dish_radius.value = value
+        self.calculation_inputs.instrument_setup.dish_radius.unit = value.unit
 
     @property
     def T_amb(self):
-        return self._calculation_inputs.instrument_setup.T_amb.value
+        return self.calculation_inputs.instrument_setup.T_amb.value
 
     @property
     def eta_eff(self):
-        return self._calculation_inputs.instrument_setup.eta_eff.value
+        return self.calculation_inputs.instrument_setup.eta_eff.value
 
     @property
     def eta_ill(self):
-        return self._calculation_inputs.instrument_setup.eta_ill.value
+        return self.calculation_inputs.instrument_setup.eta_ill.value
 
     @property
     def eta_spill(self):
-        return self._calculation_inputs.instrument_setup.eta_spill.value
+        return self.calculation_inputs.instrument_setup.eta_spill.value
 
     @property
     def eta_block(self):
-        return self._calculation_inputs.instrument_setup.eta_block.value
+        return self.calculation_inputs.instrument_setup.eta_block.value
 
     @property
     def eta_pol(self):
-        return self._calculation_inputs.instrument_setup.eta_pol.value
+        return self.calculation_inputs.instrument_setup.eta_pol.value
 
     @property
     def eta_r(self):
-        return self._calculation_inputs.instrument_setup.eta_r.value
+        return self.calculation_inputs.instrument_setup.eta_r.value
 
     #########################
     # Getters for constants #
@@ -194,7 +194,7 @@ class Calculator:
 
     @property
     def T_cmb(self):
-        return self._calculation_inputs.T_cmb.value
+        return self.calculation_inputs.T_cmb.value
 
     ###################################
     # Getters for derived parameters  #
@@ -210,7 +210,7 @@ class Calculator:
 
     @property
     def T_rx(self):
-        return self._calculation_inputs.instrument_setup.T_rx
+        return self.calculation_inputs.instrument_setup.T_rx
 
     @property
     def eta_a(self):
@@ -248,7 +248,7 @@ class Calculator:
         return self._calculation_params_as_dict()
 
     @property
-    def _calculation_inputs(self):
+    def calculation_inputs(self):
         """
         The inputs to the calculation (user input and instrument setup)
         """
@@ -334,8 +334,7 @@ class Calculator:
         Resets all calculator parameters to their initial values.
         """
         # Reset the config calculation inputs to their original values
-        self._config.calculation_inputs = \
-            self._config.original_calculation_inputs
+        self._config.reset()
         # Recalculate the derived parameters
         self._calculate_derived_parameters()
 
@@ -355,8 +354,6 @@ class Calculator:
         for param in user_input:
             if param not in test_model.__dict__:
                 raise ValueError(f'"{param}" is not a valid input parameter')
-
-
 
     def _calculate_derived_parameters(self):
         """
@@ -402,7 +399,7 @@ class Calculator:
 
         # Convert the calculation inputs to a dictionary
         output_dict = {}
-        for field in self._calculation_inputs:
+        for field in self.calculation_inputs:
             if isinstance(field[1], UserInput) \
                     or isinstance(field[1], InstrumentSetup):
                 for values in field[1]:

@@ -1,3 +1,4 @@
+# flake8: noqa
 import os
 import astropy.units as u
 from atlast_sc.calculator import Calculator

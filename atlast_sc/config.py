@@ -39,14 +39,18 @@ class Config:
     def calculation_inputs(self):
         return self._calculation_inputs
 
-    @calculation_inputs.setter
-    def calculation_inputs(self, value):
-        self._calculation_inputs = value
+    @property
+    def user_input(self):
+        return self._user_input
 
     @property
-    def original_calculation_inputs(self):
-        return self._original_inputs
+    def instrument_setup(self):
+        return self._instrument_setup
 
     def calculation_inputs_as_dict(self):
         return dict(self.calculation_inputs.user_input) \
                | dict(self._calculation_inputs.instrument_setup)
+
+    def reset(self):
+        self._calculation_inputs = \
+            self._original_inputs

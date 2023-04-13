@@ -75,7 +75,6 @@ class TestCalculator:
         #     assert calculator_params[param] == \
         #            expected_configured_params[param]
 
-
     # TODO test invalid input parameters result in an error
 
     # def test_sensitivity(self, calculator):
