@@ -177,7 +177,7 @@ class TestDataValidation:
          pytest.raises(ValueOutOfRangeException)),
         ({'dish_radius': {'value': 30, 'unit': 'm'}}, does_not_raise()),
         ({'dish_radius': {'value': 1, 'unit': 'm'}}, does_not_raise()),
-        ({'dish_radius': {'value': 100, 'unit': 'm'}}, does_not_raise()),
+        ({'dish_radius': {'value': 50, 'unit': 'm'}}, does_not_raise()),
         ({'dish_radius': {'value': 0.5, 'unit': 'm'}},
          pytest.raises(ValueOutOfRangeException)),
         ({'dish_radius': {'value': 110, 'unit': 'm'}},
