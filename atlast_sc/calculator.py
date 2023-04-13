@@ -229,21 +229,6 @@ class Calculator:
     def area(self):
         return self.derived_parameters.area
 
-    # @property
-    # def calculation_parameters_as_dict(self):
-    #     """
-    #     Returns the parameters used in the calculation (user input, instrument
-    #     setup, and derived parameters) as a dictionary.
-    #
-    #     Dictionary keys are the parameter names; values are either a float (
-    #     values without units), or an astropy Quantity object with a value and
-    #     unit.
-    #
-    #     :return: Dictionary of parameters used in the calculation
-    #     :rtype: dict
-    #     """
-    #     return self._calculation_params_as_dict()
-
     @property
     def calculation_inputs(self):
         """
@@ -407,28 +392,3 @@ class Calculator:
         return DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
                              eta_a=eta_a, eta_s=eta_s, T_sys=T_sys, sefd=sefd,
                              area=area)
-
-    # def _calculation_params_as_dict(self):
-    #     """
-    #     Convert the calculation inputs (user inputs and instrument setup)
-    #     and derived parameters to a dictionary
-    #     """
-    #
-    #     # Convert the calculation inputs to a dictionary
-    #     output_dict = {}
-    #     for field in self.calculation_inputs:
-    #         if isinstance(field[1], UserInput) \
-    #                 or isinstance(field[1], InstrumentSetup):
-    #             for values in field[1]:
-    #                 output_dict[values[0]] = values[1].value
-    #         else:
-    #             print('how did I get here??')
-    #             print(field[0])
-    #             print(field[1])
-    #             output_dict[field[0]] = field[1].value
-    #
-    #     # Append the derived parameters to the dictionary
-    #     for field in self._derived_params:
-    #         output_dict[field[0]] = field[1]
-    #
-    #     return output_dict
