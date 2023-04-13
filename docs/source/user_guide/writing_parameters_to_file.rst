@@ -1,6 +1,6 @@
 The :class:`FileHelper <atlast_sc.utils.FileHelper>` method
 :meth:`write_to_file <atlast_sc.utils.FileHelper.write_to_file>` writes
-all input parameters and calculated values to a
+all user inputs and derived parameters to a
 plain-text, `YAML <https://en.wikipedia.org/wiki/YAML>`__,
 or `JSON <https://en.wikipedia.org/wiki/JSON>`__ formatted file.
 
@@ -23,18 +23,6 @@ Below is an example of a ``YAML``-formatted output file:
     n_pol           : {value:        2.0}
     weather         : {value:       25.0}
     elevation       : {value:       45.0, unit: deg}
-    g               : {value:        1.0}
-    surface_rms     : {value:       25.0, unit: micron}
-    dish_radius     : {value:       25.0, unit: m}
-    T_amb           : {value:      270.0, unit: K}
-    eta_eff         : {value:        0.8}
-    eta_ill         : {value:        0.8}
-    eta_q           : {value:       0.96}
-    eta_spill       : {value:       0.95}
-    eta_block       : {value:       0.94}
-    eta_pol         : {value:       0.99}
-    eta_r           : {value:        1.0}
-    T_cmb           : {value:       2.73, unit: K}
     tau_atm         : {value: 0.027620396974877098}
     T_atm           : {value:   7.757599, unit: K}
     T_rx            : {value: 23.996215366831105, unit: K}

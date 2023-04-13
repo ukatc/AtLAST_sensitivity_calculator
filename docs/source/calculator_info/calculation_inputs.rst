@@ -1,7 +1,7 @@
 Inputs to the Calculation
 =========================
 
-The table below lists the parameters that are used by the calculator to
+The table below lists the user input parameters used by the calculator to
 calculate the integration time or sensitivity. Units in the table are string
 representations of `astropy units <https://docs.astropy.org/en/stable/units/index.html>`__:
 
