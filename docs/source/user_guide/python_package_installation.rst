@@ -9,8 +9,7 @@ Instructions are provided below.
 .. note:: Please contact `Pamela Klaassen`_ if you require access to the repository.
 
 
-.. note:: At a future release, the web client will be hosted on a publicly
-    available server. The Python package will also be installable from a
+.. note:: At a future release, the Python package will be installable from a
     publicly available repository.
 
 

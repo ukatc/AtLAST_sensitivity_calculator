@@ -1,10 +1,8 @@
-The Sensitivity Calculator is pre-configured with default values for all
-user input parameters.
-See :doc:`User input <../calculator_info/user_input>` for
-more information on the input parameters and their default values.
+The Sensitivity Calculator can be initialized with your own input
+values. This is described in the sections that follow.
 
-You may also initialize the calculator with your own input
-values. This is described below.
+See :doc:`User input <../calculator_info/user_input>` for
+more information on the calculation input parameters.
 
 Initializing the Calculator with a dictionary
 *********************************************
