@@ -137,12 +137,21 @@ const doCalculation = (paramData) => {
     for (const param in paramData) {
         // Get the input element for the current param and retrieve its
         //  value
-        // TODO: include inputs for units
-        const elem = document.querySelector(`[name=${param}]`);
-        if (elem) {
+        const inputElem = document.querySelector(`[name=${param}]`);
+        // Get the value in the units dropdown, where applicable
+        const unitsElem = document.getElementById(`${param}-units`);
+        let unit;
+        if (unitsElem) {
+            unit = unitsElem.value;
+        }
+        else {
+            unit = paramData[param].default_unit;
+        }
+
+        if (inputElem) {
             inputData[param] =
-                {'value': elem.value.trim(),
-                 'unit': paramData[param].default_unit};
+                {'value': inputElem.value.trim(),
+                 'unit': unit};
         }
     }
 
