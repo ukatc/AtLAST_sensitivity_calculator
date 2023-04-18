@@ -15,7 +15,7 @@ User input
       - t_int
       - 100
       - s
-      - > 1s
+      - > 0
       - s, min, h
     * - Sensitivity
       - sensitivity

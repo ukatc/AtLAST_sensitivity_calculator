@@ -36,7 +36,7 @@ set the bandwidth after initializing the calculator:
 
 .. code-block:: python
 
-    calculator.bandwidth = 10*u.GHz
+    calculator.bandwidth = 150*u.MHz
 
 .. note::
 
@@ -73,11 +73,16 @@ You can also specify a sensitivity to perform the integration time calculation:
     sens = 10*u.mJy
     calculated_t_int = calculator.calculate_t_integration(sens)
 
+.. note::
+
+    If an integration time is passed to ``calculate_sensitivity``, this value
+    is stored in the Calculator object. Similarly, a sensitivity passed to
+    ``calculate_t_integration`` is stored by the Calculator object.
 
 .. note::
 
-    When the sensitivity or integration time calculations are performed,
-    the corresponding parameters stored in the Calculator object are updated by default.
+    When the sensitivity or integration time calculations are performed, by default,
+    the calculated values are stored in the Calculator object.
     To prevent this behaviour, set the ``update_calculator`` parameter to ``False``, as shown below:
 
     .. code-block:: python

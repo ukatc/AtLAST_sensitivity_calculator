@@ -278,13 +278,12 @@ class Calculator:
         :rtype: astropy.units.Quantity
         """
 
-        # Use the internally stored integration time if t_int is not
-        #   supplied
-        t_int = t_int if t_int is not None else self.t_int
+        if t_int is not None:
+            self.t_int = t_int
 
         sensitivity = \
             self.sefd / \
-            (self.eta_s * np.sqrt(self.n_pol * self.bandwidth * t_int))
+            (self.eta_s * np.sqrt(self.n_pol * self.bandwidth * self.t_int))
 
         # Convert the output to mJy
         # TODO: we may want to make this configurable in future
@@ -313,12 +312,10 @@ class Calculator:
         :rtype: astropy.units.Quantity
         """
 
-        # Use the internally stored sensitivity if this value is not
-        #   supplied.
-        sensitivity = sensitivity if sensitivity is not None \
-            else self.sensitivity
+        if sensitivity is not None:
+            self.sensitivity = sensitivity
 
-        t_int = (self.sefd / (sensitivity * self.eta_s)) ** 2 \
+        t_int = (self.sefd / (self.sensitivity * self.eta_s)) ** 2 \
             / (self.n_pol * self.bandwidth)
         t_int = t_int.to(u.s)
 
