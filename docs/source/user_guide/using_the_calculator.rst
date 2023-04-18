@@ -91,6 +91,12 @@ You can also specify a sensitivity to perform the integration time calculation:
         calculator.t_int = calculated_t_int
 
 
+.. warning::
+
+    If any of the parameters stored in the Calculator object are updated, the
+    sensitivity or integration time will *not* be recalculated automatically.
+
+
 Resetting the calculator
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
