@@ -48,7 +48,7 @@ const resetOutputBox = () => {
     outputBox.innerHTML = "";
 }
 
-const initializeInputs = (formValidated) => {
+const initializeInputs = () => {
     // Set up the user input field for all parameters
     const allUserInput = document.querySelectorAll(".param-input");
 
@@ -58,6 +58,34 @@ const initializeInputs = (formValidated) => {
 
         // Make the input required
         input.required = true;
+    });
+
+    // TODO Initialize the number of polarizations
+}
+
+const initializeUnits = (paramData) => {
+    // Set up all the dropdowns with units
+    const allUnitsInput = document.querySelectorAll('.units-input');
+
+    allUnitsInput.forEach(input => {
+        // Get the parameter data corresponding to the current input
+        const paramName = input.id.replace('-units', '');
+        // Get the permitted units for this parameter
+        const allowedUnits = paramData[paramName]['units'];
+        // Get the default unit for this parameters
+        const defaultUnit = paramData[paramName]['default_unit']
+
+        // Add an option for each allowed unit and select the default
+        allowedUnits.forEach(unit => {
+            const option = document.createElement('option');
+            option.setAttribute('value', unit);
+            option.innerHTML = unit;
+
+            if (unit === defaultUnit) {
+                option.setAttribute('selected', 'selected');
+            }
+            input.appendChild(option);
+        });
     });
 }
 
@@ -74,4 +102,5 @@ const toggleSpinner = (action, completed) => {
 }
 
 export {setUIInitialState, hideInvalidMessages, showCalculatedValue,
-        disableCalculateBtn, initializeInputs, resetOutputBox, toggleSpinner}
+        disableCalculateBtn, initializeInputs, initializeUnits,
+        resetOutputBox, toggleSpinner}

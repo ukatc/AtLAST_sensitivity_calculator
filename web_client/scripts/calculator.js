@@ -4,7 +4,6 @@ import * as CalculatorUI from './calculator_ui.js'
 
 $(document).ready(() => {
 
-//    CalculatorUI.initializeRadioButtons();
     CalculatorUI.initializeInputs();
     CalculatorUI.hideInvalidMessages(true);
 
@@ -15,6 +14,8 @@ $(document).ready(() => {
         .then((data) => {
 
             let formValidated = false;
+
+            CalculatorUI.initializeUnits(data);
 
             // Set up the event listeners on user input fields
             const allUserInput = document.querySelectorAll(".param-input");
@@ -36,7 +37,6 @@ $(document).ready(() => {
                     }
                 });
             });
-
 
             const calcOptions =
                 document.querySelectorAll('input[name="calc-options"');
