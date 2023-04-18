@@ -52,40 +52,65 @@
   <div class="container mt-4">
     <h1 class="mt-5">Sensitivity Calculator</h1>
     <form method="POST" id="calculator-form" novalidate>
+
+      <div class="row titles">
+        <div class="col-sm-2">Parameter</div>
+        <div class="col-sm-1">Value</div>
+        <div class="col-sm-1">Units</div>
+        <div class="col">Allowed range</div>
+      </div>
+
       <div class="row" id="row-elevation">
-        <div class="col-sm-4">
-          <label for="elev-input">Elevation ({{ default_unit('elevation') }}):</label>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control param-input" id="elev-input" name="elevation" value="{{ default_value('elevation') }}">
-            <div class="invalid-message" id="elev-invalid">{{ invalid_message('elevation') }}</div>
-          </div>
+        <div class="row">
         </div>
-        <div class="col info-col">
-          <br>
-          <p class="notes">Elevation in {{ default_unit('elevation') }} ({{ allowed_range('elevation') }})</p>
+        <div class="row">
+          <div class="col-sm-2"><label for="elev-input">Elevation</label></div>
+          <div class="col-sm-1">
+            <div class="input-group mb-3">
+              <input type="text" class="form-control param-input" id="elev-input" name="elevation" value="{{ default_value('elevation') }}">
+            </div>
+          </div>
+          <div class="col-sm-1 fixed-unit-col">{{ default_unit('elevation') }}</div>
+          <div class="col info-col">{{ allowed_range('elevation') }}</div>
+        </div>
+        <div class="row">
+          <div class="invalid-message" id="elev-input-invalid">{{ invalid_message('elevation') }}</div>
         </div>
       </div>
 
       <div class="row" id="obs-freq">
-        <div class="col-sm-4">
-          <label for="obs-freq-input">Observing frequency ({{ default_unit('obs_freq') }}):</label>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control param-input" id="obs-freq-input" name="obs_freq" value="{{ default_value('obs_freq') }}">
-            <div class="invalid-message" id="obs-freq-invalid">{{ invalid_message('obs_freq') }}</div>
-          </div>
+        <div class="row">
+          <label for="elev-input">Observing frequency:</label>
         </div>
-        <div class="col info-col">
-          <br>
-          <p class="notes">Observing frequency in {{ default_unit('obs_freq') }} ({{ allowed_range('obs_freq') }})</p>
+        <div class="row">
+          <div class="col-sm-2">
+            <div class="input-group mb-3">
+              <input type="text" class="form-control param-input" id="obs-freq-input" name="obs_freq" value="{{ default_value('obs_freq') }}">
+            </div>
+          </div>
+          <div class="col-sm-1 fixed-unit-col">{{ default_unit('obs_freq') }}</div>
+          <div class="col info-col">{{ allowed_range('obs_freq') }}</div>
+        </div>
+        <div class="row">
+           <div class="invalid-message" id="obs-freq-input-invalid">{{ invalid_message('obs_freq') }}</div>
         </div>
       </div>
 
       <div class="row" id="row-bandwidth">
-        <div class="col-sm-4">
+        <div class="col-sm-2">
           <label for="bandwidth-input">Bandwidth ({{ default_unit('bandwidth') }}):</label>
           <div class="input-group mb-3">
             <input type="text" class="form-control param-input" id="bandwidth-input" name="bandwidth" value="{{ default_value('bandwidth') }}">
-            <div class="invalid-message" id="bandwidth-invalid">{{ invalid_message('bandwidth') }}</div>
+            <div class="invalid-message" id="bandwidth-input-invalid">{{ invalid_message('bandwidth') }}</div>
+          </div>
+        </div>
+        <div class="col-sm-1">
+          <label for="bandwidth-units">Units:</label>
+          <div class="input-group mb-3">
+            <select id="bandwidth-units" name="bandwidth_units">
+              <option value=1>1</option>
+              <option value=2 selected="selected">2</option>
+            </select>
           </div>
         </div>
         <div class="col info-col">
@@ -95,13 +120,14 @@
       </div>
 
       <div class="row" id="row-pwv">
-        <div class="col-sm-4">
+        <div class="col-sm-2">
       	  <label for="pwv-input">H2O profile percentile:</label>
           <div class="input-group mb-3">
             <input type="text" class="form-control param-input" id="pwv-input" name="weather" value="{{ default_value('weather') }}">
-	        <div class="invalid-message" id="pwv-invalid">{{ invalid_message('weather') }}</div>
+	        <div class="invalid-message" id="pwv-input-invalid">{{ invalid_message('weather') }}</div>
           </div>
         </div>
+        <div style="border:2px solid red;" class="col-sm-1"></div>
         <div class="col info-col">
           <br>
           <p class="notes">The weather condition for observing, H2O profile percentile ({{ allowed_range('weather') }})</p>
@@ -122,13 +148,14 @@
       </div>
 
       <div class="row d-none" id="row-t-int">
-        <div class="col-sm-4">
+        <div class="col-sm-2">
           <label for="integration-time-input">Integration time ({{ default_unit('t_int') }}):</label>
           <div class="input-group mb-3">
             <input type="text" class="form-control param-input" id="integration-time-input" name="t_int" value="{{ default_value('t_int') }}">
-            <div class="invalid-message" id="integration-time-invalid">{{ invalid_message('t_int') }}</div>
+            <div class="invalid-message" id="integration-time-input-invalid">{{ invalid_message('t_int') }}</div>
           </div>
         </div>
+        <div style="border:2px solid red;" class="col-sm-1"></div>
         <div class="col info-col">
           <br>
           <p class="notes">Integration time in {{ default_unit('t_int') }} ({{ allowed_range('t_int') }})</p>
@@ -136,13 +163,14 @@
       </div>
 
       <div class="row" id="row-sensitivity">
-        <div class="col-sm-4">
+        <div class="col-sm-2">
           <label for="sensitivity-input">Sensitivity ({{ default_unit('sensitivity') }}):</label>
           <div class="input-group mb-3">
             <input type="text" class="form-control param-input" id="sensitivity-input" name="sensitivity" value="{{ default_value('sensitivity') }}">
-            <div class="invalid-message" id="sensitivity-invalid">{{ invalid_message('sensitivity') }}</div>
+            <div class="invalid-message" id="sensitivity-input-invalid">{{ invalid_message('sensitivity') }}</div>
           </div>
         </div>
+        <div style="border:2px solid red;" class="col-sm-1"></div>
         <div class="col info-col">
           <br>
           <p class="notes">Sensitivity in {{ default_unit('sensitivity') }} ({{ allowed_range('sensitivity') }})</p>
@@ -150,7 +178,7 @@
       </div>
 
       <div class="row mb-3">
-        <div class="col-sm-4">
+        <div class="col-sm-3">
           <label for="calculation-options"><strong>Calculate integration time or sensitivity?</strong></label>
           <div class="btn-group" role="group" id="calculation-options">
             <input type="radio" name="calc-options" id="btn-t-int" calculation="integration-time" autocomplete="off" checked>

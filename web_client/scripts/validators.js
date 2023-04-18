@@ -5,7 +5,8 @@ const validateInput = (input, paramData) => {
         input.setCustomValidity(validStateMessage);
 
         // Show or hide the validation message for each input
-        input.nextElementSibling.hidden = (validState)? true: false;
+        const invalid_msg_elem = document.getElementById(`${input.id}-invalid`);
+        invalid_msg_elem.hidden = (validState)? true: false;
     }
 
     // All values should be numeric

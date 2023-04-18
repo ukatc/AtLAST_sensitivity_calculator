@@ -33,9 +33,9 @@ a.nav-link:hover {
     color: #18bc9c !important;
 }
 
-.notes {
-  font-weight: 600;
-  color: #747474;
+.titles {
+    font-weight: 600;
+    color: #747474;
 }
 
 .card {
