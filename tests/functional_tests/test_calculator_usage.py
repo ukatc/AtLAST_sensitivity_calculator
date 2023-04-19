@@ -41,7 +41,7 @@ class TestDataValidation:
         ({'t_int': {'value': 0.5, 'unit': 'min'}}, does_not_raise(), None),
         ({'t_int': {'value': 1, 'unit': 'h'}}, does_not_raise(), None),
         ({'t_int': {'value': 0, 'unit': 's'}}, pytest.raises(ValidationError),
-         value_out_of_range_exception),
+         value_too_low_exception),
         ({'t_int': {'value': float('inf'), 'unit': 's'}},
          pytest.raises(ValidationError), value_too_high_exception),
         ({'t_int': {'value': 1, 'unit': 'GHz'}},
