@@ -20,8 +20,8 @@ sys.path.insert(0, '../')
 # -- Project information -----------------------------------------------------
 
 project = 'AtLAST Sensitivity Calculator'
-copyright = '2021, Jo Ramasawmy'
-author = 'Jo Ramasawmy'
+copyright = '2023, UK ATC'
+author = 'Jo Ramasawmy, Pamela Klaassen, Fiona Kirton'
 
 # The full version, including alpha/beta/rc tags
 release = '0.1.0'

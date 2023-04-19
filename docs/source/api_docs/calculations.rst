@@ -11,8 +11,5 @@ Calculations
 .. automodule:: atlast_sc.efficiencies
    :members:
 
-.. automodule:: atlast_sc.sefd
-   :members:
-
 .. automodule:: atlast_sc.temperatures
    :members:
