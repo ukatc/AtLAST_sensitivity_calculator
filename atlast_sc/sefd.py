@@ -1,6 +1,7 @@
 from astropy.constants import k_B
 import numpy as np
 
+
 class SEFD:
     """
     Class that calculates the source equivalent flux density, SEFD
