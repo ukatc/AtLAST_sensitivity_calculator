@@ -30,4 +30,3 @@ Below is an example of a ``YAML``-formatted output file:
     eta_s           : {value:       0.99}
     T_sys           : {value: 114.70931842978237, unit: K}
     sefd            : {value: 2.306081307192973e-24, unit: J / m2}
-    area            : {value: 1963.4954084936207, unit: m2}
