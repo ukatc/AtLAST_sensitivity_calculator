@@ -4,7 +4,6 @@ import astropy.units as u
 from atlast_sc.temperatures import Temperatures
 from atlast_sc.atmosphere_params import AtmosphereParams
 from atlast_sc.efficiencies import Efficiencies
-from atlast_sc.sefd import SEFD
 import atlast_sc.data as data
 
 
@@ -148,14 +147,6 @@ def atmosphere_params(obs_freq, weather, elevation):
 @pytest.fixture(scope='session')
 def efficiencies(eta_ill, eta_spill, eta_block, eta_pol, eta_r):
     return Efficiencies(eta_ill, eta_spill, eta_block, eta_pol, eta_r)
-
-
-@pytest.fixture(scope='session')
-def sefd(temperatures, efficiencies, g, eta_eff, area, obs_freq, surface_rms):
-    eta_a = efficiencies.eta_a(obs_freq, surface_rms)
-    T_sys = temperatures.system_temperature(g, eta_eff)
-
-    return SEFD.calculate(T_sys, area, eta_a)
 
 
 @pytest.fixture(scope='session')

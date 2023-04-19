@@ -1,7 +1,7 @@
 import astropy.units as u
+from astropy.constants import k_B
 import numpy as np
 from atlast_sc.atmosphere_params import AtmosphereParams
-from atlast_sc.sefd import SEFD
 from atlast_sc.temperatures import Temperatures
 from atlast_sc.efficiencies import Efficiencies
 from atlast_sc.models import DerivedParams
@@ -226,10 +226,6 @@ class Calculator:
         return self.derived_parameters.sefd
 
     @property
-    def area(self):
-        return self.derived_parameters.area
-
-    @property
     def calculation_inputs(self):
         """
         The inputs to the calculation (user input and instrument setup)
@@ -381,11 +377,26 @@ class Calculator:
                              tau_atm)
         T_sys = temps.system_temperature(self.g, self.eta_eff)
 
-        # Calculate the dish area
-        area = np.pi * self.dish_radius ** 2
         # Calculate source equivalent flux density
-        sefd = SEFD.calculate(T_sys, area, eta_a)
+        sefd = self._calculate_sefd(T_sys, eta_a)
 
         return DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
-                             eta_a=eta_a, eta_s=eta_s, T_sys=T_sys, sefd=sefd,
-                             area=area)
+                             eta_a=eta_a, eta_s=eta_s, T_sys=T_sys, sefd=sefd)
+
+    def _calculate_sefd(self, T_sys, eta_A):
+        """
+        Calculates the source equivalent flux density, SEFD, from the system
+        temperature, T_sys, the dish efficiency eta_A, and the dish area.
+
+        :param T_sys: system temperature
+        :type T_sys: astropy.units.Quantity
+        :param eta_A: the dish efficiency factor
+        :type eta_A: float
+        :return: source equivalent flux density
+        :rtype: astropy.units.Quantity
+        """
+
+        dish_area = np.pi * self.dish_radius ** 2
+        sefd = (2 * k_B * T_sys) / (eta_A * dish_area)
+
+        return sefd

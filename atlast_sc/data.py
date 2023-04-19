@@ -50,7 +50,7 @@ bandwidth = DataType(
     units=[str(unit) for unit in [u.Hz, u.kHz, u.MHz, u.GHz]]
 )
 
-# Sky frequency of the observations 
+# Sky frequency of the observations
 obs_frequency = DataType(
     default_value=100,
     default_unit=str(u.GHz),
@@ -59,13 +59,14 @@ obs_frequency = DataType(
     units=[str(u.GHz)]
 )
 
-# Number of polarisations being observed 
+# Number of polarisations being observed
 n_pol = DataType(
     default_value=2,
     allowed_values=[1, 2]
 )
 
-# Relative Humidity (related to PWV, and ALMA weather bands as described in the 'Weather Conditions' section of the user guide
+# Relative Humidity (related to PWV, and ALMA weather bands as described
+# in the 'Weather Conditions' section of the user guide
 weather = DataType(
     default_value=25,
     lower_value=5,
@@ -86,7 +87,8 @@ g = DataType(
     default_value=1
 )
 
-# surface smoothness, set to 25 micron to be consistent with OHB design requirements
+# surface smoothness, set to 25 micron to be consistent with OHB
+# design requirements
 surface_rms = DataType(
     default_value=25,
     default_unit=str(u.micron)

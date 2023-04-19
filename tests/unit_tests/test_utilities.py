@@ -137,30 +137,13 @@ class TestFileHelper:
         expected_file_name = file_name + '.' + file_type
         assert expected_file_name in os.listdir(tmp_output_dir)
 
-        # # Atmospheric opacity
-        # tau_atm: float
-        # # Atmospheric temperature
-        # T_atm: Quantity
-        # # Receiver temperature
-        # T_rx: Quantity
-        # # Dish efficiency
-        # eta_a: float
-        # # System efficiency
-        # eta_s: float
-        # # System temperature
-        # T_sys: Quantity
-        # # Source equivalent flux density
-        # sefd: Quantity
-        # # Dish area
-        # area: Quantity
-
         # Make sure the file has been written in a format that allows it
         # to be read by the FileHelper to produce an appropriately formatted
         # dictionary that could be used by the Calculator.
         expected_params = ['t_int', 'sensitivity', 'bandwidth', 'n_pol',
                            'obs_freq', 'weather', 'elevation', 'tau_atm',
                            'T_atm', 'T_rx', 'eta_a', 'eta_s', 'T_sys',
-                           'sefd', 'area']
+                           'sefd']
         # sort the expected parameters
         expected_params.sort()
 
