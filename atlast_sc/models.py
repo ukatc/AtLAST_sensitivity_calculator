@@ -293,8 +293,6 @@ class DerivedParams(BaseModel):
     T_sys: Quantity
     # Source equivalent flux density
     sefd: Quantity
-    # Dish area
-    area: Quantity
 
     class Config:
         arbitrary_types_allowed = True
