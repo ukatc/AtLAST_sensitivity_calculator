@@ -29,6 +29,3 @@ Derived parameters
     * - System equivalent flux density
       - sefd
       - J / m2
-    * - Dish area
-      - area
-      - m2
