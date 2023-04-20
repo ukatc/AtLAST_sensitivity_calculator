@@ -33,6 +33,10 @@ a.nav-link:hover {
     color: #18bc9c !important;
 }
 
+.calculator-container {
+    margin-left: 1%;
+}
+
 .titles {
     font-weight: 600;
     color: #747474;
@@ -53,6 +57,10 @@ a.nav-link:hover {
 
 input:invalid {
   border: 2px solid red;
+}
+
+.param-input-group {
+    width: 80%;
 }
 
 .submit-btn-col {
