@@ -43,6 +43,10 @@ def default_units_processor(request: Request):
 
 def allowed_range_processor(request: Request):
     def allowed_range(param):
+        # NB: the message construction code below does not cover all
+        #   logically possible conditions. However, it does cover the
+        #   scenarios that exist in the application.
+
         param_data = param_data_type_dicts[param]
         maximum = None
 
@@ -56,8 +60,11 @@ def allowed_range_processor(request: Request):
         else:
             maximum = f"{param_data.upper_value}"
 
-        message = \
-            F"Min: {minimum}{'; Max: ' + str(maximum) if maximum else ''}"
+        if maximum is None and not param_data.lower_value_is_floor:
+            message = f">={minimum}"
+        else:
+            message = \
+                f"{minimum}{' - ' + str(maximum) if maximum else ''}"
 
         return message
 
