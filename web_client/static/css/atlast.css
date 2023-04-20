@@ -36,6 +36,7 @@ a.nav-link:hover {
 .titles {
     font-weight: 600;
     color: #747474;
+    font-size: larger;
 }
 
 .card {

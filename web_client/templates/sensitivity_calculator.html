@@ -53,14 +53,14 @@
     <h1 class="mt-5">Sensitivity Calculator</h1>
     <form method="POST" id="calculator-form" novalidate>
 
-      <div class="row titles">
+      <div class="row titles mb-2 mt-4">
         <div class="col-sm-2">Parameter</div>
         <div class="col-sm-1">Value</div>
         <div class="col-sm-1">Units</div>
         <div class="col">Allowed range</div>
       </div>
 
-      <div class="row" id="row-elevation">
+      <div class=row id="row-elevation">
         <div class="row">
           <div class="col-sm-2"><label for="elev-input">Elevation</label></div>
           <div class="col-sm-1">
@@ -77,9 +77,6 @@
       </div>
 
       <div class="row" id="obs-freq">
-        <div class="row">
-
-        </div>
         <div class="row">
           <div class="col-sm-2"><label for="elev-input">Observing frequency</label></div>
           <div class="col-sm-1">
@@ -126,7 +123,6 @@
 	        <div class="invalid-message" id="pwv-input-invalid">{{ invalid_message('weather') }}</div>
         </div>
       </div>
-
 
       <div class="row" id="row-npol">
         <div class="col-sm-2"><label for="npol-input">Number of polarizations</label></div>
