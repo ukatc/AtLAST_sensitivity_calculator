@@ -20,18 +20,6 @@
 </head>
 <body>
 
-  <div id="head-wrapper" role="banner">
-    <div id="head">
-      <div id="header">
-        <img id="logoimg" src="{{ url_for('static', path='resources/atlast-banner-foreground.png') }}" alt="AtLAST logo image">
-        <a id="logotext" href="#">
-          <span>AtLAST</span>
-          <div class="tagline">Towards an Atacama Large Aperture Submillimeter Telescope</div>
-        </a>
-      </div>
-    </div>
-  </div>
-
   <nav class="atlast-navbar navbar navbar-expand-sm navbar-dark fixed-top" style="color:white;">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
       <span class="navbar-toggler-icon"></span>
@@ -48,6 +36,14 @@
       </ul>
     </div>
   </nav>
+
+  <div id="header" role="banner">
+    <img id="logoimg" src="{{ url_for('static', path='resources/atlast-banner-foreground.png') }}" alt="AtLAST logo image">
+    <div id="logotext">
+      <span>AtLAST</span>
+      <div class="tagline">Towards an Atacama Large Aperture Submillimeter Telescope</div>
+    </div>
+  </div>
 
   <div class="container calculator-container mt-4">
     <h1 class="mt-5">Sensitivity Calculator</h1>
