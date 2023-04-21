@@ -48,6 +48,13 @@ a.nav-link:hover {
   border: 3px solid #4c9c8b;
 }
 
+.units-input {
+    font-size: 0.9rem;
+    background-size: 14px 10px;
+    background-position: right 0.2rem center;
+    padding: 4px;
+}
+
 input:invalid {
   border: 2px solid red;
 }
@@ -172,6 +179,15 @@ img#logoimg {
 }
 
 @media screen and (max-width: 660px) {
+    h1 {
+        font-size: 2rem;
+    }
+    .calculator-container {
+        margin: auto;
+    }
+    .titles {
+        font-size: 1em;
+    }
     #header {
         height: 180px;
         background-size: 8px;
