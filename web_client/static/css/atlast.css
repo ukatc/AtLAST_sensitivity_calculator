@@ -137,41 +137,30 @@ button:hover {
 }
 
 #header {
-  background: url("../resources/atlast-banner-bg.png") 0% 85% repeat-x;
+    height: 200px;
+    width: 100%;
+    background: url("../resources/atlast-banner-bg.png") top center repeat-x;
+    background-size: 10px;
 }
 
-#header {
-  height: 240px;
-  width: 100%;
-}
-
-#header img#logoimg {
+img#logoimg {
   position: absolute;
-  height: 150px;
-  top: 88px;
-  left: 80px;
+  height: 110px;
+  top: 80px;
+  left: 2%;
 }
 
 #logotext {
-  width: 600px;
-  display: block;
   font-size: 5rem;
   top: 100px;
-  left: 600px;
-  position: absolute;
-  height: 80px;
+  left: 20%;
+  position: relative;
   padding: 10px 0;
-  text-decoration: none
 }
 
-#header div.tagline {
-  border-top-width: 0px;
-  border-top-style: solid;
+#tagline {
   padding-top: 20px;
-  top: 40px;
-  position: absolute;
-  left: 0;
-  font-size: 2rem;
+  font-size: 1.5rem;
   line-height: 1.1;
 }
 
@@ -181,26 +170,43 @@ button:hover {
     height: 185px;
   }
 }
-@media only screen and (max-width: 16cm) and (orientation: portrait), only screen and (max-width: 19cm) and (orientation: landscape) {
-  #header {
-    width: 100%;
-    height: 180px;
-  }
-  #logotext {
-    top: 20px;
-    left: 0;
-    width: 100%;
-    display: block;
-    font-size: 50px;
-    font-size: 5rem;
-    text-align: center;
-  }
-  #logoimg {
-    height: 130px;
-    top: 50px;
-    left: -75px;
-  }
-  #header span.tagline {
-    display: none;
-  }
+
+@media screen and (max-width: 660px) {
+    #header {
+        height: 180px;
+        background-size: 8px;
+    }
+    #logotext {
+        left: 0;
+        top: 70px;
+        font-size: 4rem;
+        text-align: center;
+    }
+    img#logoimg {
+        height: 80px;
+        top: 70px;
+        left: -75px;
+    }
+    #tagline {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    #header {
+        height: 180px;
+        background-size: 8px;
+    }
+    #logotext {
+        top: 70px;
+        font-size: 4rem;
+    }
+    img#logoimg {
+        height: 80px;
+        top: 70px;
+        left: -75px;
+    }
+    #tagline {
+        font-size: 1.1rem;
+    }
 }
