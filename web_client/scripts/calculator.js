@@ -19,7 +19,6 @@ $(document).ready(() => {
 
             // Set up the event listeners on user input fields
             const allUserInputs = document.querySelectorAll(".param-input");
-            console.log(allUserInputs);
 
             allUserInputs.forEach(input => {
                 // Validate the initial input data (should never fail!)
@@ -41,7 +40,6 @@ $(document).ready(() => {
 
             // Set up event listeners on the units dropdowns
             const allUnitsInputs = document.querySelectorAll(".units-input");
-            console.log(allUnitsInputs);
 
             allUnitsInputs.forEach(input => {
                 // Add an event listener to re-enable to the Calculate button
