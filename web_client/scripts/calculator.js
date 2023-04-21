@@ -18,9 +18,9 @@ $(document).ready(() => {
             CalculatorUI.initializeUnits(data);
 
             // Set up the event listeners on user input fields
-            const allUserInput = document.querySelectorAll(".param-input");
+            const allUserInputs = document.querySelectorAll(".param-input");
 
-            allUserInput.forEach(input => {
+            allUserInputs.forEach(input => {
                 // Validate the initial input data (should never fail!)
                 formValidated = validateInput(input, data[input.name]);
 
@@ -37,6 +37,17 @@ $(document).ready(() => {
                     }
                 });
             });
+
+            // Set up event listeners on the units dropdowns
+            const allUnitsInputs = document.querySelectorAll(".units-input");
+
+            allUnitsInputs.forEach(input => {
+                // Add an event listener to re-enable to the Calculate button
+                // if the form is in a valid state
+                input.addEventListener("change", e => {
+                    CalculatorUI.disableCalculateBtn(!formValidated);
+                });
+            })
 
             const calcOptions =
                 document.querySelectorAll('input[name="calc-options"');
