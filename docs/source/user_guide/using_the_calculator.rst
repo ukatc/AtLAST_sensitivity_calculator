@@ -95,6 +95,12 @@ You can also specify a sensitivity to perform the integration time calculation:
 
         calculator.t_int = calculated_t_int
 
+.. note::
+
+    If the calculated integration time or sensitivity is outside the permitted range
+    of values, the calculator will report a warning and the calculated value
+    will not be stored in the Calculator object.
+
 
 .. warning::
 
