@@ -22,8 +22,7 @@ class DataType:
 integration_time = DataType(
     default_value=100,
     default_unit=str(u.s),
-    lower_value=0,
-    lower_value_is_floor=True,
+    lower_value=1,
     upper_value=float('inf'),
     upper_value_is_ceil=True,
     units=[str(u.s), str(u.min), str(u.h)]

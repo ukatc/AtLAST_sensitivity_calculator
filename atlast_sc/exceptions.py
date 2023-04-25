@@ -1,4 +1,16 @@
 
+class CalculatedValueInvalidWarning(UserWarning):
+    """
+    Warning raised when a calculated value is not valid, e.g., because it
+    falls outside its permitted range.
+    """
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return repr(self.message)
+
+
 class UnitException(ValueError):
     """
     Exception raised when a parameter is provided with invalid units
@@ -9,8 +21,8 @@ class UnitException(ValueError):
         self.parameter = parameter
         self.expected_units = expected_units
         self.message = message if message else \
-            f"The parameter '{parameter}' must have one of the following " \
-            f"units: {expected_units}."
+            f"The parameter '{self.parameter}' must have one of " \
+            f"the following units: {self.expected_units}."
 
         super().__init__(self.message)
 
@@ -29,10 +41,10 @@ class ValueOutOfRangeException(ValueError):
         self.units = units
         self.message = message \
             if message \
-            else f"The parameter '{parameter}' " \
-                 f"must be in the range {lower_value} " \
-                 f"to {upper_value}" \
-                 f"{'.' if not units else ' ' + str(units) + '.'}"
+            else f"The parameter '{self.parameter}' " \
+                 f"must be in the range {self.lower_value} " \
+                 f"to {self.upper_value}" \
+                 f"{'.' if not self.units else ' ' + str(self.units) + '.'}"
 
         super().__init__(self.message)
 
@@ -72,8 +84,9 @@ class ValueNotAllowedException(ValueError):
         self.units = units
         self.message = message \
             if message\
-            else f"The parameter '{parameter}' " \
-                 f"must have one of the following values: {allowed_values} " \
-                 f"{'.' if not units else ' ' + str(units) + '.'}"
+            else f"The parameter '{self.parameter}' " \
+                 f"must have one of the following " \
+                 f"values: {self.allowed_values} " \
+                 f"{'.' if not self.units else ' ' + str(self.units) + '.'}"
 
         super().__init__(self.message)

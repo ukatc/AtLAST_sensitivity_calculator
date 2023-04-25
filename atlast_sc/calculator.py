@@ -1,3 +1,4 @@
+import warnings
 import astropy.units as u
 from astropy.constants import k_B
 import numpy as np
@@ -8,6 +9,8 @@ from atlast_sc.models import DerivedParams
 from atlast_sc.models import UserInput
 from atlast_sc.config import Config
 from atlast_sc.utils import Decorators
+from atlast_sc.exceptions import CalculatedValueInvalidWarning
+from atlast_sc.exceptions import ValueOutOfRangeException
 
 
 class Calculator:
@@ -285,9 +288,14 @@ class Calculator:
         # TODO: we may want to make this configurable in future
         sensitivity = sensitivity.to(u.mJy)
 
-        # Update the sensitivity stored in the calculator
+        # Try to update the sensitivity stored in the calculator
         if update_calculator:
-            self.sensitivity = sensitivity
+            try:
+                self.sensitivity = sensitivity
+            except ValueOutOfRangeException as e:
+                message = \
+                    Calculator._calculated_value_error_msg(sensitivity, e)
+                warnings.warn(message, CalculatedValueInvalidWarning)
 
         return sensitivity
 
@@ -315,9 +323,13 @@ class Calculator:
             / (self.n_pol * self.bandwidth)
         t_int = t_int.to(u.s)
 
-        # Update the integration time stored in the calculator
+        # Try to update the integration time stored in the calculator
         if update_calculator:
-            self.t_int = t_int
+            try:
+                self.t_int = t_int
+            except ValueOutOfRangeException as e:
+                message = Calculator._calculated_value_error_msg(t_int, e)
+                warnings.warn(message, CalculatedValueInvalidWarning)
 
         return t_int
 
@@ -400,3 +412,25 @@ class Calculator:
         sefd = (2 * k_B * T_sys) / (eta_A * dish_area)
 
         return sefd
+
+    @staticmethod
+    def _calculated_value_error_msg(calculated_value, validation_error):
+        """
+        The message displayed when a calculated value (t_int or sensitivity) is
+        outside the permitted range.
+
+        :param calculated_value: the calculated value of the target parameter
+        :type calculated_value: astropy.units.Quantity
+        :param validation_error: the error raised when validating the
+            calculated parameter value
+        :type validation_error: atlast_sc.exceptions.ValueOutOfRangeException
+        """
+
+        message = f"The calculated value {calculated_value.round(4)} " \
+                  f"is outside of the permitted range " \
+                  f"for parameter '{validation_error.parameter}'. " \
+                  f"{validation_error.message} " \
+                  f"The Calculator will not be updated with the new value. " \
+                  f"Please adjust the input parameters and recalculate."
+
+        return message
