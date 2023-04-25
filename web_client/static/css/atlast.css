@@ -65,6 +65,11 @@ input:invalid {
 
 .submit-btn-col {
     margin-top: 0.2rem;
+    margin-right: 1rem;
+}
+
+.form-btn {
+    width: 90%;
 }
 
 .invalid-message {
