@@ -10,6 +10,7 @@ from atlast_sc.models import UserInput
 from atlast_sc.config import Config
 from atlast_sc.utils import Decorators
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
+from atlast_sc.exceptions import ValueOutOfRangeException
 
 
 class Calculator:
@@ -291,7 +292,7 @@ class Calculator:
         if update_calculator:
             try:
                 self.sensitivity = sensitivity
-            except ValueError as e:
+            except ValueOutOfRangeException as e:
                 message = \
                     Calculator._calculated_value_error_msg(sensitivity, e)
                 warnings.warn(message, CalculatedValueInvalidWarning)
@@ -326,7 +327,7 @@ class Calculator:
         if update_calculator:
             try:
                 self.t_int = t_int
-            except ValueError as e:
+            except ValueOutOfRangeException as e:
                 message = Calculator._calculated_value_error_msg(t_int, e)
                 warnings.warn(message, CalculatedValueInvalidWarning)
 
@@ -414,12 +415,22 @@ class Calculator:
 
     @staticmethod
     def _calculated_value_error_msg(calculated_value, validation_error):
+        """
+        The message displayed when a calculated value (t_int or sensitivity) is
+        outside the permitted range.
+
+        :param calculated_value: the calculated value of the target parameter
+        :type calculated_value: astropy.units.Quantity
+        :param validation_error: the error raised when validating the
+            calculated parameter value
+        :type validation_error: atlast_sc.exceptions.ValueOutOfRangeException
+        """
 
         message = f"The calculated value {calculated_value.round(4)} " \
-                 f"is outside of the permitted range " \
-                 f"for parameter '{validation_error.parameter}'. " \
-                 f"{validation_error.message} " \
-                 f"The Calculator will not be updated with the new value. " \
-                 f"Please adjust the input parameters and recalculate."
+                  f"is outside of the permitted range " \
+                  f"for parameter '{validation_error.parameter}'. " \
+                  f"{validation_error.message} " \
+                  f"The Calculator will not be updated with the new value. " \
+                  f"Please adjust the input parameters and recalculate."
 
         return message

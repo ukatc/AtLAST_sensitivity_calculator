@@ -21,8 +21,8 @@ class UnitException(ValueError):
         self.parameter = parameter
         self.expected_units = expected_units
         self.message = message if message else \
-            f"The parameter '{self.parameter}' must have one of the following " \
-            f"units: {self.expected_units}."
+            f"The parameter '{self.parameter}' must have one of " \
+            f"the following units: {self.expected_units}."
 
         super().__init__(self.message)
 
@@ -85,7 +85,8 @@ class ValueNotAllowedException(ValueError):
         self.message = message \
             if message\
             else f"The parameter '{self.parameter}' " \
-                 f"must have one of the following values: {self.allowed_values} " \
+                 f"must have one of the following " \
+                 f"values: {self.allowed_values} " \
                  f"{'.' if not self.units else ' ' + str(self.units) + '.'}"
 
         super().__init__(self.message)
