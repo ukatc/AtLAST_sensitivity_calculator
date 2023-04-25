@@ -9,8 +9,29 @@ class UnitException(ValueError):
         self.parameter = parameter
         self.expected_units = expected_units
         self.message = message if message else \
-            f"The parameter '{parameter}' must have one of the following " \
-            f"units: {expected_units}."
+            f"The parameter '{self.parameter}' must have one of the following " \
+            f"units: {self.expected_units}."
+
+        super().__init__(self.message)
+
+
+class CalculatedValueInvalidException(ValueError):
+    """
+    Exception raised when a calculated value in not valid, e.g., because it
+    falls outside its permitted range.
+    """
+
+    def __init__(self, parameter, calculated_value, invalid_message,
+                 message=None):
+
+        self.parameter = parameter
+        self.calculated_value = calculated_value.round(4)
+        self.invalid_message = invalid_message
+        self.message = message if message \
+            else f"The calculated value {self.calculated_value} " \
+                 f"is outside of the permitted range for parameter '{self.parameter}'. " \
+                 f"{self.invalid_message} " \
+                 f"Please adjust the input parameters and recalculate."
 
         super().__init__(self.message)
 
@@ -29,10 +50,10 @@ class ValueOutOfRangeException(ValueError):
         self.units = units
         self.message = message \
             if message \
-            else f"The parameter '{parameter}' " \
-                 f"must be in the range {lower_value} " \
-                 f"to {upper_value}" \
-                 f"{'.' if not units else ' ' + str(units) + '.'}"
+            else f"The parameter '{self.parameter}' " \
+                 f"must be in the range {self.lower_value} " \
+                 f"to {self.upper_value}" \
+                 f"{'.' if not self.units else ' ' + str(self.units) + '.'}"
 
         super().__init__(self.message)
 
@@ -72,8 +93,8 @@ class ValueNotAllowedException(ValueError):
         self.units = units
         self.message = message \
             if message\
-            else f"The parameter '{parameter}' " \
-                 f"must have one of the following values: {allowed_values} " \
-                 f"{'.' if not units else ' ' + str(units) + '.'}"
+            else f"The parameter '{self.parameter}' " \
+                 f"must have one of the following values: {self.allowed_values} " \
+                 f"{'.' if not self.units else ' ' + str(self.units) + '.'}"
 
         super().__init__(self.message)

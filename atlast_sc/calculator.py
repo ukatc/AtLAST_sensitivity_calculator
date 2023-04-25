@@ -8,6 +8,7 @@ from atlast_sc.models import DerivedParams
 from atlast_sc.models import UserInput
 from atlast_sc.config import Config
 from atlast_sc.utils import Decorators
+from atlast_sc.exceptions import CalculatedValueInvalidException
 
 
 class Calculator:
@@ -285,9 +286,13 @@ class Calculator:
         # TODO: we may want to make this configurable in future
         sensitivity = sensitivity.to(u.mJy)
 
-        # Update the sensitivity stored in the calculator
+        # Try to update the sensitivity stored in the calculator
         if update_calculator:
-            self.sensitivity = sensitivity
+            try:
+                self.sensitivity = sensitivity
+            except ValueError as e:
+                raise CalculatedValueInvalidException(e.parameter,
+                                                      sensitivity, e.message)
 
         return sensitivity
 
@@ -315,9 +320,13 @@ class Calculator:
             / (self.n_pol * self.bandwidth)
         t_int = t_int.to(u.s)
 
-        # Update the integration time stored in the calculator
+        # Try to update the integration time stored in the calculator
         if update_calculator:
-            self.t_int = t_int
+            try:
+                self.t_int = t_int
+            except ValueError as e:
+                raise CalculatedValueInvalidException(e.parameter,
+                                                      t_int, e.message)
 
         return t_int
 

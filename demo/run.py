@@ -34,7 +34,7 @@ print("-----------")
 # print("Sensitivity: {:0.2f} for an integration time of {:0.2f} "
 #       .format(calculated_sensitivity, calculator.t_int))
 # calculator.sensitivity = calculated_sensitivity
-calculator.bandwidth = 150*u.MHz
+calculator.bandwidth = 10*u.GHz
 sens = 10*u.mJy
 # # Calculate the integration time for a given sensitivity
 calculated_t_int = \
