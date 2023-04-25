@@ -1,3 +1,4 @@
+import warnings
 import astropy.units as u
 from astropy.constants import k_B
 import numpy as np
@@ -8,7 +9,7 @@ from atlast_sc.models import DerivedParams
 from atlast_sc.models import UserInput
 from atlast_sc.config import Config
 from atlast_sc.utils import Decorators
-from atlast_sc.exceptions import CalculatedValueInvalidException
+from atlast_sc.exceptions import CalculatedValueInvalidWarning
 
 
 class Calculator:
@@ -291,8 +292,9 @@ class Calculator:
             try:
                 self.sensitivity = sensitivity
             except ValueError as e:
-                raise CalculatedValueInvalidException(e.parameter,
-                                                      sensitivity, e.message)
+                message = \
+                    Calculator._calculated_value_error_msg(sensitivity, e)
+                warnings.warn(message, CalculatedValueInvalidWarning)
 
         return sensitivity
 
@@ -325,8 +327,8 @@ class Calculator:
             try:
                 self.t_int = t_int
             except ValueError as e:
-                raise CalculatedValueInvalidException(e.parameter,
-                                                      t_int, e.message)
+                message = Calculator._calculated_value_error_msg(t_int, e)
+                warnings.warn(message, CalculatedValueInvalidWarning)
 
         return t_int
 
@@ -409,3 +411,15 @@ class Calculator:
         sefd = (2 * k_B * T_sys) / (eta_A * dish_area)
 
         return sefd
+
+    @staticmethod
+    def _calculated_value_error_msg(calculated_value, validation_error):
+
+        message = f"The calculated value {calculated_value.round(4)} " \
+                 f"is outside of the permitted range " \
+                 f"for parameter '{validation_error.parameter}'. " \
+                 f"{validation_error.message} " \
+                 f"The Calculator will not be updated with the new value. " \
+                 f"Please adjust the input parameters and recalculate."
+
+        return message

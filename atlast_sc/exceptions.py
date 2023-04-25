@@ -1,4 +1,16 @@
 
+class CalculatedValueInvalidWarning(UserWarning):
+    """
+    Warning raised when a calculated value is not valid, e.g., because it
+    falls outside its permitted range.
+    """
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return repr(self.message)
+
+
 class UnitException(ValueError):
     """
     Exception raised when a parameter is provided with invalid units
@@ -11,27 +23,6 @@ class UnitException(ValueError):
         self.message = message if message else \
             f"The parameter '{self.parameter}' must have one of the following " \
             f"units: {self.expected_units}."
-
-        super().__init__(self.message)
-
-
-class CalculatedValueInvalidException(ValueError):
-    """
-    Exception raised when a calculated value in not valid, e.g., because it
-    falls outside its permitted range.
-    """
-
-    def __init__(self, parameter, calculated_value, invalid_message,
-                 message=None):
-
-        self.parameter = parameter
-        self.calculated_value = calculated_value.round(4)
-        self.invalid_message = invalid_message
-        self.message = message if message \
-            else f"The calculated value {self.calculated_value} " \
-                 f"is outside of the permitted range for parameter '{self.parameter}'. " \
-                 f"{self.invalid_message} " \
-                 f"Please adjust the input parameters and recalculate."
 
         super().__init__(self.message)
 
