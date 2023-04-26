@@ -15,7 +15,14 @@ TAU_ATM_PATH = STATIC_DATA_PATH / "lookups" / "am_ACT_tau_annual.txt"
 
 
 class AtmosphereParams:
-    """ Class used to retrieve atmospheric parameters from a model. """
+    """
+    Class used to retrieve atmospheric parameters from a model.
+
+    The AM model was used to produce a grid of T_atm and tau_atm.
+    (Use of AM model described in am_code/REAME.md.)
+    The code  interpolates over the grids to get the correct values for tau_atm
+    and T_atm.
+    """
 
     def __init__(self, obs_freq, weather, elevation):
         """ AtmosphereParams class constructor.
@@ -25,36 +32,54 @@ class AtmosphereParams:
         :param weather: the precipitable water vapour
         :type weather: astropy.units.Quantity
         """
-        self.obs_freq = obs_freq
-        self.weather = weather
-        self.elevation = elevation
-        self.T_atm_table = np.genfromtxt(T_ATM_PATH)
-        self.tau_atm_table = np.genfromtxt(TAU_ATM_PATH)
+        self._obs_freq = obs_freq
+        self._weather = weather
+        self._elevation = elevation
+
+        T_atm_table = np.genfromtxt(T_ATM_PATH)
+        tau_atm_table = np.genfromtxt(TAU_ATM_PATH)
         # TODO: interp2d is deprecated:
         #   see https://docs.scipy.org/doc/scipy/reference/generated
         #       /scipy.interpolate.interp2d.html
-        self.interp_T_atm = interp2d(self.T_atm_table[:, 0],
-                                     WEATHER, self.T_atm_table[:, 1:].T)
-        self.interp_tau_atm = interp2d(self.tau_atm_table[:, 0],
-                                       WEATHER, self.tau_atm_table[:, 1:].T)
+        self._interp_T_atm = interp2d(T_atm_table[:, 0],
+                                      WEATHER, T_atm_table[:, 1:].T)
+        self._interp_tau_atm = interp2d(tau_atm_table[:, 0],
+                                        WEATHER, tau_atm_table[:, 1:].T)
 
+        self._tau_atm = self._calculate_transmittance()
+        self._T_atm = self._calculate_temperature()
+
+    @property
     def tau_atm(self):
         """
-        Return atmospheric transmittance tau_atm
+        Get the atmospheric transmittance
+        """
+        return self._tau_atm
+
+    @property
+    def T_atm(self):
+        """
+        Get the atmospheric temperature
+        """
+        return self._T_atm
+
+    def _calculate_transmittance(self):
+        """
+        Calculate the atmospheric transmittance tau_atm
 
         :return: Atmospheric transmittance
         :rtype: astropy.units.Quantity
         """
-        tau_z = self.interp_tau_atm(self.obs_freq, self.weather)
-        zenith = 90.0 * u.deg - self.elevation
+        tau_z = self._interp_tau_atm(self._obs_freq, self._weather)
+        zenith = 90.0 * u.deg - self._elevation
         tau_atm = tau_z / np.cos(zenith)
         return tau_atm[0]
 
-    def T_atm(self):
+    def _calculate_temperature(self):
         """
-        Return atmospheric temperature T_atm
+        Calculate the atmospheric temperature T_atm
 
         :return: Atmospheric temperature
         :rtype: astropy.units.Quantity
         """
-        return self.interp_T_atm(self.obs_freq, self.weather)[0] * u.K
+        return self._interp_T_atm(self._obs_freq, self._weather)[0] * u.K
