@@ -27,7 +27,7 @@ a.nav-link:hover {
 }
 
 .calculator-container {
-    margin-left: 1%;
+    margin-left: 35%;
 }
 
 .titles {
@@ -157,15 +157,14 @@ button:hover {
 
 img#logoimg {
   position: absolute;
-  height: 110px;
-  top: 80px;
-  left: 2%;
+  height: 90px;
+  top: 100px;
 }
 
 #logotext {
   font-size: 5rem;
   top: 100px;
-  left: 20%;
+  left: 35%;
   position: relative;
   padding: 10px 0;
 }
@@ -183,9 +182,37 @@ img#logoimg {
   }
 }
 
+@media screen and (min-width: 661px) and (max-width: 1200px) {
+    .btn {
+        padding-left: 0.2rem;
+        padding-right: 0.3rem;
+    }
+    #header {
+        height: 180px;
+        background-size: 8px;
+    }
+    #logotext {
+        left: 30%;
+        top: 70px;
+        font-size: 4rem;
+    }
+    img#logoimg {
+        height: 70px;
+        top: 80px;
+        left: -75px;
+    }
+    #tagline {
+        font-size: 1.2rem;
+    }
+}
+
 @media screen and (max-width: 660px) {
     h1 {
         font-size: 2rem;
+    }
+    .btn {
+        padding-left: 0.1rem;
+        padding-right: 0.2rem;
     }
     .calculator-container {
         margin: auto;
@@ -204,30 +231,11 @@ img#logoimg {
         text-align: center;
     }
     img#logoimg {
-        height: 80px;
-        top: 70px;
-        left: -75px;
+        height: 60px;
+        top: 90px;
+        left: -90px;
     }
     #tagline {
         display: none;
-    }
-}
-
-@media screen and (max-width: 1200px) {
-    #header {
-        height: 180px;
-        background-size: 8px;
-    }
-    #logotext {
-        top: 70px;
-        font-size: 4rem;
-    }
-    img#logoimg {
-        height: 80px;
-        top: 70px;
-        left: -75px;
-    }
-    #tagline {
-        font-size: 1.1rem;
     }
 }
