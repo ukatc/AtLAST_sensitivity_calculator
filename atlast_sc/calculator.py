@@ -365,7 +365,7 @@ class Calculator:
         Calculates the integration time required for a given `sensitivity`
         to be reached.
 
-        :param sensitivity: required sensitivity in Jansky. Optional. Defaults
+        :param sensitivity: required sensitivity. Optional. Defaults
             to the internally stored value
         :type sensitivity: astropy.units.Quantity
         :param update_calculator: True if the integration time stored in the
@@ -439,32 +439,31 @@ class Calculator:
                            self.eta_spill, self.eta_block, self.eta_pol)
 
         # Calculate the temperatures
-        temps = Temperatures(self.obs_freq, self.T_cmb, atm.T_atm, self.T_amb,
-                             atm.tau_atm)
-        T_sys = temps.system_temperature(self.g, self.eta_eff)
+        temps = Temperatures(self.obs_freq, self.T_cmb, self.T_amb, self.g,
+                             self.eta_eff, atm)
 
         # Calculate source equivalent flux density
-        sefd = self._calculate_sefd(T_sys, eta.eta_a)
+        sefd = self._calculate_sefd(temps.T_sys, eta.eta_a)
 
         return DerivedParams(tau_atm=atm.tau_atm, T_atm=atm.T_atm,
                              T_rx=temps.T_rx, eta_a=eta.eta_a, eta_s=eta.eta_s,
-                             T_sys=T_sys, sefd=sefd)
+                             T_sys=temps.T_sys, sefd=sefd)
 
-    def _calculate_sefd(self, T_sys, eta_A):
+    def _calculate_sefd(self, T_sys, eta_a):
         """
         Calculates the source equivalent flux density, SEFD, from the system
         temperature, T_sys, the dish efficiency eta_A, and the dish area.
 
         :param T_sys: system temperature
         :type T_sys: astropy.units.Quantity
-        :param eta_A: the dish efficiency factor
-        :type eta_A: float
+        :param eta_a: the dish efficiency factor
+        :type eta_a: float
         :return: source equivalent flux density
         :rtype: astropy.units.Quantity
         """
 
         dish_area = np.pi * self.dish_radius ** 2
-        sefd = (2 * k_B * T_sys) / (eta_A * dish_area)
+        sefd = (2 * k_B * T_sys) / (eta_a * dish_area)
 
         return sefd
 
