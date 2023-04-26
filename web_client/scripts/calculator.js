@@ -21,19 +21,19 @@ $(document).ready(() => {
             const allUserInputs = document.querySelectorAll(".param-input");
 
             allUserInputs.forEach(input => {
+                // Get the corresponding units for this input
+                const units =
+                    document.getElementById(`${input.name}-units`);
                 // Validate the initial input data (should never fail!)
-                formValidated = validateInput(input, data[input.name]);
+                formValidated = validateInput(input, units, data[input.name]);
 
                 // Add an event listener to validate input when it changes
                 input.addEventListener("change", e => {
                     if (input === e.target) {
-                        formValidated = validateInput(input, data[input.name]);
-                        // Disable the calculation button if the form has not
-                        // been validated, or enable if it has
-                        CalculatorUI.disableCalculateBtn(!formValidated);
-                        if (formValidated) {
-                            CalculatorUI.resetOutputBox();
-                        }
+                        formValidated =
+                            validateAndSetUIState(input, units,
+                                                  data[input.name]);
+
                     }
                 });
             });
@@ -41,11 +41,20 @@ $(document).ready(() => {
             // Set up event listeners on the units dropdowns
             const allUnitsInputs = document.querySelectorAll(".units-input");
 
-            allUnitsInputs.forEach(input => {
+            allUnitsInputs.forEach(unitsInput => {
                 // Add an event listener to re-enable to the Calculate button
                 // if the form is in a valid state
-                input.addEventListener("change", e => {
-                    CalculatorUI.disableCalculateBtn(!formValidated);
+                unitsInput.addEventListener("change", e => {
+                    if (unitsInput === e.target) {
+                        // Get the corresponding input for this units input
+                        const input =
+                            document.querySelector(
+                                `input[name=${unitsInput.id.replace("-units", "")}`
+                            );
+                        formValidated =
+                            validateAndSetUIState(input, unitsInput,
+                                                  data[input.name]);
+                    }
                 });
             })
 
@@ -186,4 +195,17 @@ const doCalculation = (paramData) => {
             break;
         }
     }
+}
+
+const validateAndSetUIState = (input, units, paramData) => {
+
+    const formValidated = validateInput(input, units, paramData);
+    // Disable the calculation button if the form has not
+    // been validated, or enable if it has
+    CalculatorUI.disableCalculateBtn(!formValidated);
+    if (formValidated) {
+        CalculatorUI.resetOutputBox();
+    }
+
+    return formValidated;
 }

@@ -1,6 +1,8 @@
 import pytest
 import os
+import astropy.units as u
 from atlast_sc.utils import FileHelper
+from atlast_sc.utils import DataHelper
 from atlast_sc.calculator import Calculator
 
 
@@ -202,3 +204,17 @@ class TestFileHelper:
         assert str(e.value) == \
                f'Unsupported file type "{bad_file_type}". ' \
                f'Must be one of: {FileHelper.SUPPORTED_FILE_EXTENSIONS}'
+
+
+class TestDataHelper:
+
+    def test_convert(self):
+        test_value = 1000
+        test_unit = "MHz"
+        target_unit = "GHz"
+
+        result = DataHelper.convert(test_value, test_unit, target_unit)
+
+        assert result == 1 * u.GHz
+
+    # TODO: test data_conversion_factors for each parameter
