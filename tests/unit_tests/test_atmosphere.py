@@ -1,11 +1,7 @@
 # import numpy as np
 # import astropy.units as u
 
-
-def test_init(atmosphere_params):
-    assert atmosphere_params.tau_atm_table[0, 0] == 30
-    assert atmosphere_params.T_atm_table[0, 0] == 30
-
+# TODO: write tests!
 
 # def test_tau_atm(atmosphere_params, elevation):
 #
