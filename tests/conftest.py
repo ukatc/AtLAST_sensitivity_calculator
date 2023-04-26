@@ -138,8 +138,10 @@ def atmosphere_params(obs_freq, weather, elevation):
 
 
 @pytest.fixture(scope='session')
-def efficiencies(eta_ill, eta_spill, eta_block, eta_pol):
-    return Efficiencies(eta_ill, eta_spill, eta_block, eta_pol)
+def efficiencies(obs_freq, surface_rms, eta_ill, eta_spill, eta_block,
+                 eta_pol):
+    return Efficiencies(obs_freq, surface_rms, eta_ill, eta_spill,
+                        eta_block, eta_pol)
 
 
 @pytest.fixture(scope='session')

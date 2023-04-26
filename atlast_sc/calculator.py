@@ -435,11 +435,8 @@ class Calculator:
                                self.elevation)
 
         # Perform efficiencies calculation
-        eta = Efficiencies(self.eta_ill, self.eta_spill,
-                           self.eta_block, self.eta_pol)
-
-        eta_a = eta.eta_a(self.obs_freq, self.surface_rms)
-        eta_s = eta.eta_s()
+        eta = Efficiencies(self.obs_freq, self.surface_rms, self.eta_ill,
+                           self.eta_spill, self.eta_block, self.eta_pol)
 
         # Calculate the temperatures
         temps = Temperatures(self.obs_freq, self.T_cmb, atm.T_atm, self.T_amb,
@@ -447,10 +444,10 @@ class Calculator:
         T_sys = temps.system_temperature(self.g, self.eta_eff)
 
         # Calculate source equivalent flux density
-        sefd = self._calculate_sefd(T_sys, eta_a)
+        sefd = self._calculate_sefd(T_sys, eta.eta_a)
 
         return DerivedParams(tau_atm=atm.tau_atm, T_atm=atm.T_atm,
-                             T_rx=temps.T_rx, eta_a=eta_a, eta_s=eta_s,
+                             T_rx=temps.T_rx, eta_a=eta.eta_a, eta_s=eta.eta_s,
                              T_sys=T_sys, sefd=sefd)
 
     def _calculate_sefd(self, T_sys, eta_A):

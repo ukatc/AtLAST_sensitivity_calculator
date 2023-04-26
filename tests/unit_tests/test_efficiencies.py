@@ -1,13 +1,13 @@
 
+# TODO: tests!
+
 def test_eta_s(efficiencies):
-    eta_s = efficiencies.eta_s()
-    print('got value for eta_s of', eta_s)
+    eta_s = efficiencies.eta_s
     assert eta_s <= 1
 
 
 def test_eta_a(efficiencies, obs_freq, surface_rms):
-    eta_a = efficiencies.eta_a(obs_freq, surface_rms)
-    print('got value for eta_a of', eta_a)
+    eta_a = efficiencies.eta_a
     # assert eta_a.value == pytest.approx(0.9211434072170483)
     assert eta_a.value <= 1
 
