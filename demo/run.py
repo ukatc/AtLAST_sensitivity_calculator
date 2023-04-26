@@ -20,7 +20,7 @@ print("-----------")
 
 # Calculate the sensitivity for a given integration time
 # (here, specified in user_input.yaml)
-# calculator.bandwidth = 150*u.MHz
+# calculator.bandwidth = 10*u.kHz
 # calculator.elevation = 5*u.deg
 # calculator.dish_radius = 100*u.m
 # calculator.dish_radius = 'nonsense'
@@ -29,12 +29,13 @@ print("-----------")
 # calculator.sensitivity = float('inf')*u.Jy
 # calculator.n_pol = 1
 # print('using params', calculator.calculation_parameters_as_dict)
+# calculator.t_int = 0.5*u.min
 calculated_sensitivity = \
     calculator.calculate_sensitivity()
 print("Sensitivity: {:0.2f} for an integration time of {:0.2f} "
       .format(calculated_sensitivity, calculator.t_int))
 calculator.sensitivity = calculated_sensitivity
-calculator.bandwidth = 10*u.GHz
+# calculator.bandwidth = 10*u.GHz
 sens = 10*u.mJy
 # # Calculate the integration time for a given sensitivity
 calculated_t_int = \

@@ -64,9 +64,7 @@
           <div class="col-5 col-md-4 col-lg-3 col-xl-2">
             <div class="input-group param-input-group mb-3">
               <input type="text" class="form-control param-input" id="elev-input" name="elevation" value="{{ default_value('elevation') }}">
-<!--              <div class="input-group-append">-->
                 <span class="input-group-text">{{ default_unit('elevation') }}</span>
-<!--              </div>-->
             </div>
           </div>
           <div class="col allowed-range-info">{{ allowed_range('elevation') }}</div>
@@ -82,9 +80,7 @@
           <div class="col-5 col-md-4 col-lg-3 col-xl-2">
             <div class="input-group param-input-group mb-3">
               <input type="text" class="form-control param-input" id="obs-freq-input" name="obs_freq" value="{{ default_value('obs_freq') }}">
-<!--              <div class="input-group-append">-->
                 <span class="input-group-text">{{ default_unit('obs_freq') }}</span>
-<!--              </div>-->
             </div>
           </div>
           <div class="col col-md-3 col-lg-2 allowed-range-info">{{ allowed_range('obs_freq') }}</div>
@@ -144,7 +140,7 @@
           <div class="col-5 col-md-4 col-lg-3 col-xl-2">
             <div class="input-group param-input-group mb-3">
               <input type="text" class="form-control param-input" id="integration-time-input" name="t_int" value="{{ default_value('t_int') }}">
-              <select class="form-select units-input" id="t_int-units" name="t_int_units"></select>>
+              <select class="form-select units-input" id="t_int-units" name="t_int_units"></select>
             </div>
           </div>
           <div class="col col-md-3 col-lg-2 allowed-range-info">{{ allowed_range('t_int') }}</div>

@@ -5,6 +5,7 @@ for the parameters used by the sensitivity calculator.
 
 from dataclasses import dataclass
 import astropy.units as u
+from atlast_sc.utils import DataHelper
 
 
 @dataclass
@@ -17,6 +18,7 @@ class DataType:
     upper_value_is_ceil: bool = False
     allowed_values: list = None
     units: list[str] = None
+    data_conversion: dict = None
 
 
 integration_time = DataType(
@@ -25,7 +27,12 @@ integration_time = DataType(
     lower_value=1,
     upper_value=float('inf'),
     upper_value_is_ceil=True,
-    units=[str(u.s), str(u.min), str(u.h)]
+    units=[str(u.s), str(u.min), str(u.h)],
+    data_conversion=DataHelper
+    .data_conversion_factors(
+        str(u.s),
+        [str(u.s), str(u.min), str(u.h)]
+    )
 )
 
 sensitivity = DataType(
@@ -35,7 +42,12 @@ sensitivity = DataType(
     lower_value_is_floor=True,
     upper_value=float('inf'),
     upper_value_is_ceil=True,
-    units=[str(unit) for unit in [u.uJy, u.mJy, u.Jy]]
+    units=[str(u.uJy), str(u.mJy), str(u.Jy)],
+    data_conversion=DataHelper
+    .data_conversion_factors(
+        str(u.mJy),
+        [str(u.uJy), str(u.mJy), str(u.Jy)]
+    )
 )
 
 # TODO: include km/s. Will have to provide suitable conversion logic
@@ -46,7 +58,12 @@ bandwidth = DataType(
     lower_value_is_floor=True,
     upper_value=float('inf'),
     upper_value_is_ceil=True,
-    units=[str(unit) for unit in [u.Hz, u.kHz, u.MHz, u.GHz]]
+    units=[str(u.Hz), str(u.kHz), str(u.MHz), str(u.GHz)],
+    data_conversion=DataHelper
+    .data_conversion_factors(
+        str(u.MHz),
+        [str(u.Hz), str(u.kHz), str(u.MHz), str(u.GHz)]
+    )
 )
 
 # Sky frequency of the observations

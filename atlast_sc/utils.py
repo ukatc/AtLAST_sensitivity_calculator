@@ -2,6 +2,7 @@ import os
 import functools
 import json
 from yaml import load, Loader
+from astropy.units import Unit
 
 
 class Decorators:
@@ -370,3 +371,28 @@ class FileHelper:
                 outputs[key] = {'value': value}
 
         json.dump(outputs, file, indent=2)
+
+
+class DataHelper:
+
+    @staticmethod
+    def data_conversion_factors(default_unit, allowed_units):
+
+        conversion_factors = \
+            {unit: DataHelper.convert(1, unit, default_unit).value
+             for unit in allowed_units}
+
+        return conversion_factors
+
+    @staticmethod
+    def convert(quantity, from_unit, to_unit):
+
+        # TODO implement error handling for invalid units or
+        #  conversion problems
+        source_unit = Unit(from_unit)
+        target_unit = Unit(to_unit)
+
+        source_quantity = quantity * source_unit
+        converted_quantity = source_quantity.to(target_unit)
+
+        return converted_quantity

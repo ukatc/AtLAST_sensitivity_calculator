@@ -1,5 +1,4 @@
-const validateInput = (input, paramData) => {
-
+const validateInput = (input, units, paramData) => {
     const setUpValidState = (validState) => {
         const validStateMessage = (validState)? "" : "invalid";
         input.setCustomValidity(validStateMessage);
@@ -27,8 +26,22 @@ const validateInput = (input, paramData) => {
     // Where applicable, validate that the value is within the permitted
     //  range
     if (paramData.lower_value !== null || paramData.upper_value !== null) {
+        let valueToValidate;
+
+        // Get the corresponding unit for the input
+        const unitsElem = document.getElementById(`${input.name}-units`);
+        if (units) {
+            // Convert the input value from the specified to the default
+            //  units for this parameter
+            valueToValidate =
+                input.value * paramData.data_conversion[units.value];
+        }
+        else {
+            valueToValidate = input.value;
+        }
+
         if (!isInRange(
-                input.value,
+                valueToValidate,
                 {'lowerValue': paramData.lower_value,
                  'upperValue': paramData.upper_value,
                  'lowerValueIsFloor': paramData.lower_value_is_floor,
@@ -76,6 +89,10 @@ const isInRange = (val, ...rangeInfo) => {
 
 const isAllowedValue = (val, allowedValues) => {
     return true;
+}
+
+const convertToDefaultUnits = (parameter, value) => {
+
 }
 
 export {validateInput}
