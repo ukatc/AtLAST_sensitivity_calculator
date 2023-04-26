@@ -150,11 +150,6 @@ eta_pol = DataType(
     default_value=0.99
 )
 
-# Not Used
-eta_r = DataType(
-    default_value=1
-)
-
 # Temperature of the CMB
 t_cmb = DataType(
     default_value=2.73,
@@ -178,6 +173,5 @@ param_data_type_dicts = {
     'eta_spill': eta_spill,
     'eta_block': eta_block,
     'eta_pol': eta_pol,
-    'eta_r': eta_r,
     'T_cmb': t_cmb,
 }

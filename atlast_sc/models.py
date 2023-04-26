@@ -218,8 +218,6 @@ class InstrumentSetup(BaseModel):
         ValueWithoutUnits(value=data.eta_block.default_value)
     eta_pol: ValueWithoutUnits = \
         ValueWithoutUnits(value=data.eta_pol.default_value)
-    eta_r: ValueWithoutUnits = \
-        ValueWithoutUnits(value=data.eta_r.default_value)
 
     def __str__(self):
         return model_str_rep(self)

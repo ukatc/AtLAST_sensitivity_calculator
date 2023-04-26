@@ -55,6 +55,12 @@ Efficiencies
 :math:`\eta_{A}`, the dish efficiency, is given by:
 
 .. math::
-    \eta_{A} = \eta_{ill} \times exp^{(-\frac{(4\pi \times RMS}{\lambda^2})}
+    \eta_{A} = \eta_{ill} \times \eta_{spill} \times \eta_{pol} \times \eta_{block} \times exp^{(-\frac{(4\pi \times RMS}{\lambda^2})}
 
-where :math:`\eta_{ill}` is the illumination efficiency (defaults to value 0.63), and the latter term accounts for Ruze losses due to the RMS of the dish surface roughness.
+
+where the exponential term accounts for Ruze losses due to the RMS of the dish surface roughness, and
+
+* :math:`\eta_{ill}` is the illumination efficiency
+* :math:`\eta_{spill}` is the spillover efficiency
+* :math:`\eta_{pol}` is the polarisation efficiency
+* :math:`\eta_{block}` is the lowered efficiency due to blocking

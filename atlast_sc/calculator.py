@@ -29,7 +29,7 @@ class Calculator:
 
         # Make sure the user input doesn't contain any unexpected parameter
         # names
-        Calculator._check_input(user_input)
+        Calculator._check_input_param_names(user_input)
 
         # Store the input parameters used to initialise the calculator
         self._config = Config(user_input, instrument_setup)
@@ -90,6 +90,9 @@ class Calculator:
 
     @property
     def bandwidth(self):
+        """
+        Get or set the bandwidth
+        """
         return self.calculation_inputs.user_input.bandwidth.value
 
     @bandwidth.setter
@@ -100,6 +103,9 @@ class Calculator:
 
     @property
     def obs_freq(self):
+        """
+        Get or set the sky frequency of the observations
+        """
         return self.calculation_inputs.user_input.obs_freq.value
 
     @obs_freq.setter
@@ -110,6 +116,9 @@ class Calculator:
 
     @property
     def n_pol(self):
+        """
+        Get or set the number of polarisations being observed
+        """
         return self.calculation_inputs.user_input.n_pol.value
 
     @n_pol.setter
@@ -119,6 +128,9 @@ class Calculator:
 
     @property
     def weather(self):
+        """
+        Get or set the relative humidity
+        """
         return self.calculation_inputs.user_input.weather.value
 
     @weather.setter
@@ -128,6 +140,7 @@ class Calculator:
 
     @property
     def elevation(self):
+        """Get or set the elevation of the target for calculating air mass"""
         return self.calculation_inputs.user_input.elevation.value
 
     @elevation.setter
@@ -142,14 +155,23 @@ class Calculator:
 
     @property
     def g(self):
+        """
+        Get the sideband ratio
+        """
         return self.calculation_inputs.instrument_setup.g.value
 
     @property
     def surface_rms(self):
+        """
+        Get the surface smoothness of the instrument
+        """
         return self.calculation_inputs.instrument_setup.surface_rms.value
 
     @property
     def dish_radius(self):
+        """
+        Get the radius of the primary mirror
+        """
         return self.calculation_inputs.instrument_setup.dish_radius.value
 
     @dish_radius.setter
@@ -162,31 +184,45 @@ class Calculator:
 
     @property
     def T_amb(self):
+        """
+        Get the average ambient temperature
+        """
         return self.calculation_inputs.instrument_setup.T_amb.value
 
     @property
     def eta_eff(self):
+        """
+        Get the forward efficiency
+        """
         return self.calculation_inputs.instrument_setup.eta_eff.value
 
     @property
     def eta_ill(self):
+        """
+        Get the illumination efficiency
+        """
         return self.calculation_inputs.instrument_setup.eta_ill.value
 
     @property
     def eta_spill(self):
+        """
+        Get the spillover efficiency
+        """
         return self.calculation_inputs.instrument_setup.eta_spill.value
 
     @property
     def eta_block(self):
+        """
+        Get the lowered efficiency due to blocking
+        """
         return self.calculation_inputs.instrument_setup.eta_block.value
 
     @property
     def eta_pol(self):
+        """
+        Get the polarisation efficiency
+        """
         return self.calculation_inputs.instrument_setup.eta_pol.value
-
-    @property
-    def eta_r(self):
-        return self.calculation_inputs.instrument_setup.eta_r.value
 
     #########################
     # Getters for constants #
@@ -194,6 +230,9 @@ class Calculator:
 
     @property
     def T_cmb(self):
+        """
+        Get the temperature of the CMB
+        """
         return self.calculation_inputs.T_cmb.value
 
     ###################################
@@ -202,30 +241,51 @@ class Calculator:
 
     @property
     def tau_atm(self):
+        """
+        Get the atmospheric transmittance
+        """
         return self.derived_parameters.tau_atm
 
     @property
     def T_atm(self):
+        """
+        Get the atmospheric temperature
+        """
         return self.derived_parameters.T_atm
 
     @property
     def T_rx(self):
+        """
+        Get the receiver temperature
+        """
         return self.derived_parameters.T_rx
 
     @property
     def eta_a(self):
+        """
+        Get the dish efficiency
+        """
         return self.derived_parameters.eta_a
 
     @property
     def eta_s(self):
+        """
+        Get the system efficiency
+        """
         return self.derived_parameters.eta_s
 
     @property
     def T_sys(self):
+        """
+        Get the system temperature
+        """
         return self.derived_parameters.T_sys
 
     @property
     def sefd(self):
+        """
+        Get the system equivalent flux density
+        """
         return self.derived_parameters.sefd
 
     @property
@@ -263,7 +323,7 @@ class Calculator:
 
     def calculate_sensitivity(self, t_int=None, update_calculator=True):
         """
-        Calculates the telescope sensitivity (Jansky) for a
+        Calculates the telescope sensitivity (mJy) for a
         given integration time `t_int`.
 
         :param t_int: integration time. Optional. Defaults to the internally
@@ -273,7 +333,7 @@ class Calculator:
             calculator should be updated with the new value. Optional.
             Defaults to True
         :type update_calculator: bool
-        :return: sensitivity in Janksy
+        :return: sensitivity in mJy
         :rtype: astropy.units.Quantity
         """
 
@@ -351,7 +411,7 @@ class Calculator:
     #####################
 
     @staticmethod
-    def _check_input(user_input):
+    def _check_input_param_names(user_input):
         """
         Validates the user input parameters (just the names; value validation
         is handled by the model)
@@ -379,7 +439,7 @@ class Calculator:
 
         # Perform efficiencies calculation
         eta = Efficiencies(self.eta_ill, self.eta_spill,
-                           self.eta_block, self.eta_pol, self.eta_r)
+                           self.eta_block, self.eta_pol)
 
         eta_a = eta.eta_a(self.obs_freq, self.surface_rms)
         eta_s = eta.eta_s()

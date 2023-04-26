@@ -41,23 +41,17 @@ Instrument setup
       - 0.8
       -
       -
-    * - Eta spill
+    * - Spillover efficiency
       - eta_spill
       - 0.95
       -
-      - NAME REQUIRES UPDATE
-    * - Eta Block
+      -
+    * - Lowered efficiency due to blocking
       - eta_block
       - 0.94
       -
-      - NAME REQUIRES UPDATE
-    * - Eta Pol
+      -
+    * - Polarisation efficiency
       - eta_pol
       - 0.99
       -
-      - NAME REQUIRES UPDATE
-    * - Eta R
-      - eta_r
-      - 1
-      -
-      - NAME REQUIRES UPDATE

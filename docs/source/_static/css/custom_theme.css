@@ -5,3 +5,7 @@ See here: https://stackoverflow.com/questions/16570087/multiple-lines-of-text-in
 .wy-table-responsive table td, .wy-table-responsive table th {
     white-space: normal;
 }
+
+dl.py.property {
+    display: block !important;
+}

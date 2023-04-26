@@ -7,23 +7,23 @@ class Efficiencies:
     """
     All of the efficiency factors need to come in here...
     """
-    def __init__(self, eta_ill, eta_spill, eta_block, eta_pol, eta_r):
+    def __init__(self, eta_ill, eta_spill, eta_block, eta_pol):
         """
         At present, a placeholder method just to hold some efficiencies.
 
-        :param eta_ill: the illumination factor
+        :param eta_ill: illumination efficiency
         :type eta_ill: float
-        :param eta_spill: spill-over factor
+        :param eta_spill: spillover efficiency
         :type eta_spill: float
-        :param eta_block: blocking factor
+        :param eta_block: lowered efficiency due to blocking
         :type eta_block: float
-
+        :param eta_pol: polarisation efficiency
+        :type eta_pol: float
         """
         self.eta_ill = eta_ill
         self.eta_spill = eta_spill
         self.eta_block = eta_block
         self.eta_pol = eta_pol
-        self.eta_r = eta_r
 
     def eta_a(self, obs_freq, surface_rms):
         """
@@ -38,7 +38,7 @@ class Efficiencies:
         :rtype: astropy.units quantity
         """
         wavelength = (constants.c / obs_freq).to(u.m)
-        return self.eta_ill * self.eta_spill * self.eta_r * self.eta_pol * \
+        return self.eta_ill * self.eta_spill * self.eta_pol * \
             self.eta_block * \
             np.exp(-(4 * np.pi * surface_rms / wavelength)**2)
 
