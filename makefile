@@ -20,6 +20,9 @@ pushwebclientimage: buildwebclientimage
 buildpythonpackage: clean
 	python -m build
 
+coverage: clean
+	coverage run --source=atlast_sc -m pytest -v tests && coverage report -m && coverage html
+
 clean:
 	@rm -rf .pytest_cache/ .mypy_cache/ junit/ build/ dist/
 	@find . -not -path './.venv*' -path '*/__pycache__*' -delete
