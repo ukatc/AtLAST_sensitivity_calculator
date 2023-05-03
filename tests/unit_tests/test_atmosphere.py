@@ -20,7 +20,7 @@ test_data = [
 ]
 
 
-@pytest.mark.parametrize('obs_freq,band',test_data)
+@pytest.mark.parametrize('obs_freq,band', test_data)
 def test__calculate_atmospheric_tau_factor(obs_freq, band, weather):
 
     elevations = [5, 45]
@@ -31,7 +31,9 @@ def test__calculate_atmospheric_tau_factor(obs_freq, band, weather):
     for elevation in elevations:
         elevation = elevation * u.deg
         atmosphere_params = AtmosphereParams(obs_freq, weather, elevation)
-        tau_factors.append(atmosphere_params._calculate_atmospheric_tau_factor())
+        tau_factors.append(
+            atmosphere_params._calculate_atmospheric_tau_factor()
+        )
         atms.append(atmosphere_params)
 
     # Check that the tau factor for the lower elevation is greater than the
