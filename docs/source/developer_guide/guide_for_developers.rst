@@ -34,17 +34,8 @@ Running the web client directly
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1. Ensure you have created and activated the conda environment as per the instructions above.
-2. The FastAPI server requires the sensitivity calculator Python package to be installed in
-    the development environment. To install the packe, navigate to the root directory of the
-    repository and execute the following command:
-
-.. code-block:: bash
-
-    $ pip install -e ./
-
-
-3. Navigate to the ``web_client`` directory
-4. Run the web client with the following command:
+2. Navigate to the ``web_client`` directory
+3. Run the web client with the following command:
 
 .. code-block:: bash
 
