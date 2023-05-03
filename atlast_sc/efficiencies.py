@@ -58,6 +58,9 @@ class Efficiencies:
         """
         wavelength = (constants.c / self._obs_freq).to(u.m)
 
-        return self._eta_ill * self._eta_spill * self._eta_pol * \
+        eta_a_quantity = self._eta_ill * self._eta_spill * self._eta_pol * \
             self._eta_block * \
             np.exp(-(4 * np.pi * self._surface_rms / wavelength)**2)
+
+        return eta_a_quantity.value
+
