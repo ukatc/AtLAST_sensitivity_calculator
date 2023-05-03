@@ -89,7 +89,7 @@ weather = DataType(
     upper_value=95
 )
 
-# elevation of the target for calculating air mass
+# Elevation of the target for calculating air mass
 elevation = DataType(
     default_value=45,
     default_unit=str(u.deg),

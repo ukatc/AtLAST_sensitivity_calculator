@@ -37,7 +37,6 @@ class Calculator:
         # Calculate the derived parameters used in the calculation
         self._derived_params = self._calculate_derived_parameters()
 
-    # TODO: move these getters and setters to Config object?
     ###################################################
     # Getters and setters for user input parameters   #
     ###################################################
@@ -50,6 +49,9 @@ class Calculator:
     #   calculation
     @property
     def t_int(self):
+        """
+        Get or set the integration time
+        """
         return self.calculation_inputs.user_input.t_int.value
 
     @t_int.setter
@@ -73,6 +75,9 @@ class Calculator:
 
     @property
     def sensitivity(self):
+        """
+        Get or set the sensitivity
+        """
         return self.calculation_inputs.user_input.sensitivity.value
 
     @sensitivity.setter
@@ -140,7 +145,9 @@ class Calculator:
 
     @property
     def elevation(self):
-        """Get or set the elevation of the target for calculating air mass"""
+        """
+        Get or set the elevation of the target for calculating air mass
+        """
         return self.calculation_inputs.user_input.elevation.value
 
     @elevation.setter
@@ -415,6 +422,9 @@ class Calculator:
         """
         Validates the user input parameters (just the names; value validation
         is handled by the model)
+
+        :param user_input: Dictionary containing user-defined input parameters
+        :type user_input: dict
         """
 
         test_model = UserInput()
@@ -430,11 +440,11 @@ class Calculator:
         calculation.
         """
 
-        # Perform atmospheric model calculation
+        # Perform atmospheric model calculations
         atm = AtmosphereParams(self.obs_freq, self.weather,
                                self.elevation)
 
-        # Perform efficiencies calculation
+        # Perform efficiencies calculations
         eta = Efficiencies(self.obs_freq, self.surface_rms, self.eta_ill,
                            self.eta_spill, self.eta_block, self.eta_pol)
 

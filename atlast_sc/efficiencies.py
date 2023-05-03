@@ -11,8 +11,6 @@ class Efficiencies:
     def __init__(self, obs_freq, surface_rms, eta_ill, eta_spill, eta_block,
                  eta_pol):
         """
-        At present, a placeholder method just to hold some efficiencies.
-
         :param obs_freq: observing frequency
         :type obs_freq: astropy.units.Quantity
         :param surface_rms: surface smoothness

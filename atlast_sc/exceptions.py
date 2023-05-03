@@ -4,7 +4,12 @@ class CalculatedValueInvalidWarning(UserWarning):
     Warning raised when a calculated value is not valid, e.g., because it
     falls outside its permitted range.
     """
+
     def __init__(self, message):
+        """
+        :param message: the warning message to display
+        :type message: str
+        """
         self.message = message
 
     def __str__(self):

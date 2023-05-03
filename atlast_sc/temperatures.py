@@ -52,10 +52,19 @@ class Temperatures:
                 )
 
     def _calculate_receiver_temperature(self):
+        """
+        Calculate the receiver temperature
+        """
         return (5 * h * self._obs_freq.to(u.Hz) / k_B).to(u.K)
 
     def _calculate_transmittance(self):
+        """
+        Calculate the transmittance
+        """
         return np.exp(-self._tau_atm)
 
     def _calculate_sky_temperature(self):
+        """
+        Calculate the sky temperature
+        """
         return self._T_atm * (1 - self._transmittance) + self._T_cmb
