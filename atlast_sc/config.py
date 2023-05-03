@@ -4,25 +4,21 @@ from atlast_sc import models
 
 class Config:
     """
-    Sets up the configuration used to perform the sensitivity calculations.
-
-    Attributes
-    ----------
-
-    Methods
-    -------
+    Class that holds the user input and instrument setup parameters
+    used to perform the sensitivity calculations.
     """
     def __init__(self, user_input={}, instrument_setup={}):
         """
-        Initialises all the required parameters from various input sources
-        setup_input, fixed_input and the default can be found in .yaml files
-        in the configs directory User input is here read as dict but class
-        methods allow reading various file types.
+        Initialises all the required parameters from user_input and
+        instrument_setup.
 
         :param user_input: A dictionary of user inputs of structure
         {'param_name':{'value': <value>, 'unit': <unit>}}
         :type user_input: dict
-        :param setup: The required telescope setup. Default value 'standard'
+        :param instrument_setup: A dictionary of instrument setup parameters
+        of structure
+        {'param_name':{'value': <value>, 'unit': <unit>}}
+        :type instrument_setup: dict
         """
 
         self._user_input = models.UserInput(**user_input)
@@ -37,16 +33,29 @@ class Config:
 
     @property
     def calculation_inputs(self):
+        """
+        Get the calculation inputs (user input and instrument setup)
+        """
         return self._calculation_inputs
 
     @property
     def user_input(self):
+        """
+        Get the user input parameters
+        """
         return self._user_input
 
     @property
     def instrument_setup(self):
+        """
+        Get the instrument setup parameters
+        """
         return self._instrument_setup
 
     def reset(self):
+        """
+        Resets the calculator configuration parameters (user input and
+        instrument setup to their original values.
+        """
         self._calculation_inputs = \
             self._original_inputs

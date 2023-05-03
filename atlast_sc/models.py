@@ -185,8 +185,10 @@ class UserInput(BaseModel):
     @root_validator
     @classmethod
     def validate_t_int_or_sens_initialised(cls, field_values):
-        # Validate that at least one of 't_int' and 'sensitivity'
-        # has been initialised
+        """
+        Validate that at least one of 't_int' and 'sensitivity'
+        has been initialised
+        """
         if field_values["t_int"].value == 0 and \
                 field_values["sensitivity"].value == 0:
             raise ValueError("Please add either a sensitivity or an "
@@ -237,7 +239,9 @@ class CalculationInput(BaseModel):
     @root_validator
     @classmethod
     def validate_fields(cls, field_values):
-        # Flatten the field values for convenience
+        """
+        Flatten the field values for convenience
+        """
         user_input = field_values['user_input']
         instrument_setup = field_values['instrument_setup']
 
@@ -297,5 +301,3 @@ class DerivedParams(BaseModel):
 
     def __str__(self):
         return model_str_rep(self)
-
-    # TODO add validator for Quantity
