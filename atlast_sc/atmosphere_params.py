@@ -46,7 +46,7 @@ class AtmosphereParams:
         self._interp_tau_atm = interp2d(tau_atm_table[:, 0],
                                         WEATHER, tau_atm_table[:, 1:].T)
 
-        self._tau_atm = self._calculate_transmittance()
+        self._tau_atm = self._calculate_atmospheric_tau_factor()
         self._T_atm = self._calculate_temperature()
 
     @property
@@ -63,9 +63,9 @@ class AtmosphereParams:
         """
         return self._T_atm
 
-    def _calculate_transmittance(self):
+    def _calculate_atmospheric_tau_factor(self):
         """
-        Calculate the atmospheric transmittance tau_atm
+        Calculate the atmospheric tau factor tau_atm
 
         :return: Atmospheric transmittance
         :rtype: astropy.units.Quantity
