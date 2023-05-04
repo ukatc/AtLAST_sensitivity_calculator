@@ -1,0 +1,108 @@
+@startuml data_model
+
+left to right direction
+
+class "<color:red>CalculatedValueInvalidWarning</color>" as exceptions.CalculatedValueInvalidWarning {
+  message
+}
+class "CalculationInput" as models.CalculationInput {
+  T_cmb : ValueWithUnits
+  instrument_setup : InstrumentSetup
+  user_input : UserInput
+  validate_fields(field_values)
+  validate_update(value_to_update, new_value)
+}
+class "DataType" as data.DataType {
+  allowed_values : Optional[list]
+  data_conversion : Optional[dict]
+  default_unit : Optional[str]
+  default_value : Optional[float]
+  lower_value : Optional[float]
+  lower_value_is_floor : bool
+  units : Optional[list[str]]
+  upper_value : Optional[float]
+  upper_value_is_ceil : bool
+}
+class "DerivedParams" as models.DerivedParams {
+  T_atm : Quantity
+  T_rx : Quantity
+  T_sys : Quantity
+  eta_a : float
+  eta_s : float
+  sefd : Quantity
+  tau_atm : float
+}
+class "InstrumentSetup" as models.InstrumentSetup {
+  T_amb : ValueWithUnits
+  dish_radius : ValueWithUnits
+  eta_block : ValueWithoutUnits
+  eta_eff : ValueWithoutUnits
+  eta_ill : ValueWithoutUnits
+  eta_pol : ValueWithoutUnits
+  eta_spill : ValueWithoutUnits
+  g : ValueWithoutUnits
+  surface_rms : ValueWithUnits
+}
+class "<color:red>UnitException</color>" as exceptions.UnitException {
+  expected_units : str
+  message : str
+  parameter : str
+}
+class "UserInput" as models.UserInput {
+  bandwidth : ValueWithUnits
+  elevation : ValueWithUnits
+  n_pol : ValueWithoutUnits
+  obs_freq : ValueWithUnits
+  sensitivity : ValueWithUnits
+  t_int : ValueWithUnits
+  weather : ValueWithoutUnits
+  validate_t_int_or_sens_initialised(field_values)
+}
+class "Validator" as models.Validator {
+  validate_allowed_values(value, param, data_type)
+  validate_field(key, val)
+  validate_in_range(value, param, data_type)
+  validate_units(unit, param, data_type)
+}
+class "<color:red>ValueNotAllowedException</color>" as exceptions.ValueNotAllowedException {
+  allowed_values
+  message
+  parameter
+  units : NoneType
+}
+class "<color:red>ValueOutOfRangeException</color>" as exceptions.ValueOutOfRangeException {
+  lower_value
+  message
+  parameter
+  units : NoneType
+  upper_value
+}
+class "<color:red>ValueTooHighException</color>" as exceptions.ValueTooHighException {
+  message
+}
+class "<color:red>ValueTooLowException</color>" as exceptions.ValueTooLowException {
+  message
+}
+class "ValueWithUnits" as models.ValueWithUnits {
+  unit : str
+  value : float
+  validate_fields(field_values)
+}
+class "ValueWithoutUnits" as models.ValueWithoutUnits {
+  value : float
+}
+
+InstrumentSetup --* CalculationInput
+UserInput --* CalculationInput
+Validator ..> CalculationInput
+exceptions ..> Validator
+DataType ..> Validator
+ValueWithUnits --* CalculationInput
+ValueWithUnits --* UserInput
+ValueWithUnits --* InstrumentSetup
+ValueWithoutUnits --* CalculationInput
+ValueWithoutUnits --* UserInput
+ValueWithoutUnits --* InstrumentSetup
+ValueTooHighException --|> ValueOutOfRangeException
+ValueTooLowException --|> ValueOutOfRangeException
+@enduml

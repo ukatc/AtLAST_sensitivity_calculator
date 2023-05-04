@@ -52,8 +52,8 @@ AtLAST Sensitivity Calculator
 
 .. toctree::
    :maxdepth: 3
-   :caption: Public API Documentation
+   :caption: Code Documentation
    :hidden:
 
-   api_docs/calculations
-   api_docs/utilities
+   code_docs/public_api
+   code_docs/uml

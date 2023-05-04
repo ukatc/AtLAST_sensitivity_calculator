@@ -1,6 +1,5 @@
-************
-Calculations
-************
+Public API
+**********
 
 .. automodule:: atlast_sc.calculator
    :members:
@@ -12,4 +11,7 @@ Calculations
    :members:
 
 .. automodule:: atlast_sc.temperatures
+   :members:
+
+.. autoclass:: atlast_sc.utils.FileHelper
    :members:

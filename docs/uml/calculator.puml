@@ -1,5 +1,8 @@
 @startuml calculator
 set namespaceSeparator none
+
+top to bottom direction
+
 class "AtmosphereParams" as atlast_sc.atmosphere_params.AtmosphereParams {
   T_atm : Quantity
   tau_atm : float
@@ -97,10 +100,10 @@ class "Decorators" as atlast_sc.utils.Decorators {
   validate_and_update_params(func)
   validate_update(func)
 }
-atlast_sc.efficiencies.Efficiencies --o atlast_sc.calculator.Calculator
-atlast_sc.temperatures.Temperatures --o atlast_sc.calculator.Calculator
-atlast_sc.atmosphere_params.AtmosphereParams --o atlast_sc.calculator.Calculator
-atlast_sc.utils.Decorators --> atlast_sc.calculator.Calculator
+atlast_sc.efficiencies.Efficiencies --* atlast_sc.calculator.Calculator
+atlast_sc.temperatures.Temperatures --* atlast_sc.calculator.Calculator
+atlast_sc.atmosphere_params.AtmosphereParams --* atlast_sc.calculator.Calculator
+atlast_sc.utils.Decorators ..> atlast_sc.calculator.Calculator
 atlast_sc.models.CalculationInput --* atlast_sc.config.Config
 atlast_sc.calculator.Calculator *-- atlast_sc.models.DerivedParams
 atlast_sc.models.InstrumentSetup --* atlast_sc.models.CalculationInput

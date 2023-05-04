@@ -26,4 +26,5 @@ dependencies:
   - coverage=7.2
   - pip
   - pip:
-    - -e ./
+      - sphinxcontrib.plantuml==0.25
+      - -e ./
