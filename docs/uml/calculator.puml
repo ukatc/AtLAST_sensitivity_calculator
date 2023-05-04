@@ -1,9 +1,3 @@
-The documentation for the sensitivity calculator can be accessed in this directory.
-
-To view the documentation, run `` make html `` in this directory, and then point your browser towards ``docs/build/html/index.html``
-
-<div hidden>
-```
 @startuml calculator
 set namespaceSeparator none
 class "AtmosphereParams" as atlast_sc.atmosphere_params.AtmosphereParams {
@@ -113,7 +107,3 @@ atlast_sc.models.InstrumentSetup --* atlast_sc.models.CalculationInput
 atlast_sc.models.UserInput --* atlast_sc.models.CalculationInput
 atlast_sc.calculator.Calculator *-- atlast_sc.config.Config
 @enduml
-```
-</div>
-
-![](calculator.svg)
