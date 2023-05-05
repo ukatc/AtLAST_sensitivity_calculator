@@ -1,11 +1,11 @@
 import math
 from fastapi import Request
-from atlast_sc.data import param_data_type_dicts
+from atlast_sc.data import Data
 
 
 def invalid_message_processor(request: Request):
     def invalid_message(param):
-        param_data = param_data_type_dicts[param]
+        param_data = Data.param_data_type_dicts[param]
 
         message = "Please enter a valid number "
 
@@ -36,14 +36,14 @@ def invalid_message_processor(request: Request):
 
 def default_values_processor(request: Request):
     def default_value(param):
-        return param_data_type_dicts[param].default_value
+        return Data.param_data_type_dicts[param].default_value
 
     return dict(default_value=default_value)
 
 
 def default_units_processor(request: Request):
     def default_unit(param):
-        return param_data_type_dicts[param].default_unit
+        return Data.param_data_type_dicts[param].default_unit
 
     return dict(default_unit=default_unit)
 
@@ -54,7 +54,7 @@ def allowed_range_processor(request: Request):
         #   logically possible conditions. However, it does cover the
         #   scenarios that exist in the application.
 
-        param_data = param_data_type_dicts[param]
+        param_data = Data.param_data_type_dicts[param]
         maximum = None
 
         if param_data.lower_value_is_floor:

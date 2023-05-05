@@ -24,6 +24,7 @@ dependencies:
   - jinja2=3.1
   - aiofiles=22.1
   - coverage=7.2
+  - pylint
   - pip
   - pip:
       - sphinxcontrib.plantuml==0.25

@@ -1,109 +1,7 @@
-import math
 from pydantic import BaseModel, root_validator
 from astropy.units import Unit, Quantity
-from atlast_sc.exceptions import UnitException, ValueOutOfRangeException,\
-    ValueNotAllowedException, ValueTooHighException, ValueTooLowException
-import atlast_sc.data as data
-
-
-class Validator:
-    """
-    Class providing custom validation functions
-    """
-
-    @staticmethod
-    def validate_field(key, val):
-
-        data_type = data.param_data_type_dicts[key]
-
-        # Validate units on Quantities
-        if isinstance(val, Quantity):
-            try:
-                Validator.validate_units(val.unit, key, data_type)
-            except UnitException as e:
-                raise e
-
-        # Validate value is allowed
-        if isinstance(val, Quantity):
-            # Convert the value to the default units and extract the value
-            # to be validated
-            value_to_validate = \
-                val.to(Unit(data_type.default_unit)).value
-        else:
-            value_to_validate = val
-
-        try:
-            Validator.validate_allowed_values(value_to_validate,
-                                              key, data_type)
-        except ValueNotAllowedException as e:
-            raise e
-
-        # Validate value is in permitted range
-        try:
-            Validator.validate_in_range(value_to_validate,
-                                        key, data_type)
-        except ValueOutOfRangeException as e:
-            raise e
-
-    @staticmethod
-    def validate_units(unit, param, data_type):
-
-        # Don't need to check the units if the data type is unit-less
-        if data_type.units is None:
-            return
-
-        if unit not in data_type.units:
-            raise UnitException(param, data_type.units)
-
-    @staticmethod
-    def validate_in_range(value, param, data_type):
-
-        # Don't need to check the value is in the permitted range if
-        #   there is no range specified
-        if data_type.lower_value is None:
-            return
-
-        # Check there's also an upper value
-        assert data_type.upper_value is not None
-
-        # If the lower value is a floor value, make sure the provided value
-        # is greater than
-        if data_type.lower_value_is_floor:
-            if value <= data_type.lower_value:
-                raise ValueTooLowException(param, data_type.lower_value,
-                                           data_type.default_unit)
-
-        # If the upper value is a ceiling value, make sure the provided value
-        # is less than
-        if data_type.upper_value_is_ceil:
-            if value >= data_type.upper_value:
-                raise ValueTooHighException(param, data_type.upper_value,
-                                            data_type.default_unit)
-
-        # Do a special check for infinity (unlikely scenario, but not
-        # impossible...)
-        if math.isinf(value):
-            raise ValueTooHighException(param, data_type.upper_value,
-                                        data_type.default_unit)
-
-        if not (data_type.lower_value <= value <= data_type.upper_value):
-            raise ValueOutOfRangeException(param,
-                                           data_type.lower_value,
-                                           data_type.upper_value,
-                                           data_type.default_unit)
-
-    @staticmethod
-    def validate_allowed_values(value, param, data_type):
-
-        # Don't need to check the value is allowed if there are no
-        # allowed values specified
-        if data_type.allowed_values is None:
-            return
-
-        if value not in data_type.allowed_values:
-            raise ValueNotAllowedException(param,
-                                           data_type.allowed_values,
-                                           data_type.default_unit)
+from atlast_sc.exceptions import ValueOutOfRangeException
+from atlast_sc.data import Data, Validator
 
 
 def model_str_rep(model):
@@ -169,24 +67,24 @@ class UserInput(BaseModel):
     """
 
     t_int: ValueWithUnits = \
-        ValueWithUnits(value=data.integration_time.default_value,
-                       unit=data.integration_time.default_unit)
+        ValueWithUnits(value=Data.integration_time.default_value,
+                       unit=Data.integration_time.default_unit)
     sensitivity: ValueWithUnits = \
-        ValueWithUnits(value=data.sensitivity.default_value,
-                       unit=data.sensitivity.default_unit)
+        ValueWithUnits(value=Data.sensitivity.default_value,
+                       unit=Data.sensitivity.default_unit)
     bandwidth: ValueWithUnits = \
-        ValueWithUnits(value=data.bandwidth.default_value,
-                       unit=data.bandwidth.default_unit)
+        ValueWithUnits(value=Data.bandwidth.default_value,
+                       unit=Data.bandwidth.default_unit)
     obs_freq: ValueWithUnits = \
-        ValueWithUnits(value=data.obs_frequency.default_value,
-                       unit=data.obs_frequency.default_unit)
+        ValueWithUnits(value=Data.obs_frequency.default_value,
+                       unit=Data.obs_frequency.default_unit)
     n_pol: ValueWithoutUnits = \
-        ValueWithoutUnits(value=data.n_pol.default_value)
+        ValueWithoutUnits(value=Data.n_pol.default_value)
     weather: ValueWithoutUnits = \
-        ValueWithoutUnits(value=data.weather.default_value)
+        ValueWithoutUnits(value=Data.weather.default_value)
     elevation: ValueWithUnits = \
-        ValueWithUnits(value=data.elevation.default_value,
-                       unit=data.elevation.default_unit)
+        ValueWithUnits(value=Data.elevation.default_value,
+                       unit=Data.elevation.default_unit)
 
     @root_validator
     @classmethod
@@ -206,26 +104,26 @@ class UserInput(BaseModel):
 
 
 class InstrumentSetup(BaseModel):
-    g: ValueWithoutUnits = ValueWithoutUnits(value=data.g.default_value)
+    g: ValueWithoutUnits = ValueWithoutUnits(value=Data.g.default_value)
     surface_rms: ValueWithUnits = \
-        ValueWithUnits(value=data.surface_rms.default_value,
-                       unit=data.surface_rms.default_unit)
+        ValueWithUnits(value=Data.surface_rms.default_value,
+                       unit=Data.surface_rms.default_unit)
     dish_radius: ValueWithUnits = \
-        ValueWithUnits(value=data.dish_radius.default_value,
-                       unit=data.dish_radius.default_unit)
+        ValueWithUnits(value=Data.dish_radius.default_value,
+                       unit=Data.dish_radius.default_unit)
     T_amb: ValueWithUnits = \
-        ValueWithUnits(value=data.t_amb.default_value,
-                       unit=data.t_amb.default_unit)
+        ValueWithUnits(value=Data.t_amb.default_value,
+                       unit=Data.t_amb.default_unit)
     eta_eff: ValueWithoutUnits = \
-        ValueWithoutUnits(value=data.eta_eff.default_value)
+        ValueWithoutUnits(value=Data.eta_eff.default_value)
     eta_ill: ValueWithoutUnits = \
-        ValueWithoutUnits(value=data.eta_ill.default_value)
+        ValueWithoutUnits(value=Data.eta_ill.default_value)
     eta_spill: ValueWithoutUnits = \
-        ValueWithoutUnits(value=data.eta_spill.default_value)
+        ValueWithoutUnits(value=Data.eta_spill.default_value)
     eta_block: ValueWithoutUnits = \
-        ValueWithoutUnits(value=data.eta_block.default_value)
+        ValueWithoutUnits(value=Data.eta_block.default_value)
     eta_pol: ValueWithoutUnits = \
-        ValueWithoutUnits(value=data.eta_pol.default_value)
+        ValueWithoutUnits(value=Data.eta_pol.default_value)
 
     def __str__(self):
         return model_str_rep(self)
@@ -239,8 +137,8 @@ class CalculationInput(BaseModel):
     user_input: UserInput = UserInput()
     instrument_setup: InstrumentSetup = InstrumentSetup()
     T_cmb: ValueWithUnits = \
-        ValueWithUnits(value=data.t_cmb.default_value,
-                       unit=data.t_cmb.default_unit)
+        ValueWithUnits(value=Data.t_cmb.default_value,
+                       unit=Data.t_cmb.default_unit)
 
     @root_validator
     @classmethod

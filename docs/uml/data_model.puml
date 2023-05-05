@@ -13,6 +13,26 @@ class "CalculationInput" as models.CalculationInput {
   validate_fields(field_values)
   validate_update(value_to_update, new_value)
 }
+class "Data" as data.Data {
+  bandwidth : DataType
+  dish_radius : DataType
+  elevation : DataType
+  eta_block : DataType
+  eta_eff : DataType
+  eta_ill : DataType
+  eta_pol : DataType
+  eta_spill : DataType
+  g : DataType
+  integration_time : DataType
+  n_pol : DataType
+  obs_frequency : DataType
+  sensitivity : DataType
+  surface_rms : DataType
+  t_amb : DataType
+  t_cmb : DataType
+  weather : DataType
+  param_data_type_dicts : dict
+}
 class "DataType" as data.DataType {
   allowed_values : list<float> | None
   data_conversion : dict | None
@@ -61,7 +81,7 @@ class "UserInput" as models.UserInput {
   weather : ValueWithoutUnits
   validate_t_int_or_sens_initialised(field_values)
 }
-class "Validator" as models.Validator {
+class "Validator" as data.Validator {
   validate_allowed_values(value, param, data_type)
   validate_field(key, val)
   validate_in_range(value, param, data_type)
@@ -105,12 +125,13 @@ class "ValueWithoutUnits" as models.ValueWithoutUnits {
 
 models.InstrumentSetup --* models.CalculationInput
 models.UserInput --* models.CalculationInput
-models.Validator ..> models.CalculationInput
-exceptions --* models.Validator
-data.DataType ..> models.Validator
-data.DataType ..> models.CalculationInput
-data.DataType ..> models.UserInput
-data.DataType ..> models.InstrumentSetup
+data.Validator ..> models.CalculationInput
+exceptions --* data.Validator
+data.DataType --+ data.Data
+data.Data ..> data.Validator
+data.Data ..> models.CalculationInput
+data.Data ..> models.UserInput
+data.Data ..> models.InstrumentSetup
 models.ValueWithUnits --* models.CalculationInput
 models.ValueWithUnits --* models.UserInput
 models.ValueWithUnits --* models.InstrumentSetup

@@ -3,7 +3,7 @@ import math
 from dataclasses import asdict
 from pydantic import ValidationError
 from atlast_sc.calculator import Calculator
-from atlast_sc.data import param_data_type_dicts
+from atlast_sc.data import Data
 
 
 def do_calculation(user_input, calculation):
@@ -33,7 +33,8 @@ def do_calculation(user_input, calculation):
 
 def get_param_values_units():
     param_values_units = {
-        param: asdict(data) for param, data in param_data_type_dicts.items()
+        param: asdict(data) for param, data in
+        Data.param_data_type_dicts.items()
     }
 
     # convert 'inf' to very large number, otherwise the json encoder will
