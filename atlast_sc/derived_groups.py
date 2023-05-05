@@ -15,11 +15,11 @@ class AtmosphereParams:
     and T_atm.
     """
 
-    STATIC_DATA_PATH = Path(__file__).resolve().parents[0] / "static"
+    _STATIC_DATA_PATH = Path(__file__).resolve().parents[0] / "static"
 
-    WEATHER = [5, 25, 50, 75, 95]
-    T_ATM_PATH = STATIC_DATA_PATH / "lookups" / "am_ACT_T_annual.txt"
-    TAU_ATM_PATH = STATIC_DATA_PATH / "lookups" / "am_ACT_tau_annual.txt"
+    _WEATHER = [5, 25, 50, 75, 95]
+    _T_ATM_PATH = _STATIC_DATA_PATH / "lookups" / "am_ACT_T_annual.txt"
+    _TAU_ATM_PATH = _STATIC_DATA_PATH / "lookups" / "am_ACT_tau_annual.txt"
 
     def __init__(self, obs_freq, weather, elevation):
         """ AtmosphereParams class constructor.
@@ -33,16 +33,16 @@ class AtmosphereParams:
         self._weather = weather
         self._elevation = elevation
 
-        T_atm_table = np.genfromtxt(AtmosphereParams.T_ATM_PATH)
-        tau_atm_table = np.genfromtxt(AtmosphereParams.TAU_ATM_PATH)
+        T_atm_table = np.genfromtxt(AtmosphereParams._T_ATM_PATH)
+        tau_atm_table = np.genfromtxt(AtmosphereParams._TAU_ATM_PATH)
         # TODO: interp2d is deprecated:
         #   see https://docs.scipy.org/doc/scipy/reference/generated
         #       /scipy.interpolate.interp2d.html
         self._interp_T_atm = interp2d(T_atm_table[:, 0],
-                                      AtmosphereParams.WEATHER,
+                                      AtmosphereParams._WEATHER,
                                       T_atm_table[:, 1:].T)
         self._interp_tau_atm = interp2d(tau_atm_table[:, 0],
-                                        AtmosphereParams.WEATHER,
+                                        AtmosphereParams._WEATHER,
                                         tau_atm_table[:, 1:].T)
 
         self._tau_atm = self._calculate_atmospheric_tau_factor()
