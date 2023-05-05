@@ -53,7 +53,7 @@ Calculator
       calculate_t_integration(sensitivity, update_calculator) : Quantity
       reset()
     }
-    class "Config" as config.Config {
+    class "Config" as calculator.Config {
       calculation_inputs : CalculationInput
       instrument_setup : InstrumentSetup
       user_input : UserInput
@@ -109,9 +109,9 @@ Calculator
     temperatures.Temperatures --* calculator.Calculator
     atmosphere_params.AtmosphereParams --* calculator.Calculator
     utils.Decorators ..> calculator.Calculator
-    models.CalculationInput --* config.Config
-    models.InstrumentSetup --* config.Config
-    models.UserInput --* config.Config
+    models.CalculationInput --* calculator.Config
+    models.InstrumentSetup --* calculator.Config
+    models.UserInput --* calculator.Config
     calculator.Calculator *-- models.DerivedParams
-    calculator.Calculator *-- config.Config
+    calculator.Calculator *-- calculator.Config
     @enduml
