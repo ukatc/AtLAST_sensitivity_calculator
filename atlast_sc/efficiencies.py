@@ -63,4 +63,3 @@ class Efficiencies:
             np.exp(-(4 * np.pi * self._surface_rms / wavelength)**2)
 
         return eta_a_quantity.value
-
