@@ -108,5 +108,8 @@ Calculator
     models.InstrumentSetup --* calculator.Config
     models.UserInput --* calculator.Config
     calculator.Calculator *-- models.DerivedParams
+    models.CalculationInput ..> calculator.Calculator
+    models.InstrumentSetup ..> calculator.Calculator
+    models.UserInput ..> calculator.Calculator
     calculator.Calculator *-- calculator.Config
     @enduml
