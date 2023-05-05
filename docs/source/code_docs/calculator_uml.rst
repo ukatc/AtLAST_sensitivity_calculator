@@ -101,14 +101,9 @@ Calculator
       t_int : ValueWithUnits
       weather : ValueWithoutUnits
     }
-    class "Decorators" as utils.Decorators {
-      validate_and_update_params(func)
-      validate_update(func)
-    }
     efficiencies.Efficiencies --* calculator.Calculator
     temperatures.Temperatures --* calculator.Calculator
     atmosphere_params.AtmosphereParams --* calculator.Calculator
-    utils.Decorators ..> calculator.Calculator
     models.CalculationInput --* calculator.Config
     models.InstrumentSetup --* calculator.Config
     models.UserInput --* calculator.Config
