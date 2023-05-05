@@ -1,11 +1,10 @@
 import pytest
 import numpy as np
 import astropy.units as u
-from atlast_sc.temperatures import Temperatures
-from atlast_sc.atmosphere_params import AtmosphereParams
-from atlast_sc.efficiencies import Efficiencies
+from atlast_sc.derived_groups import Temperatures
+from atlast_sc.derived_groups import AtmosphereParams
+from atlast_sc.derived_groups import Efficiencies
 from atlast_sc.data import Data
-import atlast_sc.data as data
 
 
 @pytest.fixture(scope='session')

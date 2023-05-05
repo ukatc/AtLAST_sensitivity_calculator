@@ -8,7 +8,7 @@ Calculator
     left to right direction
 
 
-    class "AtmosphereParams" as atmosphere_params.AtmosphereParams {
+    class "AtmosphereParams" as derived_groups.AtmosphereParams {
       T_atm : Quantity
       tau_atm : float
       AtmosphereParams(obs_freq : Quantity, weather : float,
@@ -69,7 +69,7 @@ Calculator
       sefd : Quantity
       tau_atm : float
     }
-    class "Efficiencies" as efficiencies.Efficiencies {
+    class "Efficiencies" as derived_groups.Efficiencies {
       eta_a : float
       eta_s : float
       Efficiencies(obs_freq : Quantity, surface_rms : Quantity,
@@ -86,7 +86,7 @@ Calculator
       g : ValueWithoutUnits
       surface_rms : ValueWithUnits
     }
-    class "Temperatures" as temperatures.Temperatures {
+    class "Temperatures" as derived_groups.Temperatures {
       T_rx : Quantity
       T_sys : Quantity
       Temperatures(obs_freq : Quantity, T_cmb : Quantity, T_amb : Quantity,
@@ -101,9 +101,9 @@ Calculator
       t_int : ValueWithUnits
       weather : ValueWithoutUnits
     }
-    efficiencies.Efficiencies --* calculator.Calculator
-    temperatures.Temperatures --* calculator.Calculator
-    atmosphere_params.AtmosphereParams --* calculator.Calculator
+    derived_groups.Efficiencies --* calculator.Calculator
+    derived_groups.Temperatures --* calculator.Calculator
+    derived_groups.AtmosphereParams --* calculator.Calculator
     models.CalculationInput --* calculator.Config
     models.InstrumentSetup --* calculator.Config
     models.UserInput --* calculator.Config

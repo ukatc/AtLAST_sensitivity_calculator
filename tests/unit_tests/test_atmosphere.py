@@ -1,6 +1,6 @@
 import pytest
 import astropy.units as u
-from atlast_sc.atmosphere_params import AtmosphereParams
+from atlast_sc.derived_groups import AtmosphereParams
 
 
 test_data = [

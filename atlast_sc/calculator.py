@@ -3,9 +3,9 @@ import copy
 import astropy.units as u
 from astropy.constants import k_B
 import numpy as np
-from atlast_sc.atmosphere_params import AtmosphereParams
-from atlast_sc.temperatures import Temperatures
-from atlast_sc.efficiencies import Efficiencies
+from atlast_sc.derived_groups import AtmosphereParams
+from atlast_sc.derived_groups import Temperatures
+from atlast_sc.derived_groups import Efficiencies
 from atlast_sc.models import DerivedParams
 from atlast_sc.models import UserInput
 from atlast_sc.models import InstrumentSetup

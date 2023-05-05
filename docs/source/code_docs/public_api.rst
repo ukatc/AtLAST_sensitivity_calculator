@@ -2,15 +2,9 @@ Public API
 **********
 
 .. automodule:: atlast_sc.calculator
-   :members:
+   :members: Calculator
 
-.. automodule:: atlast_sc.atmosphere_params
-   :members:
-
-.. automodule:: atlast_sc.efficiencies
-   :members:
-
-.. automodule:: atlast_sc.temperatures
+.. automodule:: atlast_sc.derived_groups
    :members:
 
 .. autoclass:: atlast_sc.utils.FileHelper

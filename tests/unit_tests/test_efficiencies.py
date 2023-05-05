@@ -1,5 +1,5 @@
 import astropy.units as u
-from atlast_sc.efficiencies import Efficiencies
+from atlast_sc.derived_groups import Efficiencies
 
 test_obs_freqs = [35, 50, 100, 200,  300, 400, 500, 600, 700, 800, 900, 950]
 
