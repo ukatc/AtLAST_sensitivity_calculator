@@ -107,6 +107,12 @@ class Validator:
 
 
 def model_str_rep(model):
+    """
+    Creates a "pretty" string representation of the model
+
+    :param model: The model to prettify
+    :type model: subclass of BaseModel
+    """
     string_rep = ""
     decimal_places = 6
 
