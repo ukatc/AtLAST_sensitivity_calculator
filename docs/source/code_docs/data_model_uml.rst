@@ -1,5 +1,5 @@
 Data model
-**********
+^^^^^^^^^^
 
 .. uml::
 
@@ -11,8 +11,8 @@ Data model
       T_cmb : ValueWithUnits
       instrument_setup : InstrumentSetup
       user_input : UserInput
-      validate_fields(field_values)
-      validate_update(value_to_update, new_value)
+      validate_fields(field_values) : dict
+      validate_update(value_to_update, new_value) : dict
     }
     class "Data" as data.Data {
       bandwidth : DataType
@@ -76,10 +76,10 @@ Data model
       validate_t_int_or_sens_initialised(field_values)
     }
     class "Validator" as data.Validator {
-      validate_allowed_values(value, param, data_type)
-      validate_field(key, val)
-      validate_in_range(value, param, data_type)
-      validate_units(unit, param, data_type)
+      {static} validate_allowed_values(value, param, data_type)
+      {static} validate_field(key, val)
+      {static} validate_in_range(value, param, data_type)
+      {static} validate_units(unit, param, data_type)
     }
     class "ValueWithUnits" as models.ValueWithUnits {
       unit : str

@@ -88,7 +88,7 @@ class TestFileHelper:
 
         assert str(e.value) == \
                f'Unsupported file type "{extension}". ' \
-               f'Must be one of: {FileHelper.SUPPORTED_FILE_EXTENSIONS}'
+               f'Must be one of: {FileHelper._SUPPORTED_FILE_EXTENSIONS}'
 
     ill_formatted_txt_files = [
         ('test_input_file_ill_formatted_1.txt',
@@ -203,17 +203,17 @@ class TestFileHelper:
 
         assert str(e.value) == \
                f'Unsupported file type "{bad_file_type}". ' \
-               f'Must be one of: {FileHelper.SUPPORTED_FILE_EXTENSIONS}'
+               f'Must be one of: {FileHelper._SUPPORTED_FILE_EXTENSIONS}'
 
 
 class TestDataHelper:
 
-    def test_convert(self):
+    def test__convert(self):
         test_value = 1000
         test_unit = "MHz"
         target_unit = "GHz"
 
-        result = DataHelper.convert(test_value, test_unit, target_unit)
+        result = DataHelper._convert(test_value, test_unit, target_unit)
 
         assert result == 1 * u.GHz
 
