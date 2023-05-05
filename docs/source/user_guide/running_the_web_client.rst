@@ -40,13 +40,6 @@ provided in the repository:
    $ conda activate sens-calc
 
 
-4. The web client application requires the Sensitivity Calculator Python package to
-be installed in the environment. To install the package:
-
-.. code-block:: bash
-
-   $ pip install -e ./
-
 Once you have set up your environment, run the web client as follows:
 
 1. Navigate to the ``web_client`` directory

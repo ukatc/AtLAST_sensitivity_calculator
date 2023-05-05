@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-import atlast_sc.data as data
+from atlast_sc.data import Data
 
 
 class APIUserInput(BaseModel):
@@ -23,30 +23,30 @@ class APIUserInput(BaseModel):
         schema_extra = {
             "example": {
                 "t_int": {
-                    "value": data.integration_time.default_value,
-                    "unit": data.integration_time.default_unit,
+                    "value": Data.integration_time.default_value,
+                    "unit": Data.integration_time.default_unit,
                 },
                 "sensitivity": {
-                    "value": data.sensitivity.default_value,
-                    "unit": data.sensitivity.default_unit,
+                    "value": Data.sensitivity.default_value,
+                    "unit": Data.sensitivity.default_unit,
                 },
                 "bandwidth": {
-                    "value": data.bandwidth.default_value,
-                    "unit": data.bandwidth.default_unit,
+                    "value": Data.bandwidth.default_value,
+                    "unit": Data.bandwidth.default_unit,
                 },
                 "obs_freq": {
-                    "value": data.obs_frequency.default_value,
-                    "unit": data.obs_frequency.default_unit,
+                    "value": Data.obs_frequency.default_value,
+                    "unit": Data.obs_frequency.default_unit,
                 },
                 "elevation": {
-                    "value": data.elevation.default_value,
-                    "unit": data.elevation.default_unit,
+                    "value": Data.elevation.default_value,
+                    "unit": Data.elevation.default_unit,
                 },
                 "weather": {
-                    "value": data.weather.default_value,
+                    "value": Data.weather.default_value,
                 },
                 "n_pol": {
-                    "value": data.n_pol.default_value,
+                    "value": Data.n_pol.default_value,
                 },
             }
         }

@@ -51,9 +51,9 @@ AtLAST Sensitivity Calculator
    Hidden toctree to allow sidebar navigation.
 
 .. toctree::
-   :maxdepth: 3
-   :caption: Public API Documentation
+   :maxdepth: 1
+   :caption: Code Documentation
    :hidden:
 
-   api_docs/calculations
-   api_docs/utilities
+   code_docs/public_api
+   code_docs/uml

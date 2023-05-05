@@ -107,8 +107,8 @@ class FileHelper:
     Supported file formats are `yaml`, `txt`, and `json`.
     """
 
-    SUPPORTED_FILE_EXTENSIONS = ['yaml', 'yml', 'txt', 'json']
-    UNSUPPORTED_FILE_TYPE_ERROR_MSG = \
+    _SUPPORTED_FILE_EXTENSIONS = ['yaml', 'yml', 'txt', 'json']
+    _UNSUPPORTED_FILE_TYPE_ERROR_MSG = \
         'Unsupported file type "{file_type}". ' \
         'Must be one of: {supported_extensions}'
 
@@ -199,10 +199,10 @@ class FileHelper:
             case 'txt':
                 return FileHelper._dict_from_txt
             case _:
-                raise ValueError(FileHelper.UNSUPPORTED_FILE_TYPE_ERROR_MSG
+                raise ValueError(FileHelper._UNSUPPORTED_FILE_TYPE_ERROR_MSG
                                  .format(file_type=extension,
                                          supported_extensions=FileHelper
-                                         .SUPPORTED_FILE_EXTENSIONS))
+                                         ._SUPPORTED_FILE_EXTENSIONS))
 
     @staticmethod
     def _dict_from_yaml(file):
@@ -313,10 +313,10 @@ class FileHelper:
             case 'json':
                 return FileHelper._to_json
             case _:
-                raise ValueError(FileHelper.UNSUPPORTED_FILE_TYPE_ERROR_MSG
+                raise ValueError(FileHelper._UNSUPPORTED_FILE_TYPE_ERROR_MSG
                                  .format(file_type=file_type,
                                          supported_extensions=FileHelper
-                                         .SUPPORTED_FILE_EXTENSIONS))
+                                         ._SUPPORTED_FILE_EXTENSIONS))
 
     @staticmethod
     def _to_txt(file, params):
@@ -379,13 +379,13 @@ class DataHelper:
     def data_conversion_factors(default_unit, allowed_units):
 
         conversion_factors = \
-            {unit: DataHelper.convert(1, unit, default_unit).value
+            {unit: DataHelper._convert(1, unit, default_unit).value
              for unit in allowed_units}
 
         return conversion_factors
 
     @staticmethod
-    def convert(quantity, from_unit, to_unit):
+    def _convert(quantity, from_unit, to_unit):
 
         # TODO implement error handling for invalid units or
         #  conversion problems

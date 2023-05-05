@@ -9,3 +9,27 @@ See here: https://stackoverflow.com/questions/16570087/multiple-lines-of-text-in
 dl.py.property {
     display: block !important;
 }
+
+@media only screen and (min-width: 768px) {
+    .plantuml > img:active {
+        position: relative;
+        left: -40%;
+        width: 100vw;
+        top: 20%;
+        z-index: 999;
+        box-shadow: 3px 3px 10px grey;
+        transform: scale(1.5);
+    }
+}
+
+@media only screen and (min-width: 992px) {
+    .plantuml > img:active {
+        position: relative;
+        left: -10%;
+        width: 50vw;
+        top: 18%;
+        z-index: 999;
+        box-shadow: 3px 3px 20px grey;
+        transform: scale(1.5);
+    }
+}
