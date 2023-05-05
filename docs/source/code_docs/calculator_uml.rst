@@ -7,17 +7,11 @@ Calculator
 
     left to right direction
 
-
     class "AtmosphereParams" as derived_groups.AtmosphereParams {
       T_atm : Quantity
       tau_atm : float
       AtmosphereParams(obs_freq : Quantity, weather : float,
       elevation : Quantity)
-    }
-    class "CalculationInput" as models.CalculationInput {
-      T_cmb : ValueWithUnits
-      instrument_setup : InstrumentSetup
-      user_input : UserInput
     }
     class "Calculator" as calculator.Calculator {
       bandwidth : Quantity
@@ -60,46 +54,17 @@ Calculator
       Config(user_input: Optiona[dict], instrument_setup: Optional[dict])
       reset()
     }
-    class "DerivedParams" as models.DerivedParams {
-      T_atm : Quantity
-      T_rx : Quantity
-      T_sys : Quantity
-      eta_a : float
-      eta_s : float
-      sefd : Quantity
-      tau_atm : float
-    }
     class "Efficiencies" as derived_groups.Efficiencies {
       eta_a : float
       eta_s : float
       Efficiencies(obs_freq : Quantity, surface_rms : Quantity,
       eta_ill : float, eta_spill : float, eta_block : float, eta_pol : float)
     }
-    class "InstrumentSetup" as models.InstrumentSetup {
-      T_amb : ValueWithUnits
-      dish_radius : ValueWithUnits
-      eta_block : ValueWithoutUnits
-      eta_eff : ValueWithoutUnits
-      eta_ill : ValueWithoutUnits
-      eta_pol : ValueWithoutUnits
-      eta_spill : ValueWithoutUnits
-      g : ValueWithoutUnits
-      surface_rms : ValueWithUnits
-    }
     class "Temperatures" as derived_groups.Temperatures {
       T_rx : Quantity
       T_sys : Quantity
       Temperatures(obs_freq : Quantity, T_cmb : Quantity, T_amb : Quantity,
       g : float, eta_eff : float, atmosphere_params : AtmosphereParams)
-    }
-    class "UserInput" as models.UserInput {
-      bandwidth : ValueWithUnits
-      elevation : ValueWithUnits
-      n_pol : ValueWithoutUnits
-      obs_freq : ValueWithUnits
-      sensitivity : ValueWithUnits
-      t_int : ValueWithUnits
-      weather : ValueWithoutUnits
     }
     derived_groups.Efficiencies --* calculator.Calculator
     derived_groups.Temperatures --* calculator.Calculator

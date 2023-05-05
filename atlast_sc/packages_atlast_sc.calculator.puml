@@ -1,0 +1,25 @@
+@startuml packages_atlast_sc.calculator
+set namespaceSeparator none
+package "atlast_sc" as atlast_sc {
+}
+package "atlast_sc.calculator" as atlast_sc.calculator {
+}
+package "atlast_sc.data" as atlast_sc.data {
+}
+package "atlast_sc.derived_groups" as atlast_sc.derived_groups {
+}
+package "atlast_sc.exceptions" as atlast_sc.exceptions {
+}
+package "atlast_sc.models" as atlast_sc.models {
+}
+package "atlast_sc.utils" as atlast_sc.utils {
+}
+atlast_sc.calculator --> atlast_sc.derived_groups
+atlast_sc.calculator --> atlast_sc.exceptions
+atlast_sc.calculator --> atlast_sc.models
+atlast_sc.calculator --> atlast_sc.utils
+atlast_sc.data --> atlast_sc.exceptions
+atlast_sc.data --> atlast_sc.utils
+atlast_sc.models --> atlast_sc.data
+atlast_sc.models --> atlast_sc.exceptions
+@enduml
