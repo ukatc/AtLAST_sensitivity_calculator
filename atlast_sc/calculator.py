@@ -442,22 +442,33 @@ class Calculator:
         calculation.
         """
 
-        # Perform atmospheric model calculations
-        atm = AtmosphereParams(self.obs_freq, self.weather,
-                               self.elevation)
+        # TODO Technically, it's possible to instantiate each of the
+        # classes below using a different observing frequency for each.
+        # The resulting derived parameters wouldn't make sense under those
+        # circumstances. Although this is an unlikely scenario, the design
+        # would be cleaner if there three classes referenced the
+        # same observing frequency.
+        # Implement a Builder interface to construct all three objects using
+        # the same observing frequency?
 
         # Perform efficiencies calculations
         eta = Efficiencies(self.obs_freq, self.surface_rms, self.eta_ill,
                            self.eta_spill, self.eta_block, self.eta_pol)
 
+        # Perform atmospheric model calculations
+        atm = AtmosphereParams()
+        tau_atm = atm.calculate_tau_atm(self.obs_freq,
+                                        self.weather, self.elevation)
+        T_atm = atm.calculate_atmospheric_temperature(self.obs_freq,
+                                                      self.weather)
         # Calculate the temperatures
         temps = Temperatures(self.obs_freq, self.T_cmb, self.T_amb, self.g,
-                             self.eta_eff, atm)
+                             self.eta_eff, T_atm, tau_atm)
 
         # Calculate source equivalent flux density
         sefd = self._calculate_sefd(temps.T_sys, eta.eta_a)
 
-        return DerivedParams(tau_atm=atm.tau_atm, T_atm=atm.T_atm,
+        return DerivedParams(tau_atm=tau_atm, T_atm=T_atm,
                              T_rx=temps.T_rx, eta_a=eta.eta_a, eta_s=eta.eta_s,
                              T_sys=temps.T_sys, sefd=sefd)
 

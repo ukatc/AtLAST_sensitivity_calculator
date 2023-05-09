@@ -124,24 +124,18 @@ def surface_rms():
 
 
 @pytest.fixture(scope='session')
-def temperatures(obs_freq, t_cmb, _amb, g, eta_eff):
-
-    class TestAtmoshpereParams:
-        @property
-        def T_atm(self):
-            return 255 * u.K
-
-        @property
-        def tau_atm(self):
-            return 0.8
-
-    return Temperatures(obs_freq, t_cmb, t_amb, g, eta_eff,
-                        TestAtmoshpereParams())
+def temperatures(obs_freq, t_cmb, t_amb, g, eta_eff, weather, elevation,
+                 atmosphere_params):
+    t_atm = \
+        atmosphere_params.calculate_atmospheric_temperature(obs_freq, weather)
+    tau_atm = \
+        atmosphere_params.calculate_tau_atm(obs_freq, weather, elevation)
+    return Temperatures(obs_freq, t_cmb, t_amb, g, eta_eff, t_atm, tau_atm)
 
 
 @pytest.fixture(scope='session')
-def atmosphere_params(obs_freq, weather, elevation):
-    return AtmosphereParams(obs_freq, weather, elevation)
+def atmosphere_params():
+    return AtmosphereParams()
 
 
 @pytest.fixture(scope='session')
