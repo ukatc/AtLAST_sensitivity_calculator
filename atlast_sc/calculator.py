@@ -68,7 +68,7 @@ class Calculator:
         #  subsequent calculations and/or storing results?
         # TODO: We don't technically need to update the unit here (ditto other
         #   values with units, because the value is set to a Quantity, which
-        #   contains the units. It's this quantity that is used throughout the
+        #   contains the units. It's this value that is used throughout the
         #   the application. However, not updating it feels odd, since it would
         #   result in a discrepancy between the unit property and the unit
         #   contained in the Quantity object. Think about this...

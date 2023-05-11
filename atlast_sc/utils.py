@@ -81,7 +81,8 @@ class Decorators:
     def _do_validation(calculator, param_name, value):
         attribute = getattr(calculator, param_name)
 
-        # Ensure integer values are converted to floats
+        # Ensure integer values are converted to floats (all parameter values
+        # are expected to be floats)
         if isinstance(value, int):
             value = float(value)
 
@@ -120,11 +121,11 @@ class FileHelper:
         determined from the file extension in`file_name`.
 
         :param path: The directory where the file is located.
-        :type path: string
+        :type path: str
         :param file_name: The name of the file, including the file extension.
-        :type file_name: string
+        :type file_name: str
         :return: Dictionary of input parameters.
-        :rtype: dictionary
+        :rtype: dict[str, float]
         """
         file_reader = FileHelper._get_reader(file_name)
 
@@ -154,12 +155,12 @@ class FileHelper:
         :param calculator: A Calculator object.
         :type calculator: atlast_sc.calculator.Calculator
         :param path: The location where the file is saved.
-        :type path: string
+        :type path: str
         :param file_name: The name of the file to write. Note this should not
                             include the file extension.
-        :type file_name: string
+        :type file_name: str
         :param file_type: The file type (e.g., `yaml`).
-        :type file_type: string
+        :type file_type: str
         """
 
         file_type = file_type.lower()
@@ -183,7 +184,7 @@ class FileHelper:
         file type indicated by the extension in `file_name`.
 
         :param file_name: The name of file to read.
-        :type file_name: string
+        :type file_name: str
         :return: A file reader function
         :rtype: function
         """
@@ -212,10 +213,9 @@ class FileHelper:
         :param file: the yaml file
         :type file: buffered text stream (TextIOWrapper)
         :return: a dictionary of parameters
-        :rtype: dictionary
+        :rtype: dict
         """
         inputs = load(file, Loader=Loader)
-
         return inputs
 
     @staticmethod
@@ -226,7 +226,7 @@ class FileHelper:
         :param file: the json file
         :type file: buffered text stream (TextIOWrapper)
         :return: a dictionary of parameters
-        :rtype: dictionary
+        :rtype: dict
         """
 
         def _remove_none_values(d):
@@ -252,7 +252,7 @@ class FileHelper:
         :param file: the txt file
         :type file: buffered text stream (TextIOWrapper)
         :return: a dictionary of parameters
-        :rtype: dictionary
+        :rtype: dict
         """
 
         def _parse_line(line_to_parse):
@@ -297,7 +297,7 @@ class FileHelper:
         specified `file_type`.
 
         :param file_type: The type of file to write (e.g., `yaml`).
-        :type file_type: string
+        :type file_type: str
         :return: A file writer function
         :rtype: function
         """
@@ -326,7 +326,7 @@ class FileHelper:
         :param file: The txt file
         :type file: buffered text stream (TextIOWrapper)
         :param params: A dictionary of parameters to write.
-        :type params: dictionary
+        :type params: dict
         """
         for key, value in params.items():
             file.write(f"{key} = {value} \n")
@@ -339,7 +339,7 @@ class FileHelper:
         :param file: The yaml file
         :type file: buffered text stream (TextIOWrapper)
         :param params: A dictionary of parameters to write.
-        :type params: dictionary
+        :type params: dict
         """
         for key, value in params.items():
             if hasattr(value, "unit"):
@@ -359,7 +359,7 @@ class FileHelper:
         :param file: The json file
         :type file: buffered text stream (TextIOWrapper)
         :param params: A dictionary of parameters to write.
-        :type params: dictionary
+        :type params: dict
         """
         outputs = {}
         for key, value in params.items():
@@ -377,22 +377,42 @@ class DataHelper:
 
     @staticmethod
     def data_conversion_factors(default_unit, allowed_units):
+        """
+        Creates a dictionary of units and conversion factors where each
+        conversion factor provides the conversion from an allowed
+        unit to the default unit for a parameter.
 
+        :param default_unit: The default unit for the parameter
+        :type default_unit: str
+        :param allowed_units: A list of allowed units for the parameter
+        :type allowed_units: list[str]
+        :return: A dictionary of units and conversion factors
+        :rtype: dict
+        """
         conversion_factors = \
-            {unit: DataHelper._convert(1, unit, default_unit).value
+            {unit: DataHelper._convert(1, unit, default_unit)
              for unit in allowed_units}
 
         return conversion_factors
 
     @staticmethod
-    def _convert(quantity, from_unit, to_unit):
+    def _convert(value, from_unit, to_unit):
+        """
+        Converts the specified value from the source to the target unit.
 
-        # TODO implement error handling for invalid units or
-        #  conversion problems
+        :param value: The value to be converted
+        :type value: float or int
+        :param from_unit: The unit to convert from
+        :type from_unit: str
+        :param to_unit: The unit to convert to
+        :type to_unit: str
+        :return: A converted value
+        :rtype: float
+        """
         source_unit = Unit(from_unit)
         target_unit = Unit(to_unit)
 
-        source_quantity = quantity * source_unit
+        source_quantity = value * source_unit
         converted_quantity = source_quantity.to(target_unit)
 
-        return converted_quantity
+        return converted_quantity.value

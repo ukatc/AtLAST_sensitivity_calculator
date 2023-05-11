@@ -29,7 +29,8 @@ print("-----------")
 # calculator.sensitivity = float('inf')*u.Jy
 # calculator.n_pol = 1
 # print('using params', calculator.calculation_parameters_as_dict)
-# calculator.t_int = 0.5*u.min
+# calculator.t_int = 100*u.min
+calculator.bandwidth = 100*u.kHz
 calculated_sensitivity = \
     calculator.calculate_sensitivity()
 print("Sensitivity: {:0.2f} for an integration time of {:0.2f} "

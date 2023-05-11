@@ -5,6 +5,7 @@ from atlast_sc.derived_groups import Temperatures
 from atlast_sc.derived_groups import AtmosphereParams
 from atlast_sc.derived_groups import Efficiencies
 from atlast_sc.data import Data
+from atlast_sc.calculator import Calculator
 
 
 @pytest.fixture(scope='session')
@@ -13,6 +14,12 @@ def tmp_output_dir(tmp_path_factory):
     Temporary directory where output files should be stored
     """
     return tmp_path_factory.mktemp('output')
+
+
+@pytest.fixture()
+def calculator():
+    # Return a calculator with default parameters
+    return Calculator()
 
 
 @pytest.fixture(scope='session')
@@ -161,6 +168,43 @@ def user_input_params(t_int, sensitivity, bandwidth, obs_freq, n_pol,
     }
 
     return input_params
+
+
+@pytest.fixture(scope='session')
+def mock_calculator():
+    class MockCalculator:
+
+        def __init__(self):
+            self._calculation_inputs = MockCalculator.MockCalculationInputs()
+
+        class MockCalculationInputs:
+
+            def validate_update(self, param, value):
+                print('\n**********************************************')
+                print(f'doing validation of {param} with value {value}')
+                print('\n**********************************************')
+                if value == "invalid":
+                    raise ValueError
+
+                return self
+
+        @property
+        def prop1(self):
+            return 1
+
+        @property
+        def prop2(self):
+            return 2.0
+
+        @property
+        def prop3(self):
+            return '3'
+
+        @property
+        def calculation_inputs(self):
+            return self._calculation_inputs
+
+    return MockCalculator()
 
 
 def _get_param(param):

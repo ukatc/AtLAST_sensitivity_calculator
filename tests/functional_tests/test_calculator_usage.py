@@ -1,32 +1,29 @@
-from contextlib import contextmanager
 import pytest
 from pydantic import ValidationError
 from astropy.units import Unit
 from atlast_sc.calculator import Calculator
 from atlast_sc.exceptions import ValueTooHighException, ValueTooLowException, \
     ValueOutOfRangeException, ValueNotAllowedException, UnitException
+from tests.utils import does_not_raise
 
-
-@contextmanager
-def does_not_raise():
-    # Utility for checking that an exception is NOT raised
-    yield
+# TODO: test data_conversion_factors for each parameter
+# TODO: test providing invalid param name(s) to the Calculator
+# TODO: test that Calculator param updates are validated and derived params are
+#   recalculated, where appropriate, otherwise not.
 
 
 class TestCalculatorUsage:
 
     def test_calculator_with_defaults(self):
-        # Initialise a new calculator without passing any params
-
-        # calculator = Calculator()
-        # print(calculator.calculation_parameters_as_dict)
-
         assert True
 
     def test_calculator_from_file(self):
         pass
 
 
+# TODO: testing that the calculator params cannot be set outside of their
+#   permitted range, etc, should be part of the tests of data.py. Make sure
+#   it's clear what modules are being tested.
 class TestDataValidation:
 
     unit_exception = 'unitexception'
@@ -188,10 +185,8 @@ class TestDataValidation:
 
     @pytest.mark.parametrize('input_data,expect_raises',
                              validation_input_data_for_update)
-    def test_data_validation_on_update(self, input_data, expect_raises):
-
-        # Initialise the calculator with default values
-        calculator = Calculator()
+    def test_data_validation_on_update(self, input_data, expect_raises,
+                                       calculator):
 
         with expect_raises:
             for key, val in input_data.items():
@@ -229,13 +224,10 @@ class TestDataValidation:
                              input_data_check_derived_params)
     def tests_derived_params_recalculated(self, input_data,
                                           expect_derived_params_recalculated,
-                                          mocker):
+                                          calculator, mocker):
         # Check that the derived parameters are recalculated when parameters
         # are successfully updated, unless the updated parameter is t_int
         # or sensitivity
-
-        # Initialise the calculator with default values
-        calculator = Calculator()
 
         # Ensure that the appropriate validation takes place when parameters
         # are updated directly

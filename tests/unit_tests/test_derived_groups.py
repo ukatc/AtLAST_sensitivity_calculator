@@ -194,12 +194,11 @@ class TestTemperatures:
             else:
                 band_temps.append(system_temperature.value)
                 assert system_temperature < 1800 * u.K
-                print(f'\nband: {band}, temp: {system_temperature}')
 
         # Confirm that the system temperature follows an increasing trend
         # with the band
         x = np.arange(1, len(band_temps)+1)
         y = np.array(band_temps)
         res = linregress(x, y)
-        print(f'Equation: {res[0]:.3f} * x + {res[1]:.3f}')
+        # print(f'Equation: {res[0]:.3f} * x + {res[1]:.3f}')
         assert res[0] > 1
