@@ -1,3 +1,4 @@
+from math import log10, floor
 from pydantic import BaseModel, root_validator
 from astropy.units import Unit, Quantity
 from atlast_sc.exceptions import ValueOutOfRangeException
@@ -12,18 +13,35 @@ def model_str_rep(model):
     :type model: subclass of BaseModel
     """
     string_rep = ""
-    decimal_places = 6
+    unit = ""
+
+    def get_formatted_value(orig_value):
+
+        exponent = floor(log10(abs(orig_value)))
+
+        if exponent >= 4:
+            new_value = f'{value:.6e}'
+        else:
+            new_value = round(value, 6)
+
+        return new_value
 
     for key in model.__dict__:
         param = model.__dict__[key]
 
-        if type(param) == ValueWithUnits or type(param) == ValueWithoutUnits:
+        if type(param) == ValueWithoutUnits:
             value = param.value
+        elif type(param) == ValueWithUnits:
+            value = param.value.value
+            unit = param.value.unit
         else:
+            # TODO probably want to remove this condition? How would I know
+            #   how to handle param?
             value = param
 
-        formatted_value = format(value, f'.{decimal_places}g')
-        string_rep = string_rep + f'{key}: {formatted_value}\n'
+        formatted_value = get_formatted_value(value)
+        string_rep = string_rep + f'{key}: {formatted_value} {unit}\n'
+
     return string_rep
 
 

@@ -3,18 +3,7 @@ import astropy.units as u
 import atlast_sc.calculator as sc
 from atlast_sc.models import DerivedParams, CalculationInput
 
-
-# class DataHelper:
-#
-#     @staticmethod
-#     @pytest.fixture(scope='session')
-#     def default_user_input(user_input_params):
-#         return user_input_params
-#
-#     @staticmethod
-#     def get_default_input(default_user_input):
-#         return default_user_input()
-
+# TODO: This is WIP
 
 class TestCalculator:
 
