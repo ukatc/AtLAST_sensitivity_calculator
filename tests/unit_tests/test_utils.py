@@ -6,7 +6,6 @@ from atlast_sc.utils import FileHelper
 from atlast_sc.utils import DataHelper
 from atlast_sc.calculator import Calculator
 from tests.utils import does_not_raise
-# from tests.utils import MockCalculator
 
 
 TEST_FILES_PATH = os.path.join(os.path.dirname(__file__), '../test_files')
@@ -181,17 +180,17 @@ class TestDecorators:
 
         mock_calculator = TestDecorators.MockCalculator()
 
-        with expect_raises as e:
-            validate_update_spy = \
-                mocker.spy(TestDecorators.MockCalculator.MockCalculationInputs,
-                           'validate_update')
+        validate_update_spy = \
+            mocker.spy(TestDecorators.MockCalculator.MockCalculationInputs,
+                       'validate_update')
 
+        with expect_raises:
             Decorators._do_validation(mock_calculator, param_name, value)
 
-            if expect_validation_performed:
-                validate_update_spy.assert_called_once_with(param_name, value)
-            else:
-                validate_update_spy.assert_not_called()
+        if expect_validation_performed:
+            validate_update_spy.assert_called_once_with(param_name, value)
+        else:
+            validate_update_spy.assert_not_called()
 
 
 class TestFileHelper:

@@ -1,16 +1,12 @@
 import pytest
 import astropy.units as u
-import atlast_sc.calculator as sc
+from atlast_sc.calculator import Calculator
 from atlast_sc.models import DerivedParams, CalculationInput
 
 # TODO: This is WIP
 
-class TestCalculator:
 
-    @staticmethod
-    @pytest.fixture
-    def calculator(user_input_params):
-        return sc.Calculator(user_input_params)
+class TestCalculator:
 
     init_calc_input = [
         ({}, 'default', 'Default values used'),
@@ -24,15 +20,15 @@ class TestCalculator:
     @pytest.mark.parametrize('input_data,expected_data,scenario',
                              init_calc_input)
     def test_initialize_calculator(self, input_data, expected_data, scenario,
-                                   user_input_params, mocker):
+                                   mocker):
 
         print('testing scenario:', scenario)
         derived_params_spy = \
-            mocker.spy(sc.Calculator,
+            mocker.spy(Calculator,
                        '_calculate_derived_parameters')
 
         # Initialize the calculator
-        calculator = sc.Calculator(input_data)
+        calculator = Calculator(input_data)
 
         # Make sure the derived parameters were calculated
         derived_params_spy.assert_called_once()
@@ -43,26 +39,8 @@ class TestCalculator:
                           CalculationInput)
         assert isinstance(calculator._derived_params, DerivedParams)
 
-        # TODO: pick up from here
         # # Check that the calculator has been configured with the correct
         # # input data
-        # # Have to construct the expected parameters inside this func
-        # # if we want to make use of fixtures
-        # expected_configured_params = {}
-        # if expected_data == 'default':
-        #     expected_configured_params = user_input_params
-        # else:
-        #     for param in user_input_params:
-        #         if param in input_data:
-        #             expected_configured_params[param] = input_data[param]
-        #         else:
-        #             expected_configured_params[param] = \
-        #                 user_input_params[param]
-        # calculator_params = calculator.calculation_parameters_as_dict
-        # for param in expected_configured_params:
-        #     assert param in calculator_params
-        #     assert calculator_params[param] == \
-        #            expected_configured_params[param]
 
     # TODO test invalid input parameters result in an error
 

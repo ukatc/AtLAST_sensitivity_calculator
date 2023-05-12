@@ -1,53 +1,59 @@
 from math import log10, floor
+from numpy import floating
+from typing import Union
 from pydantic import BaseModel, root_validator
 from astropy.units import Unit, Quantity
-from atlast_sc.exceptions import ValueOutOfRangeException
 from atlast_sc.data import Data, Validator
 
 
-def model_str_rep(model):
-    """
-    Creates a "pretty" string representation of the model
+class ModelUtils:
 
-    :param model: The model to prettify
-    :type model: subclass of BaseModel
-    """
-    string_rep = ""
-    unit = ""
+    @staticmethod
+    def model_str_rep(model):
+        """
+        Creates a "pretty" string representation of the model
 
-    def get_formatted_value(orig_value):
+        :param model: The model to prettify
+        :type model: subclass of BaseModel
+        """
+        string_rep = ""
+        unit = ""
 
-        exponent = floor(log10(abs(orig_value)))
+        def get_formatted_value(orig_value):
 
-        if exponent >= 4:
-            new_value = f'{value:.6e}'
-        else:
-            new_value = round(value, 6)
+            if not isinstance(orig_value, (floating, float)):
+                return orig_value
 
-        return new_value
+            exponent = floor(log10(abs(orig_value)))
 
-    for key in model.__dict__:
-        param = model.__dict__[key]
+            if exponent >= 4:
+                new_value = f'{value:.6e}'
+            else:
+                new_value = round(value, 6)
 
-        if type(param) == ValueWithoutUnits:
-            value = param.value
-        elif type(param) == ValueWithUnits:
-            value = param.value.value
-            unit = param.value.unit
-        else:
-            # TODO probably want to remove this condition? How would I know
-            #   how to handle param?
-            value = param
+            return new_value
 
-        formatted_value = get_formatted_value(value)
-        string_rep = string_rep + f'{key}: {formatted_value} {unit}\n'
+        for key in model.__dict__:
+            param = model.__dict__[key]
 
-    return string_rep
+            if type(param) == ValueWithoutUnits:
+                value = param.value
+            elif type(param) == ValueWithUnits:
+                value = param.value.value
+                unit = param.value.unit
+            else:
+                value = param
+
+            formatted_value = get_formatted_value(value)
+            string_rep = string_rep + \
+                f'{key}: {formatted_value}{" " + str(unit) if unit else ""}\n'
+
+        return string_rep.strip()
 
 
 class ValueWithUnits(BaseModel):
-    value: float
-    unit: str
+    value: Union[float, Quantity]
+    unit: Union[str, None]
 
     @root_validator
     @classmethod
@@ -55,17 +61,27 @@ class ValueWithUnits(BaseModel):
         """
         Validate the unit and convert the value to an astropy Quantity object
         """
-
-        # Ensure the unit string can be converted to a valid astropy Unit
-        try:
-            Unit(field_values["unit"])
-        except ValueError as e:
-            raise ValueError(e)
-
-        # Convert the value to an astropy Quantity object to simplify
-        #   access
-        field_values["value"] = \
-            field_values["value"] * Unit(field_values["unit"])
+        if isinstance(field_values['value'], float) or \
+                isinstance(field_values['value'], int):
+            try:
+                unit = Unit(field_values['unit'])
+                field_values['value'] = \
+                    field_values['value'] * unit
+            except (ValueError, TypeError):
+                raise ValueError(f'\'{field_values["unit"]}\' is not a '
+                                 f'valid unit')
+        else:
+            # If 'unit' is provided, check if it matches the unit of the
+            # Quantity assigned to 'value'
+            if field_values['unit'] and \
+                    not field_values['unit'] == field_values['value'].unit:
+                raise ValueError(f'Ambiguous definition: unit '
+                                 f'\'{field_values["unit"]}\' '
+                                 f'does not match '
+                                 f'\'{field_values["value"].unit}\' '
+                                 f'from parameter \'value\'')
+            else:
+                field_values['unit'] = str(field_values['value'].unit)
 
         return field_values
 
@@ -114,11 +130,11 @@ class UserInput(BaseModel):
         if field_values["t_int"].value == 0 and \
                 field_values["sensitivity"].value == 0:
             raise ValueError("Please add either a sensitivity or an "
-                             "integration time to your input.")
+                             "integration time to your input")
         return field_values
 
     def __str__(self):
-        return model_str_rep(self)
+        return ModelUtils.model_str_rep(self)
 
 
 class InstrumentSetup(BaseModel):
@@ -144,7 +160,7 @@ class InstrumentSetup(BaseModel):
         ValueWithoutUnits(value=Data.eta_pol.default_value)
 
     def __str__(self):
-        return model_str_rep(self)
+        return ModelUtils.model_str_rep(self)
 
 
 class CalculationInput(BaseModel):
@@ -178,7 +194,7 @@ class CalculationInput(BaseModel):
         for key, val in flattened_field_values.items():
             try:
                 Validator.validate_field(key, val)
-            except ValueOutOfRangeException as e:
+            except ValueError as e:
                 raise e
 
         return field_values
@@ -222,4 +238,4 @@ class DerivedParams(BaseModel):
         arbitrary_types_allowed = True
 
     def __str__(self):
-        return model_str_rep(self)
+        return ModelUtils.model_str_rep(self)

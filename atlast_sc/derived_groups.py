@@ -47,7 +47,7 @@ class AtmosphereParams:
         :param obs_freq: the central observing frequency
         :type obs_freq: astropy.units.Quantity
         :param weather: the precipitable water vapour
-        :type weather: astropy.units.Quantity
+        :type weather: float
         :param elevation: elevation of the target
         :type elevation: astropy.units.Quantity
         :return: Atmospheric transmittance
@@ -66,7 +66,7 @@ class AtmosphereParams:
         :param obs_freq: the central observing frequency
         :type obs_freq: astropy.units.Quantity
         :param weather: the precipitable water vapour
-        :type weather: astropy.units.Quantity
+        :type weather: float
         :return: Atmospheric temperature
         :rtype: astropy.units.Quantity
         """

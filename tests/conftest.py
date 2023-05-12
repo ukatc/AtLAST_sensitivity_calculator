@@ -1,11 +1,13 @@
 import pytest
 import numpy as np
 import astropy.units as u
+from pydantic import BaseModel
 from atlast_sc.derived_groups import Temperatures
 from atlast_sc.derived_groups import AtmosphereParams
 from atlast_sc.derived_groups import Efficiencies
 from atlast_sc.data import Data
 from atlast_sc.calculator import Calculator
+from atlast_sc.models import ValueWithoutUnits, ValueWithUnits
 
 
 @pytest.fixture(scope='session')
@@ -153,21 +155,39 @@ def efficiencies(obs_freq, surface_rms, eta_ill, eta_spill, eta_block,
 
 
 @pytest.fixture(scope='session')
-def user_input_params(t_int, sensitivity, bandwidth, obs_freq, n_pol,
-                      weather, elevation):
+def user_input_dict(t_int, sensitivity, bandwidth, obs_freq, n_pol,
+                    weather, elevation):
 
     input_params = {
-        't_int': {'value': t_int.value, 'unit': str(t_int.unit)},
-        'sensitivity': {'value': sensitivity.value,
-                        'unit': str(sensitivity.unit)},
-        'bandwidth': {'value': bandwidth.value, 'unit': str(bandwidth.unit)},
-        'obs_freq': {'value': obs_freq.value, 'unit': str(obs_freq.unit)},
-        'n_pol': {'value': n_pol},
-        'weather': {'value': weather},
-        'elevation': {'value': elevation.value, 'unit': str(elevation.unit)}
+        't_int': t_int,
+        'sensitivity': sensitivity,
+        'bandwidth': bandwidth,
+        'obs_freq': obs_freq,
+        'n_pol': n_pol,
+        'weather': weather,
+        'elevation': elevation
     }
 
     return input_params
+
+
+@pytest.fixture(scope='session')
+def instrument_setup_dict(g, surface_rms, dish_radius, t_amb, eta_eff, eta_ill,
+                          eta_spill, eta_block, eta_pol):
+
+    instrument_setup_parms = {
+        'g': g,
+        'surface_rms': surface_rms,
+        'dish_radius': dish_radius,
+        'T_amb': t_amb,
+        'eta_eff': eta_eff,
+        'eta_ill': eta_ill,
+        'eta_spill': eta_spill,
+        'eta_block': eta_block,
+        'eta_pol': eta_pol
+    }
+
+    return instrument_setup_parms
 
 
 @pytest.fixture(scope='session')
@@ -207,8 +227,30 @@ def mock_calculator():
     return MockCalculator()
 
 
+@pytest.fixture(scope='session')
+def test_model_with_values():
+    class TestModel(BaseModel):
+        value1: ValueWithUnits = ValueWithUnits(value=1, unit='GHz')
+        value2: ValueWithUnits = ValueWithUnits(value=2.12345678e10, unit='s')
+        value3: ValueWithoutUnits = ValueWithoutUnits(value=1)
+        value4: ValueWithoutUnits = ValueWithoutUnits(value=1.12345678)
+
+    return TestModel()
+
+
+@pytest.fixture(scope='session')
+def test_model_with_literals():
+    class TestModel(BaseModel):
+        value1: float = 1.3
+        value2: bool = True
+        value3: str = "hello"
+        value4: list = [1, 2, 3]
+
+    return TestModel()
+
+
 def _get_param(param):
     if param.default_unit is not None:
         return param.default_value * u.Unit(param.default_unit)
 
-    return param.default_value
+    return float(param.default_value)
