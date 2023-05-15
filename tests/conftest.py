@@ -1,11 +1,12 @@
 import pytest
 import numpy as np
+from dataclasses import dataclass
 import astropy.units as u
 from pydantic import BaseModel
 from atlast_sc.derived_groups import Temperatures
 from atlast_sc.derived_groups import AtmosphereParams
 from atlast_sc.derived_groups import Efficiencies
-from atlast_sc.data import Data
+from atlast_sc.data import Data, DataHelper
 from atlast_sc.calculator import Calculator
 from atlast_sc.models import ValueWithoutUnits, ValueWithUnits
 
@@ -247,6 +248,83 @@ def test_model_with_literals():
         value4: list = [1, 2, 3]
 
     return TestModel()
+
+
+@pytest.fixture()
+def test_data_types(mocker):
+    # Use this fixture to unit test Validator functions, etc., so they are
+    # decoupled from the allowed values, units, etc., of the real
+    # Calculator params.
+
+    @dataclass
+    class DataType:
+        default_value: float = None
+        default_unit: str = None
+        lower_value: float = None
+        lower_value_is_floor: bool = False
+        upper_value: float = None
+        upper_value_is_ceil: bool = False
+        allowed_values: list = None
+        units: list[str] = None
+
+        def __post_init__(self):
+            if self.units:
+                self.data_conversion = \
+                    DataHelper.data_conversion_factors(self.default_unit,
+                                                       self.units)
+
+    t_int = DataType(
+        default_value=100,
+        default_unit=str(u.s),
+        lower_value=1,
+        upper_value=float('inf'),
+        upper_value_is_ceil=True,
+        units=[str(u.s), str(u.min), str(u.h)],
+    )
+
+    sensitivity = DataType(
+        default_value=3.0,
+        default_unit=str(u.mJy),
+        lower_value=0,
+        lower_value_is_floor=True,
+        upper_value=1e10,
+        upper_value_is_ceil=True,
+        units=[str(u.uJy), str(u.mJy), str(u.Jy)],
+    )
+
+    n_pol = DataType(
+        default_value=2,
+        allowed_values=[1, 2]
+    )
+
+    obs_freq = DataType(
+        default_value=100,
+        default_unit=str(u.GHz),
+        lower_value=35,
+        upper_value=950,
+        units=[str(u.GHz)]
+    )
+
+    allowed_values_with_units = DataType(
+        default_value=100,
+        default_unit=str(u.s),
+        allowed_values=[1, 60],
+        units=[str(u.s), str(u.min), str(u.h)],
+    )
+
+    param_data_type_dicts = {
+        't_int': t_int,
+        'sensitivity': sensitivity,
+        'n_pol': n_pol,
+        'obs_freq': obs_freq,
+        'allowed_values_with_units': allowed_values_with_units,
+    }
+
+    mocker.patch(__name__ + '.Data.param_data_type_dicts',
+                 return_value=param_data_type_dicts,
+                 new_callable=mocker.PropertyMock)
+
+    return param_data_type_dicts
 
 
 def _get_param(param):

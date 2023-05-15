@@ -91,7 +91,7 @@ class ValueNotAllowedException(ValueError):
             if message\
             else f"The parameter '{self.parameter}' " \
                  f"must have one of the following " \
-                 f"values: {self.allowed_values} " \
+                 f"values: {self.allowed_values}" \
                  f"{'.' if not self.units else ' ' + str(self.units) + '.'}"
 
         super().__init__(self.message)
