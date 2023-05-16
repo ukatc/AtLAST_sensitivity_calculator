@@ -103,7 +103,7 @@ class Calculator:
         return self.calculation_inputs.user_input.bandwidth.value
 
     @bandwidth.setter
-    @Decorators.validate_and_update_params
+    @Decorators.validate_update
     def bandwidth(self, value):
         self.calculation_inputs.user_input.bandwidth.value = value
         self.calculation_inputs.user_input.bandwidth.unit = value.unit
@@ -129,7 +129,7 @@ class Calculator:
         return self.calculation_inputs.user_input.n_pol.value
 
     @n_pol.setter
-    @Decorators.validate_and_update_params
+    @Decorators.validate_update
     def n_pol(self, value):
         self.calculation_inputs.user_input.n_pol.value = value
 
@@ -309,14 +309,14 @@ class Calculator:
         """
         User inputs to the calculation
         """
-        return self._config.user_input
+        return self._config.calculation_inputs.user_input
 
     @property
     def instrument_setup(self):
         """
         Instrument setup parameters
         """
-        return self._config.instrument_setup
+        return self._config.calculation_inputs.instrument_setup
 
     @property
     def derived_parameters(self):
@@ -339,7 +339,7 @@ class Calculator:
             stored value
         :type t_int: astropy.units.Quantity
         :param update_calculator: True if the sensitivity stored in the
-            calculator should be updated with the new value. Optional.
+            calculator should be updated with the calculated value. Optional.
             Defaults to True
         :type update_calculator: bool
         :return: sensitivity in mJy
@@ -354,7 +354,6 @@ class Calculator:
             (self.eta_s * np.sqrt(self.n_pol * self.bandwidth * self.t_int))
 
         # Convert the output to mJy
-        # TODO: we may want to make this configurable in future
         sensitivity = sensitivity.to(u.mJy)
 
         # Try to update the sensitivity stored in the calculator
@@ -362,6 +361,10 @@ class Calculator:
             try:
                 self.sensitivity = sensitivity
             except ValueOutOfRangeException as e:
+                # This point is actually unreachable, but it's sensible to
+                # have the code in place in case the permitted range of
+                # the sensitivity changes and becomes possible to achieve with
+                # the right combination of input parameters.
                 message = \
                     Calculator._calculated_value_error_msg(sensitivity, e)
                 warnings.warn(message, CalculatedValueInvalidWarning)
@@ -378,7 +381,7 @@ class Calculator:
             to the internally stored value
         :type sensitivity: astropy.units.Quantity
         :param update_calculator: True if the integration time stored in the
-            calculator should be updated with the new value. Optional.
+            calculator should be updated with the calculated value. Optional.
             Defaults to True
         :type update_calculator: bool
         :return: integration time in seconds
@@ -390,6 +393,8 @@ class Calculator:
 
         t_int = (self.sefd / (self.sensitivity * self.eta_s)) ** 2 \
             / (self.n_pol * self.bandwidth)
+
+        # Convert the integration time to seconds
         t_int = t_int.to(u.s)
 
         # Try to update the integration time stored in the calculator
@@ -532,11 +537,11 @@ class Config:
         :type instrument_setup: dict
         """
 
-        self._user_input = UserInput(**user_input)
-        self._instrument_setup = InstrumentSetup(**instrument_setup)
+        new_user_input = UserInput(**user_input)
+        new_instrument_setup = InstrumentSetup(**instrument_setup)
         self._calculation_inputs = \
-            CalculationInput(user_input=self._user_input,
-                             instrument_setup=self._instrument_setup)
+            CalculationInput(user_input=new_user_input,
+                             instrument_setup=new_instrument_setup)
 
         # Make a deep copy of the calculation inputs to enable the
         # calculator to be reset to its initial setup
@@ -548,20 +553,6 @@ class Config:
         Get the calculation inputs (user input and instrument setup)
         """
         return self._calculation_inputs
-
-    @property
-    def user_input(self):
-        """
-        Get the user input parameters
-        """
-        return self._user_input
-
-    @property
-    def instrument_setup(self):
-        """
-        Get the instrument setup parameters
-        """
-        return self._instrument_setup
 
     def reset(self):
         """

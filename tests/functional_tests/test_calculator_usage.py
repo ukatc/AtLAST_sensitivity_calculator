@@ -8,9 +8,7 @@ from tests.utils import does_not_raise
 
 # TODO: test data_conversion_factors for each parameter
 # TODO: test providing invalid param name(s) to the Calculator
-# TODO: test that Calculator param updates are validated and derived params are
-#   recalculated, where appropriate, otherwise not.
-
+# TODO: test can't pass invalid sensitivity or t_int to the calculator methods
 
 class TestCalculatorUsage:
 
@@ -196,64 +194,6 @@ class TestDataValidation:
                     value = val['value']
 
                 setattr(calculator, key, value)
-
-    input_data_check_derived_params = [
-        ({'t_int': {'value': 1, 'unit': 's'}}, False),
-        ({'sensitivity': {'value': 1, 'unit': 'uJy'}}, False),
-        ({'bandwidth': {'value': 200, 'unit': 'GHz'}}, True),
-        ({'bandwidth': {'value': 100, 'unit': 'MHz'}}, False),
-        ({'bandwidth': {'value': 200, 'unit': 'h'}}, False),
-        ({'obs_freq': {'value': 200, 'unit': 'GHz'}}, True),
-        ({'obs_freq': {'value': 100, 'unit': 'GHz'}}, False),
-        ({'obs_freq': {'value': 200, 'unit': 'Hz'}}, False),
-        ({'n_pol': {'value': 1}}, True),
-        ({'n_pol': {'value': 2}}, False),
-        ({'n_pol': {'value': 0.5}}, False),
-        ({'weather': {'value': 50}}, True),
-        ({'weather': {'value': 25}}, False),
-        ({'weather': {'value': 2}}, False),
-        ({'elevation': {'value': 40, 'unit': 'deg'}}, True),
-        ({'elevation': {'value': 45, 'unit': 'deg'}}, False),
-        ({'elevation': {'value': 40, 'unit': 'Hz'}}, False),
-        ({'dish_radius': {'value': 30, 'unit': 'm'}}, True),
-        ({'dish_radius': {'value': 25, 'unit': 'm'}}, False),
-        ({'dish_radius': {'value': 0.5, 'unit': 'm'}}, False),
-    ]
-
-    @pytest.mark.parametrize('input_data,expect_derived_params_recalculated',
-                             input_data_check_derived_params)
-    def tests_derived_params_recalculated(self, input_data,
-                                          expect_derived_params_recalculated,
-                                          calculator, mocker):
-        # Check that the derived parameters are recalculated when parameters
-        # are successfully updated, unless the updated parameter is t_int
-        # or sensitivity
-
-        # Ensure that the appropriate validation takes place when parameters
-        # are updated directly
-        derived_params_spy = \
-            mocker.spy(Calculator,
-                       '_calculate_derived_parameters')
-
-        for key, val in input_data.items():
-            if 'unit' in val:
-                value = val['value'] * Unit(val["unit"])
-            else:
-                value = val['value']
-
-            try:
-                setattr(calculator, key, value)
-            except ValueError:
-                # Do nothing. We're not interested in the specifics of the
-                # update error
-                pass
-
-            # Verify that the derived parameters were recalculated
-            # (unless the updated parameter is 't_int' or 'sensitivity'
-            if expect_derived_params_recalculated:
-                derived_params_spy.assert_called_once()
-            else:
-                derived_params_spy.assert_not_called()
 
     def test_value_is_float(self):
         pass

@@ -1,5 +1,3 @@
-import math
-
 import pytest
 import astropy.units as u
 from atlast_sc.data import Data, Validator

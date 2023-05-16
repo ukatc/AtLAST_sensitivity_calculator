@@ -122,24 +122,51 @@ def dish_radius():
 
 
 @pytest.fixture(scope='session')
-def area(dish_radius):
-    # Calculate and return the dish area
-    return np.pi * dish_radius ** 2
-
-
-@pytest.fixture(scope='session')
 def surface_rms():
     # Return the default surface RMS
     return _get_param(Data.surface_rms)
 
 
 @pytest.fixture(scope='session')
-def temperatures(obs_freq, t_cmb, t_amb, g, eta_eff, weather, elevation,
-                 atmosphere_params):
-    t_atm = \
-        atmosphere_params.calculate_atmospheric_temperature(obs_freq, weather)
-    tau_atm = \
-        atmosphere_params.calculate_tau_atm(obs_freq, weather, elevation)
+def t_sys(temperatures):
+    # Return the system temperature
+    return temperatures.T_sys
+
+
+@pytest.fixture(scope='session')
+def t_rx(temperatures):
+    # Return the receiver temperature
+    return temperatures.T_rx
+
+
+@pytest.fixture(scope='session')
+def t_atm(obs_freq, weather, atmosphere_params):
+    return atmosphere_params.calculate_atmospheric_temperature(obs_freq,
+                                                               weather)
+
+
+@pytest.fixture(scope='session')
+def tau_atm(obs_freq, weather, elevation, atmosphere_params):
+    return atmosphere_params.calculate_tau_atm(obs_freq, weather, elevation)
+
+
+@pytest.fixture(scope='session')
+def eta_a(efficiencies):
+    return efficiencies.eta_a
+
+
+@pytest.fixture(scope='session')
+def eta_s(efficiencies):
+    return efficiencies.eta_s
+
+
+@pytest.fixture()
+def sefd(calculator, t_sys, eta_a):
+    return calculator._calculate_sefd(t_sys, eta_a)
+
+
+@pytest.fixture(scope='session')
+def temperatures(obs_freq, t_cmb, t_amb, g, eta_eff, t_atm, tau_atm):
     return Temperatures(obs_freq, t_cmb, t_amb, g, eta_eff, t_atm, tau_atm)
 
 
@@ -189,43 +216,6 @@ def instrument_setup_dict(g, surface_rms, dish_radius, t_amb, eta_eff, eta_ill,
     }
 
     return instrument_setup_parms
-
-
-@pytest.fixture(scope='session')
-def mock_calculator():
-    class MockCalculator:
-
-        def __init__(self):
-            self._calculation_inputs = MockCalculator.MockCalculationInputs()
-
-        class MockCalculationInputs:
-
-            def validate_update(self, param, value):
-                print('\n**********************************************')
-                print(f'doing validation of {param} with value {value}')
-                print('\n**********************************************')
-                if value == "invalid":
-                    raise ValueError
-
-                return self
-
-        @property
-        def prop1(self):
-            return 1
-
-        @property
-        def prop2(self):
-            return 2.0
-
-        @property
-        def prop3(self):
-            return '3'
-
-        @property
-        def calculation_inputs(self):
-            return self._calculation_inputs
-
-    return MockCalculator()
 
 
 @pytest.fixture(scope='session')

@@ -22,11 +22,6 @@ class AtmosphereParams:
     _TAU_ATM_PATH = _STATIC_DATA_PATH / "lookups" / "am_ACT_tau_annual.txt"
 
     def __init__(self):
-        """
-        AtmosphereParams class constructor.
-        """
-
-        # TODO: test the model grids have been correctly constructed
 
         T_atm_table = np.genfromtxt(AtmosphereParams._T_ATM_PATH)
         tau_atm_table = np.genfromtxt(AtmosphereParams._TAU_ATM_PATH)
