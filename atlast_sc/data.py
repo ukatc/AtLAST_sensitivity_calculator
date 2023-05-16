@@ -23,7 +23,54 @@ class Data:
         upper_value_is_ceil: bool = False
         allowed_values: list = None
         units: list[str] = None
-        data_conversion: dict = None
+
+        def __post_init__(self):
+            # Make sure the default value is not infinity
+            assert not math.isinf(self.default_value)
+            # If there's a lower value, make sure there's also an upper value
+            if self.lower_value:
+                assert self.upper_value is not None
+                # Make sure the default value is within the permitted range
+                if not self.lower_value_is_floor:
+                    assert self.default_value >= self.lower_value
+                else:
+                    assert self.default_value > self.lower_value
+                # (Handle infinity differently)
+                if not math.isinf(self.upper_value):
+                    # Make sure the upper value is greater than the lower value
+                    assert self.upper_value > self.lower_value
+                    if not self.upper_value_is_ceil:
+                        assert self.default_value <= self.upper_value
+                    else:
+                        assert self.default_value < self.upper_value
+                # Make sure an allowed values has not also been specified
+                assert self.allowed_values is None
+                # Make sure the lower value is not infinity
+                assert not math.isinf(self.lower_value)
+            # If there's an upper value, make sure there's also a lower value
+            if self.upper_value:
+                assert self.lower_value is not None
+                # Make sure an allowed values has not also been specified
+                assert self.allowed_values is None
+            if self.units:
+                # Make sure all the units are valid astropy units
+                Unit(self.default_unit)
+                for unit in self.units:
+                    Unit(unit)
+                # Make sure the default unit is in the list of allowed units
+                assert self.default_unit in self.units
+            # If a list of allowed values has been provided, make sure the
+            # default value is one of these
+            if self.allowed_values:
+                assert self.default_value in self.allowed_values
+
+            # If the data type has a list of allowed units, evaluate the data
+            # conversion factors between allowed units and the default unit
+            if self.units:
+                self.data_conversion = DataHelper.data_conversion_factors(
+                    self.default_unit,
+                    self.units
+                )
 
     integration_time = DataType(
         default_value=100,
@@ -32,11 +79,6 @@ class Data:
         upper_value=float('inf'),
         upper_value_is_ceil=True,
         units=[str(u.s), str(u.min), str(u.h)],
-        data_conversion=DataHelper
-        .data_conversion_factors(
-            str(u.s),
-            [str(u.s), str(u.min), str(u.h)]
-        )
     )
 
     sensitivity = DataType(
@@ -47,11 +89,6 @@ class Data:
         upper_value=float('inf'),
         upper_value_is_ceil=True,
         units=[str(u.uJy), str(u.mJy), str(u.Jy)],
-        data_conversion=DataHelper
-        .data_conversion_factors(
-            str(u.mJy),
-            [str(u.uJy), str(u.mJy), str(u.Jy)]
-        )
     )
 
     # TODO: include km/s. Will have to provide suitable conversion logic
@@ -63,11 +100,6 @@ class Data:
         upper_value=float('inf'),
         upper_value_is_ceil=True,
         units=[str(u.Hz), str(u.kHz), str(u.MHz), str(u.GHz)],
-        data_conversion=DataHelper
-        .data_conversion_factors(
-            str(u.MHz),
-            [str(u.Hz), str(u.kHz), str(u.MHz), str(u.GHz)]
-        )
     )
 
     # Sky frequency of the observations
@@ -238,15 +270,18 @@ class Validator:
         if data_type.lower_value is None:
             return
 
-        # Check there's also an upper value
-        assert data_type.upper_value is not None
-
         # If the lower value is a floor value, make sure the provided value
-        # is greater than
+        # is greater than this
         if data_type.lower_value_is_floor:
             if value <= data_type.lower_value:
                 raise ValueTooLowException(param, data_type.lower_value,
                                            data_type.default_unit)
+
+        # Do a special check for infinity (unlikely scenario, but not
+        # impossible...)
+        if math.isinf(value):
+            raise ValueTooHighException(param, data_type.upper_value,
+                                        data_type.default_unit)
 
         # If the upper value is a ceiling value, make sure the provided value
         # is less than
@@ -254,12 +289,6 @@ class Validator:
             if value >= data_type.upper_value:
                 raise ValueTooHighException(param, data_type.upper_value,
                                             data_type.default_unit)
-
-        # Do a special check for infinity (unlikely scenario, but not
-        # impossible...)
-        if math.isinf(value):
-            raise ValueTooHighException(param, data_type.upper_value,
-                                        data_type.default_unit)
 
         if not (data_type.lower_value <= value <= data_type.upper_value):
             raise ValueOutOfRangeException(param,

@@ -2,7 +2,8 @@
 .PHONY: test
 
 test:
-	PYTHONPATH=. pytest -s -vv
+	coverage run -m pytest -s -vv
+	coverage report -m
 
 buildwebclientimage:
 	@echo "Building web client image for current branch '${GIT_BRANCH}'..."

@@ -29,6 +29,8 @@ class Calculator:
     """
     def __init__(self, user_input={}, instrument_setup={}):
 
+        self._derived_params = None
+
         # Make sure the user input doesn't contain any unexpected parameter
         # names
         Calculator._check_input_param_names(user_input)
@@ -37,7 +39,7 @@ class Calculator:
         self._config = Config(user_input, instrument_setup)
 
         # Calculate the derived parameters used in the calculation
-        self._derived_params = self._calculate_derived_parameters()
+        self._calculate_derived_parameters()
 
     ###################################################
     # Getters and setters for user input parameters   #
@@ -68,7 +70,7 @@ class Calculator:
         #  subsequent calculations and/or storing results?
         # TODO: We don't technically need to update the unit here (ditto other
         #   values with units, because the value is set to a Quantity, which
-        #   contains the units. It's this quantity that is used throughout the
+        #   contains the units. It's this value that is used throughout the
         #   the application. However, not updating it feels odd, since it would
         #   result in a discrepancy between the unit property and the unit
         #   contained in the Quantity object. Think about this...
@@ -103,7 +105,7 @@ class Calculator:
         return self.calculation_inputs.user_input.bandwidth.value
 
     @bandwidth.setter
-    @Decorators.validate_and_update_params
+    @Decorators.validate_update
     def bandwidth(self, value):
         self.calculation_inputs.user_input.bandwidth.value = value
         self.calculation_inputs.user_input.bandwidth.unit = value.unit
@@ -129,7 +131,7 @@ class Calculator:
         return self.calculation_inputs.user_input.n_pol.value
 
     @n_pol.setter
-    @Decorators.validate_and_update_params
+    @Decorators.validate_update
     def n_pol(self, value):
         self.calculation_inputs.user_input.n_pol.value = value
 
@@ -309,14 +311,14 @@ class Calculator:
         """
         User inputs to the calculation
         """
-        return self._config.user_input
+        return self._config.calculation_inputs.user_input
 
     @property
     def instrument_setup(self):
         """
         Instrument setup parameters
         """
-        return self._config.instrument_setup
+        return self._config.calculation_inputs.instrument_setup
 
     @property
     def derived_parameters(self):
@@ -339,7 +341,7 @@ class Calculator:
             stored value
         :type t_int: astropy.units.Quantity
         :param update_calculator: True if the sensitivity stored in the
-            calculator should be updated with the new value. Optional.
+            calculator should be updated with the calculated value. Optional.
             Defaults to True
         :type update_calculator: bool
         :return: sensitivity in mJy
@@ -354,7 +356,6 @@ class Calculator:
             (self.eta_s * np.sqrt(self.n_pol * self.bandwidth * self.t_int))
 
         # Convert the output to mJy
-        # TODO: we may want to make this configurable in future
         sensitivity = sensitivity.to(u.mJy)
 
         # Try to update the sensitivity stored in the calculator
@@ -362,6 +363,10 @@ class Calculator:
             try:
                 self.sensitivity = sensitivity
             except ValueOutOfRangeException as e:
+                # This point is actually unreachable, but it's sensible to
+                # have the code in place in case the permitted range of
+                # the sensitivity changes and becomes possible to achieve with
+                # the right combination of input parameters.
                 message = \
                     Calculator._calculated_value_error_msg(sensitivity, e)
                 warnings.warn(message, CalculatedValueInvalidWarning)
@@ -378,7 +383,7 @@ class Calculator:
             to the internally stored value
         :type sensitivity: astropy.units.Quantity
         :param update_calculator: True if the integration time stored in the
-            calculator should be updated with the new value. Optional.
+            calculator should be updated with the calculated value. Optional.
             Defaults to True
         :type update_calculator: bool
         :return: integration time in seconds
@@ -390,6 +395,8 @@ class Calculator:
 
         t_int = (self.sefd / (self.sensitivity * self.eta_s)) ** 2 \
             / (self.n_pol * self.bandwidth)
+
+        # Convert the integration time to seconds
         t_int = t_int.to(u.s)
 
         # Try to update the integration time stored in the calculator
@@ -413,7 +420,7 @@ class Calculator:
         # Reset the config calculation inputs to their original values
         self._config.reset()
         # Recalculate the derived parameters
-        self._derived_params = self._calculate_derived_parameters()
+        self._calculate_derived_parameters()
 
     #####################
     # Protected methods #
@@ -438,28 +445,41 @@ class Calculator:
     def _calculate_derived_parameters(self):
         """
         Performs the calculations required to produce the
-        final set of parameters required for the sensitivity
+        set of derived parameters required for the sensitivity
         calculation.
         """
 
-        # Perform atmospheric model calculations
-        atm = AtmosphereParams(self.obs_freq, self.weather,
-                               self.elevation)
+        # TODO Technically, it's possible to instantiate each of the
+        # classes below using a different observing frequency for each.
+        # The resulting derived parameters wouldn't make sense under those
+        # circumstances. Although this is an unlikely scenario, the design
+        # would be cleaner if there three classes referenced the
+        # same observing frequency.
+        # Implement a Builder interface to construct all three objects using
+        # the same observing frequency?
 
         # Perform efficiencies calculations
         eta = Efficiencies(self.obs_freq, self.surface_rms, self.eta_ill,
                            self.eta_spill, self.eta_block, self.eta_pol)
 
+        # Perform atmospheric model calculations
+        atm = AtmosphereParams()
+        tau_atm = atm.calculate_tau_atm(self.obs_freq,
+                                        self.weather, self.elevation)
+        T_atm = atm.calculate_atmospheric_temperature(self.obs_freq,
+                                                      self.weather)
+
         # Calculate the temperatures
         temps = Temperatures(self.obs_freq, self.T_cmb, self.T_amb, self.g,
-                             self.eta_eff, atm)
+                             self.eta_eff, T_atm, tau_atm)
 
         # Calculate source equivalent flux density
         sefd = self._calculate_sefd(temps.T_sys, eta.eta_a)
 
-        return DerivedParams(tau_atm=atm.tau_atm, T_atm=atm.T_atm,
-                             T_rx=temps.T_rx, eta_a=eta.eta_a, eta_s=eta.eta_s,
-                             T_sys=temps.T_sys, sefd=sefd)
+        self._derived_params = \
+            DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
+                          eta_a=eta.eta_a, eta_s=eta.eta_s, T_sys=temps.T_sys,
+                          sefd=sefd)
 
     def _calculate_sefd(self, T_sys, eta_a):
         """
@@ -521,11 +541,11 @@ class Config:
         :type instrument_setup: dict
         """
 
-        self._user_input = UserInput(**user_input)
-        self._instrument_setup = InstrumentSetup(**instrument_setup)
+        new_user_input = UserInput(**user_input)
+        new_instrument_setup = InstrumentSetup(**instrument_setup)
         self._calculation_inputs = \
-            CalculationInput(user_input=self._user_input,
-                             instrument_setup=self._instrument_setup)
+            CalculationInput(user_input=new_user_input,
+                             instrument_setup=new_instrument_setup)
 
         # Make a deep copy of the calculation inputs to enable the
         # calculator to be reset to its initial setup
@@ -537,20 +557,6 @@ class Config:
         Get the calculation inputs (user input and instrument setup)
         """
         return self._calculation_inputs
-
-    @property
-    def user_input(self):
-        """
-        Get the user input parameters
-        """
-        return self._user_input
-
-    @property
-    def instrument_setup(self):
-        """
-        Get the instrument setup parameters
-        """
-        return self._instrument_setup
 
     def reset(self):
         """

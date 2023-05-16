@@ -8,10 +8,9 @@ Calculator
     left to right direction
 
     class "AtmosphereParams" as derived_groups.AtmosphereParams {
-      T_atm : Quantity
-      tau_atm : float
-      AtmosphereParams(obs_freq : Quantity, weather : float,
-      elevation : Quantity)
+      AtmosphereParams()
+      calculate_atmospheric_temperature(obs_freq : Quantity, weather: float) : Quantity
+      calculate_tau_atm(obs_freq : Quantity, weather : float, elevation : Quantity) : float
     }
     class "Calculator" as calculator.Calculator {
       bandwidth : Quantity
@@ -64,7 +63,7 @@ Calculator
       T_rx : Quantity
       T_sys : Quantity
       Temperatures(obs_freq : Quantity, T_cmb : Quantity, T_amb : Quantity,
-      g : float, eta_eff : float, atmosphere_params : AtmosphereParams)
+      g : float, eta_eff : float, T_atm : Quantity, tau_atm: float)
     }
     derived_groups.Efficiencies --* calculator.Calculator
     derived_groups.Temperatures --* calculator.Calculator
