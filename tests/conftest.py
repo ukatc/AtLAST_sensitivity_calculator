@@ -1,5 +1,4 @@
 import pytest
-import numpy as np
 from dataclasses import dataclass
 import astropy.units as u
 from pydantic import BaseModel

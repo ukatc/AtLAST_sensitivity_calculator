@@ -1,4 +1,3 @@
-import sys
 import pytest
 import astropy.units as u
 from atlast_sc.calculator import Calculator, Config
@@ -343,4 +342,3 @@ class TestConfig:
         # Check that all the config properties are correctly mapped
         assert config.calculation_inputs == config._calculation_inputs
         assert config._original_inputs == config._calculation_inputs
-
