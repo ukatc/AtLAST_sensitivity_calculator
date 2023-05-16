@@ -22,6 +22,36 @@ class TestData:
         assert list(Data.param_data_type_dicts.keys()) == expected_keys
 
     @pytest.mark.parametrize(
+        'default_value,default_unit,lower_value,lower_value_is_floor,'
+        'upper_value,upper_value_is_ceil,allowed_values,units,'
+        'expected_data_conversion',
+        [
+            (1, 's', 0, False, 10, True, None, ['s', 'min', 'h'],
+             {'s': 1, 'min': 60, 'h': 3600}),
+            (1, None, None, False, None, False, [1, 2, 3], None, None)
+        ]
+    )
+    def test_create_data_type(self, default_value, default_unit, lower_value,
+                              lower_value_is_floor, upper_value,
+                              upper_value_is_ceil, allowed_values, units,
+                              expected_data_conversion):
+
+        data_type = Data.DataType(default_value=default_value,
+                                  default_unit=default_unit,
+                                  lower_value=lower_value,
+                                  lower_value_is_floor=lower_value_is_floor,
+                                  upper_value=upper_value,
+                                  upper_value_is_ceil=upper_value_is_ceil,
+                                  allowed_values=allowed_values, units=units)
+        # Verify that data conversion factors have been calculated if the
+        # data type has units
+        if units:
+            assert hasattr(data_type, 'data_conversion')
+            assert data_type.data_conversion == expected_data_conversion
+        else:
+            assert not hasattr(data_type, 'data_conversion')
+
+    @pytest.mark.parametrize(
         'scenario,default_value,default_unit,lower_value,lower_value_is_floor,'
         'upper_value,upper_value_is_ceil,allowed_values,units',
         [

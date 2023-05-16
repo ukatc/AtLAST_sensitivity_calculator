@@ -124,7 +124,7 @@ class TestCalculator:
     )
     def test_update_properties(self, param, new_value,
                                derived_params_recalculated, expected_raises,
-                               calculator, mocker, request):
+                               t_atm, calculator, mocker, request):
 
         validate_update_spy = mocker.spy(Decorators, '_do_validation')
         calculate_derived_params_spy = \

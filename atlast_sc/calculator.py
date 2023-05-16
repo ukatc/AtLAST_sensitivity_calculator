@@ -29,6 +29,8 @@ class Calculator:
     """
     def __init__(self, user_input={}, instrument_setup={}):
 
+        self._derived_params = None
+
         # Make sure the user input doesn't contain any unexpected parameter
         # names
         Calculator._check_input_param_names(user_input)
@@ -37,7 +39,7 @@ class Calculator:
         self._config = Config(user_input, instrument_setup)
 
         # Calculate the derived parameters used in the calculation
-        self._derived_params = self._calculate_derived_parameters()
+        self._calculate_derived_parameters()
 
     ###################################################
     # Getters and setters for user input parameters   #
@@ -418,7 +420,7 @@ class Calculator:
         # Reset the config calculation inputs to their original values
         self._config.reset()
         # Recalculate the derived parameters
-        self._derived_params = self._calculate_derived_parameters()
+        self._calculate_derived_parameters()
 
     #####################
     # Protected methods #
@@ -443,7 +445,7 @@ class Calculator:
     def _calculate_derived_parameters(self):
         """
         Performs the calculations required to produce the
-        final set of parameters required for the sensitivity
+        set of derived parameters required for the sensitivity
         calculation.
         """
 
@@ -466,6 +468,7 @@ class Calculator:
                                         self.weather, self.elevation)
         T_atm = atm.calculate_atmospheric_temperature(self.obs_freq,
                                                       self.weather)
+
         # Calculate the temperatures
         temps = Temperatures(self.obs_freq, self.T_cmb, self.T_amb, self.g,
                              self.eta_eff, T_atm, tau_atm)
@@ -473,9 +476,10 @@ class Calculator:
         # Calculate source equivalent flux density
         sefd = self._calculate_sefd(temps.T_sys, eta.eta_a)
 
-        return DerivedParams(tau_atm=tau_atm, T_atm=T_atm,
-                             T_rx=temps.T_rx, eta_a=eta.eta_a, eta_s=eta.eta_s,
-                             T_sys=temps.T_sys, sefd=sefd)
+        self._derived_params = \
+            DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
+                          eta_a=eta.eta_a, eta_s=eta.eta_s, T_sys=temps.T_sys,
+                          sefd=sefd)
 
     def _calculate_sefd(self, T_sys, eta_a):
         """
