@@ -39,18 +39,13 @@ provided in the repository:
 
    $ conda activate sens-calc
 
-
-Once you have set up your environment, run the web client as follows:
-
-1. Navigate to the ``web_client`` directory
-2. Start the application with the following command:
+4. Start the web client application
 
 .. code-block:: bash
 
-   $ python -m main
+   $ python -m web_client.main
 
-
-3. Point your browser at http://127.0.0.1:8000/ . You should now see the Sensitivity Calculator web client.
+5. Point your browser at http://127.0.0.1:8000/ . You should now see the Sensitivity Calculator web client.
 
 
 Running the web client in a container
