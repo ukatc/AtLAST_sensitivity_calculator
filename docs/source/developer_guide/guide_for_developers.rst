@@ -34,14 +34,13 @@ Running the web client directly
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1. Ensure you have created and activated the conda environment as per the instructions above.
-2. Navigate to the ``web_client`` directory
-3. Run the web client with the following command:
+2. Run the web client with the following command:
 
 .. code-block:: bash
 
-    $ python -m main
+    $ python -m web_client.main
 
-4. Point your browser at http://127.0.0.1:8000/ . You should now see the sensitivity calculator web client.
+3. Point your browser at http://127.0.0.1:8000/ . You should now see the sensitivity calculator web client.
 
 
 Running the web client in a container

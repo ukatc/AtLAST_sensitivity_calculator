@@ -1,9 +1,13 @@
 -include web_client/secrets/.env
 .PHONY: test
 
-test:
-	coverage run -m pytest -s -vv
+testpackage:
+	coverage run -m pytest atlast_sc_tests -s -vv
 	coverage report -m
+
+testwebclient:
+	coverage run -m pytest web_client -s -vv
+	coverage report -m --omit=atlast_sc/*
 
 buildwebclientimage:
 	@echo "Building web client image for current branch '${GIT_BRANCH}'..."

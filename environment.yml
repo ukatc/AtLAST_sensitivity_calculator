@@ -26,6 +26,7 @@ dependencies:
   - coverage=7.2
   - pylint
   - pip
+  - httpx=0.24
   - pip:
       - sphinxcontrib.plantuml==0.25
       - -e ./

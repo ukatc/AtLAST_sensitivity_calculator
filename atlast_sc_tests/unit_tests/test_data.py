@@ -3,7 +3,7 @@ import astropy.units as u
 from atlast_sc.data import Data, Validator
 from atlast_sc.exceptions import UnitException, ValueNotAllowedException, \
     ValueOutOfRangeException, ValueTooLowException, ValueTooHighException
-from tests.utils import does_not_raise
+from atlast_sc_tests.utils import does_not_raise
 
 
 class TestData:

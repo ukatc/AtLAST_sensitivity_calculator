@@ -7,7 +7,7 @@ from astropy import constants
 from atlast_sc.calculator import Calculator
 from atlast_sc.derived_groups import AtmosphereParams, Temperatures, \
     Efficiencies
-from tests.utils import does_not_raise
+from atlast_sc_tests.utils import does_not_raise
 
 
 class TestCalculationInput:

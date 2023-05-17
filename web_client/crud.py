@@ -7,7 +7,9 @@ from atlast_sc.data import Data
 
 
 def do_calculation(user_input, calculation):
-
+    """
+    Perform the specified calculation (sensitivity or integration time)
+    """
     try:
         calculator = _create_calculater(user_input)
     except UserInputError as e:
@@ -32,6 +34,10 @@ def do_calculation(user_input, calculation):
 
 
 def get_param_values_units():
+    """
+    Return the values, units, data conversion factors, etc. for each of the
+    calculator input parameters (user input and instrument setup)
+    """
     param_values_units = {
         param: asdict(data) for param, data in
         Data.param_data_type_dicts.items()
@@ -48,7 +54,9 @@ def get_param_values_units():
 
 
 def _create_calculater(user_input):
-
+    """
+    Create a calculator object with the specified user input
+    """
     try:
         calculator = Calculator(user_input)
     except ValidationError as e:

@@ -6,7 +6,7 @@ from atlast_sc.models import ModelUtils
 from atlast_sc.models import ValueWithUnits, ValueWithoutUnits, \
     UserInput, CalculationInput
 from atlast_sc.data import Validator
-from tests.utils import does_not_raise
+from atlast_sc_tests.utils import does_not_raise
 
 
 class TestModelUtils:
