@@ -1,7 +1,7 @@
 import math
 from fastapi import Request
 from atlast_sc.data import Data
-import utils
+from web_client import utils
 
 
 def api_version(request: Request):

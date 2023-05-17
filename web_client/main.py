@@ -1,13 +1,14 @@
+import os
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from schemas import APIUserInput
-import utils
-import crud
-import context_processors as cp
+from web_client.schemas import APIUserInput
+from web_client import utils, crud
+import web_client.context_processors as cp
 
+os.chdir(os.path.dirname(__file__))
 
 app = FastAPI(
     title="AtLast Sensitivity Calculator",
