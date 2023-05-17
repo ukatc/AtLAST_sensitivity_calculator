@@ -49,4 +49,5 @@ Exceptions
     exceptions.ValueTooHighException --|> exceptions.ValueOutOfRangeException
     exceptions.ValueTooLowException --|> exceptions.ValueOutOfRangeException
     exceptions --* data.Validator
+    exceptions --* calculator.Calculator
     @enduml
