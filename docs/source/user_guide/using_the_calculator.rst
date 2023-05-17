@@ -75,25 +75,24 @@ You can also specify a sensitivity to perform the integration time calculation:
 
 .. note::
 
-    If an integration time is passed to ``calculate_sensitivity``, this value
-    is stored in the Calculator object. Similarly, a sensitivity passed to
-    ``calculate_t_integration`` is stored by the Calculator object.
-
-.. note::
-
     When the sensitivity or integration time calculations are performed, by default,
-    the calculated values are stored in the Calculator object.
-    To prevent this behaviour, set the ``update_calculator`` parameter to ``False``, as shown below:
+    the calculated values are stored in the Calculator object. Similarly, an
+    integration time passed to ``calculate_sensitivity`` or sensitivity passed
+    to ``calculate_t_integration`` are stored by the Calculator object.
+    To prevent this behaviour, set the ``update_calculator`` parameter to ``False``,
+    as shown below:
 
     .. code-block:: python
 
-        calculated_t_int = calculator.calculate_t_integration(update_calculator=False)
+        new_sens = 15*u.mJy
+        calculated_t_int = calculator.calculate_t_integration(new_sens, update_calculator=False)
 
-    You can then manually update the calculator with the new value:
+    You may then manually update the calculator with the new values:
 
     .. code-block:: python
 
         calculator.t_int = calculated_t_int
+        calculator.sensitivity = new_sens
 
 .. note::
 

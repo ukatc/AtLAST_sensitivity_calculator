@@ -11,7 +11,7 @@ class Decorators:
     """
 
     @staticmethod
-    def validate_update(func):
+    def validate_value(func):
         """
         Decorator to support setter methods on calculations input parameters.
         Validates the value for the
@@ -30,7 +30,7 @@ class Decorators:
             """
 
             # Validate the new value
-            Decorators._do_validation(calculator, func.__name__, value)
+            DataHelper.validate(calculator, func.__name__, value)
 
             # Update the parameter
             func(calculator, value, **kwargs)
@@ -62,7 +62,7 @@ class Decorators:
             """
 
             # Validate the new value
-            Decorators._do_validation(calculator, func.__name__, value)
+            DataHelper.validate(calculator, func.__name__, value)
 
             # Determine if the old and new values differ
             attribute = getattr(calculator, func.__name__)
@@ -76,29 +76,6 @@ class Decorators:
                 calculator._calculate_derived_parameters()
 
         return do_update
-
-    @staticmethod
-    def _do_validation(calculator, param_name, value):
-        attribute = getattr(calculator, param_name)
-
-        # Ensure integer values are converted to floats (all parameter values
-        # are expected to be floats)
-        if isinstance(value, int):
-            value = float(value)
-
-        # Make sure the new value is of the correct type
-        if not isinstance(value, type(attribute)):
-            raise ValueError(f'Value {value} for parameter {param_name} '
-                             f'is of invalid type. '
-                             f'Expected {type(attribute)}. '
-                             f'Received {type(value)}.')
-
-        # Validate the new value
-        try:
-            calculator.calculation_inputs. \
-                validate_update(param_name, value)
-        except ValueError as e:
-            raise e
 
 
 class FileHelper:
@@ -117,6 +94,7 @@ class FileHelper:
     def read_from_file(path, file_name):
         """
         Reads the file with name `file_name` located in directory `path`
+        and returns a dictionary. The file type (e.g., `yaml`) is
         and returns a dictionary. The file type (e.g., `yaml`) is
         determined from the file extension in`file_name`.
 
@@ -374,6 +352,29 @@ class FileHelper:
 
 
 class DataHelper:
+
+    @staticmethod
+    def validate(calculator, param_name, value):
+        attribute = getattr(calculator, param_name)
+
+        # Ensure integer values are converted to floats (all parameter values
+        # are expected to be floats)
+        if isinstance(value, int):
+            value = float(value)
+
+        # Make sure the new value is of the correct type
+        if not isinstance(value, type(attribute)):
+            raise ValueError(f'Value {value} for parameter {param_name} '
+                             f'is of invalid type. '
+                             f'Expected {type(attribute)}. '
+                             f'Received {type(value)}.')
+
+        # Validate the new value
+        try:
+            calculator.calculation_inputs. \
+                validate_value(param_name, value)
+        except ValueError as e:
+            raise e
 
     @staticmethod
     def data_conversion_factors(default_unit, allowed_units):

@@ -199,14 +199,14 @@ class CalculationInput(BaseModel):
 
         return field_values
 
-    def validate_update(self, value_to_update, new_value):
+    def validate_value(self, value_to_validate, value):
         """
         Custom validator called manually (i.e., not as part of the Pydantic
         framework), e.g., when one of the user input values is updated.
         """
 
         try:
-            Validator.validate_field(value_to_update, new_value)
+            Validator.validate_field(value_to_validate, value)
         except ValueError as e:
             raise e
 

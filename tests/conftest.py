@@ -1,3 +1,4 @@
+import os
 import pytest
 from dataclasses import dataclass
 import astropy.units as u
@@ -8,6 +9,11 @@ from atlast_sc.derived_groups import Efficiencies
 from atlast_sc.data import Data, DataHelper
 from atlast_sc.calculator import Calculator
 from atlast_sc.models import ValueWithoutUnits, ValueWithUnits
+
+
+@pytest.fixture(scope='session')
+def test_files_path():
+    return os.path.join(os.path.dirname(__file__), 'test_files')
 
 
 @pytest.fixture(scope='session')

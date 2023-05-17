@@ -1,8 +1,9 @@
+import copy
 import pytest
 import astropy.units as u
 from atlast_sc.calculator import Calculator, Config
 from atlast_sc.models import DerivedParams, CalculationInput
-from atlast_sc.utils import Decorators
+from atlast_sc.utils import DataHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
 from tests.utils import does_not_raise
 
@@ -32,7 +33,7 @@ class TestCalculator:
                        '_calculate_derived_parameters')
 
         # Initialize the calculator
-        calculator = Calculator(input_data)
+        test_calculator = Calculator(input_data)
 
         # Make sure the param names in user input data were validated
         check_input_param_names_spy.assert_called_with(input_data)
@@ -41,39 +42,39 @@ class TestCalculator:
 
         # Make sure calculator contains a config object with
         # calculation inputs, and a derived params object
-        assert isinstance(calculator._config.calculation_inputs,
+        assert isinstance(test_calculator._config.calculation_inputs,
                           CalculationInput)
-        assert isinstance(calculator._derived_params, DerivedParams)
+        assert isinstance(test_calculator._derived_params, DerivedParams)
 
         # Check that the calculator has been configured with the correct
         # input data
         for user_input_param in user_input_dict:
             if user_input_param not in expected_custom_values:
-                assert getattr(calculator, user_input_param) \
+                assert getattr(test_calculator, user_input_param) \
                        == user_input_dict[user_input_param]
             else:
-                assert getattr(calculator, user_input_param) \
+                assert getattr(test_calculator, user_input_param) \
                        == expected_custom_values[user_input_param]
 
         for instrument_setup_param in instrument_setup_dict:
-            assert getattr(calculator, instrument_setup_param) \
+            assert getattr(test_calculator, instrument_setup_param) \
                    == instrument_setup_dict[instrument_setup_param]
 
         # Check that all the calculator properties are correctly mapped
-        assert calculator.calculation_inputs \
-               == calculator._config.calculation_inputs
-        assert calculator.calculation_inputs.user_input \
-               == calculator.user_input
-        assert calculator.calculation_inputs.user_input \
-               == calculator._config.calculation_inputs.user_input
-        assert calculator.calculation_inputs.instrument_setup \
-               == calculator.instrument_setup
-        assert calculator.calculation_inputs.instrument_setup \
-               == calculator._config.calculation_inputs.instrument_setup
+        assert test_calculator.calculation_inputs \
+               == test_calculator._config.calculation_inputs
+        assert test_calculator.calculation_inputs.user_input \
+               == test_calculator.user_input
+        assert test_calculator.calculation_inputs.user_input \
+               == test_calculator._config.calculation_inputs.user_input
+        assert test_calculator.calculation_inputs.instrument_setup \
+               == test_calculator.instrument_setup
+        assert test_calculator.calculation_inputs.instrument_setup \
+               == test_calculator._config.calculation_inputs.instrument_setup
 
         # Make sure the derived parameters are mapped correctly
-        for param in calculator.derived_parameters:
-            assert getattr(calculator, param[0]) == param[1]
+        for param in test_calculator.derived_parameters:
+            assert getattr(test_calculator, param[0]) == param[1]
 
     @pytest.mark.parametrize(
         'user_input,expected_raises',
@@ -125,9 +126,10 @@ class TestCalculator:
                                derived_params_recalculated, expected_raises,
                                t_atm, calculator, mocker, request):
 
-        validate_update_spy = mocker.spy(Decorators, '_do_validation')
+        validation_spy = mocker.spy(DataHelper, 'validate')
         calculate_derived_params_spy = \
             mocker.spy(Calculator, '_calculate_derived_parameters')
+        original_derived_params = copy.deepcopy(calculator.derived_parameters)
 
         # Check that we can update certain properties, but not others
         with expected_raises as e:
@@ -135,33 +137,40 @@ class TestCalculator:
 
         if not e:
             # Verify that the update was validated
-            validate_update_spy.assert_called()
+            validation_spy.assert_called()
             # Verify that the parameter was updated
             assert getattr(calculator, param) == new_value
             # Verify that the derived parameters were updated,
             # where appropriate
             if derived_params_recalculated:
                 calculate_derived_params_spy.assert_called()
+                assert calculator.derived_parameters != \
+                       original_derived_params
             else:
                 calculate_derived_params_spy.assert_not_called()
+                assert calculator.derived_parameters == \
+                       original_derived_params
         else:
             # Verify that that parameter was not updated
             original_value = request.getfixturevalue(param.lower())
             assert getattr(calculator, param) == original_value
 
-    def test_reset(self, t_int, calculator, mocker):
+    def test_reset(self, obs_freq, calculator, mocker):
+
         calculate_derived_params_spy = \
             mocker.spy(Calculator, '_calculate_derived_parameters')
         config_reset_spy = mocker.spy(Config, 'reset')
+        original_derived_params = copy.deepcopy(calculator.derived_parameters)
 
         # update the calculator
-        calculator.t_int = 90 * u.s
-        assert calculator.t_int == 90 * u.s
+        calculator.obs_freq = 850 * u.GHz
+
         # reset the calculator
         calculator.reset()
-        assert calculator.t_int == t_int
+        assert calculator.obs_freq == obs_freq
         # Verify that the derived parameters were recalculated
         calculate_derived_params_spy.assert_called()
+        assert calculator.derived_parameters == original_derived_params
         # Verify that the reset function resets the values stored in the
         # Calculator's config object
         config_reset_spy.assert_called()
@@ -201,14 +210,18 @@ class TestCalculator:
                 # Call the function without arguments
                 sens = calculator.calculate_sensitivity()
 
+        # Verify that the calculator has been updated with the new integration
+        # time and calculated sensitivity, where appropriate
+        # (the default behaviour is to update the calculator, hence we need
+        # a specific check for 'False' here)
         if new_t_int is not None:
-            # Verify that the calculator now stores the new integration time
-            assert calculator.t_int == new_t_int
+            if update_calculator is not False:
+                assert calculator.t_int == new_t_int
+            else:
+                assert calculator.t_int == t_int
         else:
             assert calculator.t_int == t_int
-        # Verify that the calculator has been updated with the calculated
-        # sensitivity, where appropriate (the default behaviour is to update
-        # the calculator, hence we need a specific check for 'False' here)
+
         if update_calculator is not False:
             assert calculator.sensitivity == sens
         else:
@@ -253,15 +266,18 @@ class TestCalculator:
                 # Call the function without arguments
                 int_time = calculator.calculate_t_integration()
 
+        # Verify that the calculator has been updated with the new sensitivity
+        # and calculated integration time, where appropriate
+        # (the default behaviour is to update the calculator, hence we need
+        # a specific check for 'False' here)
         if new_sens is not None:
-            # Verify that the calculator now stores the new sensitivity
-            assert calculator.sensitivity == new_sens
+            if update_calculator is not False:
+                assert calculator.sensitivity == new_sens
+            else:
+                assert calculator.sensitivity == sensitivity
         else:
             assert calculator.sensitivity == sensitivity
-        # Verify that the calculator has been updated with the calculated
-        # integration time, where appropriate (the default behaviour is to
-        # update the calculator, hence we need a specific check for
-        # 'False' here)
+
         if update_calculator is not False:
             assert calculator.t_int == int_time
         else:

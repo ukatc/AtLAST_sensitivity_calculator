@@ -31,19 +31,18 @@ print("-----------")
 # print('using params', calculator.calculation_parameters_as_dict)
 # calculator.t_int = 100*u.min
 # calculator.obs_freq = 550*u.GHz
-calculated_sensitivity = \
-    calculator.calculate_sensitivity()
-print("Sensitivity: {:0.2f} for an integration time of {:0.2f} "
-      .format(calculated_sensitivity, calculator.t_int))
-calculator.sensitivity = calculated_sensitivity
+# t_int = 5 * u.s
+# calculated_sensitivity = \
+#     calculator.calculate_sensitivity(t_int, False)
+# print("Sensitivity: {:0.2f} for an integration time of {:0.2f} "
+#       .format(calculated_sensitivity, t_int))
+# calculator.sensitivity = calculated_sensitivity
 # calculator.bandwidth = 10*u.GHz
-# sens = 10*u.mJy
-# # Calculate the integration time for a given sensitivity
+sens = 10*u.mJy
 calculated_t_int = \
-    calculator.calculate_t_integration()
+    calculator.calculate_t_integration(sens, False)
 print("Integration time: {:0.2f} to obtain a sensitivity of {:0.2f}"
-      .format(calculated_t_int, calculator.sensitivity))
-# calculator.t_int = calculated_t_int
+      .format(calculated_t_int, sens))
 
 print("-----------")
 
