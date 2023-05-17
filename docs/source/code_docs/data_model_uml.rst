@@ -12,7 +12,7 @@ Data model
       instrument_setup : InstrumentSetup
       user_input : UserInput
       validate_fields(field_values) : dict
-      validate_update(value_to_update, new_value) : dict
+      validate_value(value_to_update, new_value) : dict
     }
     class "Data" as data.Data {
       bandwidth : DataType

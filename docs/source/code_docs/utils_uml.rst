@@ -16,7 +16,7 @@ Utilities
     }
     class "Decorators" as utils.Decorators {
       {static} validate_and_update_params(func) : func
-      {static} validate_update(func) : func
+      {static} validate_value(func) : func
     }
     utils.FileHelper <.. calculator.Calculator
     utils.Decorators ..> calculator.Calculator

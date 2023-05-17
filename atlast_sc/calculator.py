@@ -10,7 +10,7 @@ from atlast_sc.models import DerivedParams
 from atlast_sc.models import UserInput
 from atlast_sc.models import InstrumentSetup
 from atlast_sc.models import CalculationInput
-from atlast_sc.utils import Decorators
+from atlast_sc.utils import Decorators, DataHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
 from atlast_sc.exceptions import ValueOutOfRangeException
 
@@ -59,7 +59,7 @@ class Calculator:
         return self.calculation_inputs.user_input.t_int.value
 
     @t_int.setter
-    @Decorators.validate_update
+    @Decorators.validate_value
     def t_int(self, value):
         # TODO: Setting this value in the on the inputs feels wrong.
         #  This may be a calculated param. Allowing the user to change it
@@ -85,7 +85,7 @@ class Calculator:
         return self.calculation_inputs.user_input.sensitivity.value
 
     @sensitivity.setter
-    @Decorators.validate_update
+    @Decorators.validate_value
     def sensitivity(self, value):
         # TODO: Setting this value in the on the inputs feels wrong.
         #  This may be a calculated param. Allowing the user to change it
@@ -105,7 +105,7 @@ class Calculator:
         return self.calculation_inputs.user_input.bandwidth.value
 
     @bandwidth.setter
-    @Decorators.validate_update
+    @Decorators.validate_value
     def bandwidth(self, value):
         self.calculation_inputs.user_input.bandwidth.value = value
         self.calculation_inputs.user_input.bandwidth.unit = value.unit
@@ -131,7 +131,7 @@ class Calculator:
         return self.calculation_inputs.user_input.n_pol.value
 
     @n_pol.setter
-    @Decorators.validate_update
+    @Decorators.validate_value
     def n_pol(self, value):
         self.calculation_inputs.user_input.n_pol.value = value
 
@@ -340,20 +340,25 @@ class Calculator:
         :param t_int: integration time. Optional. Defaults to the internally
             stored value
         :type t_int: astropy.units.Quantity
-        :param update_calculator: True if the sensitivity stored in the
-            calculator should be updated with the calculated value. Optional.
-            Defaults to True
+        :param update_calculator: True if the calculator should be updated with
+            the specified integration time and calculated sensitivity.
+            Optional. Defaults to True
         :type update_calculator: bool
         :return: sensitivity in mJy
         :rtype: astropy.units.Quantity
         """
 
         if t_int is not None:
-            self.t_int = t_int
+            if update_calculator:
+                self.t_int = t_int
+            else:
+                DataHelper.validate(self, 't_int', t_int)
+        else:
+            t_int = self.t_int
 
         sensitivity = \
             self.sefd / \
-            (self.eta_s * np.sqrt(self.n_pol * self.bandwidth * self.t_int))
+            (self.eta_s * np.sqrt(self.n_pol * self.bandwidth * t_int))
 
         # Convert the output to mJy
         sensitivity = sensitivity.to(u.mJy)
@@ -382,18 +387,23 @@ class Calculator:
         :param sensitivity: required sensitivity. Optional. Defaults
             to the internally stored value
         :type sensitivity: astropy.units.Quantity
-        :param update_calculator: True if the integration time stored in the
-            calculator should be updated with the calculated value. Optional.
-            Defaults to True
+        :param update_calculator: True if the calculator should be updated with
+            the specified sensitivity and calculated integration time.
+            Optional. Defaults to True
         :type update_calculator: bool
         :return: integration time in seconds
         :rtype: astropy.units.Quantity
         """
 
         if sensitivity is not None:
-            self.sensitivity = sensitivity
+            if update_calculator:
+                self.sensitivity = sensitivity
+            else:
+                DataHelper.validate(self, 'sensitivity', sensitivity)
+        else:
+            sensitivity = self.sensitivity
 
-        t_int = (self.sefd / (self.sensitivity * self.eta_s)) ** 2 \
+        t_int = (self.sefd / (sensitivity * self.eta_s)) ** 2 \
             / (self.n_pol * self.bandwidth)
 
         # Convert the integration time to seconds
