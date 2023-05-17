@@ -46,10 +46,9 @@ class TestData:
         # Verify that data conversion factors have been calculated if the
         # data type has units
         if units:
-            assert hasattr(data_type, 'data_conversion')
             assert data_type.data_conversion == expected_data_conversion
         else:
-            assert not hasattr(data_type, 'data_conversion')
+            assert data_type.data_conversion is None
 
     @pytest.mark.parametrize(
         'scenario,default_value,default_unit,lower_value,lower_value_is_floor,'

@@ -23,6 +23,7 @@ class Data:
         upper_value_is_ceil: bool = False
         allowed_values: list = None
         units: list[str] = None
+        data_conversion: dict = None
 
         def __post_init__(self):
             # Make sure the default value is not infinity
