@@ -4,11 +4,23 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from schemas import APIUserInput
+import utils
 import crud
 import context_processors as cp
 
-app = FastAPI()
 
+app = FastAPI(
+    title="AtLast Sensitivity Calculator",
+    version=utils.VERSION,
+    swagger_ui_parameters={"defaultModelsExpandDepth": -1}
+)
+
+version = f'v{utils.version_num_for_url()}'
+paths = {
+    'sensitivity': f'/{version}/sensitivity',
+    'integration_time': f'/{version}/integration-time',
+    'param_values_units': f'/{version}/param-values-units'
+}
 
 templates = Jinja2Templates(directory="templates",
                             context_processors=[cp.invalid_message_processor,
@@ -21,7 +33,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/scripts", StaticFiles(directory="scripts"), name="scripts")
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def sensitivity_calculator(request: Request):
 
     return templates.TemplateResponse("sensitivity_calculator.html",
@@ -30,7 +42,7 @@ async def sensitivity_calculator(request: Request):
                                            crud.get_param_values_units()})
 
 
-@app.post("/v1/sensitivity")
+@app.post(paths['sensitivity'])
 async def sensitivity(api_user_input: APIUserInput):
 
     user_input = _unpack_api_user_input(api_user_input)
@@ -41,7 +53,7 @@ async def sensitivity(api_user_input: APIUserInput):
         raise HTTPException(status_code=400, detail=e.message)
 
 
-@app.post("/v1/integration-time")
+@app.post(paths['integration_time'])
 async def t_int(api_user_input: APIUserInput):
 
     user_input = _unpack_api_user_input(api_user_input)
@@ -52,12 +64,7 @@ async def t_int(api_user_input: APIUserInput):
         raise HTTPException(status_code=400, detail=e.message)
 
 
-@app.post("/v1/test")
-async def test(test_input: dict):
-    return test_input
-
-
-@app.get("/v1/param-values-units")
+@app.get(paths['param_values_units'])
 async def param_values_units():
     return JSONResponse(content=crud.get_param_values_units())
 
