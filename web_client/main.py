@@ -27,6 +27,7 @@ templates = Jinja2Templates(directory="templates",
                                                 cp.default_values_processor,
                                                 cp.default_units_processor,
                                                 cp.allowed_range_processor,
+                                                cp.api_version,
                                                 ])
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -35,7 +36,6 @@ app.mount("/scripts", StaticFiles(directory="scripts"), name="scripts")
 
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def sensitivity_calculator(request: Request):
-
     return templates.TemplateResponse("sensitivity_calculator.html",
                                       {"request": request,
                                        "params_vals_units":
@@ -44,7 +44,7 @@ async def sensitivity_calculator(request: Request):
 
 @app.post(paths['sensitivity'])
 async def sensitivity(api_user_input: APIUserInput):
-
+    print(api_user_input)
     user_input = _unpack_api_user_input(api_user_input)
 
     try:

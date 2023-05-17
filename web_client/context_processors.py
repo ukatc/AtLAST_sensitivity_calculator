@@ -1,6 +1,14 @@
 import math
 from fastapi import Request
 from atlast_sc.data import Data
+import utils
+
+
+def api_version(request: Request):
+    def version():
+        return utils.version_num_for_url()
+
+    return dict(api_version=version)
 
 
 def invalid_message_processor(request: Request):

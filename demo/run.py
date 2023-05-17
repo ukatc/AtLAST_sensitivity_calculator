@@ -1,4 +1,10 @@
 # flake8: noqa
+
+"""
+This file is intended for doing quick checks of the calculator python package.
+It is not intended for testing the calculator.
+Edit at will.
+"""
 import math
 import os
 import astropy.units as u
@@ -59,4 +65,3 @@ print(calculator.derived_parameters)
 # print('before resetting', calculator.calculation_parameters_as_dict)
 # calculator.reset()
 # print('after resetting', calculator.calculation_parameters_as_dict)
-# TODO: add something here to demonstrate that the calculator has been reset

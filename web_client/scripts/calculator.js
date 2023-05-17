@@ -3,7 +3,6 @@ import {validateInput} from './validators.js'
 import * as CalculatorUI from './calculator_ui.js'
 
 $(document).ready(() => {
-
     CalculatorUI.initializeInputs();
     CalculatorUI.hideInvalidMessages(true);
 
