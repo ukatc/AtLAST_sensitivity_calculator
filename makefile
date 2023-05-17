@@ -5,6 +5,9 @@ test:
 	coverage run -m pytest -s -vv
 	coverage report -m
 
+testwebclient:
+	cd web_client && coverage run -m pytest -s -vv && coverage report -m --omit=../atlast_sc/*
+
 buildwebclientimage:
 	@echo "Building web client image for current branch '${GIT_BRANCH}'..."
 	# TODO: tag image built from main branch "latest"

@@ -44,7 +44,7 @@ async def sensitivity_calculator(request: Request):
 
 @app.post(paths['sensitivity'])
 async def sensitivity(api_user_input: APIUserInput):
-    print(api_user_input)
+
     user_input = _unpack_api_user_input(api_user_input)
 
     try:
