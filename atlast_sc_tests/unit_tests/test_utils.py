@@ -4,7 +4,7 @@ import astropy.units as u
 from atlast_sc.utils import Decorators
 from atlast_sc.utils import FileHelper
 from atlast_sc.utils import DataHelper
-from tests.utils import does_not_raise
+from atlast_sc_tests.utils import does_not_raise
 
 
 class TestDecorators:

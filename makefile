@@ -2,7 +2,7 @@
 .PHONY: test
 
 test:
-	coverage run -m pytest -s -vv
+	coverage run -m pytest atlast_sc_tests -s -vv
 	coverage report -m
 
 testwebclient:

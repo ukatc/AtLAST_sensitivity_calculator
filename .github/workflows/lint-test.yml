@@ -29,11 +29,10 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Run python package tests and coverage report
       run: |
-        coverage run -m pytest -s -vv
+        coverage run -m pytest atlast_sc_tests -s -vv
         coverage report -m
     - name: Run FastAPI tests and coverage report
       run: |
-        #cd web_client
-        #coverage run -m pytest -s -vv
-        #coverage report -m --omit=../atlast_sc/*        
-        make testwebclient
+        cd web_client
+        coverage run -m pytest -s -vv
+        coverage report -m --omit=../atlast_sc/*        

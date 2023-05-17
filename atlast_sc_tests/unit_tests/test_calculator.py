@@ -5,7 +5,7 @@ from atlast_sc.calculator import Calculator, Config
 from atlast_sc.models import DerivedParams, CalculationInput
 from atlast_sc.utils import DataHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
-from tests.utils import does_not_raise
+from atlast_sc_tests.utils import does_not_raise
 
 
 class TestCalculator:
