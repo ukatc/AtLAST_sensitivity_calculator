@@ -20,5 +20,7 @@ Utilities
     }
     utils.FileHelper <.. calculator.Calculator
     utils.Decorators ..> calculator.Calculator
+    utils.DataHelper ..> calculator.Calculator
     utils.DataHelper ..> data.Data
+    utils.DataHelper ..> utils.Decorators
     @enduml
