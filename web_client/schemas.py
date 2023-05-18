@@ -4,7 +4,7 @@ from atlast_sc.data import Data
 
 class APIUserInput(BaseModel):
     """
-    A convenience model that allows us to specify both the required data
+    A convenience model that allows us to specify both the required data,
     and value and unit hints.
     (NB: We're not able to take advantage of the UserInput model in the
      atlast_sc.models package because of recursion issues. Not clear why

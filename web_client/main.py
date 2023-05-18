@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from web_client.schemas import APIUserInput
-from web_client import utils, crud
+from web_client import utils, calculator
 import web_client.context_processors as cp
 
 os.chdir(os.path.dirname(__file__))
@@ -40,7 +40,7 @@ async def sensitivity_calculator(request: Request):
     return templates.TemplateResponse("sensitivity_calculator.html",
                                       {"request": request,
                                        "params_vals_units":
-                                           crud.get_param_values_units()})
+                                           calculator.get_param_values_units()})
 
 
 @app.post(paths['sensitivity'])
@@ -49,8 +49,8 @@ async def sensitivity(api_user_input: APIUserInput):
     user_input = _unpack_api_user_input(api_user_input)
 
     try:
-        return crud.do_calculation(user_input, "sensitivity")
-    except crud.UserInputError as e:
+        return calculator.do_calculation(user_input, "sensitivity")
+    except calculator.UserInputError as e:
         raise HTTPException(status_code=400, detail=e.message)
 
 
@@ -60,14 +60,14 @@ async def t_int(api_user_input: APIUserInput):
     user_input = _unpack_api_user_input(api_user_input)
 
     try:
-        return crud.do_calculation(user_input, "integration_time")
-    except crud.UserInputError as e:
+        return calculator.do_calculation(user_input, "integration_time")
+    except calculator.UserInputError as e:
         raise HTTPException(status_code=400, detail=e.message)
 
 
 @app.get(paths['param_values_units'])
 async def param_values_units():
-    return JSONResponse(content=crud.get_param_values_units())
+    return JSONResponse(content=calculator.get_param_values_units())
 
 
 def _unpack_api_user_input(api_user_input):
