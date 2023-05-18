@@ -8,21 +8,22 @@ Setting up your development environment
 
 .. code-block:: bash
 
-   $ git clone https://github.com/ukatc/AtLAST_sensitivity_calculator.git
+   git clone https://github.com/ukatc/AtLAST_sensitivity_calculator.git
 
 
 2. Create a conda environment:
 
 .. code-block:: bash
 
-   $ conda env create -f environment.yml
+   conda env create -f environment.yml
 
 
 3. Activate the conda environment
 
 .. code-block:: bash
 
-   $ conda activate sens-calc
+   conda activate sens-calc
+
 
 The repository
 --------------
@@ -56,13 +57,15 @@ Running the web client directly
 
 .. code-block:: bash
 
-    $ python -m web_client.main
+    python -m web_client.main
 
 3. Point your browser at http://127.0.0.1:8000/ . You should now see the sensitivity calculator web client.
 
 
-Running the web client in a container
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _build-run-client-container:
+
+Building and running the web client container
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A ``Dockerfile`` is provided in the repository that can be used to build and run
 the web client application in a docker container.
@@ -71,7 +74,7 @@ the web client application in a docker container.
     application dependencies in the container. This requirements file is not used by any other part of the
     application.
 
-As part of the build process, the Dockerfile installs the python application from the AtLast Sensitivity
+As part of the build process, the Dockerfile installs the ``atlast_sc`` Python package from the AtLast Sensitivity
 Calculator GitHub repository.
 
 At present, the repository is private. You therefore need to provide your credentials as "secrets" to the
@@ -85,19 +88,26 @@ Docker build process. To do this:
    GIT_USERNAME=<your username>
    GIT_PAT=<your Personal Access Token>
 
-
-You can now build and run the Docker container as follows:
 3. From the ``web_client`` directory, build the image with the command:
 
 .. code-block:: bash
 
-    $ DOCKER_BUILDKIT=1 docker build -t atlast_sc_client:latest --secret id=git_secrets,src=secrets/.env .
+    DOCKER_BUILDKIT=1 docker build -t atlast_sc_client:latest --secret id=git_secrets,src=secrets/.env .
+
+By default, the build process installs the ``atlast_sc`` package from the ``main`` branch. To install
+a version of the Python package from a different branch, execute the following:
+
+.. code-block:: bash
+
+    DOCKER_BUILDKIT=1 docker build --build-arg BRANCH=<branch_name> -t atlast_sc_client:latest --secret id=git_secrets,src=secrets/.env .
+
+where ``<branch_name>`` is the name of the target branch.
 
 4. Run the container with the command:
 
 .. code-block:: bash
 
-   $ docker run --rm -d -p 8000:8000 --name atlast_sc_client atlast_sc_client:latest
+   docker run --rm -d -p 8000:8000 --name atlast_sc_client atlast_sc_client:latest
 
 
 5. Point your browser at http://127.0.0.1:8000/ . You should now see the sensitivity calculator web client.
@@ -152,7 +162,7 @@ To build the html version of the documentation:
 
 .. code-block:: bash
 
-   $ make html
+   make html
 
 This will create the html and other resources in ``docs/build/``.
 
@@ -172,7 +182,7 @@ and execute the following:
 
 .. code-block:: bash
 
-    $ pyreverse -o puml -p atlast_sc .
+    pyreverse -o puml -p atlast_sc .
 
 This will generate ``puml`` files in the current directory, which you can edit as required.
 
