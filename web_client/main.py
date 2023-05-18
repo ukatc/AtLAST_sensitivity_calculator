@@ -38,9 +38,7 @@ app.mount("/scripts", StaticFiles(directory="scripts"), name="scripts")
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def sensitivity_calculator(request: Request):
     return templates.TemplateResponse("sensitivity_calculator.html",
-                                      {"request": request,
-                                       "params_vals_units":
-                                           crud.get_param_values_units()})
+                                      {"request": request})
 
 
 @app.post(paths['sensitivity'])
