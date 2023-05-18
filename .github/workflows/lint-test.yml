@@ -33,5 +33,5 @@ jobs:
         coverage report -m
     - name: Run FastAPI tests and coverage report
       run: |
-        coverage run -m pytest web_client -s -vv
+        coverage run -m pytest fastapi_tests -s -vv
         coverage report -m --omit=atlast_sc/*        
