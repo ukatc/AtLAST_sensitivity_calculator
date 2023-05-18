@@ -6,7 +6,7 @@ testpackage:
 	coverage report -m
 
 testwebclient:
-	coverage run -m pytest web_client -s -vv
+	coverage run -m pytest fastapi_tests -s -vv
 	coverage report -m --omit=atlast_sc/*
 
 buildwebclientimage:
