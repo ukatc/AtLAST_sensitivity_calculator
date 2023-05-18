@@ -1,5 +1,5 @@
-Guide for Developers
-====================
+Developing the application
+==========================
 
 Setting up your development environment
 ---------------------------------------
@@ -24,9 +24,29 @@ Setting up your development environment
 
    $ conda activate sens-calc
 
+The repository
+--------------
+TODO: complete
 
-Running the web client
-----------------------
+
+The Calculator
+--------------
+The AtLast Sensitivity Calculator is a written in Python. The repository contains
+a ``pyproject.toml`` file that specifies build requirements and other information
+such as package version, author information, etc.
+
+Building the Python package
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Deploying the Python package
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The web client
+--------------
+The web client consists of a backend based on the `FastAPI web framework <https://fastapi.tiangolo.com/lo/>`__,
+and a standard HTML/CSS/JavaScript frontend. The backend renders the frontend using
+the `Jinja templating engine <https://jinja.palletsprojects.com/en/3.1.x/>`__.
+
 The web client can be run directly in your development environment from the command line. Alternatively, it can be
 run in a docker container. Instructions for each method are provided below.
 
@@ -46,7 +66,12 @@ Running the web client directly
 Running the web client in a container
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A Dockerfile is provided in the repository that can be used to build and run the web client application.
+A ``Dockerfile`` is provided in the repository that can be used to build and run the web client application.
+
+.. note:: The ``Dockerfile`` uses the ``requirements.txt`` file in ``web_client`` directory to install
+    application dependencies in the container. This requirements file is not used by any other part of the
+    application.
+
 As part of the build process, the Dockerfile installs the python application from the AtLast Sensitivity
 Calculator GitHub repository.
 
