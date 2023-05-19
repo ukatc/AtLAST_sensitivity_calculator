@@ -45,7 +45,9 @@ AtLAST Sensitivity Calculator
    :caption: Developer Guide
    :hidden:
 
-   developer_guide/guide_for_developers
+   developer_guide/application_overview
+   developer_guide/repository_overview
+   developer_guide/developing_the_application
 
 .. API section
    Hidden toctree to allow sidebar navigation.
@@ -57,3 +59,4 @@ AtLAST Sensitivity Calculator
 
    code_docs/public_api
    code_docs/uml
+   code_docs/openapi

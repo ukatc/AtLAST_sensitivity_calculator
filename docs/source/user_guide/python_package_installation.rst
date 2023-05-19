@@ -31,13 +31,13 @@ typing:
 
 .. code-block:: bash
 
-    $ python -V
+    python -V
 
 If this returns ``2.x.x``, then try:
 
 .. code-block:: bash
 
-    $ python3 -V
+    python3 -V
 
 
 Installing the sensitivity calculator Python package
@@ -48,7 +48,7 @@ Once you have created and activated your environment, install the Sensitivity Ca
 
 .. code-block:: bash
 
-    $ pip install git+https://<GIT_USERNAME>:<GIT_PAT>@github.com/ukatc/AtLAST_sensitivity_calculator.git
+    pip install git+https://<GIT_USERNAME>:<GIT_PAT>@github.com/ukatc/AtLAST_sensitivity_calculator.git
 
 where ``<GIT_USERNAME>`` and ``<GIT_PAT>`` are the username and personal access token that you use to access the AtLast
 Sensitivity Calculator GitHub repository.
@@ -57,7 +57,7 @@ You can install the package from a different branch by typing:
 
 .. code-block:: bash
 
-    $ pip install git+https://<GIT_USERNAME>:<GIT_PAT>@github.com/ukatc/AtLAST_sensitivity_calculator.git@<branch>
+    pip install git+https://<GIT_USERNAME>:<GIT_PAT>@github.com/ukatc/AtLAST_sensitivity_calculator.git@<branch>
 
 where ``<branch>`` is the name of the target branch.
 

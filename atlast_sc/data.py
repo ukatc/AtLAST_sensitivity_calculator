@@ -65,7 +65,7 @@ class Data:
             if self.allowed_values:
                 assert self.default_value in self.allowed_values
 
-            # If the data type has a list of allowed units, evaluate the data
+            # If the data type has a list of allowed units, evaluate the
             # conversion factors between allowed units and the default unit
             if self.units:
                 self.data_conversion = DataHelper.data_conversion_factors(

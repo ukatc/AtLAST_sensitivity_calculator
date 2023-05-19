@@ -20,11 +20,15 @@ Documentation on how to install the Sensitivity Calculater Python package can be
 in the [``Python Package Installation Guide``](docs/source/user_guide/python_package_installation.rst). Information
 on using the Python package is provided in the [``Using the Calculator guide``](docs/source/user_guide/using_the_calculator.rst).
 
-See [``Installing and Running the Web Client``](docs/source/user_guide/running_the_web_client.rst) for instructions on
+See [``Running the Web Client``](docs/source/user_guide/running_the_web_client.rst) for instructions on
 setting up the Sensitivity Calculator web application.
 
 
 Guide for Developers
 ====================
 Information on setting up your development environment, building, running, and deploying the application, running tests,
-and generating the docs is provided in the [``Guide for Developers``](docs/source/developer_guide/guide_for_developers.rst).
+and generating the docs is provided in the [``Developing the application guide``](docs/source/developer_guide/developing_the_application.rst).
+
+An overview of the application is provided [``here``](docs/source/developer_guide/application_overview.rst).
+
+Information about the structure of the repository can be found [``here``](docs/source/developer_guide/repository_overview.rst).
