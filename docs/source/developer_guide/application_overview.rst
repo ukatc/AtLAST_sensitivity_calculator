@@ -1,5 +1,5 @@
-Overview
-========
+Application overview
+====================
 The sensitivity calculator consists of a Python package and a web application.
 An overview of each component is provided below.
 
@@ -52,7 +52,7 @@ models
 This module contains model definitions that describe the structure of the data
 provided to the calculator. The module uses the ``pydantic`` library; models
 within the module inherit from the pydantic ``BaseModel``. Custom validation methods
-within the models ensures that input data is of the right type and satisfies the
+within the models ensure that input data is of the right type and satisfies the
 constraints defined in the ``data.Data`` class.
 
 derived_groups
@@ -73,7 +73,7 @@ This module contains the data validation exception and warning classes.
 
 utils
 +++++
-A utility module containing classes and methods used throughout the application.
+This is a utility module that contains classes and methods used throughout the application.
 
 The web application
 -------------------

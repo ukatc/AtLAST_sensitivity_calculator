@@ -101,7 +101,6 @@ Data model
     models.ValueWithUnits --* models.CalculationInput
     models.ValueWithUnits --* models.UserInput
     models.ValueWithUnits --* models.InstrumentSetup
-    models.ValueWithoutUnits --* models.CalculationInput
     models.ValueWithoutUnits --* models.UserInput
     models.ValueWithoutUnits --* models.InstrumentSetup
     @enduml

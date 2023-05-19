@@ -48,8 +48,6 @@ Calculator
     }
     class "Config" as calculator.Config {
       calculation_inputs : CalculationInput
-      instrument_setup : InstrumentSetup
-      user_input : UserInput
       Config(user_input: Optiona[dict], instrument_setup: Optional[dict])
       reset()
     }

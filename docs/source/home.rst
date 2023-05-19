@@ -22,5 +22,5 @@ See :doc:`Using the Calculator <user_guide/using_the_calculator>` for informatio
 on how to integrate the calculator into your Python code.
 
 For information on running the web client, see
-:doc:`Installing and Running the Web Client <user_guide/running_the_web_client>`.
+:doc:`Running the Web Client <user_guide/running_the_web_client>`.
 

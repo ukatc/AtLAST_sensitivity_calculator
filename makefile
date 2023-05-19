@@ -1,6 +1,9 @@
 -include web_client/secrets/.env
 .PHONY: test
 
+buildpythonpackage: clean
+	python -m build
+
 testpackage:
 	coverage run -m pytest atlast_sc_tests -s -vv
 	coverage report -m
@@ -20,12 +23,7 @@ pushwebclientimage: buildwebclientimage
 	@echo ${GIT_CR_PAT} | docker login ghcr.io -u ${GIT_USERNAME} --password-stdin ; \
 	echo "Pushing web client image for current branch '${GIT_BRANCH}'..." ; \
 	docker push ${GIT_CR_REPO}:${GIT_BRANCH}
-	@echo "Push completed."
-
-buildpythonpackage: clean
-	python -m build
-
-
+	@echo "Push complete."
 
 clean:
 	@rm -rf .pytest_cache/ .mypy_cache/ junit/ build/ dist/

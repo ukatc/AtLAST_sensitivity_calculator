@@ -46,6 +46,7 @@ AtLAST Sensitivity Calculator
    :hidden:
 
    developer_guide/application_overview
+   developer_guide/repository_overview
    developer_guide/developing_the_application
 
 .. API section
@@ -58,3 +59,4 @@ AtLAST Sensitivity Calculator
 
    code_docs/public_api
    code_docs/uml
+   code_docs/openapi
