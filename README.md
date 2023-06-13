@@ -32,3 +32,9 @@ and generating the docs is provided in the [``Developing the application guide``
 An overview of the application is provided [``here``](docs/source/developer_guide/application_overview.rst).
 
 Information about the structure of the repository can be found [``here``](docs/source/developer_guide/repository_overview.rst).
+
+
+Funding Acknowledgement
+===============================
+
+This project has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 951815
