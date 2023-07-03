@@ -1,5 +1,5 @@
 from pathlib import Path
-from scipy.interpolate import interp2d
+from scipy.interpolate import interp2d, RegularGridInterpolator
 import numpy as np
 import astropy.units as u
 from astropy import constants
@@ -23,17 +23,28 @@ class AtmosphereParams:
 
     def __init__(self):
 
-        T_atm_table = np.genfromtxt(AtmosphereParams._T_ATM_PATH)
         tau_atm_table = np.genfromtxt(AtmosphereParams._TAU_ATM_PATH)
+
+        T_atm_table = np.genfromtxt(AtmosphereParams._T_ATM_PATH)
+        T_atm_table[:,1:] = T_atm_table[:,1:] / (1.00 - np.exp(-tau_atm_table[:,1:]))
+
         # TODO: interp2d is deprecated:
         #   see https://docs.scipy.org/doc/scipy/reference/generated
         #       /scipy.interpolate.interp2d.html
-        self._interp_T_atm = interp2d(T_atm_table[:, 0],
-                                      AtmosphereParams._WEATHER,
-                                      T_atm_table[:, 1:].T)
-        self._interp_tau_atm = interp2d(tau_atm_table[:, 0],
-                                        AtmosphereParams._WEATHER,
-                                        tau_atm_table[:, 1:].T)
+        # self._interp_T_atm = interp2d(T_atm_table[:, 0],
+        #                               AtmosphereParams._WEATHER,
+        #                               T_atm_table[:, 1:].T)
+        # self._interp_tau_atm = interp2d(tau_atm_table[:, 0],
+        #                                 AtmosphereParams._WEATHER,
+        #                                 tau_atm_table[:, 1:].T)
+
+        self._interp_T_atm = RegularGridInterpolator((T_atm_table[:, 0],
+                                                      AtmosphereParams._WEATHER),
+                                                      T_atm_table[:, 1:]) #.T)
+
+        self._interp_tau_atm = RegularGridInterpolator((tau_atm_table[:, 0],
+                                                        AtmosphereParams._WEATHER),
+                                                        tau_atm_table[:, 1:]) #.T)
 
     def calculate_tau_atm(self, obs_freq, weather, elevation):
         """
@@ -48,11 +59,11 @@ class AtmosphereParams:
         :return: Atmospheric transmittance
         :rtype: astropy.units.Quantity
         """
-        tau_z = self._interp_tau_atm(obs_freq, weather)
+        tau_z = self._interp_tau_atm((obs_freq, weather))
         zenith = 90.0 * u.deg - elevation
         tau_atm = tau_z / np.cos(zenith)
 
-        return tau_atm[0]
+        return tau_atm
 
     def calculate_atmospheric_temperature(self, obs_freq, weather):
         """
@@ -65,7 +76,7 @@ class AtmosphereParams:
         :return: Atmospheric temperature
         :rtype: astropy.units.Quantity
         """
-        return self._interp_T_atm(obs_freq, weather)[0] * u.K
+        return self._interp_T_atm((obs_freq, weather)) * u.K
 
 
 class Efficiencies:
