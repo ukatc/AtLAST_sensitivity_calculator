@@ -24,9 +24,7 @@ class ModelUtils:
             if not isinstance(orig_value, (floating, float)):
                 return orig_value
 
-            exponent = floor(log10(abs(orig_value)))
-
-            if exponent >= 4:
+            if orig_value!=0 and floor(log10(abs(orig_value))) >= 4:
                 new_value = f'{value:.6e}'
             else:
                 new_value = round(value, 6)
@@ -231,6 +229,8 @@ class DerivedParams(BaseModel):
     eta_s: float
     # System temperature
     T_sys: Quantity
+    # Sky temperature
+    T_sky: Quantity
     # Source equivalent flux density
     sefd: Quantity
 

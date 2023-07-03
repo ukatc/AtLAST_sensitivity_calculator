@@ -167,6 +167,13 @@ class Temperatures:
         """
         return self._T_sys
 
+    @property
+    def T_sky(self):
+        """
+        Get the sky temperature
+        """
+        return self._T_sky
+
     @staticmethod
     def _calculate_receiver_temperature(obs_freq):
         """
@@ -185,6 +192,8 @@ class Temperatures:
 
         transmittance = np.exp(-tau_atm)
         sky_temp = T_atm * (1 - transmittance) + T_cmb
+
+        self._T_sky = sky_temp
 
         return (1 + g) / (eta_eff * transmittance) * \
                (self.T_rx

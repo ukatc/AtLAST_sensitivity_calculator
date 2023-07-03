@@ -137,7 +137,7 @@ class Data:
 
     # Sideband Ratio
     g = DataType(
-        default_value=1
+        default_value=0
     )
 
     # surface smoothness, set to 25 micron to be consistent with OHB
