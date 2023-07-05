@@ -202,12 +202,10 @@ class Temperatures:
         """
 
         transmittance = np.exp(-tau_atm)
-        sky_temp = T_atm * (1 - transmittance) + T_cmb
-
-        self._T_sky = sky_temp
+        self._T_sky = T_atm * (1 - transmittance) + T_cmb
 
         return (1 + g) / (eta_eff * transmittance) * \
                (self.T_rx
-                + (eta_eff * sky_temp)
+                + (eta_eff * self._T_sky)
                 + ((1 - eta_eff) * T_amb)
                 )
