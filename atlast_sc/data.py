@@ -128,10 +128,10 @@ class Data:
 
     # Elevation of the target for calculating air mass
     elevation = DataType(
-        default_value=45,
+        default_value=60,
         default_unit=str(u.deg),
-        lower_value=25,
-        upper_value=85,
+        lower_value=20,
+        upper_value=90,
         units=[str(u.deg)]
     )
 
@@ -164,7 +164,7 @@ class Data:
 
     # Forward Efficiency
     eta_eff = DataType(
-        default_value=0.8
+        default_value=0.95
     )
 
     # Illumination Efficiency
@@ -184,12 +184,12 @@ class Data:
 
     # Polarisation Efficiency
     eta_pol = DataType(
-        default_value=0.99
+        default_value=0.995
     )
 
     # Temperature of the CMB
     t_cmb = DataType(
-        default_value=2.73,
+        default_value=2.726,
         default_unit=str(u.K)
     )
 
