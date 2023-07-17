@@ -16,7 +16,7 @@ package. For future releases, both will be hosted on publicly available servers.
 For the time being, both the web client and Python package can be installed or
 downloaded from this repository.
 
-Documentation on how to install the Sensitivity Calculater Python package can be found
+Documentation on how to install the Sensitivity Calculator Python package can be found
 in the [``Python Package Installation Guide``](docs/source/user_guide/python_package_installation.rst). Information
 on using the Python package is provided in the [``Using the Calculator guide``](docs/source/user_guide/using_the_calculator.rst).
 
