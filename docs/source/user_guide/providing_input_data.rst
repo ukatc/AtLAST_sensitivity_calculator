@@ -32,7 +32,7 @@ Next, create a new Calculator object, passing the ``input_data`` dictionary.
     representations of
     `astropy units <https://docs.astropy.org/en/stable/units/index.html>`__.
 
-.. note:: The Calculator with throw an error if any of the input parameter names are
+.. note:: The Calculator will throw an error if any of the input parameter names are
     incorrect.
 
 .. note:: If any of the above parameters are missing from input data dictionary,
