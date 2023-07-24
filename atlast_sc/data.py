@@ -137,7 +137,7 @@ class Data:
 
     # Sideband Ratio
     g = DataType(
-        default_value=1
+        default_value=0
     )
 
     # surface smoothness, set to 25 micron to be consistent with OHB
@@ -164,7 +164,7 @@ class Data:
 
     # Forward Efficiency
     eta_eff = DataType(
-        default_value=0.8
+        default_value=0.95
     )
 
     # Illumination Efficiency
@@ -184,12 +184,12 @@ class Data:
 
     # Polarisation Efficiency
     eta_pol = DataType(
-        default_value=0.99
+        default_value=0.995
     )
 
     # Temperature of the CMB
     t_cmb = DataType(
-        default_value=2.73,
+        default_value=2.726,
         default_unit=str(u.K)
     )
 
