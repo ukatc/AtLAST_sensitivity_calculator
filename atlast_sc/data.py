@@ -135,7 +135,7 @@ class Data:
         units=[str(u.deg)]
     )
 
-    # Sideband Ratio
+    # Sideband Ratio - 0 for SSB and 2SB receivers, 1 for DSB receivers
     g = DataType(
         default_value=0
     )
