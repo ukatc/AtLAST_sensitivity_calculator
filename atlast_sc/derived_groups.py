@@ -25,7 +25,7 @@ class AtmosphereParams:
 
         T_atm_table = np.genfromtxt(AtmosphereParams._T_ATM_PATH)
         tau_atm_table = np.genfromtxt(AtmosphereParams._TAU_ATM_PATH)
-
+        # the temperature values obtained by interpolating over the ATM tables are rescaled by the opacity at zenith to obtain T_atm (see the discussion around Eq. 7-9 in the ALMA Memo 602 (https://library.nrao.edu/public/memos/alma/main/memo602.pdf))
         T_atm_table[:,1:] = T_atm_table[:,1:] / (1.00 - np.exp(-tau_atm_table[:,1:]))
 
         self._interp_T_atm = RegularGridInterpolator((T_atm_table[:, 0],
