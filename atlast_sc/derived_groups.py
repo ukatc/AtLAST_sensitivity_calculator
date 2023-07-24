@@ -25,15 +25,17 @@ class AtmosphereParams:
 
         T_atm_table = np.genfromtxt(AtmosphereParams._T_ATM_PATH)
         tau_atm_table = np.genfromtxt(AtmosphereParams._TAU_ATM_PATH)
-        # TODO: interp2d is deprecated:
-        #   see https://docs.scipy.org/doc/scipy/reference/generated
-        #       /scipy.interpolate.interp2d.html
-        self._interp_T_atm = interp2d(T_atm_table[:, 0],
-                                      AtmosphereParams._WEATHER,
-                                      T_atm_table[:, 1:].T)
-        self._interp_tau_atm = interp2d(tau_atm_table[:, 0],
-                                        AtmosphereParams._WEATHER,
-                                        tau_atm_table[:, 1:].T)
+
+        T_atm_table[:,1:] = T_atm_table[:,1:] / (1.00 - np.exp(-tau_atm_table[:,1:]))
+
+        self._interp_T_atm = RegularGridInterpolator((T_atm_table[:, 0],
+                                                      AtmosphereParams._WEATHER),
+                                                      T_atm_table[:, 1:])
+
+        self._interp_tau_atm = RegularGridInterpolator((tau_atm_table[:, 0],
+                                                        AtmosphereParams._WEATHER),
+                                                        tau_atm_table[:, 1:])
+
 
     def calculate_tau_atm(self, obs_freq, weather, elevation):
         """
@@ -52,7 +54,7 @@ class AtmosphereParams:
         zenith = 90.0 * u.deg - elevation
         tau_atm = tau_z / np.cos(zenith)
 
-        return tau_atm[0]
+        return float(tau_atm)
 
     def calculate_atmospheric_temperature(self, obs_freq, weather):
         """
@@ -65,7 +67,7 @@ class AtmosphereParams:
         :return: Atmospheric temperature
         :rtype: astropy.units.Quantity
         """
-        return self._interp_T_atm(obs_freq, weather)[0] * u.K
+        return float(self._interp_T_atm(obs_freq, weather)) * u.K
 
 
 class Efficiencies:
@@ -167,6 +169,13 @@ class Temperatures:
         """
         return self._T_sys
 
+    @property
+    def T_sky(self):
+        """
+        Get the sky temperature
+        """
+        return self._T_sky
+
     @staticmethod
     def _calculate_receiver_temperature(obs_freq):
         """
@@ -184,10 +193,10 @@ class Temperatures:
         """
 
         transmittance = np.exp(-tau_atm)
-        sky_temp = T_atm * (1 - transmittance) + T_cmb
+        self._T_sky = T_atm * (1 - transmittance) + T_cmb
 
         return (1 + g) / (eta_eff * transmittance) * \
                (self.T_rx
-                + (eta_eff * sky_temp)
+                + (eta_eff * self._T_sky)
                 + ((1 - eta_eff) * T_amb)
                 )
