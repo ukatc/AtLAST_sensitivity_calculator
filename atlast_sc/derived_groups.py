@@ -50,7 +50,7 @@ class AtmosphereParams:
         :return: Atmospheric transmittance
         :rtype: astropy.units.Quantity
         """
-        tau_z = self._interp_tau_atm(obs_freq, weather)
+        tau_z = self._interp_tau_atm((obs_freq, weather))
         zenith = 90.0 * u.deg - elevation
         tau_atm = tau_z / np.cos(zenith)
 
@@ -67,7 +67,7 @@ class AtmosphereParams:
         :return: Atmospheric temperature
         :rtype: astropy.units.Quantity
         """
-        return float(self._interp_T_atm(obs_freq, weather)) * u.K
+        return float(self._interp_T_atm((obs_freq, weather))) * u.K
 
 
 class Efficiencies:
