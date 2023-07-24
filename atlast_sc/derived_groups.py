@@ -1,5 +1,5 @@
 from pathlib import Path
-from scipy.interpolate import interp2d
+from scipy.interpolate import RegularGridInterpolator
 import numpy as np
 import astropy.units as u
 from astropy import constants
