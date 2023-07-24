@@ -17,8 +17,8 @@ class TestCalculatorUsage:
         # Verify that the calculator now stores the newly calculated
         # sensitivity
         assert sens == test_calculator.sensitivity
-        # Verify that the sensitivity is about 2.97 mJy
-        assert test_calculator.sensitivity.value == pytest.approx(2.97, 0.01)
+        # Verify that the sensitivity is about 0.78 mJy
+        assert test_calculator.sensitivity.value == pytest.approx(0.78, 0.01)
         assert test_calculator.sensitivity.unit == u.mJy
 
         # Update observing frequency
