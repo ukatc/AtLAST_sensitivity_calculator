@@ -162,7 +162,7 @@ class Data:
         default_unit=str(u.K)
     )
 
-    # Forward Efficiency
+    # Forward Efficiency - 0.95 based on ALMA Memo 602(https://library.nrao.edu/public/memos/alma/main/memo602.pdf), page 8
     eta_eff = DataType(
         default_value=0.95
     )
