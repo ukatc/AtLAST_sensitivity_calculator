@@ -293,6 +293,13 @@ class Calculator:
         return self.derived_parameters.T_sys
 
     @property
+    def T_sky(self):
+        """
+        Get the system temperature
+        """
+        return self.derived_parameters.T_sky
+
+    @property
     def sefd(self):
         """
         Get the system equivalent flux density
@@ -488,7 +495,7 @@ class Calculator:
 
         self._derived_params = \
             DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
-                          eta_a=eta.eta_a, eta_s=eta.eta_s, T_sys=temps.T_sys,
+                          eta_a=eta.eta_a, eta_s=eta.eta_s, T_sys=temps.T_sys, T_sky=temps.T_sky,
                           sefd=sefd)
 
     def _calculate_sefd(self, T_sys, eta_a):

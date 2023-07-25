@@ -231,6 +231,8 @@ class DerivedParams(BaseModel):
     eta_s: float
     # System temperature
     T_sys: Quantity
+    # Sky temperature
+    T_sky: Quantity
     # Source equivalent flux density
     sefd: Quantity
 

@@ -163,6 +163,9 @@ class TestDerivedGroups:
 
         temp = atmosphere_params.calculate_atmospheric_temperature(obs_freq,
                                                                    weather)
+        tau = atmosphere_params.calculate_tau_atm(obs_freq, weather, 90*u.deg)
+        # convert atmospheric temperature to sky temperature at zenith = 0
+        temp = temp * (1.00-np.exp(-tau))
 
         # Check that the atmospheric temperature is "cold" for transparent
         # frequencies and "hot" for opaque frequencies

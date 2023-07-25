@@ -233,9 +233,9 @@ class TestCalculator:
     @pytest.mark.parametrize(
         'new_sens,update_calculator',
         [
-            (10 * u.mJy, None),
-            (10 * u.mJy, True),
-            (10 * u.mJy, False),
+            (5 * u.mJy, None),
+            (5 * u.mJy, True),
+            (5 * u.mJy, False),
             (None, None),
             (None, True),
             (None, False)

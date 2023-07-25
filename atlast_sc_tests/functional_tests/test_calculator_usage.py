@@ -17,8 +17,8 @@ class TestCalculatorUsage:
         # Verify that the calculator now stores the newly calculated
         # sensitivity
         assert sens == test_calculator.sensitivity
-        # Verify that the sensitivity is about 2.97 mJy
-        assert test_calculator.sensitivity.value == pytest.approx(2.97, 0.01)
+        # Verify that the sensitivity is about 0.78 mJy
+        assert test_calculator.sensitivity.value == pytest.approx(0.78, 0.01)
         assert test_calculator.sensitivity.unit == u.mJy
 
         # Update observing frequency
@@ -114,7 +114,7 @@ class TestCalculatorUsage:
         # parameters
         expected_params = ['t_int', 'sensitivity', 'bandwidth', 'n_pol',
                            'obs_freq', 'weather', 'elevation', 'tau_atm',
-                           'T_atm', 'T_rx', 'eta_a', 'eta_s', 'T_sys',
+                           'T_atm', 'T_rx', 'eta_a', 'eta_s', 'T_sys', 'T_sky',
                            'sefd']
         # sort the expected parameters
         expected_params.sort()

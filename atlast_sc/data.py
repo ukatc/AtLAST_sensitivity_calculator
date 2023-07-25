@@ -135,9 +135,9 @@ class Data:
         units=[str(u.deg)]
     )
 
-    # Sideband Ratio
+    # Sideband Ratio - 0 for SSB and 2SB receivers, 1 for DSB receivers
     g = DataType(
-        default_value=1
+        default_value=0
     )
 
     # surface smoothness, set to 25 micron to be consistent with OHB
@@ -162,9 +162,9 @@ class Data:
         default_unit=str(u.K)
     )
 
-    # Forward Efficiency
+    # Forward Efficiency - 0.95 based on ALMA Memo 602(https://library.nrao.edu/public/memos/alma/main/memo602.pdf), page 8
     eta_eff = DataType(
-        default_value=0.8
+        default_value=0.95
     )
 
     # Illumination Efficiency
@@ -184,12 +184,12 @@ class Data:
 
     # Polarisation Efficiency
     eta_pol = DataType(
-        default_value=0.99
+        default_value=0.995
     )
 
     # Temperature of the CMB
     t_cmb = DataType(
-        default_value=2.73,
+        default_value=2.726,
         default_unit=str(u.K)
     )
 

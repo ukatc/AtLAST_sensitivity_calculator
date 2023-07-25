@@ -139,3 +139,5 @@ dmypy.json
 
 # puml files
 */*.puml
+
+.DS_Store
