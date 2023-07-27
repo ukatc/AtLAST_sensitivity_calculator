@@ -26,6 +26,9 @@ Derived parameters
     * - System temperature
       - T_sys
       - K
+    * - Sky temperature
+      - T_sky
+      - K
     * - System equivalent flux density
       - sefd
       - J / m2

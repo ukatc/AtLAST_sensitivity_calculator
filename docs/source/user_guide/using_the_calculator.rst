@@ -151,27 +151,26 @@ parameters to the console as follows:
 
     # Check the instrument setup parameters
     >>> print(calculator.instrument_setup)
-    g: 1
+    g: 0
     surface_rms: 25 micron
     dish_radius: 25 m
     T_amb: 270 K
-    eta_eff: 0.8
+    eta_eff: 0.95
     eta_ill: 0.8
     eta_spill: 0.95
     eta_block: 0.94
-    eta_pol: 0.99
-    eta_r: 1
+    eta_pol: 0.995
 
     # Check the derived parameters
     >>> print(calculator.derived_parameters)
-    tau_atm: 0.0276204
-    T_atm: 7.7576 K
-    T_rx: 23.9962 K
-    eta_a: 0.699532
+    tau_atm: 0.02762
+    T_atm: 401.094323096683 K
+    T_rx: 23.996215366831105 K
+    eta_a: 0.703065
     eta_s: 0.99
-    T_sys: 206.499 K
-    sefd: 4.15139e-24 J / m2
-    area: 1963.5 m2
+    T_sys: 54.61020434562856 K
+    T_sky: 13.652788658783503 K
+    sefd: 1.0923500468071407e-24 J / m2
 
 .. _input data:
 
