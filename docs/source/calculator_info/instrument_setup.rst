@@ -12,7 +12,7 @@ Instrument setup
       - Notes
     * - Sideband ratio
       - g
-      - 1
+      - 0
       -
       -
     * - Surface RMS
@@ -33,7 +33,7 @@ Instrument setup
       -
     * - Forward efficiency
       - eta_eff
-      - 0.8
+      - 0.95
       -
       -
     * - Illumination efficiency
@@ -53,6 +53,6 @@ Instrument setup
       -
     * - Polarisation efficiency
       - eta_pol
-      - 0.99
+      - 0.995
       -
       -

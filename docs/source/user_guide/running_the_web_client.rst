@@ -7,11 +7,6 @@ using a Docker image hosted on the GitHub Container Registry.
 
 Instructions for each method are provided below.
 
-.. note:: Please contact `Pamela Klaassen`_ if you require access to the repository.
-
-
-.. note:: At a future release, the web client will be hosted on a publicly
-    available server.
 
 Running the web client directly
 -------------------------------
