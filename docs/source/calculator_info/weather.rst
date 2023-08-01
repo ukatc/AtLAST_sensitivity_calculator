@@ -1,8 +1,9 @@
 Weather Calculations
 --------------------
 
-A grid of atmospheric temperature and opacity were calculated using *am* models for the Atacama Plateau,
-and are interpolated to the observing frequency and water column requested in the sensitivity calculator.
+A grid of atmospheric temperature and opacity were calculated using *am* models for the Atacama Plateau.
+The code only provides measurements of the sky temperature at zenith and must first be scaled by the opacity at zentih to obtain :math:`T_{atm}`.
+These are then interpolated to the observing frequency and water column requested in the sensitivity calculator.
 
 The input required for the calculator is the percentile water column in the atmosphere,
 which takes a value between 5 and 95%, with 5% being low water column, and 95% being high.

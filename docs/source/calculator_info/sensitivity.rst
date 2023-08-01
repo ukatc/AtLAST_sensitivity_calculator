@@ -48,6 +48,25 @@ where
 * :math:`T_{sky}` is the sky temperature
 * :math:`T_{amb}` is the ambient temperature
 
+Here we assume a receiver temperature calculated from:
+
+.. math::
+    T_{rx} = \frac{5h\nu}{k}
+
+where
+
+* :math:`h` is the Planck constant
+
+The sky temperature is calculated as:
+
+.. math::
+    T_{sky} = (1-\mathfrak{t})\times T_{atm} + T_{cmb}
+
+where
+
+* :math:`T_{atm}` is the atmospheric temperature calculated from the model grid described in :doc:`Weather Calculations <weather>`
+* :math:`T_{cmb}` is the temperature of the cosmic microwave background.
+
 
 Efficiencies
 ------------
