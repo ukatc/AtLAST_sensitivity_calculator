@@ -23,6 +23,7 @@ conda environment
 * jupyter lab
 * ipython
 * reproject
+* astroquery
 
 They are not included in the python package to minimise the download size of the package
 for those who are only interested in the sensitivity calculator itself.  To download
