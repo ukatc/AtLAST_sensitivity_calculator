@@ -367,8 +367,14 @@ class Calculator:
             self.sefd / \
             (self.eta_s * np.sqrt(self.n_pol * self.bandwidth * t_int))
 
-        # Convert the output to mJy
-        sensitivity = sensitivity.to(u.mJy)
+        # Convert the output to the most convenient units
+        sensitivityresult = sensitivity.to(u.mJy)
+        if  sensitivityresult < 1*u.mJy:
+            sensitivity = sensitivity.to(u.uJy)
+        elif (sensitivityresult >= 1*u.mJy) & (sensitivityresult < 1000*u.mJy):
+            sensitivity = sensitivity.to(u.mJy)
+        elif sensitivityresult >= 1000*u.mJy:
+            sensitivity = sensitivity.to(u.Jy)
 
         # Try to update the sensitivity stored in the calculator
         if update_calculator:
@@ -413,8 +419,14 @@ class Calculator:
         t_int = (self.sefd / (sensitivity * self.eta_s)) ** 2 \
             / (self.n_pol * self.bandwidth)
 
-        # Convert the integration time to seconds
-        t_int = t_int.to(u.s)
+        # Convert the output to the most convenient units
+        timeresult = t_int.to(u.s)
+        if  timeresult < 60*u.s:
+            t_int = t_int.to(u.s)
+        elif (timeresult >= 60*u.s) & (timeresult < 3600*u.s):
+            t_int = t_int.to(u.min)
+        elif timeresult >= 3600*u.s:
+            t_int = t_int.to(u.h)
 
         # Try to update the integration time stored in the calculator
         if update_calculator:
