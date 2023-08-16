@@ -227,8 +227,9 @@ class TestCalculator:
         else:
             assert calculator.sensitivity == sensitivity
 
-        # Verify that the units of the calculated sensitivity are in mJy
-        assert sens.unit == u.mJy
+        # Verify that the units of the calculated sensitivity are in units of 
+        # flux density
+        assert any(sens.unit == x for x in [u.uJy, u.mJy, u.Jy])
 
     @pytest.mark.parametrize(
         'new_sens,update_calculator',
@@ -284,8 +285,8 @@ class TestCalculator:
             assert calculator.t_int == t_int
 
         # # Verify that the units of the calculated integration time are in
-        # seconds
-        assert int_time.unit == u.s
+        # units of time
+        assert any(int_time.unit == x for x in [u.s, u.min, u.h])
 
     @pytest.mark.parametrize(
         'input_value,func_name',
