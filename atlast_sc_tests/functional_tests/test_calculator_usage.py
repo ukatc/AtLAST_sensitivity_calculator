@@ -12,7 +12,7 @@ class TestCalculatorUsage:
         test_calculator = Calculator()
 
         # Calculate the sensitivity using default parameters
-        sens = test_calculator.calculate_sensitivity()
+        sens = test_calculator.calculate_sensitivity().to(u.mJy)
 
         # Verify that the calculator now stores the newly calculated
         # sensitivity
@@ -58,7 +58,7 @@ class TestCalculatorUsage:
                calculator.derived_parameters
 
         # Calculate the integration time with default values
-        new_t_int = test_calculator.calculate_t_integration()
+        new_t_int = test_calculator.calculate_t_integration().to(u.s)
         # Verify that the calculator has been updated with calculated
         # integration time
         assert test_calculator.t_int == new_t_int
