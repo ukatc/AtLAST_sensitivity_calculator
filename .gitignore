@@ -141,3 +141,6 @@ dmypy.json
 */*.puml
 
 .DS_Store
+
+# fits files for example notebooks
+AtLAST_Simulator_examples/*.fits

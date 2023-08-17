@@ -28,8 +28,8 @@ def test_calculate_sensitivity():
     assert response.status_code == 200
 
     sensitivity = response.json()
-    assert sensitivity['unit'] == 'mJy'
-    assert pytest.approx(sensitivity['value'], 0.01) == 0.78
+    assert sensitivity['unit'] == 'uJy'
+    assert pytest.approx(sensitivity['value'], 0.01) == 780.
 
 
 def test_calculate_t_int():

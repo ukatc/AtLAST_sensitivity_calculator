@@ -17,9 +17,9 @@ class TestCalculatorUsage:
         # Verify that the calculator now stores the newly calculated
         # sensitivity
         assert sens == test_calculator.sensitivity
-        # Verify that the sensitivity is about 0.78 mJy
-        assert test_calculator.sensitivity.value == pytest.approx(0.78, 0.01)
-        assert test_calculator.sensitivity.unit == u.mJy
+        # Verify that the sensitivity is about 780 mJy
+        assert test_calculator.sensitivity.value == pytest.approx(780, 0.01)
+        assert test_calculator.sensitivity.unit == u.uJy
 
         # Update observing frequency
         test_calculator.obs_freq = 850 * u.GHz
@@ -62,8 +62,8 @@ class TestCalculatorUsage:
         # Verify that the calculator has been updated with calculated
         # integration time
         assert test_calculator.t_int == new_t_int
-        # Verify that the calculated integration time is about 100 s
-        assert test_calculator.t_int.value == pytest.approx(100, 3)
+        # Verify that the calculated integration time is about 6.76 s
+        assert test_calculator.t_int.value == pytest.approx(6.76, 0.01)
         assert test_calculator.t_int.unit == u.s
 
         # Calculate integration time using a different sensitivity
