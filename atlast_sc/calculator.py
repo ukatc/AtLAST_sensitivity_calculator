@@ -507,24 +507,25 @@ class Calculator:
                              self.eta_eff, T_atm, tau_atm)
 
         # Calculate source equivalent flux density
-        if self.finetune:
-            obs_freq_low = (self.obs_freq-0.50*self.bandwidth).to('GHz').value
-            obs_freq_upp = (self.obs_freq+0.50*self.bandwidth).to('GHz').value
+        obs_freq_low = (self.obs_freq-0.50*self.bandwidth).to('GHz').value
+        obs_freq_upp = (self.obs_freq+0.50*self.bandwidth).to('GHz').value
 
-            obs_freq_list = atm.tau_atm_table[:, 0][np.logical_and(atm.tau_atm_table[:, 0]>obs_freq_low,
-                                                                   atm.tau_atm_table[:, 0]<obs_freq_upp)]
+        obs_freq_list = atm.tau_atm_table[:, 0][np.logical_and(atm.tau_atm_table[:, 0]>obs_freq_low,
+                                                               atm.tau_atm_table[:, 0]<obs_freq_upp)]
 
+        if self.finetune and len(obs_freq_list)>1:
             _sefd = []
             for freq in obs_freq_list:
                 _tau_atm = atm.calculate_tau_atm(freq,self.weather,self.elevation)
 
                 _T_atm = atm.calculate_atmospheric_temperature(freq,self.weather)
-                _temps = Temperatures(self.obs_freq, self.T_cmb, self.T_amb, self.g,
+                _temps = Temperatures(freq*u.GHz, self.T_cmb, self.T_amb, self.g,
                                       self.eta_eff, _T_atm, _tau_atm)
 
                 _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a).to('J/m2').value)
 
-            sefd = trapz(_sefd,obs_freq_list)*(u.J/u.m**2)/trapz(np.ones(obs_freq_list.shape[0]),obs_freq_list)
+            sefd = trapz(x=obs_freq_list,y=_sefd)*(u.J/u.m**2)/ \
+                   trapz(x=obs_freq_list,y=np.ones(obs_freq_list.shape[0]))
         else:
             sefd = self._calculate_sefd(temps.T_sys, eta.eta_a)
 
