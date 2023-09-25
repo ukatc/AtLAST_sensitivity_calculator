@@ -14,6 +14,7 @@ from atlast_sc.utils import Decorators, DataHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
 from atlast_sc.exceptions import ValueOutOfRangeException
 
+from scipy.integrate import trapezoid as trapz
 
 class Calculator:
     """
@@ -27,7 +28,9 @@ class Calculator:
      **NB: usage not tested, and may not be supported in future.**
     :type instrument_setup: dict
     """
-    def __init__(self, user_input={}, instrument_setup={}):
+    def __init__(self, user_input={}, instrument_setup={},finetune=False):
+
+        self.finetune = finetune
 
         self._derived_params = None
 
@@ -105,7 +108,8 @@ class Calculator:
         return self.calculation_inputs.user_input.bandwidth.value
 
     @bandwidth.setter
-    @Decorators.validate_value
+#   @Decorators.validate_value
+    @Decorators.validate_and_update_params
     def bandwidth(self, value):
         self.calculation_inputs.user_input.bandwidth.value = value
         self.calculation_inputs.user_input.bandwidth.unit = value.unit
@@ -497,13 +501,33 @@ class Calculator:
                                         self.weather, self.elevation)
         T_atm = atm.calculate_atmospheric_temperature(self.obs_freq,
                                                       self.weather)
-
+       
         # Calculate the temperatures
         temps = Temperatures(self.obs_freq, self.T_cmb, self.T_amb, self.g,
                              self.eta_eff, T_atm, tau_atm)
 
         # Calculate source equivalent flux density
-        sefd = self._calculate_sefd(temps.T_sys, eta.eta_a)
+        if self.finetune:
+            obs_freq_low = (self.obs_freq-0.50*self.bandwidth).to('GHz').value
+            obs_freq_upp = (self.obs_freq+0.50*self.bandwidth).to('GHz').value
+
+            print(atm.tau_atm_table[:, 0])
+            obs_freq_list = atm.tau_atm_table[:, 0][np.logical_and(atm.tau_atm_table[:, 0]>obs_freq_low,
+                                                                   atm.tau_atm_table[:, 0]<obs_freq_upp)]
+
+            _sefd = []
+            for freq in obs_freq_list:
+                _tau_atm = atm.calculate_tau_atm(freq,self.weather,self.elevation)
+
+                _T_atm = atm.calculate_atmospheric_temperature(freq,self.weather)
+                _temps = Temperatures(self.obs_freq, self.T_cmb, self.T_amb, self.g,
+                                      self.eta_eff, _T_atm, _tau_atm)
+
+                _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a).to('J/m2').value)
+
+            sefd = trapz(_sefd,obs_freq_list)*(u.J/u.m**2)/trapz(np.ones(obs_freq_list.shape[0]),obs_freq_list)
+        else:
+            sefd = self._calculate_sefd(temps.T_sys, eta.eta_a)
 
         self._derived_params = \
             DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
@@ -526,7 +550,7 @@ class Calculator:
         dish_area = np.pi * self.dish_radius ** 2
         sefd = (2 * k_B * T_sys) / (eta_a * dish_area)
 
-        return sefd
+        return sefd.to('J/m2')
 
     @staticmethod
     def _calculated_value_error_msg(calculated_value, validation_error):

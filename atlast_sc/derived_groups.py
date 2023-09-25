@@ -23,18 +23,18 @@ class AtmosphereParams:
 
     def __init__(self):
 
-        T_atm_table = np.genfromtxt(AtmosphereParams._T_ATM_PATH)
-        tau_atm_table = np.genfromtxt(AtmosphereParams._TAU_ATM_PATH)
+        self.T_atm_table = np.genfromtxt(AtmosphereParams._T_ATM_PATH)
+        self.tau_atm_table = np.genfromtxt(AtmosphereParams._TAU_ATM_PATH)
         # the temperature values obtained by interpolating over the ATM tables are rescaled by the opacity at zenith to obtain T_atm (see the discussion around Eq. 7-9 in the ALMA Memo 602 (https://library.nrao.edu/public/memos/alma/main/memo602.pdf))
-        T_atm_table[:,1:] = T_atm_table[:,1:] / (1.00 - np.exp(-tau_atm_table[:,1:]))
+        self.T_atm_table[:,1:] = self.T_atm_table[:,1:] / (1.00 - np.exp(-self.tau_atm_table[:,1:]))
 
-        self._interp_T_atm = RegularGridInterpolator((T_atm_table[:, 0],
+        self._interp_T_atm = RegularGridInterpolator((self.T_atm_table[:, 0],
                                                       AtmosphereParams._WEATHER),
-                                                      T_atm_table[:, 1:])
+                                                      self.T_atm_table[:, 1:])
 
-        self._interp_tau_atm = RegularGridInterpolator((tau_atm_table[:, 0],
+        self._interp_tau_atm = RegularGridInterpolator((self.tau_atm_table[:, 0],
                                                         AtmosphereParams._WEATHER),
-                                                        tau_atm_table[:, 1:])
+                                                        self.tau_atm_table[:, 1:])
 
 
     def calculate_tau_atm(self, obs_freq, weather, elevation):
