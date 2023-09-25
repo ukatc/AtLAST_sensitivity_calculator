@@ -511,7 +511,6 @@ class Calculator:
             obs_freq_low = (self.obs_freq-0.50*self.bandwidth).to('GHz').value
             obs_freq_upp = (self.obs_freq+0.50*self.bandwidth).to('GHz').value
 
-            print(atm.tau_atm_table[:, 0])
             obs_freq_list = atm.tau_atm_table[:, 0][np.logical_and(atm.tau_atm_table[:, 0]>obs_freq_low,
                                                                    atm.tau_atm_table[:, 0]<obs_freq_upp)]
 
