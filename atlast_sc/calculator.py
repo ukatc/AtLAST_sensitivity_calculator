@@ -108,7 +108,6 @@ class Calculator:
         return self.calculation_inputs.user_input.bandwidth.value
 
     @bandwidth.setter
-#   @Decorators.validate_value
     @Decorators.validate_and_update_params
     def bandwidth(self, value):
         self.calculation_inputs.user_input.bandwidth.value = value
