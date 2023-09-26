@@ -18,8 +18,8 @@ class AtmosphereParams:
     _STATIC_DATA_PATH = Path(__file__).resolve().parents[0] / "static"
 
     _WEATHER = [5, 25, 50, 75, 95]
-    _T_ATM_PATH = _STATIC_DATA_PATH / "lookups" / "am_ACT_T_annual.txt"
-    _TAU_ATM_PATH = _STATIC_DATA_PATH / "lookups" / "am_ACT_tau_annual.txt"
+    _T_ATM_PATH = _STATIC_DATA_PATH / "lookups" / "am_ACT_T_ext_annual.txt"
+    _TAU_ATM_PATH = _STATIC_DATA_PATH / "lookups" / "am_ACT_tau_ext_annual.txt"
 
     def __init__(self):
 

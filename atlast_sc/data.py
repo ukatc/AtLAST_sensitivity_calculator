@@ -107,7 +107,7 @@ class Data:
     obs_frequency = DataType(
         default_value=100,
         default_unit=str(u.GHz),
-        lower_value=35,
+        lower_value=20,
         upper_value=950,
         units=[str(u.GHz)]
     )
