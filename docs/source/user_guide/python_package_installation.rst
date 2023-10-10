@@ -51,6 +51,7 @@ installing pip
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Sometimes pip in not installed with conda, and so the following extra step might be required to setup your environment properly
+
 .. code-block:: bash
 
     conda install pip 
