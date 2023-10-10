@@ -22,7 +22,7 @@ environment with:
 
 .. code-block:: bash
 
-   conda env create atlast
+   conda create -n atlast
 
 
 Then activate the environment:
@@ -46,6 +46,14 @@ If this returns ``2.x.x``, then try:
 
     python3 -V
 
+
+installing pip
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sometimes pip in not installed with conda, and so the following extra step might be required to setup your environment properly
+.. code-block:: bash
+
+    conda install pip 
 
 Installing the sensitivity calculator Python package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
