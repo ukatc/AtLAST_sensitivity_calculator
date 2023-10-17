@@ -22,6 +22,7 @@ environment with:
 
 .. code-block:: bash
 
+
    conda create -n atlast python=3.11 pip
 
 
