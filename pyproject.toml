@@ -15,10 +15,6 @@ authors = [
     { name="Joanna Ramasawmy", email="joanna.ramasawmy@stfc.ac.uk" },
     { name="Fiona Kirton", email="fiona.kirton@gmail.com"}
 ]
-maintainers = [
-    { name="Mark Booth", email="mark.booth@stfc.ac.uk" },
-    { name="Pamela Klaassen, email="pamela.klaassen@stfc.ac.uk"}
-]
 description = "AtLast sensitivity calculator"
 #license = "MIT"
 requires-python = ">=3.10"
