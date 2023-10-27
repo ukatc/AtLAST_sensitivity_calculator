@@ -22,7 +22,8 @@ environment with:
 
 .. code-block:: bash
 
-   conda create -n atlast
+
+   conda create -n atlast python=3.11 pip
 
 
 Then activate the environment:
@@ -33,7 +34,7 @@ Then activate the environment:
 
 
 If you want to install into an environment that you're already using, note that the Sensitivity Calculator 
-package requires Python >= 3.10. You can check your version of Python by
+package currently only works with Python versions 3.10 and 3.11. You can check your version of Python by
 typing:
 
 .. code-block:: bash
@@ -46,15 +47,6 @@ If this returns ``2.x.x``, then try:
 
     python3 -V
 
-
-installing pip
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Sometimes pip in not installed with conda, and so the following extra step might be required to setup your environment properly
-
-.. code-block:: bash
-
-    conda install pip 
 
 Installing the sensitivity calculator Python package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
