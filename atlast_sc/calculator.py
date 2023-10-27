@@ -537,9 +537,9 @@ class Calculator:
 
         # double the frequency resolution; turned off for the moment, but
         # just wanted to keep track of this
-        if False:
-            obs_freq_list = np.ravel([obs_freq_list[1:],0.50*(obs_freq_list[1:]+obs_freq_list[:-1])],'F')
-            obs_freq_list = np.append(obs_freq_low,obs_freq_list)
+        # if False:
+        #     obs_freq_list = np.ravel([obs_freq_list[1:],0.50*(obs_freq_list[1:]+obs_freq_list[:-1])],'F')
+        #     obs_freq_list = np.append(obs_freq_low,obs_freq_list)
 
         # check if there are enough channels for performing the sum,
         # otherwise estimate the single-frequency SEFD
