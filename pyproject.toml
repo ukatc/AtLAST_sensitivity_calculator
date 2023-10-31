@@ -10,7 +10,7 @@ include = ["atlast_sc*"]
 
 [project]
 name = "atlast_sc"
-version = "1.0.0"
+version = "1.0.1"
 authors = [
     { name="Joanna Ramasawmy", email="joanna.ramasawmy@stfc.ac.uk" },
     { name="Fiona Kirton", email="fiona.kirton@gmail.com"}
