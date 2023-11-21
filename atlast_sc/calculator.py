@@ -14,7 +14,6 @@ from atlast_sc.utils import Decorators, DataHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
 from atlast_sc.exceptions import ValueOutOfRangeException
 
-from scipy.integrate import trapezoid as trapz
 
 class Calculator:
     """
@@ -28,9 +27,7 @@ class Calculator:
      **NB: usage not tested, and may not be supported in future.**
     :type instrument_setup: dict
     """
-    def __init__(self, user_input={}, instrument_setup={},finetune=True):
-
-        self.finetune = finetune
+    def __init__(self, user_input={}, instrument_setup={}):
 
         self._derived_params = None
 
@@ -108,7 +105,7 @@ class Calculator:
         return self.calculation_inputs.user_input.bandwidth.value
 
     @bandwidth.setter
-    @Decorators.validate_and_update_params
+    @Decorators.validate_value
     def bandwidth(self, value):
         self.calculation_inputs.user_input.bandwidth.value = value
         self.calculation_inputs.user_input.bandwidth.unit = value.unit
@@ -490,14 +487,6 @@ class Calculator:
         # Implement a Builder interface to construct all three objects using
         # the same observing frequency?
 
-
-        # LDM
-        # ------------------------------------------------------------------
-        # T_atm, tau_atm, and the various temps values are not actually used
-        # for computing the sefd, but I kept this part to avoid breaking the
-        # build of DerivedParams below
-        # ------------------------------------------------------------------
-
         # Perform efficiencies calculations
         eta = Efficiencies(self.obs_freq, self.surface_rms, self.eta_ill,
                            self.eta_spill, self.eta_block, self.eta_pol)
@@ -508,63 +497,13 @@ class Calculator:
                                         self.weather, self.elevation)
         T_atm = atm.calculate_atmospheric_temperature(self.obs_freq,
                                                       self.weather)
-       
+
         # Calculate the temperatures
         temps = Temperatures(self.obs_freq, self.T_cmb, self.T_amb, self.g,
                              self.eta_eff, T_atm, tau_atm)
 
-        # LDM
-        # ------------------------------------------------------------------
-        # This is where the snippet starts. The idea is to compute an
-        # effect SEFD as sefd_eff = sqrt(dnu/sum(dnu_i/sefd_i)), where dnu
-        # is the total bandwidth and dnu_i the widths of the narrow channels
-        # for which we compute each sefd_i. This comes from basic noise 
-        # statistics consideration for computing the total RMS for a broad
-        # band composed of n independent channels. 
-        # Setting finetune=False will fall back on the old implementation
-        # ------------------------------------------------------------------
-
-        # define lower and upper limit of the requested band
-        obs_freq_low = (self.obs_freq-0.50*self.bandwidth).to('GHz').value
-        obs_freq_upp = (self.obs_freq+0.50*self.bandwidth).to('GHz').value
-
-        # select all the frequencies in the atm tables comprised within the band edges
-        obs_freq_list = atm.tau_atm_table[:, 0][np.logical_and(atm.tau_atm_table[:, 0]>obs_freq_low,
-                                                               atm.tau_atm_table[:, 0]<obs_freq_upp)]
-       
-        # pad the frequency array to include the lower/upper band edges 
-        obs_freq_list = np.concatenate(([obs_freq_low],obs_freq_list,[obs_freq_upp]))*u.GHz
-
-        # double the frequency resolution; turned off for the moment, but
-        # just wanted to keep track of this
-        # if False:
-        #     obs_freq_list = np.ravel([obs_freq_list[1:],0.50*(obs_freq_list[1:]+obs_freq_list[:-1])],'F')
-        #     obs_freq_list = np.append(obs_freq_low,obs_freq_list)
-
-        # check if there are enough channels for performing the sum,
-        # otherwise estimate the single-frequency SEFD
-        if self.finetune and len(obs_freq_list)>1:
-            
-            _sefd = []
-            
-            obs_band_list = (obs_freq_list[1:]-obs_freq_list[:-1])
-            obs_freq_list = (obs_freq_list[1:]+obs_freq_list[:-1])*0.50
-
-            # compute SEFD for each narrow spectral element
-            for freq in obs_freq_list:
-                _tau_atm = atm.calculate_tau_atm(freq,self.weather,self.elevation)
-
-                _T_atm = atm.calculate_atmospheric_temperature(freq,self.weather)
-                _temps = Temperatures(freq, self.T_cmb, self.T_amb, self.g,
-                                      self.eta_eff, _T_atm, _tau_atm)
-
-                _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a).to('J/m2').value)
-            _sefd = np.asarray(_sefd)*(u.J/u.m**2)
-
-            # obtain the effective SEFD for the input band
-            sefd = np.sqrt(self.bandwidth/np.sum(obs_band_list/_sefd**2))
-        else:
-            sefd = self._calculate_sefd(temps.T_sys, eta.eta_a)
+        # Calculate source equivalent flux density
+        sefd = self._calculate_sefd(temps.T_sys, eta.eta_a)
 
         self._derived_params = \
             DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
@@ -587,7 +526,7 @@ class Calculator:
         dish_area = np.pi * self.dish_radius ** 2
         sefd = (2 * k_B * T_sys) / (eta_a * dish_area)
 
-        return sefd.to('J/m2')
+        return sefd
 
     @staticmethod
     def _calculated_value_error_msg(calculated_value, validation_error):
