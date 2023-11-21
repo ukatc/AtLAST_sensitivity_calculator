@@ -10,7 +10,7 @@ include = ["atlast_sc*"]
 
 [project]
 name = "atlast_sc"
-version = "1.0.0"
+version = "1.0.1"
 authors = [
     { name="Joanna Ramasawmy", email="joanna.ramasawmy@stfc.ac.uk" },
     { name="Fiona Kirton", email="fiona.kirton@gmail.com"}
@@ -19,8 +19,8 @@ description = "AtLast sensitivity calculator"
 #license = "MIT"
 requires-python = ">=3.10"
 dependencies = [
-    "astropy == 5.1.*",
-    "numpy == 1.23.*",
+    "astropy == 5.3.*",
+    "numpy == 1.26.*",
     "scipy == 1.11.*",
     "pyyaml == 6.0.*",
     "pydantic == 1.10.*"

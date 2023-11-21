@@ -83,7 +83,7 @@ input:invalid {
 
 html,
 body {
-  font-family: "Roboto", sans-serif, Arial, sans-serif;
+  font-family: sans-serif, Arial, sans-serif;
   line-height: 26px;
   color: #3b3b3b;
   font-weight: 400;
@@ -92,7 +92,7 @@ body {
 }
 
 a {
-  font-family: "Roboto", sans-serif;
+  font-family: sans-serif;
   font-weight: 500;
 }
 
@@ -100,7 +100,7 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: "Roboto", sans-serif;
+  font-family: sans-serif;
   color: #3b3b3b;
   font-weight: 700;
 }
@@ -109,7 +109,7 @@ h1 a,
 h2 a,
 h3 a,
 h4 a {
-  font-family: "Roboto", sans-serif;
+  font-family: sans-serif;
   font-weight: 500;
 }
 
@@ -135,7 +135,7 @@ hr {
 }
 
 button {
-  font-family: "Roboto", sans-serif;
+  font-family: sans-serif;
   color: #ffffff;
   background-color: #876157;
   -webkit-transition: 0.3s all ease-in;

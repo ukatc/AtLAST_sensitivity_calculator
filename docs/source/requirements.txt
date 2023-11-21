@@ -1,6 +1,4 @@
-sphinx_rtd_theme=1.1
+sphinx_rtd_theme==1.1
 nbsphinx==0.8
 sphinx-copybutton
-pip:
-  - sphinxcontrib.plantuml==0.25
-  - -e ./
+sphinxcontrib.plantuml==0.25
