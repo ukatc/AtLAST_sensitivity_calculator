@@ -1,4 +1,4 @@
-1.1.1 (2023-12-12)
+1.1.0 (2023-12-12)
 ++++++++++++++++++
 - Integration of the broad band extension, based on the calculation of a band-integrated effective SEFD
 
