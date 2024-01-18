@@ -61,6 +61,11 @@ class Decorators:
             :type value: int, float or Quantity
             """
 
+            # Ensure integer values are converted to floats (all parameter values
+            # are expected to be floats)
+            if isinstance(value, int):
+                value = float(value)
+
             # Validate the new value
             DataHelper.validate(calculator, func.__name__, value)
 
@@ -356,11 +361,6 @@ class DataHelper:
     @staticmethod
     def validate(calculator, param_name, value):
         attribute = getattr(calculator, param_name)
-
-        # Ensure integer values are converted to floats (all parameter values
-        # are expected to be floats)
-        if isinstance(value, int):
-            value = float(value)
 
         # Make sure the new value is of the correct type
         if not isinstance(value, type(attribute)):
