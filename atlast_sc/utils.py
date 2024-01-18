@@ -362,6 +362,11 @@ class DataHelper:
     def validate(calculator, param_name, value):
         attribute = getattr(calculator, param_name)
 
+        # Ensure integer values are converted to floats (all parameter values
+        # are expected to be floats)
+        if isinstance(value, int):
+            value = float(value)
+
         # Make sure the new value is of the correct type
         if not isinstance(value, type(attribute)):
             raise ValueError(f'Value {value} for parameter {param_name} '
