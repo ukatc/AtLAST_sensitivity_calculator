@@ -104,7 +104,7 @@ class Calculator:
         Get or set the bandwidth
         """
         return self.calculation_inputs.user_input.bandwidth.value
-
+    # With the new calculation of SEFD over the whole frequency range, SEFD is now dependent on bandwidth and so parameters must be updated every time bandwidth is changed.
     @bandwidth.setter
     @Decorators.validate_and_update_params
     def bandwidth(self, value):
