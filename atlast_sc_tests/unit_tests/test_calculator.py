@@ -86,7 +86,7 @@ class TestCalculator:
     def test_initialize_calculator_invalid(self, user_input, expected_raises):
         with expected_raises:
             Calculator(user_input)
-
+    # TO DO: Add unit tests for the case where finetune=True
     @pytest.mark.parametrize(
         'param,new_value,derived_params_recalculated,expected_raises,finetuned',
         [
