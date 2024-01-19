@@ -86,44 +86,45 @@ class TestCalculator:
     def test_initialize_calculator_invalid(self, user_input, expected_raises):
         with expected_raises:
             Calculator(user_input)
-
+    # TO DO: Add unit tests for the case where finetune=True
     @pytest.mark.parametrize(
-        'param,new_value,derived_params_recalculated,expected_raises',
+        'param,new_value,derived_params_recalculated,expected_raises,finetuned',
         [
             # User input
-            ('t_int', 1 * u.s, False, does_not_raise()),
-            ('sensitivity', 3 * u.mJy, False, does_not_raise()),
-            ('bandwidth', 10 * u.MHz, False, does_not_raise()),
-            ('n_pol', 1, False, does_not_raise()),
-            ('weather', 35, True, does_not_raise()),
-            ('elevation', 80 * u.deg, True, does_not_raise()),
-            ('obs_freq', 700 * u.GHz, True, does_not_raise()),
+            ('t_int', 1 * u.s, False, does_not_raise(),False),
+            ('sensitivity', 3 * u.mJy, False, does_not_raise(),False),
+           #('bandwidth', 10 * u.MHz, False, does_not_raise(),False),
+            ('bandwidth', 10 * u.MHz, True, does_not_raise(),True),
+            ('n_pol', 1, False, does_not_raise(),False),
+            ('weather', 35, True, does_not_raise(),False),
+            ('elevation', 80 * u.deg, True, does_not_raise(),False),
+            ('obs_freq', 700 * u.GHz, True, does_not_raise(),False),
             # Instrument setup
-            ('dish_radius', 30 * u.m, True, does_not_raise()),
-            ('g', 0.9, False, pytest.raises(AttributeError)),
+            ('dish_radius', 30 * u.m, True, does_not_raise(),False),
+            ('g', 0.9, False, pytest.raises(AttributeError),False),
             ('surface_rms', 10 * u.micron, False,
-             pytest.raises(AttributeError)),
-            ('T_amb', 100 * u.K, False, pytest.raises(AttributeError)),
-            ('eta_eff', 0.7, False, pytest.raises(AttributeError)),
-            ('eta_ill', 0.7, False, pytest.raises(AttributeError)),
-            ('eta_spill', 0.7, False, pytest.raises(AttributeError)),
-            ('eta_block', 0.7, False, pytest.raises(AttributeError)),
-            ('eta_pol', 0.7, False, pytest.raises(AttributeError)),
+             pytest.raises(AttributeError),False),
+            ('T_amb', 100 * u.K, False, pytest.raises(AttributeError),False),
+            ('eta_eff', 0.7, False, pytest.raises(AttributeError),False),
+            ('eta_ill', 0.7, False, pytest.raises(AttributeError),False),
+            ('eta_spill', 0.7, False, pytest.raises(AttributeError),False),
+            ('eta_block', 0.7, False, pytest.raises(AttributeError),False),
+            ('eta_pol', 0.7, False, pytest.raises(AttributeError),False),
             # Derived parameters
-            ('tau_atm', 0.3, False, pytest.raises(AttributeError)),
-            ('T_atm', 200 * u.K, False, pytest.raises(AttributeError)),
-            ('T_rx', 200 * u.K, False, pytest.raises(AttributeError)),
-            ('T_sys', 200 * u.K, False, pytest.raises(AttributeError)),
-            ('eta_a', 0.7, False, pytest.raises(AttributeError)),
-            ('eta_s', 0.7, False, pytest.raises(AttributeError)),
+            ('tau_atm', 0.3, False, pytest.raises(AttributeError),False),
+            ('T_atm', 200 * u.K, False, pytest.raises(AttributeError),False),
+            ('T_rx', 200 * u.K, False, pytest.raises(AttributeError),False),
+            ('T_sys', 200 * u.K, False, pytest.raises(AttributeError),False),
+            ('eta_a', 0.7, False, pytest.raises(AttributeError),False),
+            ('eta_s', 0.7, False, pytest.raises(AttributeError),False),
             ('sefd', 1e-24 * u.J / (u.m * u.m), False,
-             pytest.raises(AttributeError)),
+             pytest.raises(AttributeError),False),
             # Other calculation input
-            ('T_cmb', 10 * u.K, False, pytest.raises(AttributeError))
+            ('T_cmb', 10 * u.K, False, pytest.raises(AttributeError),False)
         ]
     )
     def test_update_properties(self, param, new_value,
-                               derived_params_recalculated, expected_raises,
+                               derived_params_recalculated, expected_raises, finetuned,
                                t_atm, calculator, mocker, request):
 
         validation_spy = mocker.spy(DataHelper, 'validate')
@@ -143,13 +144,17 @@ class TestCalculator:
             # Verify that the derived parameters were updated,
             # where appropriate
             if derived_params_recalculated:
-                calculate_derived_params_spy.assert_called()
-                assert calculator.derived_parameters != \
-                       original_derived_params
+                if finetuned:
+                    calculate_derived_params_spy.assert_called()
+                    assert calculator.derived_parameters == original_derived_params                
+                else:
+                    calculate_derived_params_spy.assert_called()
+                    assert calculator.derived_parameters != \
+                        original_derived_params
             else:
                 calculate_derived_params_spy.assert_not_called()
                 assert calculator.derived_parameters == \
-                       original_derived_params
+                    original_derived_params
         else:
             # Verify that that parameter was not updated
             original_value = request.getfixturevalue(param.lower())
