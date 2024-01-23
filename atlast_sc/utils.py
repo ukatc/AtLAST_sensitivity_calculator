@@ -29,6 +29,11 @@ class Decorators:
             :type value: int, float or Quantity
             """
 
+            # Ensure integer values are converted to floats (all parameter values
+            # are expected to be floats)
+            if isinstance(value, int):
+                value = float(value)
+
             # Validate the new value
             DataHelper.validate(calculator, func.__name__, value)
 
@@ -60,6 +65,11 @@ class Decorators:
             :param value: The new value
             :type value: int, float or Quantity
             """
+
+            # Ensure integer values are converted to floats (all parameter values
+            # are expected to be floats)
+            if isinstance(value, int):
+                value = float(value)
 
             # Validate the new value
             DataHelper.validate(calculator, func.__name__, value)
