@@ -4,16 +4,18 @@
 Background
 ==========
 
+The Atacama Large Aperture Submillimeter Telescope (AtLAST) is a project to build a new 50m single-dish telescope to observe at sub-mm wavelengths that is currently in the design study phase. For further details on the project, see https://www.atlast.uio.no/.
+
 The AtLast Sensitivity Calculator can be used to calculate the required
-exposure time to achieve a given sensitivity or, conversely, the sensitivity
-obtained for a given exposure time.
+on source exposure time per pointing to achieve a given sensitivity or, conversely, the sensitivity
+obtained for a given exposure time. The sensitivity calculator is designed on our current best estimates for the telescope and instrument parameters, but these are likely to be refined as the project develops.
 
 Using the Sensitivity Calculator
 ================================
 The calculator is available as both a web-based application and as a Python 
-package. For future releases, both will be hosted on publicly available servers.
+package. The web client is available here: https://senscalc.atlast.uio.no/.
 
-For the time being, both the web client and Python package can be installed or
+Both the web client and Python package can be installed or
 downloaded from this repository.
 
 Documentation on how to install the Sensitivity Calculator Python package can be found
@@ -23,6 +25,7 @@ on using the Python package is provided in the [``Using the Calculator guide``](
 See [``Running the Web Client``](docs/source/user_guide/running_the_web_client.rst) for instructions on
 setting up the Sensitivity Calculator web application.
 
+All the documentation is also available on Readthedocs: https://atlast-sensitivity-calculator.readthedocs.io/.
 
 Guide for Developers
 ====================

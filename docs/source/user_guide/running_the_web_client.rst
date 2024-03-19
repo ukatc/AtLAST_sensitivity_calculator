@@ -1,7 +1,9 @@
 Running the Web Client
 ======================
 
-The web client can be run on your computer in one of two ways - cloning
+The web client can be accessed from https://senscalc.atlast.uio.no/.
+
+The web client can also be run on your computer in one of two ways - cloning
 the AtLast Sensitivity Calculator and running the application directly, or
 using a Docker image hosted on the GitHub Container Registry.
 
