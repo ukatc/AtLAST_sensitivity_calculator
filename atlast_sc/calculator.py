@@ -188,13 +188,18 @@ class Calculator:
             if param not in test_model.__dict__:
                 raise ValueError(f'"{param}" is not a valid input parameter')
 
-
     def find_applicable_instruments(self):
-        obs_freq = float(self._uip.obs_freq.value)
-        bandwidth = float(self._uip.bandwidth.value)
-        applicable_obs_freq_instruments = []
-        applicable_bandw_instruments = []
+        """
+        Finds what instrument/s the observing frequency and bandwidth values
+        inputted by the user correspond to and choose one to do the further
+        calculations. 
 
+        :return: applicable/chosen instrument name
+        :rtype: String
+        """
+        # TODO: could make the finding applicable ranges more efficient by looking at general ranges first 
+
+        # Instrument specific observing frequency ranges
         instrument_obs_freqs = {
             'finer' : [(120.0, 360.0)],
             'sepia' : [(163.0, 211.0), (272.0, 376.0), (600.0, 722.0)],
@@ -204,6 +209,7 @@ class Calculator:
             'muscat' : [(250.0, 300.0)]
         }
 
+        # Instrument specific bandwidth value ranges
         instrument_bandw_vals = {
             'finer' : [(10500.0, 3000000.0)],
             'sepia' : [(10000.0, 5600000.0), (10000.0, 32000000.0), (10000.0, 10000000.0)],
@@ -213,7 +219,14 @@ class Calculator:
             'muscat' : [(1.0, 5.0)]
         }
 
-        # TODO: could make these more efficient by looking at general ranges first 
+        applicable_obs_freq_instruments = []
+        applicable_bandw_instruments = []
+
+        # Get float value of each parameter to be able to make comparison
+        obs_freq = float(self._uip.obs_freq.value)
+        bandwidth = float(self._uip.bandwidth.value)
+
+        # Check what instrument/s the observing frequency value falls in
         for instrument, obs_freqs in instrument_obs_freqs.items(): 
             for tuple in obs_freqs:
                 min_freq = tuple[0]
@@ -221,6 +234,7 @@ class Calculator:
                 if obs_freq > min_freq and obs_freq < max_freq:
                     applicable_obs_freq_instruments.append(instrument)
         
+        # Check what instrument/s the bandwidth value falls in
         for instrument, bandw_vals in instrument_bandw_vals.items():
             for tuple in bandw_vals:
                 min_bandw = tuple[0]
@@ -228,12 +242,15 @@ class Calculator:
                 if bandwidth > min_bandw and bandwidth < max_bandw:
                     applicable_bandw_instruments.append(instrument)
 
+        # Create a set of both applicable instruments lists and take the intersection
         applicable_instruments = list(set(applicable_obs_freq_instruments) & set(applicable_bandw_instruments))
 
+        # If there are more than 1 applicable instrument
         if len(applicable_instruments) > 1:
-            # TODO: there might be further logic incorporated to choose which instrument will be defaulted
+            # TODO: there might be further logic incorporated to choose which instrument 
+            # will be defaulted currently we are choosing the second applicable instrument
             return applicable_instruments[1]
-        else:
+        else: # If there is only 1 applicable instrument
             return applicable_instruments[0]
 
     def _calculate_derived_parameters(self):

@@ -1,5 +1,9 @@
 import astropy.units as u
 
+###########################################################
+# Getters and setters for instrument specific parameters  #
+###########################################################
+
 class InstrumentSpecificParameters:
     def __init__(self, instrument_name):
         self.instrument_name = instrument_name
