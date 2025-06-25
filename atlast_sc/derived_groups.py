@@ -150,8 +150,8 @@ class Temperatures:
     Calculates temperature terms
     """
 
-    def __init__(self, inst_name, obs_freq, T_cmb, T_amb, g, eta_eff, T_atm, tau_atm):
-        self._T_rx = Temperatures._calculate_receiver_temperature(inst_name, obs_freq)
+    def __init__(self, inst_spec_module, obs_freq, T_cmb, T_amb, g, eta_eff, T_atm, tau_atm):
+        self._T_rx = Temperatures._calculate_receiver_temperature(inst_spec_module, obs_freq)
         self._T_sys = \
             self._calculate_system_temperature(g, T_cmb, eta_eff, T_amb,
                                                T_atm, tau_atm)
@@ -178,32 +178,14 @@ class Temperatures:
         return self._T_sky
 
     @staticmethod
-    def _calculate_receiver_temperature(inst_name, obs_freq):
+    def _calculate_receiver_temperature(inst_spec_module, obs_freq):
         """
         Retrieve instrument specific receiver temperature 
         """
-        if inst_name is not None:
-            match inst_name:
-                case "deshima":
-                    deshima_isp = InstrumentSpecificParameters.Deshima()
-                    return deshima_isp.T_rx
-                case "tifuun":
-                    tifuun_isp = InstrumentSpecificParameters.Tifuun()
-                    return tifuun_isp.T_rx
-                case "muscat":
-                    muscat_isp = InstrumentSpecificParameters.Muscat()
-                    return muscat_isp.T_rx
-                case "finer":
-                    finer_isp = InstrumentSpecificParameters.Finer(obs_freq)
-                    return finer_isp.T_rx
-                case "chai":
-                    chai_isp = InstrumentSpecificParameters.Chai()
-                    return chai_isp.T_rx
-                case "sepia":
-                    sepia_isp = InstrumentSpecificParameters.Sepia345()
-                    return sepia_isp.T_rx
-                case _: # default case 
-                    return (5 * constants.h * obs_freq / constants.k_B).to(u.K)
+        if inst_spec_module is not None:
+            return inst_spec_module.T_rx
+        else: # default case 
+            return (5 * constants.h * obs_freq / constants.k_B).to(u.K)
 
     def _calculate_system_temperature(self, g, T_cmb, eta_eff, T_amb,
                                       T_atm, tau_atm):

@@ -48,7 +48,7 @@ class Calculator:
 
         self._inst_name = self.find_applicable_instruments()
 
-        derived_params =  self._calculate_derived_parameters()
+        derived_params =  self._calculate_derived_parameters(self._inst_name)
         self._dp = DerivedParameters(derived_params, self._config)
 
     #################################################
@@ -253,7 +253,7 @@ class Calculator:
         else: # If there is only 1 applicable instrument
             return applicable_instruments[0]
 
-    def _calculate_derived_parameters(self):
+    def _calculate_derived_parameters(self, inst_name):
         """
         Performs the calculations required to produce the
         set of derived parameters required for the sensitivity
@@ -276,8 +276,10 @@ class Calculator:
         # build of DerivedParams below
         # ------------------------------------------------------------------
 
+        # Get instrument specific parameters object
+        inst_spec_module = self._get_inst_spec_params_module(inst_name, self._uip.obs_freq)
+
         # Perform efficiencies calculations
-        
         eta = Efficiencies(self._uip.obs_freq , self._isp.surface_rms, self._isp.eta_ill,
                            self._isp.eta_spill, self._isp.eta_block, self._isp.eta_pol)
 
@@ -289,7 +291,7 @@ class Calculator:
                                                       self._uip.weather)
 
         # Calculate the temperatures
-        temps = Temperatures(self._inst_name, self._uip.obs_freq, self._isp.T_cmb, self._isp.T_amb, self._isp.g,
+        temps = Temperatures(inst_spec_module, self._uip.obs_freq, self._isp.T_cmb, self._isp.T_amb, inst_spec_module.g,
                              self._isp.eta_eff, T_atm, tau_atm)
 
         # LDM
@@ -334,7 +336,7 @@ class Calculator:
                 _tau_atm = atm.calculate_tau_atm(freq,self._uip.weather,self._uip.elevation)
 
                 _T_atm = atm.calculate_atmospheric_temperature(freq,self._uip.weather)
-                _temps = Temperatures(freq, self._isp.T_cmb, self._isp.T_amb, self._isp.g,
+                _temps = Temperatures(inst_spec_module, freq, self._isp.T_cmb, self._isp.T_amb, inst_spec_module.g,
                                       self._isp.eta_eff, _T_atm, _tau_atm)
 
                 _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a).to('J/m2').value)
@@ -351,6 +353,44 @@ class Calculator:
                           sefd=sefd)
         
         return _derived_params
+    
+    @staticmethod
+    def _get_inst_spec_params_module(inst_name, obs_freq):
+        """
+        Returns the instrument module according to instrument 
+        name and observing frequency value supplied. 
+
+        TODO: Currently uses observing frequency in only one 
+        instrument module according to guidelines provided by
+        instrument teams. Observing frequency will be used in
+        other instrument modules when guidelines are clearer.
+
+        :param inst_name: instrument name
+        :type inst_name: String
+        :param obs_freq: observing frequency
+        :type obs_freq: float
+        :return: instrument module
+        :rtype: atlast_sc.parameters.instrument_specific_parameters.InstrumentSpecificParameters
+        """
+        if inst_name is not None:
+            match inst_name:
+                case "deshima":
+                    return InstrumentSpecificParameters.Deshima()
+                   
+                case "tifuun":
+                    return InstrumentSpecificParameters.Tifuun()
+                    
+                case "muscat":
+                    return InstrumentSpecificParameters.Muscat()
+                    
+                case "finer":
+                    return InstrumentSpecificParameters.Finer(obs_freq)
+                   
+                case "chai":
+                    return InstrumentSpecificParameters.Chai()
+                    
+                case "sepia":
+                    return InstrumentSpecificParameters.Sepia345()
 
     def _calculate_sefd(self, T_sys, eta_a):
         """

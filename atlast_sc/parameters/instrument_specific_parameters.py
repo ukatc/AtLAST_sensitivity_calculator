@@ -5,9 +5,16 @@ import astropy.units as u
 ###########################################################
 
 class InstrumentSpecificParameters:
+    
+    # TODO:  temporary sideband ratio value to be used in
+    # instrument modules. When further guidance is provided
+    # on how each instrument will have individual sideband 
+    # ratio values, the sideband ratio values in each instrument
+    # module will be changed accordingly. 
+    temporary_universal_g = 0.0
+
     def __init__(self, instrument_name):
         self.instrument_name = instrument_name
-        self.temporary_universal_g = 0.0
 
     """
     DESHIMA instrument parameters
