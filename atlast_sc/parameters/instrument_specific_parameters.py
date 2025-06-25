@@ -7,6 +7,7 @@ import astropy.units as u
 class InstrumentSpecificParameters:
     def __init__(self, instrument_name):
         self.instrument_name = instrument_name
+        self.temporary_universal_g = 0.0
 
     """
     DESHIMA instrument parameters
@@ -19,6 +20,11 @@ class InstrumentSpecificParameters:
         def T_rx(self):
             "Get the receiver temperature of DESHIMA instrument"
             return self._T_rx
+        
+        @property
+        def g(self):
+            "Get sideband ratio of DESHIMA instrument"
+            return InstrumentSpecificParameters.temporary_universal_g
 
         @staticmethod
         def _set_receiver_temp():
@@ -35,6 +41,11 @@ class InstrumentSpecificParameters:
         def T_rx(self):
             "Get the receiver temperature of TIFUUN instrument"
             return self._T_rx
+        
+        @property
+        def g(self):
+            "Get sideband ratio of TIFUUN instrument"
+            return InstrumentSpecificParameters.temporary_universal_g
 
         @staticmethod
         def _set_receiver_temp():
@@ -51,6 +62,11 @@ class InstrumentSpecificParameters:
         def T_rx(self):
             "Get the receiver temperature of MUSCAT instrument"
             return self._T_rx
+        
+        @property
+        def g(self):
+            "Get sideband ratio of MUSCAT instrument"
+            return InstrumentSpecificParameters.temporary_universal_g
 
         @staticmethod
         def _set_receiver_temp():
@@ -67,6 +83,11 @@ class InstrumentSpecificParameters:
         def T_rx(self):
             "Get the receiver temperature of FINER instrument"
             return self._T_rx
+        
+        @property
+        def g(self):
+            "Get sideband ratio of FINER instrument"
+            return InstrumentSpecificParameters.temporary_universal_g
 
         @staticmethod
         def _set_receiver_temp(obs_freq):
@@ -88,6 +109,11 @@ class InstrumentSpecificParameters:
             "Get the receiver temperature of CHAI instrument"
             return self._T_rx
 
+        @property
+        def g(self):
+            "Get sideband ratio of CHAI instrument"
+            return InstrumentSpecificParameters.temporary_universal_g
+        
         @staticmethod
         def _set_receiver_temp():
             return 125.0 * u.K
@@ -103,6 +129,11 @@ class InstrumentSpecificParameters:
         def T_rx(self):
             "Get the receiver temperature of SEPIA345 instrument"
             return self._T_rx
+        
+        @property
+        def g(self):
+            "Get sideband ratio of SEPIA345 instrument"
+            return InstrumentSpecificParameters.temporary_universal_g
 
         @staticmethod
         def _set_receiver_temp():
