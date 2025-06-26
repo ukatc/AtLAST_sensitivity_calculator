@@ -11,6 +11,7 @@ from atlast_sc.config import Config
 from atlast_sc.parameters.instrument_specific_parameters import InstrumentSpecificParameters
 from atlast_sc.parameters.user_input_parameters import UserInputParameters
 from atlast_sc.parameters.instrument_setup_parameters import InstrumentSetupParameters
+from atlast_sc.parameters.telescope_and_environment_parameters import TelescopeAndEnvironmentParameters
 from atlast_sc.parameters.derived_parameters import DerivedParameters
 from atlast_sc.utils import DataHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
@@ -43,6 +44,7 @@ class Calculator:
         # Calculate the derived parameters used in the calculation
         self._uip = UserInputParameters(self._config)
         self._isp = InstrumentSetupParameters(self._config)
+        self._taep = TelescopeAndEnvironmentParameters(self._config)
 
         self.sensitivity = self._uip.sensitivity
 
@@ -280,8 +282,8 @@ class Calculator:
         inst_spec_module = self._get_inst_spec_params_module(inst_name, self._uip.obs_freq)
 
         # Perform efficiencies calculations
-        eta = Efficiencies(self._uip.obs_freq , self._isp.surface_rms, self._isp.eta_ill,
-                           self._isp.eta_spill, self._isp.eta_block, self._isp.eta_pol)
+        eta = Efficiencies(self._uip.obs_freq , self._taep.surface_rms, self._taep.eta_ill,
+                           self._taep.eta_spill, self._taep.eta_block, self._isp.eta_pol)
 
         # Perform atmospheric model calculations
         atm = AtmosphereParams()
@@ -291,8 +293,8 @@ class Calculator:
                                                       self._uip.weather)
 
         # Calculate the temperatures
-        temps = Temperatures(inst_spec_module, self._uip.obs_freq, self._isp.T_cmb, self._isp.T_amb, inst_spec_module.g,
-                             self._isp.eta_eff, T_atm, tau_atm)
+        temps = Temperatures(inst_spec_module, self._uip.obs_freq, self._taep.T_cmb, self._taep.T_amb, inst_spec_module.g,
+                             self._taep.eta_eff, T_atm, tau_atm)
 
         # LDM
         # ------------------------------------------------------------------
@@ -336,7 +338,7 @@ class Calculator:
                 _tau_atm = atm.calculate_tau_atm(freq,self._uip.weather,self._uip.elevation)
 
                 _T_atm = atm.calculate_atmospheric_temperature(freq,self._uip.weather)
-                _temps = Temperatures(inst_spec_module, freq, self._isp.T_cmb, self._isp.T_amb, inst_spec_module.g,
+                _temps = Temperatures(inst_spec_module, freq, self._taep.T_cmb, self._taep.T_amb, inst_spec_module.g,
                                       self._isp.eta_eff, _T_atm, _tau_atm)
 
                 _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a).to('J/m2').value)
@@ -405,7 +407,7 @@ class Calculator:
         :rtype: astropy.units.Quantity
         """
 
-        dish_area = np.pi * self._isp.dish_radius ** 2
+        dish_area = np.pi * self._taep.dish_radius ** 2
         sefd = (2 * k_B * T_sys) / (eta_a * dish_area)
 
         return sefd
