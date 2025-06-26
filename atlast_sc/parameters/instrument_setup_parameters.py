@@ -10,13 +10,6 @@ class InstrumentSetupParameters:
         self.config = config
 
     @property
-    def g(self):
-        """
-        Get the sideband ratio
-        """
-        return self.config.calculation_inputs.instrument_setup.g.value
-
-    @property
     def surface_rms(self):
         """
         Get the surface smoothness of the instrument
