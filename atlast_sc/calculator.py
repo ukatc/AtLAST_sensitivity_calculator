@@ -252,8 +252,39 @@ class Calculator:
             # TODO: there might be further logic incorporated to choose which instrument 
             # will be defaulted currently we are choosing the second applicable instrument
             return applicable_instruments[1]
-        else: # If there is only 1 applicable instrument
+        if len(applicable_instruments) == 1: # If there is only 1 applicable instrument
             return applicable_instruments[0]
+        else: # If there is no applicable instrument
+            # TODO: there might be further logic incorporated to choose which instrument 
+            # will be chosen if there is no applicable instrument.
+            # Currently we are choosing the closest instrument according to observing
+            # frequencies.
+            return self.closest_range_from_dict(obs_freq, instrument_obs_freqs)
+
+    def closest_range_from_dict(self, obs_freq, range_dict):
+        """
+        Finds the closest range to a number from a dictionary of observing 
+        frequency range lists, only if the number is not inside any of them.
+
+        :param obs_freq: observing frequency
+        :type obs_freq: float
+
+        :return: closest instrument name
+        :rtype: String or None if obs_freq is inside any range
+        """
+
+        # Find the closest range by distance to the nearest bound
+        closest_inst = None
+        min_distance = float('inf')
+
+        for key, ranges in range_dict.items():
+            for r in ranges:
+                distance = min(abs(obs_freq - r[0]), abs(obs_freq - r[1]))
+                if distance < min_distance:
+                    min_distance = distance
+                    closest_inst = key
+        
+        return closest_inst
 
     def _calculate_derived_parameters(self, inst_name):
         """
