@@ -102,7 +102,7 @@ class InstrumentSpecificParameters:
     """        
     class Finer:
         def __init__(self, obs_freq):
-            self._T_rx = self._set_receiver_temp(obs_freq)
+            self._T_rx = self._set_receiver_temp(obs_freq.value)
             self._name = "finer"
 
         @property
@@ -122,7 +122,6 @@ class InstrumentSpecificParameters:
 
         @staticmethod
         def _set_receiver_temp(obs_freq):
-            obs_freq = obs_freq.value # needed to compare double vals
             if obs_freq > 120.0 and obs_freq < 210.0:
                 return 45.0 * u.K
             elif obs_freq > 210.0 and obs_freq < 360.0:
