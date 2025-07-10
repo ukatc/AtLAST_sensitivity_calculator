@@ -19,19 +19,25 @@ class InstrumentSpecificParameters:
     """
     DESHIMA instrument parameters
     """
-    class Deshima:
+    class GLTCam:
         def __init__(self):
             self._T_rx = self._set_receiver_temp()
+            self._name = "gltcam"
 
         @property
         def T_rx(self):
-            "Get the receiver temperature of DESHIMA instrument"
+            "Get the receiver temperature of GLTCam instrument"
             return self._T_rx
         
         @property
         def g(self):
-            "Get sideband ratio of DESHIMA instrument"
+            "Get sideband ratio of GLTCam instrument"
             return InstrumentSpecificParameters.temporary_universal_g
+        
+        @property
+        def name(self):
+            "Get name of the instrument"
+            return self._name
 
         @staticmethod
         def _set_receiver_temp():
@@ -43,6 +49,7 @@ class InstrumentSpecificParameters:
     class Tifuun:
         def __init__(self):
             self._T_rx = self._set_receiver_temp()
+            self._name = "tifuun"
 
         @property
         def T_rx(self):
@@ -53,6 +60,11 @@ class InstrumentSpecificParameters:
         def g(self):
             "Get sideband ratio of TIFUUN instrument"
             return InstrumentSpecificParameters.temporary_universal_g
+        
+        @property
+        def name(self):
+            "Get name of the instrument"
+            return self._name
 
         @staticmethod
         def _set_receiver_temp():
@@ -64,6 +76,7 @@ class InstrumentSpecificParameters:
     class Muscat:
         def __init__(self):
             self._T_rx = self._set_receiver_temp()
+            self._name = "muscat"
 
         @property
         def T_rx(self):
@@ -74,6 +87,11 @@ class InstrumentSpecificParameters:
         def g(self):
             "Get sideband ratio of MUSCAT instrument"
             return InstrumentSpecificParameters.temporary_universal_g
+        
+        @property
+        def name(self):
+            "Get name of the instrument"
+            return self._name
 
         @staticmethod
         def _set_receiver_temp():
@@ -85,6 +103,7 @@ class InstrumentSpecificParameters:
     class Finer:
         def __init__(self, obs_freq):
             self._T_rx = self._set_receiver_temp(obs_freq)
+            self._name = "finer"
 
         @property
         def T_rx(self):
@@ -95,6 +114,11 @@ class InstrumentSpecificParameters:
         def g(self):
             "Get sideband ratio of FINER instrument"
             return InstrumentSpecificParameters.temporary_universal_g
+        
+        @property
+        def name(self):
+            "Get name of the instrument"
+            return self._name
 
         @staticmethod
         def _set_receiver_temp(obs_freq):
@@ -110,6 +134,7 @@ class InstrumentSpecificParameters:
     class Chai:
         def __init__(self):
             self._T_rx = self._set_receiver_temp()
+            self._name = "chai"
 
         @property
         def T_rx(self):
@@ -121,6 +146,11 @@ class InstrumentSpecificParameters:
             "Get sideband ratio of CHAI instrument"
             return InstrumentSpecificParameters.temporary_universal_g
         
+        @property
+        def name(self):
+            "Get name of the instrument"
+            return self._name
+        
         @staticmethod
         def _set_receiver_temp():
             return 125.0 * u.K
@@ -131,6 +161,7 @@ class InstrumentSpecificParameters:
     class Sepia345:
         def __init__(self):
             self._T_rx = self._set_receiver_temp()
+            self._name = "sepia"
 
         @property
         def T_rx(self):
@@ -141,6 +172,11 @@ class InstrumentSpecificParameters:
         def g(self):
             "Get sideband ratio of SEPIA345 instrument"
             return InstrumentSpecificParameters.temporary_universal_g
+        
+        @property
+        def name(self):
+            "Get name of the instrument"
+            return self._name
 
         @staticmethod
         def _set_receiver_temp():
