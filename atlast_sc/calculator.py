@@ -310,7 +310,7 @@ class Calculator:
         # ------------------------------------------------------------------
 
         # Get instrument specific parameters object
-        inst_spec_module = self._get_inst_spec_params_module(inst_name, self._uip.obs_freq)
+        inst_spec_module = self._get_inst_spec_params_module(inst_name, self._uip.obs_freq.value)
 
         # Perform efficiencies calculations
         eta = Efficiencies(self._uip.obs_freq , self._taep.surface_rms, self._taep.eta_ill,

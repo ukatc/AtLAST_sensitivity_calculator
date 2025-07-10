@@ -102,7 +102,7 @@ class InstrumentSpecificParameters:
     """        
     class Finer:
         def __init__(self, obs_freq):
-            self._T_rx = self._set_receiver_temp(obs_freq.value)
+            self._T_rx = self._set_receiver_temp(obs_freq)
             self._name = "finer"
 
         @property
