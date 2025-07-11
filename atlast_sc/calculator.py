@@ -407,8 +407,8 @@ class Calculator:
         """
         if inst_name is not None:
             match inst_name:
-                case "deshima":
-                    return InstrumentSpecificParameters.Deshima()
+                case "gltcam":
+                    return InstrumentSpecificParameters.GLTCam()
                    
                 case "tifuun":
                     return InstrumentSpecificParameters.Tifuun()
