@@ -3,10 +3,11 @@ import numpy as np
 import pytest
 from pydantic import ValidationError
 from astropy import units as u
-from astropy import constants
 from atlast_sc.calculator import Calculator
 from atlast_sc.derived_groups import AtmosphereParams, Temperatures, \
     Efficiencies
+from atlast_sc.parameters.instrument_specific_parameters import \
+                                            InstrumentSpecificParameters
 from atlast_sc_tests.utils import does_not_raise
 
 
@@ -111,8 +112,9 @@ class TestCalculationInput:
             # find a more elegant solution
             assert exception_name in str(e.value)
 
-
 class TestDerivedGroups:
+
+    default_inst_module = InstrumentSpecificParameters.GLTCam()
 
     obs_frequency_bands = [
         (35, "band 1"),
@@ -129,6 +131,36 @@ class TestDerivedGroups:
         (750, "opaque"),
         (850, "band 10"),
     ]
+
+    instrument_modules = [
+        (InstrumentSpecificParameters.GLTCam(), "gltcam", 131.0 * u.GHz),
+        (InstrumentSpecificParameters.Tifuun(), "tifuun", 91.0 * u.GHz),
+        (InstrumentSpecificParameters.Muscat(), "muscat", 251.0 * u.GHz),
+        (InstrumentSpecificParameters.Finer(121.0), "finer", 121.0 * u.GHz),
+        (InstrumentSpecificParameters.Chai(), "chai", 461.0 * u.GHz),
+        (InstrumentSpecificParameters.Sepia345(), "sepia", 164.0 * u.GHz),
+    ]
+
+    # TODO: Review if this test is needed.
+    # Not sure if it is needed. Probably can ignore this as this is
+    # checked when test_instrument_specific_receiver_temperature()
+    # is executed anyway.
+    @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq', instrument_modules)
+    def test_instrument_modules(self, inst_spec_module, inst_name, obs_freq):
+        # Ensure that the instrument modules correspond to correct
+        # instrument names
+        assert inst_spec_module.name == inst_name
+
+    @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq', instrument_modules)
+    def test_instrument_specific_receiver_temperature(self, inst_spec_module, 
+                                                        obs_freq, inst_name):
+        receiver_temperature = Temperatures._calculate_receiver_temperature(\
+                                                inst_spec_module, obs_freq* u.GHz)
+
+        # Make sure the temperature is returned in Kelvin
+        assert receiver_temperature.unit == "K"
+        assert receiver_temperature == inst_spec_module.T_rx
+
 
     @pytest.mark.parametrize('obs_freq,band', obs_frequency_bands)
     def test_tau_atm(self, obs_freq, band, weather, atmosphere_params):
@@ -174,23 +206,6 @@ class TestDerivedGroups:
         else:
             assert temp < 150 * u.K
 
-    def test_receiver_temperature(self, obs_freq, weather, elevation,
-                                  t_cmb, t_amb, g, eta_eff):
-
-        receiver_temperature = \
-            Temperatures._calculate_receiver_temperature(obs_freq)
-
-        # Make sure the temperature is returned in Kelvin
-        assert receiver_temperature.unit == "K"
-
-        # Check that the calculated temperature is 5 times the theoretical
-        # minimum receiver temperature
-        theoretical_min_temp = (constants.h * obs_freq / constants.k_B).to(u.K)
-        expected_temp = 5 * theoretical_min_temp
-        # Handle rounding errors
-        assert round(receiver_temperature.value, 6) == \
-               round(expected_temp.value, 6)
-
     def test_system_temperature(self, t_cmb, t_amb, g, eta_eff, weather,
                                 elevation):
 
@@ -208,8 +223,8 @@ class TestDerivedGroups:
             T_atm = \
                 atmosphere_params.calculate_atmospheric_temperature(obs_freq,
                                                                     weather)
-            temperatures = Temperatures(obs_freq, t_cmb, t_amb, g,
-                                        eta_eff, T_atm, tau_atm)
+            temperatures = Temperatures(self.default_inst_module, obs_freq, t_cmb, 
+                                            t_amb, g, eta_eff, T_atm, tau_atm)
 
             system_temperature = \
                 temperatures._calculate_system_temperature(g, t_cmb, eta_eff,
