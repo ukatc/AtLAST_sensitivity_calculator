@@ -12,14 +12,15 @@ from atlast_sc_tests.utils import does_not_raise
 
 
 class TestCalculationInput:
+    
+    # Variables needed for tests
     unit_exception = 'unitexception'
     value_out_of_range_exception = 'valueoutofrangeexception'
     value_too_high_exception = 'valuetoohighexception'
     value_too_low_exception = 'valuetoolowexception'
     value_not_allowed_exception = 'valuenotallowedexception'
 
-    @pytest.mark.parametrize(
-        'input_data,expect_raises,exception_name',
+    values_and_exceptions = \
         [
             ({'t_int': {'value': 1, 'unit': 's'}}, does_not_raise(), None),
             ({'t_int': {'value': 1, 'unit': 'min'}}, does_not_raise(), None),
@@ -95,7 +96,8 @@ class TestCalculationInput:
             ({'elevation': {'value': 90, 'unit': 'deg'}},
              pytest.raises(ValidationError), value_out_of_range_exception),
         ]
-    )
+
+    @pytest.mark.parametrize('input_data,expect_raises,exception_name', values_and_exceptions)
     def test_data_validation_on_init(self, input_data, expect_raises,
                                      exception_name):
         # Ensure that parameters can only be initialised with data within the
@@ -114,8 +116,8 @@ class TestCalculationInput:
 
 class TestDerivedGroups:
 
+    # Variables needed for tests
     default_inst_module = InstrumentSpecificParameters.GLTCam()
-
     obs_frequency_bands = [
         (35, "band 1"),
         (60, "opaque"),
@@ -131,7 +133,6 @@ class TestDerivedGroups:
         (750, "opaque"),
         (850, "band 10"),
     ]
-
     instrument_modules = [
         (InstrumentSpecificParameters.GLTCam(), "gltcam", 131.0 * u.GHz),
         (InstrumentSpecificParameters.Tifuun(), "tifuun", 91.0 * u.GHz),
