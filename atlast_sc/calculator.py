@@ -255,36 +255,7 @@ class Calculator:
         if len(applicable_instruments) == 1: # If there is only 1 applicable instrument
             return applicable_instruments[0]
         else: # If there is no applicable instrument
-            # TODO: there might be further logic incorporated to choose which instrument 
-            # will be chosen if there is no applicable instrument.
-            # Currently we are choosing the closest instrument according to observing
-            # frequencies.
-            return self.closest_range_from_dict(obs_freq, instrument_obs_freqs)
-
-    def closest_range_from_dict(self, obs_freq, range_dict):
-        """
-        Finds the closest range to a number from a dictionary of observing 
-        frequency range lists, only if the number is not inside any of them.
-
-        :param obs_freq: observing frequency
-        :type obs_freq: float
-
-        :return: closest instrument name
-        :rtype: String or None if obs_freq is inside any range
-        """
-
-        # Find the closest range by distance to the nearest bound
-        closest_inst = None
-        min_distance = float('inf')
-
-        for key, ranges in range_dict.items():
-            for r in ranges:
-                distance = min(abs(obs_freq - r[0]), abs(obs_freq - r[1]))
-                if distance < min_distance:
-                    min_distance = distance
-                    closest_inst = key
-        
-        return closest_inst
+            return None
 
     def _calculate_derived_parameters(self, inst_name):
         """
@@ -311,6 +282,9 @@ class Calculator:
 
         # Get instrument specific parameters object
         inst_spec_module = self._get_inst_spec_params_module(inst_name, self._uip.obs_freq.value)
+        
+        g = self._config.calculation_inputs.instrument_setup.g.value \
+            if inst_spec_module is None else inst_spec_module.g
 
         # Perform efficiencies calculations
         eta = Efficiencies(self._uip.obs_freq , self._taep.surface_rms, self._taep.eta_ill,
@@ -323,8 +297,9 @@ class Calculator:
         T_atm = atm.calculate_atmospheric_temperature(self._uip.obs_freq,
                                                       self._uip.weather)
 
+
         # Calculate the temperatures
-        temps = Temperatures(inst_spec_module, self._uip.obs_freq, self._taep.T_cmb, self._taep.T_amb, inst_spec_module.g,
+        temps = Temperatures(inst_spec_module, self._uip.obs_freq, self._taep.T_cmb, self._taep.T_amb, g,
                              self._taep.eta_eff, T_atm, tau_atm)
 
         # LDM
@@ -424,6 +399,8 @@ class Calculator:
                     
                 case "sepia":
                     return InstrumentSpecificParameters.Sepia345()
+        else:
+            return None
 
     def _calculate_sefd(self, T_sys, eta_a):
         """

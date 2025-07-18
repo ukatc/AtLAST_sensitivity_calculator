@@ -7,11 +7,14 @@ import astropy.units as u
 class InstrumentSpecificParameters:
     
     # TODO:  temporary sideband ratio value to be used in
-    # instrument modules. When further guidance is provided
+    # instrument modules. Note that the default value for 
+    # this parameter is already 0. We are repeating this 
+    # declaration here to pre-write instrument specific
+    # g value retrieval. When further guidance is provided
     # on how each instrument will have individual sideband 
-    # ratio values, the sideband ratio values in each instrument
-    # module will be changed accordingly.
-    temporary_universal_g = 0.0
+    # ratio values, the sideband ratio values in each 
+    # instrument module will be changed accordingly.
+    temporary_universal_g = 0
 
     def __init__(self):
         pass
