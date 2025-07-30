@@ -2,6 +2,7 @@ import copy
 from atlast_sc.models import UserInput
 from atlast_sc.models import InstrumentSetup
 from atlast_sc.models import CalculationInput
+from atlast_sc.utils import Decorators
 
 class Config:
     """
@@ -38,6 +39,39 @@ class Config:
         Get the calculation inputs (user input and instrument setup)
         """
         return self._calculation_inputs
+
+    @property
+    def calculation_inputs(self):
+        """
+        The inputs to the calculation (user input and instrument setup)
+        """
+        return self._calculation_inputs
+
+    @property
+    def user_input(self):
+        """
+        User inputs to the calculation
+        """
+        return self._calculation_inputs.user_input
+
+    @property
+    def instrument_setup(self):
+        """
+        Instrument setup parameters
+        """
+        return self._calculation_inputs.instrument_setup
+
+    @property
+    def derived_parameters(self):
+        """
+        Parameters calculated from user input and instrument setup
+        """
+        return self._derived_parameters
+
+    @derived_parameters.setter
+    @Decorators.validate_and_update_params
+    def derived_parameters(self, value):
+        self._derived_parameters = value
 
     def reset(self):
 

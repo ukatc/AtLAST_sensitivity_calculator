@@ -47,6 +47,7 @@ class Calculator:
         self._dp = DerivedParameters(derived_params, self._config)
 
         self.sensitivity = self._uip.sensitivity
+        
     #################################################
     # Public methods for performing sensitivity and #
     # integration time calculations                 #
