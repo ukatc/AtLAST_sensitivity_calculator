@@ -182,7 +182,9 @@ class Temperatures:
         """
         Retrieve instrument specific receiver temperature 
         """
-        if inst_spec_module is not None:
+        # TODO: the instrument module selection may not need to be  
+        # done as this check is done previously
+        if inst_spec_module is not None and inst_spec_module.name != "gltcam":
             return inst_spec_module.T_rx
         else: # default case 
             return (5 * constants.h * obs_freq / constants.k_B).to(u.K)
