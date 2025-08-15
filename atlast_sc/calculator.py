@@ -6,14 +6,11 @@ from atlast_sc.derived_groups import AtmosphereParams
 from atlast_sc.derived_groups import Temperatures
 from atlast_sc.derived_groups import Efficiencies
 from atlast_sc.models import DerivedParams
-from atlast_sc.models import UserInput
-from atlast_sc.config import Config
-from atlast_sc.parameters.user_input_parameters import UserInputParameters
-from atlast_sc.parameters.instrument_setup_parameters import InstrumentSetupParameters
 from atlast_sc.parameters.derived_parameters import DerivedParameters
 from atlast_sc.utils import DataHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
 from atlast_sc.exceptions import ValueOutOfRangeException
+from astropy.units import Quantity
 
 
 class Calculator:
@@ -28,32 +25,21 @@ class Calculator:
      **NB: usage not tested, and may not be supported in future.**
     :type instrument_setup: dict
     """
-    def __init__(self, user_input={}, instrument_setup={}, finetune=False):
-        self._finetune = finetune
-
-
-        # Make sure the user input doesn't contain any unexpected parameter
-        # names
-        Calculator._check_input_param_names(user_input)
-
-        # Store the input parameters used to initialise the calculator
-        self._config = Config(user_input, instrument_setup)
-
-        # Calculate the derived parameters used in the calculation
-        self._uip = UserInputParameters(self._config)
-        self._isp = InstrumentSetupParameters(self._config)
-       
-        derived_params =  self._calculate_derived_parameters()
-        self._dp = DerivedParameters(derived_params, self._config)
-
-        self.sensitivity = self._uip.sensitivity
+    def __init__(self, config, user_input_params, inst_spec_params, finetune):
+        
+        self.finetune = finetune
+        self._uip = user_input_params
+        self._isp = inst_spec_params
+        derived_params =  self._calculate_derived_parameters(user_input_params, inst_spec_params)
+        self._dp = DerivedParameters(derived_params, config)
+        self.sensitivity = user_input_params.sensitivity
         
     #################################################
     # Public methods for performing sensitivity and #
     # integration time calculations                 #
     #################################################
 
-    def calculate_sensitivity(self, t_int=None, update_calculator=True):
+    def calculate_sensitivity(self, user_input, t_int=None, update_calculator=True):
         """
         Calculates the telescope sensitivity (mJy) for a
         given integration time `t_int`.
@@ -68,18 +54,26 @@ class Calculator:
         :return: sensitivity in mJy
         :rtype: astropy.units.Quantity
         """
-
         if t_int is not None:
             if update_calculator:
-                self._uip.t_int = t_int
+                user_input['t_int'] = {'value': t_int.value, 'unit': t_int.unit}
             else:
                 DataHelper.validate(self, 't_int', t_int)
         else:
-            t_int = self._uip.t_int
+            t_int = Quantity(value = (float(user_input['t_int']['value'])),
+                                unit = (user_input['t_int']['unit']))
+        
+        # Retrieve bandwidth value from user inputs and convert to Quantity object
+        bandwidth = Quantity(value = float(user_input['bandwidth']['value']),
+                                               unit = (user_input['bandwidth']['unit']))
+        
+        # Retrieve n_pol value from user inputs and convert to Quantity object
+        n_pol = Quantity(value = int(user_input['n_pol']['value']),
+                            unit = user_input['n_pol']['unit'])
 
         sensitivity = \
             self._dp.sefd / \
-            (self._dp.eta_s * np.sqrt(self._uip.n_pol * self._uip.bandwidth * t_int))
+            (self._dp.eta_s * np.sqrt(n_pol * bandwidth * t_int))
 
         # Convert the output to the most convenient units
         sensitivityresult = sensitivity.to(u.mJy)
@@ -105,7 +99,7 @@ class Calculator:
 
         return sensitivity
 
-    def calculate_t_integration(self, sensitivity=None,
+    def calculate_t_integration(self, user_input, sensitivity=None,
                                 update_calculator=True):
         """
         Calculates the integration time required for a given `sensitivity`
@@ -130,8 +124,16 @@ class Calculator:
         else:
             sensitivity = self.sensitivity
 
+        # Retrieve bandwidth value from user inputs and convert to Quantity object
+        bandwidth = Quantity(value = float(user_input['bandwidth']['value']),
+                                               unit = (user_input['bandwidth']['unit']))
+        
+        # Retrieve n_pol value from user inputs and convert to Quantity object
+        n_pol = Quantity(value = int(user_input['n_pol']['value']),
+                            unit = user_input['n_pol']['unit'])
+        
         t_int = (self._dp.sefd / (sensitivity * self._dp.eta_s)) ** 2 \
-            / (self._uip.n_pol * self._uip.bandwidth)
+                / (n_pol * bandwidth)
 
         # Convert the output to the most convenient units
         timeresult = t_int.to(u.s)
@@ -165,27 +167,9 @@ class Calculator:
         # Recalculate the derived parameters
         self._calculate_derived_parameters()
 
-    #####################
-    # Protected methods #
-    #####################
-
-    @staticmethod
-    def _check_input_param_names(user_input):
-        """
-        Validates the user input parameters (just the names; value validation
-        is handled by the model)
-
-        :param user_input: Dictionary containing user-defined input parameters
-        :type user_input: dict
-        """
-
-        test_model = UserInput()
-
-        for param in user_input:
-            if param not in test_model.__dict__:
-                raise ValueError(f'"{param}" is not a valid input parameter')
-
-    def _calculate_derived_parameters(self):
+ 
+############
+    def _calculate_derived_parameters(self, user_input_params, inst_spec_params):
         """
         Performs the calculations required to produce the
         set of derived parameters required for the sensitivity
@@ -210,19 +194,19 @@ class Calculator:
 
         # Perform efficiencies calculations
         
-        eta = Efficiencies(self._uip.obs_freq , self._isp.surface_rms, self._isp.eta_ill,
-                           self._isp.eta_spill, self._isp.eta_block, self._isp.eta_pol)
+        eta = Efficiencies(user_input_params.obs_freq , inst_spec_params.surface_rms, inst_spec_params.eta_ill,
+                           inst_spec_params.eta_spill, inst_spec_params.eta_block, inst_spec_params.eta_pol)
 
         # Perform atmospheric model calculations
         atm = AtmosphereParams()
-        tau_atm = atm.calculate_tau_atm(self._uip.obs_freq,
-                                        self._uip.weather, self._uip.elevation)
-        T_atm = atm.calculate_atmospheric_temperature(self._uip.obs_freq,
-                                                      self._uip.weather)
+        tau_atm = atm.calculate_tau_atm(user_input_params.obs_freq,
+                                        user_input_params.weather, user_input_params.elevation)
+        T_atm = atm.calculate_atmospheric_temperature(user_input_params.obs_freq,
+                                                      user_input_params.weather)
 
         # Calculate the temperatures
-        temps = Temperatures(self._uip.obs_freq, self._isp.T_cmb, self._isp.T_amb, self._isp.g,
-                             self._isp.eta_eff, T_atm, tau_atm)
+        temps = Temperatures(user_input_params.obs_freq, inst_spec_params.T_cmb, inst_spec_params.T_amb, inst_spec_params.g,
+                             inst_spec_params.eta_eff, T_atm, tau_atm)
 
         # LDM
         # ------------------------------------------------------------------
@@ -236,8 +220,8 @@ class Calculator:
         # ------------------------------------------------------------------
 
         # define lower and upper limit of the requested band
-        obs_freq_low = (self._uip.obs_freq-0.50*self._uip.bandwidth).to('GHz').value
-        obs_freq_upp = (self._uip.obs_freq+0.50*self._uip.bandwidth).to('GHz').value
+        obs_freq_low = (user_input_params.obs_freq-0.50*user_input_params.bandwidth).to('GHz').value
+        obs_freq_upp = (user_input_params.obs_freq+0.50*user_input_params.bandwidth).to('GHz').value
 
         # select all the frequencies in the atm tables comprised within the band edges
         obs_freq_list = atm.tau_atm_table[:, 0][np.logical_and(atm.tau_atm_table[:, 0]>obs_freq_low,
@@ -254,7 +238,7 @@ class Calculator:
 
         # check if there are enough channels for performing the sum,
         # otherwise estimate the single-frequency SEFD
-        if self._finetune and len(obs_freq_list)>1:
+        if self.finetune and len(obs_freq_list)>1:
             
             _sefd = []
             
@@ -263,19 +247,19 @@ class Calculator:
 
             # compute SEFD for each narrow spectral element
             for freq in obs_freq_list:
-                _tau_atm = atm.calculate_tau_atm(freq,self._uip.weather,self._uip.elevation)
+                _tau_atm = atm.calculate_tau_atm(freq,user_input_params.weather,user_input_params.elevation)
 
-                _T_atm = atm.calculate_atmospheric_temperature(freq,self._uip.weather)
-                _temps = Temperatures(freq, self._isp.T_cmb, self._isp.T_amb, self._isp.g,
-                                      self._isp.eta_eff, _T_atm, _tau_atm)
+                _T_atm = atm.calculate_atmospheric_temperature(freq,user_input_params.weather)
+                _temps = Temperatures(freq, inst_spec_params.T_cmb, inst_spec_params.T_amb, inst_spec_params.g,
+                                      inst_spec_params.eta_eff, _T_atm, _tau_atm)
 
-                _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a).to('J/m2').value)
+                _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a, inst_spec_params.dish_radius).to('J/m2').value)
             _sefd = np.asarray(_sefd)*(u.J/u.m**2)
 
             # obtain the effective SEFD for the input band
-            sefd = np.sqrt(self._uip.bandwidth/np.sum(obs_band_list/_sefd**2))
+            sefd = np.sqrt(user_input_params.bandwidth/np.sum(obs_band_list/_sefd**2))
         else:
-            sefd = self._calculate_sefd(temps.T_sys, eta.eta_a)
+            sefd = self._calculate_sefd(temps.T_sys, eta.eta_a, inst_spec_params.dish_radius)
 
         _derived_params = \
             DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
@@ -284,7 +268,7 @@ class Calculator:
         
         return _derived_params
 
-    def _calculate_sefd(self, T_sys, eta_a):
+    def _calculate_sefd(self, T_sys, eta_a, dish_radius):
         """
         Calculates the source equivalent flux density, SEFD, from the system
         temperature, T_sys, the dish efficiency eta_A, and the dish area.
@@ -297,7 +281,7 @@ class Calculator:
         :rtype: astropy.units.Quantity
         """
 
-        dish_area = np.pi * self._isp.dish_radius ** 2
+        dish_area = np.pi * dish_radius ** 2
         sefd = (2 * k_B * T_sys) / (eta_a * dish_area)
 
         return sefd

@@ -2,9 +2,8 @@ import json
 import math
 from dataclasses import asdict
 from pydantic import ValidationError
-from atlast_sc.calculator import Calculator
+from atlast_sc.factory import CalculatorFactory
 from atlast_sc.data import Data
-
 
 def do_calculation(user_input, calculation):
     """
@@ -25,7 +24,7 @@ def do_calculation(user_input, calculation):
             # TODO: handle error
             pass
 
-    calculated_param = func(update_calculator=False)
+    calculated_param = func(user_input, update_calculator=False)
 
     value = calculated_param.value
     unit = str(calculated_param.unit)
@@ -58,7 +57,8 @@ def _create_calculater(user_input):
     Create a calculator object with the specified user input
     """
     try:
-        calculator = Calculator(user_input)
+        calculator_factory = CalculatorFactory(user_input)
+        calculator = calculator_factory.calculator
     except ValidationError as e:
         message = json.loads(e.json())[0]["msg"]
         raise UserInputError(message)

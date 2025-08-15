@@ -59,8 +59,8 @@ class UserInputParameters:
         #  store or use those stored values.
         #  Need separate "outputs" properties that are used for
         #  subsequent calculations and/or storing results?
-        Config.calculation_inputs.user_input.sensitivity.value = value
-        Config.calculation_inputs.user_input.sensitivity.unit = value.unit
+        self.config.calculation_inputs.user_input.sensitivity.value = value
+        self.config.calculation_inputs.user_input.sensitivity.unit = value.unit
 
     @property
     def bandwidth(self):
