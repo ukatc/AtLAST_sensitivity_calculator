@@ -25,12 +25,12 @@ class Calculator:
      **NB: usage not tested, and may not be supported in future.**
     :type instrument_setup: dict
     """
-    def __init__(self, config, user_input_params, inst_spec_params, finetune):
+    def __init__(self, config, user_input_params, inst_setup_params, finetune):
         
         self.finetune = finetune
         self._uip = user_input_params
-        self._isp = inst_spec_params
-        derived_params =  self._calculate_derived_parameters(user_input_params, inst_spec_params)
+        self._isp = inst_setup_params
+        derived_params =  self._calculate_derived_parameters(user_input_params, inst_setup_params)
         self._dp = DerivedParameters(derived_params, config)
         self.sensitivity = user_input_params.sensitivity
         
@@ -169,7 +169,7 @@ class Calculator:
 
  
 ############
-    def _calculate_derived_parameters(self, user_input_params, inst_spec_params):
+    def _calculate_derived_parameters(self, user_input_params, inst_setup_params):
         """
         Performs the calculations required to produce the
         set of derived parameters required for the sensitivity
@@ -194,8 +194,8 @@ class Calculator:
 
         # Perform efficiencies calculations
         
-        eta = Efficiencies(user_input_params.obs_freq , inst_spec_params.surface_rms, inst_spec_params.eta_ill,
-                           inst_spec_params.eta_spill, inst_spec_params.eta_block, inst_spec_params.eta_pol)
+        eta = Efficiencies(user_input_params.obs_freq , inst_setup_params.surface_rms, inst_setup_params.eta_ill,
+                           inst_setup_params.eta_spill, inst_setup_params.eta_block, inst_setup_params.eta_pol)
 
         # Perform atmospheric model calculations
         atm = AtmosphereParams()
@@ -205,8 +205,8 @@ class Calculator:
                                                       user_input_params.weather)
 
         # Calculate the temperatures
-        temps = Temperatures(user_input_params.obs_freq, inst_spec_params.T_cmb, inst_spec_params.T_amb, inst_spec_params.g,
-                             inst_spec_params.eta_eff, T_atm, tau_atm)
+        temps = Temperatures(user_input_params.obs_freq, inst_setup_params.T_cmb, inst_setup_params.T_amb, inst_setup_params.g,
+                             inst_setup_params.eta_eff, T_atm, tau_atm)
 
         # LDM
         # ------------------------------------------------------------------
@@ -250,16 +250,16 @@ class Calculator:
                 _tau_atm = atm.calculate_tau_atm(freq,user_input_params.weather,user_input_params.elevation)
 
                 _T_atm = atm.calculate_atmospheric_temperature(freq,user_input_params.weather)
-                _temps = Temperatures(freq, inst_spec_params.T_cmb, inst_spec_params.T_amb, inst_spec_params.g,
-                                      inst_spec_params.eta_eff, _T_atm, _tau_atm)
+                _temps = Temperatures(freq, inst_setup_params.T_cmb, inst_setup_params.T_amb, inst_setup_params.g,
+                                      inst_setup_params.eta_eff, _T_atm, _tau_atm)
 
-                _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a, inst_spec_params.dish_radius).to('J/m2').value)
+                _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a, inst_setup_params.dish_radius).to('J/m2').value)
             _sefd = np.asarray(_sefd)*(u.J/u.m**2)
 
             # obtain the effective SEFD for the input band
             sefd = np.sqrt(user_input_params.bandwidth/np.sum(obs_band_list/_sefd**2))
         else:
-            sefd = self._calculate_sefd(temps.T_sys, eta.eta_a, inst_spec_params.dish_radius)
+            sefd = self._calculate_sefd(temps.T_sys, eta.eta_a, inst_setup_params.dish_radius)
 
         _derived_params = \
             DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
