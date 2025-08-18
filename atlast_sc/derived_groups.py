@@ -39,7 +39,7 @@ class AtmosphereParams:
 
     def calculate_tau_atm(self, obs_freq, weather, elevation):
         """
-        Calculate the atmospheric tau factor tau_atm
+        Calculate the atmospheric optical depth, tau_atm
 
         :param obs_freq: the central observing frequency
         :type obs_freq: astropy.units.Quantity
