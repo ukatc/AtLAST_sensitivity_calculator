@@ -31,4 +31,4 @@ Derived parameters
       - K
     * - System equivalent flux density
       - sefd
-      - J / m^2
+      - J / m2
