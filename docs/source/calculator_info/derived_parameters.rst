@@ -8,7 +8,7 @@ Derived parameters
     * - Parameter
       - Label
       - Unit
-    * - Atmospheric transmittance
+    * - Atmospheric optical depth
       - tau_atm
       -
     * - Atmospheric temperature
@@ -31,4 +31,4 @@ Derived parameters
       - K
     * - System equivalent flux density
       - sefd
-      - J / m2
+      - J / m^2
