@@ -254,7 +254,7 @@ class Calculator:
     @property
     def tau_atm(self):
         """
-        Get the atmospheric transmittance
+        Get the atmospheric optical depth
         """
         return self.derived_parameters.tau_atm
 
