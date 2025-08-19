@@ -17,7 +17,6 @@ class CalculatorFactory:
         # Calculate the derived parameters used in the calculation
         self._uip = UserInputParameters(self._config)
         self._isp = InstrumentSetupParameters(self._config)
-        
         self.calculator = Calculator(self._config, self._uip, self._isp, self._finetune)
 
     #####################

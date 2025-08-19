@@ -7,7 +7,7 @@ from atlast_sc.derived_groups import Temperatures
 from atlast_sc.derived_groups import AtmosphereParams
 from atlast_sc.derived_groups import Efficiencies
 from atlast_sc.data import Data, DataHelper
-from atlast_sc.calculator import Calculator
+from atlast_sc.factory import CalculatorFactory
 from atlast_sc.models import ValueWithoutUnits, ValueWithUnits
 
 
@@ -25,9 +25,9 @@ def tmp_output_dir(tmp_path_factory):
 
 
 @pytest.fixture()
-def calculator():
+def calculator_factory():
     # Return a calculator with default parameters
-    return Calculator()
+    return CalculatorFactory()
 
 
 @pytest.fixture(scope='session')

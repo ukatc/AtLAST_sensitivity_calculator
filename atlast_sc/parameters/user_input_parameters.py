@@ -1,5 +1,11 @@
 from atlast_sc.utils import Decorators
-from atlast_sc.config import Config
+from atlast_sc.derived_groups import AtmosphereParams
+from atlast_sc.derived_groups import Temperatures
+from atlast_sc.derived_groups import Efficiencies
+from atlast_sc.models import DerivedParams
+import astropy.units as u
+from astropy.constants import k_B
+import numpy as np
 
 ###################################################
 # Getters and setters for user input parameters   #
@@ -9,6 +15,7 @@ class UserInputParameters:
 
     def __init__(self, config):
         self.config = config
+        self._derived_parameters = None
 
     # TODO t_int and sensitivity are a special can se. They can be both
     #   set and calculated. Special care needs to be taken on setting them:
@@ -124,3 +131,170 @@ class UserInputParameters:
     def elevation(self, value):
         self.config.calculation_inputs.user_input.elevation.value = value
         self.config.calculation_inputs.user_input.elevation.unit = value.unit
+
+
+
+    #########
+
+    @property
+    def derived_parameters(self):
+        """
+        Parameters calculated from user input and instrument setup
+        """
+        return self._derived_parameters
+
+    @derived_parameters.setter
+    @Decorators.validate_and_update_params
+    def derived_parameters(self, value):
+        self._derived_parameters = value
+
+    def _calculate_derived_parameters(self, user_input_params={}, inst_setup_params={}, finetune=False):
+        """
+        Performs the calculations required to produce the
+        set of derived parameters required for the sensitivity
+        calculation.
+        """
+
+        # TODO Technically, it's possible to instantiate each of the
+        # classes below using a different observing frequency for each.
+        # The resulting derived parameters wouldn't make sense under those
+        # circumstances. Although this is an unlikely scenario, the design
+        # would be cleaner if there three classes referenced the
+        # same observing frequency.
+        # Implement a Builder interface to construct all three objects using
+        # the same observing frequency?
+
+        # LDM
+        # ------------------------------------------------------------------
+        # T_atm, tau_atm, and the various temps values are not actually used
+        # for computing the sefd, but I kept this part to avoid breaking the
+        # build of DerivedParams below
+        # ------------------------------------------------------------------
+
+        # Perform efficiencies calculations
+        if not user_input_params:
+            obs_freq = self.config.calculation_inputs.user_input.obs_freq.value
+            weather = self.config.calculation_inputs.user_input.weather.value
+            elevation = self.config.calculation_inputs.user_input.elevation.value
+            bandwidth = self.config.calculation_inputs.user_input.bandwidth.value
+        else:
+            obs_freq = user_input_params.obs_freq
+            weather = user_input_params.weather
+            elevation = user_input_params.elevation
+            bandwidth = user_input_params.bandwidth
+
+        if not inst_setup_params:
+            surface_rms = self.config.calculation_inputs.instrument_setup.surface_rms.value
+            eta_ill= self.config.calculation_inputs.instrument_setup.eta_ill.value
+            eta_spill= self.config.calculation_inputs.instrument_setup.eta_spill.value
+            eta_block = self.config.calculation_inputs.instrument_setup.eta_block.value
+            eta_pol = self.config.calculation_inputs.instrument_setup.eta_pol.value
+            T_cmb = self.config.calculation_inputs.T_cmb.value
+            T_amb = self.config.calculation_inputs.instrument_setup.T_amb.value
+            g = self.config.calculation_inputs.instrument_setup.g.value
+            eta_eff = self.config.calculation_inputs.instrument_setup.eta_eff.value
+            dish_radius = self.config.calculation_inputs.instrument_setup.dish_radius.value
+        else:
+            surface_rms = inst_setup_params.surface_rms
+            eta_ill= inst_setup_params.eta_ill
+            eta_spill= inst_setup_params.eta_spill
+            eta_block = inst_setup_params.eta_block
+            eta_pol = inst_setup_params.eta_pol
+            T_cmb = inst_setup_params.T_cmb
+            T_amb = inst_setup_params.T_amb
+            g = inst_setup_params.g
+            eta_eff = inst_setup_params.eta_eff
+            dish_radius = inst_setup_params.dish_radius
+
+        eta = Efficiencies(obs_freq , surface_rms, eta_ill,
+                            eta_spill, eta_block, eta_pol)
+
+        # Perform atmospheric model calculations
+        atm = AtmosphereParams()
+        tau_atm = atm.calculate_tau_atm(obs_freq,
+                                        weather, elevation)
+        T_atm = atm.calculate_atmospheric_temperature(obs_freq,
+                                                        weather)
+        # Calculate the temperatures
+        temps = Temperatures(obs_freq, T_cmb, T_amb, g,
+                                eta_eff, T_atm, tau_atm)
+
+        # LDM
+        # ------------------------------------------------------------------
+        # This is where the snippet starts. The idea is to compute an
+        # effect SEFD as sefd_eff = sqrt(dnu/sum(dnu_i/sefd_i)), where dnu
+        # is the total bandwidth and dnu_i the widths of the narrow channels
+        # for which we compute each sefd_i. This comes from basic noise 
+        # statistics consideration for computing the total RMS for a broad
+        # band composed of n independent channels. 
+        # Setting finetune=False will fall back on the old implementation
+        # ------------------------------------------------------------------
+
+        # define lower and upper limit of the requested band
+        obs_freq_low = (obs_freq-0.50*bandwidth).to('GHz').value
+        obs_freq_upp = (obs_freq+0.50*bandwidth).to('GHz').value
+
+        # select all the frequencies in the atm tables comprised within the band edges
+        obs_freq_list = atm.tau_atm_table[:, 0][np.logical_and(atm.tau_atm_table[:, 0]>obs_freq_low,
+                                                                atm.tau_atm_table[:, 0]<obs_freq_upp)]
+        
+        # pad the frequency array to include the lower/upper band edges 
+        obs_freq_list = np.concatenate(([obs_freq_low],obs_freq_list,[obs_freq_upp]))*u.GHz
+
+        # double the frequency resolution; turned off for the moment, but
+        # just wanted to keep track of this
+        # if False:
+        #     obs_freq_list = np.ravel([obs_freq_list[1:],0.50*(obs_freq_list[1:]+obs_freq_list[:-1])],'F')
+        #     obs_freq_list = np.append(obs_freq_low,obs_freq_list)
+
+        # check if there are enough channels for performing the sum,
+        # otherwise estimate the single-frequency SEFD
+        if finetune and len(obs_freq_list)>1:
+            
+            _sefd = []
+            
+            obs_band_list = (obs_freq_list[1:]-obs_freq_list[:-1])
+            obs_freq_list = (obs_freq_list[1:]+obs_freq_list[:-1])*0.50
+
+            # compute SEFD for each narrow spectral element
+            for freq in obs_freq_list:
+                _tau_atm = atm.calculate_tau_atm(freq,weather,elevation)
+
+                _T_atm = atm.calculate_atmospheric_temperature(freq,weather)
+                _temps = Temperatures(freq, T_cmb, T_amb, g,
+                                        eta_eff, _T_atm, _tau_atm)
+
+                _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a, dish_radius).to('J/m2').value)
+            _sefd = np.asarray(_sefd)*(u.J/u.m**2)
+
+            # obtain the effective SEFD for the input band
+            sefd = np.sqrt(bandwidth/np.sum(obs_band_list/_sefd**2))
+        else:
+            sefd = self._calculate_sefd(temps.T_sys, eta.eta_a, dish_radius)
+
+        _derived_params = \
+            DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
+                            eta_a=eta.eta_a, eta_s=eta.eta_s, T_sys=temps.T_sys, T_sky=temps.T_sky,
+                            sefd=sefd)
+        
+        self._derived_parameters = _derived_params
+        
+        return _derived_params
+
+    def _calculate_sefd(self, T_sys, eta_a, dish_radius):
+        """
+        Calculates the source equivalent flux density, SEFD, from the system
+        temperature, T_sys, the dish efficiency eta_A, and the dish area.
+
+        :param T_sys: system temperature
+        :type T_sys: astropy.units.Quantity
+        :param eta_a: the dish efficiency factor
+        :type eta_a: float
+        :return: source equivalent flux density
+        :rtype: astropy.units.Quantity
+        """
+
+        dish_area = np.pi * dish_radius ** 2
+        sefd = (2 * k_B * T_sys) / (eta_a * dish_area)
+
+        return sefd

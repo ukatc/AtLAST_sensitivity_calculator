@@ -25,21 +25,24 @@ class Calculator:
      **NB: usage not tested, and may not be supported in future.**
     :type instrument_setup: dict
     """
-    def __init__(self, config, user_input_params, inst_setup_params, finetune):
+    def __init__(self, config, user_input_params, inst_setup_params, finetune=False):
         
+        self.config = config
         self.finetune = finetune
         self._uip = user_input_params
         self._isp = inst_setup_params
-        derived_params =  self._calculate_derived_parameters(user_input_params, inst_setup_params)
-        self._dp = DerivedParameters(derived_params, config)
+        # self.derived_params =  self._uip._calculate_derived_parameters(user_input_params, inst_setup_params, self.finetune)
+        self.derived_params =  self._uip._calculate_derived_parameters()
+        self._dp = DerivedParameters(self.derived_params, config)
         self.sensitivity = user_input_params.sensitivity
+        self.t_int = None
         
     #################################################
     # Public methods for performing sensitivity and #
     # integration time calculations                 #
     #################################################
 
-    def calculate_sensitivity(self, user_input, t_int=None, update_calculator=True):
+    def calculate_sensitivity(self, user_input=None, t_int=None, update_calculator=True):
         """
         Calculates the telescope sensitivity (mJy) for a
         given integration time `t_int`.
@@ -54,26 +57,37 @@ class Calculator:
         :return: sensitivity in mJy
         :rtype: astropy.units.Quantity
         """
+
+        # TODO: If update calculator is true then update dp manually with uip derived parameters
+        n_pol = None
+        bandwidth = None
         if t_int is not None:
             if update_calculator:
-                user_input['t_int'] = {'value': t_int.value, 'unit': t_int.unit}
+                self._uip.t_int = t_int
             else:
-                DataHelper.validate(self, 't_int', t_int)
+                DataHelper.validate(self._uip, 't_int', t_int)
         else:
-            t_int = Quantity(value = (float(user_input['t_int']['value'])),
-                                unit = (user_input['t_int']['unit']))
+            t_int = self.config.calculation_inputs.user_input.t_int.value
         
-        # Retrieve bandwidth value from user inputs and convert to Quantity object
-        bandwidth = Quantity(value = float(user_input['bandwidth']['value']),
-                                               unit = (user_input['bandwidth']['unit']))
-        
-        # Retrieve n_pol value from user inputs and convert to Quantity object
-        n_pol = Quantity(value = int(user_input['n_pol']['value']),
-                            unit = user_input['n_pol']['unit'])
+        if user_input is not None:
+            if 'bandwidth' in user_input:
+                # Retrieve bandwidth value from user inputs and convert to Quantity object
+                bandwidth = Quantity(value = float(user_input['bandwidth']['value']),
+                                                unit = (user_input['bandwidth']['unit']))
+            else:
+                 bandwidth = self.config.calculation_inputs.user_input.bandwidth.value
+            if 'n_pol' in user_input:
+                n_pol = Quantity(value = int(user_input['n_pol']['value']))
+            else:
+                n_pol = self.config.calculation_inputs.user_input.n_pol.value
+        else:
+            bandwidth = self.config.calculation_inputs.user_input.bandwidth.value
+            # Retrieve n_pol value from user inputs and convert to Quantity object
+            n_pol = self.config.calculation_inputs.user_input.n_pol.value
 
         sensitivity = \
-            self._dp.sefd / \
-            (self._dp.eta_s * np.sqrt(n_pol * bandwidth * t_int))
+            self._uip.derived_parameters.sefd / \
+            (self._uip.derived_parameters.eta_s * np.sqrt(n_pol * bandwidth * t_int))
 
         # Convert the output to the most convenient units
         sensitivityresult = sensitivity.to(u.mJy)
@@ -99,7 +113,7 @@ class Calculator:
 
         return sensitivity
 
-    def calculate_t_integration(self, user_input, sensitivity=None,
+    def calculate_t_integration(self, user_input=None, sensitivity=None,
                                 update_calculator=True):
         """
         Calculates the integration time required for a given `sensitivity`
@@ -118,21 +132,29 @@ class Calculator:
 
         if sensitivity is not None:
             if update_calculator:
-                self.sensitivity = sensitivity
+                self._uip.sensitivity = sensitivity
             else:
                 DataHelper.validate(self, 'sensitivity', sensitivity)
         else:
-            sensitivity = self.sensitivity
+            sensitivity = self.config.calculation_inputs.user_input.sensitivity.value
 
-        # Retrieve bandwidth value from user inputs and convert to Quantity object
-        bandwidth = Quantity(value = float(user_input['bandwidth']['value']),
-                                               unit = (user_input['bandwidth']['unit']))
+        if user_input is not None:
+            if 'bandwidth' in user_input:
+                # Retrieve bandwidth value from user inputs and convert to Quantity object
+                bandwidth = Quantity(value = float(user_input['bandwidth']['value']),
+                                                unit = (user_input['bandwidth']['unit']))
+            else:
+                 bandwidth = self.config.calculation_inputs.user_input.bandwidth.value
+            if 'n_pol' in user_input:
+                n_pol = Quantity(value = int(user_input['n_pol']['value']))
+            else:
+                n_pol = self.config.calculation_inputs.user_input.n_pol.value
+        else:
+            bandwidth = self.config.calculation_inputs.user_input.bandwidth.value
+            # Retrieve n_pol value from user inputs and convert to Quantity object
+            n_pol = self.config.calculation_inputs.user_input.n_pol.value
         
-        # Retrieve n_pol value from user inputs and convert to Quantity object
-        n_pol = Quantity(value = int(user_input['n_pol']['value']),
-                            unit = user_input['n_pol']['unit'])
-        
-        t_int = (self._dp.sefd / (sensitivity * self._dp.eta_s)) ** 2 \
+        t_int = (self._uip.derived_parameters.sefd / (sensitivity * self._uip.derived_parameters.eta_s)) ** 2 \
                 / (n_pol * bandwidth)
 
         # Convert the output to the most convenient units
@@ -151,7 +173,6 @@ class Calculator:
             except ValueOutOfRangeException as e:
                 message = Calculator._calculated_value_error_msg(t_int, e)
                 warnings.warn(message, CalculatedValueInvalidWarning)
-
         return t_int
 
     ###################
@@ -163,128 +184,9 @@ class Calculator:
         Resets all calculator parameters to their initial values.
         """
         # Reset the config calculation inputs to their original values
-        self._config.reset()
+        self.config.reset()
         # Recalculate the derived parameters
-        self._calculate_derived_parameters()
-
- 
-############
-    def _calculate_derived_parameters(self, user_input_params, inst_setup_params):
-        """
-        Performs the calculations required to produce the
-        set of derived parameters required for the sensitivity
-        calculation.
-        """
-
-        # TODO Technically, it's possible to instantiate each of the
-        # classes below using a different observing frequency for each.
-        # The resulting derived parameters wouldn't make sense under those
-        # circumstances. Although this is an unlikely scenario, the design
-        # would be cleaner if there three classes referenced the
-        # same observing frequency.
-        # Implement a Builder interface to construct all three objects using
-        # the same observing frequency?
-
-        # LDM
-        # ------------------------------------------------------------------
-        # T_atm, tau_atm, and the various temps values are not actually used
-        # for computing the sefd, but I kept this part to avoid breaking the
-        # build of DerivedParams below
-        # ------------------------------------------------------------------
-
-        # Perform efficiencies calculations
-        
-        eta = Efficiencies(user_input_params.obs_freq , inst_setup_params.surface_rms, inst_setup_params.eta_ill,
-                           inst_setup_params.eta_spill, inst_setup_params.eta_block, inst_setup_params.eta_pol)
-
-        # Perform atmospheric model calculations
-        atm = AtmosphereParams()
-        tau_atm = atm.calculate_tau_atm(user_input_params.obs_freq,
-                                        user_input_params.weather, user_input_params.elevation)
-        T_atm = atm.calculate_atmospheric_temperature(user_input_params.obs_freq,
-                                                      user_input_params.weather)
-
-        # Calculate the temperatures
-        temps = Temperatures(user_input_params.obs_freq, inst_setup_params.T_cmb, inst_setup_params.T_amb, inst_setup_params.g,
-                             inst_setup_params.eta_eff, T_atm, tau_atm)
-
-        # LDM
-        # ------------------------------------------------------------------
-        # This is where the snippet starts. The idea is to compute an
-        # effect SEFD as sefd_eff = sqrt(dnu/sum(dnu_i/sefd_i)), where dnu
-        # is the total bandwidth and dnu_i the widths of the narrow channels
-        # for which we compute each sefd_i. This comes from basic noise 
-        # statistics consideration for computing the total RMS for a broad
-        # band composed of n independent channels. 
-        # Setting finetune=False will fall back on the old implementation
-        # ------------------------------------------------------------------
-
-        # define lower and upper limit of the requested band
-        obs_freq_low = (user_input_params.obs_freq-0.50*user_input_params.bandwidth).to('GHz').value
-        obs_freq_upp = (user_input_params.obs_freq+0.50*user_input_params.bandwidth).to('GHz').value
-
-        # select all the frequencies in the atm tables comprised within the band edges
-        obs_freq_list = atm.tau_atm_table[:, 0][np.logical_and(atm.tau_atm_table[:, 0]>obs_freq_low,
-                                                               atm.tau_atm_table[:, 0]<obs_freq_upp)]
-       
-        # pad the frequency array to include the lower/upper band edges 
-        obs_freq_list = np.concatenate(([obs_freq_low],obs_freq_list,[obs_freq_upp]))*u.GHz
-
-        # double the frequency resolution; turned off for the moment, but
-        # just wanted to keep track of this
-        # if False:
-        #     obs_freq_list = np.ravel([obs_freq_list[1:],0.50*(obs_freq_list[1:]+obs_freq_list[:-1])],'F')
-        #     obs_freq_list = np.append(obs_freq_low,obs_freq_list)
-
-        # check if there are enough channels for performing the sum,
-        # otherwise estimate the single-frequency SEFD
-        if self.finetune and len(obs_freq_list)>1:
-            
-            _sefd = []
-            
-            obs_band_list = (obs_freq_list[1:]-obs_freq_list[:-1])
-            obs_freq_list = (obs_freq_list[1:]+obs_freq_list[:-1])*0.50
-
-            # compute SEFD for each narrow spectral element
-            for freq in obs_freq_list:
-                _tau_atm = atm.calculate_tau_atm(freq,user_input_params.weather,user_input_params.elevation)
-
-                _T_atm = atm.calculate_atmospheric_temperature(freq,user_input_params.weather)
-                _temps = Temperatures(freq, inst_setup_params.T_cmb, inst_setup_params.T_amb, inst_setup_params.g,
-                                      inst_setup_params.eta_eff, _T_atm, _tau_atm)
-
-                _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a, inst_setup_params.dish_radius).to('J/m2').value)
-            _sefd = np.asarray(_sefd)*(u.J/u.m**2)
-
-            # obtain the effective SEFD for the input band
-            sefd = np.sqrt(user_input_params.bandwidth/np.sum(obs_band_list/_sefd**2))
-        else:
-            sefd = self._calculate_sefd(temps.T_sys, eta.eta_a, inst_setup_params.dish_radius)
-
-        _derived_params = \
-            DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
-                          eta_a=eta.eta_a, eta_s=eta.eta_s, T_sys=temps.T_sys, T_sky=temps.T_sky,
-                          sefd=sefd)
-        
-        return _derived_params
-
-    def _calculate_sefd(self, T_sys, eta_a, dish_radius):
-        """
-        Calculates the source equivalent flux density, SEFD, from the system
-        temperature, T_sys, the dish efficiency eta_A, and the dish area.
-
-        :param T_sys: system temperature
-        :type T_sys: astropy.units.Quantity
-        :param eta_a: the dish efficiency factor
-        :type eta_a: float
-        :return: source equivalent flux density
-        :rtype: astropy.units.Quantity
-        """
-
-        dish_area = np.pi * dish_radius ** 2
-        sefd = (2 * k_B * T_sys) / (eta_a * dish_area)
-
-        return sefd
+        self._uip._calculate_derived_parameters()
 
     @staticmethod
     def _calculated_value_error_msg(calculated_value, validation_error):

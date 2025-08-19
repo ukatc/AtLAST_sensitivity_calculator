@@ -61,18 +61,6 @@ class Config:
         """
         return self._calculation_inputs.instrument_setup
 
-    @property
-    def derived_parameters(self):
-        """
-        Parameters calculated from user input and instrument setup
-        """
-        return self._derived_parameters
-
-    @derived_parameters.setter
-    @Decorators.validate_and_update_params
-    def derived_parameters(self, value):
-        self._derived_parameters = value
-
     def reset(self):
 
         """

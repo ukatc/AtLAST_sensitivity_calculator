@@ -54,7 +54,7 @@ class Decorators:
         """
 
         @functools.wraps(func)
-        def do_update(calculator, value, **kwargs):
+        def do_update(uip, value, **kwargs):
             """
             Validates the type, value and units of the value for the target
             parameter. If the new value is different from the old, derived
@@ -72,18 +72,18 @@ class Decorators:
                 value = float(value)
 
             # Validate the new value
-            DataHelper.validate(calculator, func.__name__, value)
+            DataHelper.validate(uip, func.__name__, value)
 
             # Determine if the old and new values differ
-            attribute = getattr(calculator, func.__name__)
+            attribute = getattr(uip, func.__name__)
             dirty = (attribute != value)
 
             # Update the parameter
-            func(calculator, value, **kwargs)
+            func(uip, value, **kwargs)
 
             # Recalculate derived parameters, if necessary
             if dirty:
-                calculator._calculate_derived_parameters()
+                uip._calculate_derived_parameters()
 
         return do_update
 
@@ -116,7 +116,6 @@ class FileHelper:
         :rtype: dict[str, float]
         """
         file_reader = FileHelper._get_reader(file_name)
-
         file_path = os.path.join(path, file_name)
 
         with open(file_path, "r") as file:
@@ -159,8 +158,8 @@ class FileHelper:
         # Create and concatenate dictionaries from the user input model and
         # the derived parameters model
         params = {param: val['value']
-                  for param, val in calculator.user_input.dict().items()} | \
-            calculator.derived_parameters.dict()
+                  for param, val in calculator.config.calculation_inputs.user_input.dict().items()} | \
+            calculator.derived_params.dict()
 
         with open(file_path, "w") as f:
             file_writer(f, params)
@@ -364,8 +363,8 @@ class FileHelper:
 class DataHelper:
 
     @staticmethod
-    def validate(calculator, param_name, value):
-        attribute = getattr(calculator, param_name)
+    def validate(uip, param_name, value):
+        attribute = getattr(uip, param_name)
 
         # Ensure integer values are converted to floats (all parameter values
         # are expected to be floats)
@@ -381,7 +380,7 @@ class DataHelper:
 
         # Validate the new value
         try:
-            calculator.calculation_inputs. \
+            uip.config.calculation_inputs. \
                 validate_value(param_name, value)
         except ValueError as e:
             raise e
