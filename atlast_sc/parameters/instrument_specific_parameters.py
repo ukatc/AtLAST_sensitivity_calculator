@@ -4,7 +4,7 @@ from atlast_sc.utils import Decorators
 # Getters and a couple of setters for instrument setup parameters  #
 ####################################################################
 
-class InstrumentSetupParameters:
+class InstrumentSpecificParameters:
 
     def __init__(self, config):
         self.config = config
