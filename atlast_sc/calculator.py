@@ -34,8 +34,8 @@ class Calculator:
         # self.derived_params =  self._uip._calculate_derived_parameters(user_input_params, inst_setup_params, self.finetune)
         self.derived_params =  self._uip._calculate_derived_parameters()
         self._dp = DerivedParameters(self.derived_params)
-        self.sensitivity = user_input_params.sensitivity
-        self.t_int = None
+        self.calculated_sensitivity = None
+        self.calculated_t_int = None
         
     #################################################
     # Public methods for performing sensitivity and #
@@ -85,33 +85,33 @@ class Calculator:
             # Retrieve n_pol value from user inputs and convert to Quantity object
             n_pol = self._param_setup.calculation_inputs.user_input.n_pol.value
 
-        sensitivity = \
+        sensitivity_result = \
             self._uip.derived_parameters.sefd / \
             (self._uip.derived_parameters.eta_s * np.sqrt(n_pol * bandwidth * t_int))
 
         # Convert the output to the most convenient units
-        sensitivityresult = sensitivity.to(u.mJy)
-        if  sensitivityresult < 1*u.mJy:
-            sensitivity = sensitivity.to(u.uJy)
-        elif (sensitivityresult >= 1*u.mJy) & (sensitivityresult < 1000*u.mJy):
-            sensitivity = sensitivity.to(u.mJy)
-        elif sensitivityresult >= 1000*u.mJy:
-            sensitivity = sensitivity.to(u.Jy)
+        sensitivity_result = sensitivity_result.to(u.mJy)
+        if  sensitivity_result < 1*u.mJy:
+            sensitivity_result = sensitivity_result.to(u.uJy)
+        elif (sensitivity_result >= 1*u.mJy) & (sensitivity_result < 1000*u.mJy):
+            sensitivity_result = sensitivity_result.to(u.mJy)
+        elif sensitivity_result >= 1000*u.mJy:
+            sensitivity_result = sensitivity_result.to(u.Jy)
 
         # Try to update the sensitivity stored in the calculator
         if update_calculator:
             try:
-                self.sensitivity = sensitivity
+                self.calculated_sensitivity = sensitivity_result
             except ValueOutOfRangeException as e:
                 # This point is actually unreachable, but it's sensible to
                 # have the code in place in case the permitted range of
                 # the sensitivity changes and becomes possible to achieve with
                 # the right combination of input parameters.
                 message = \
-                    Calculator._calculated_value_error_msg(sensitivity, e)
+                    Calculator._calculated_value_error_msg(sensitivity_result, e)
                 warnings.warn(message, CalculatedValueInvalidWarning)
 
-        return sensitivity
+        return sensitivity_result
 
     def calculate_t_integration(self, user_input=None, sensitivity=None,
                                 update_calculator=True):
@@ -134,7 +134,7 @@ class Calculator:
             if update_calculator:
                 self._uip.sensitivity = sensitivity
             else:
-                DataHelper.validate(self, 'sensitivity', sensitivity)
+                DataHelper.validate(self, 'calculated_sensitivity', sensitivity)
         else:
             sensitivity = self._param_setup.calculation_inputs.user_input.sensitivity.value
 
@@ -154,26 +154,26 @@ class Calculator:
             # Retrieve n_pol value from user inputs and convert to Quantity object
             n_pol = self._param_setup.calculation_inputs.user_input.n_pol.value
         
-        t_int = (self._uip.derived_parameters.sefd / (sensitivity * self._uip.derived_parameters.eta_s)) ** 2 \
+        t_int_result = (self._uip.derived_parameters.sefd / (sensitivity * self._uip.derived_parameters.eta_s)) ** 2 \
                 / (n_pol * bandwidth)
 
         # Convert the output to the most convenient units
-        timeresult = t_int.to(u.s)
-        if  timeresult < 60*u.s:
-            t_int = t_int.to(u.s)
-        elif (timeresult >= 60*u.s) & (timeresult < 3600*u.s):
-            t_int = t_int.to(u.min)
-        elif timeresult >= 3600*u.s:
-            t_int = t_int.to(u.h)
+        t_int_result = t_int_result.to(u.s)
+        if  t_int_result < 60*u.s:
+            t_int_result = t_int_result.to(u.s)
+        elif (t_int_result >= 60*u.s) & (t_int_result < 3600*u.s):
+            t_int_result = t_int_result.to(u.min)
+        elif t_int_result >= 3600*u.s:
+            t_int_result = t_int_result.to(u.h)
 
         # Try to update the integration time stored in the calculator
         if update_calculator:
             try:
-                self.t_int = t_int
+                self.calculated_t_int = t_int_result
             except ValueOutOfRangeException as e:
-                message = Calculator._calculated_value_error_msg(t_int, e)
+                message = Calculator._calculated_value_error_msg(t_int_result, e)
                 warnings.warn(message, CalculatedValueInvalidWarning)
-        return t_int
+        return t_int_result
 
     ###################
     # Utility methods #

@@ -16,10 +16,10 @@ class TestCalculatorUsage:
         sens = test_calculator.calculate_sensitivity()
         # Verify that the calculator now stores the newly calculated
         # sensitivity
-        assert sens == test_calculator.sensitivity
+        assert sens == test_calculator.calculated_sensitivity
         # Verify that the sensitivity is about 780 mJy
-        assert test_calculator.sensitivity.value == pytest.approx(780, 0.01)
-        assert test_calculator.sensitivity.unit == u.uJy
+        assert test_calculator.calculated_sensitivity.value == pytest.approx(780, 0.01)
+        assert test_calculator.calculated_sensitivity.unit == u.uJy
 
         # Update observing frequency
         test_calculator._uip.obs_freq = 850 * u.GHz
@@ -48,7 +48,7 @@ class TestCalculatorUsage:
         # Verify that integration time has not been updated
         assert test_calculator._uip.t_int != test_t_int
         # Verify that the sensitivity has not been updated
-        assert test_calculator.sensitivity != sens
+        assert test_calculator.calculated_sensitivity != sens
 
         # Reset the calculator
         test_calculator.reset()
@@ -62,10 +62,10 @@ class TestCalculatorUsage:
         new_t_int = test_calculator.calculate_t_integration()
         # Verify that the calculator has been updated with calculated
         # integration time
-        assert test_calculator.t_int == new_t_int
+        assert test_calculator.calculated_t_int == new_t_int
         # Verify that the calculated integration time is about 6.76 s
-        assert test_calculator.t_int.value == pytest.approx(6.76, 0.01)
-        assert test_calculator.t_int.unit == u.s
+        assert test_calculator.calculated_t_int.value == pytest.approx(6.76, 0.01)
+        assert test_calculator.calculated_t_int.unit == u.s
 
         # Calculate integration time using a different sensitivity
         test_sens = 300 * u.mJy
@@ -79,9 +79,9 @@ class TestCalculatorUsage:
             test_calculator.calculate_t_integration(sensitivity=test_sens,
                                                     update_calculator=False)
         # Verify that the sensitivity has not been updated
-        assert test_calculator.sensitivity != test_sens
+        assert test_calculator.calculated_sensitivity != test_sens
         # Verify that the integration time has not been updated
-        assert test_calculator.t_int != t_int
+        assert test_calculator.calculated_t_int != t_int
 
     def test_calculator_from_to_files(self, test_files_path, tmp_output_dir):
 

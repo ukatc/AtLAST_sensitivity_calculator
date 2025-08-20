@@ -82,9 +82,28 @@ class Data:
         units=[str(u.s), str(u.min), str(u.h)],
     )
 
+    calculated_integration_time = DataType(
+        default_value=6.7636,
+        default_unit=str(u.s),
+        lower_value=1,
+        upper_value=float('inf'),
+        upper_value_is_ceil=True,
+        units=[str(u.s), str(u.min), str(u.h)],
+    )
+
     sensitivity = DataType(
         default_value=3.0,
         default_unit=str(u.mJy),
+        lower_value=0,
+        lower_value_is_floor=True,
+        upper_value=float('inf'),
+        upper_value_is_ceil=True,
+        units=[str(u.uJy), str(u.mJy), str(u.Jy)],
+    )
+
+    calculated_sensitivity = DataType(
+        default_value=780.2102,
+        default_unit=str(u.uJy),
         lower_value=0,
         lower_value_is_floor=True,
         upper_value=float('inf'),
@@ -195,7 +214,9 @@ class Data:
 
     param_data_type_dicts = {
         't_int': integration_time,
+        'calculated_integration_time': calculated_integration_time,
         'sensitivity': sensitivity,
+        'calculated_sensitivity': calculated_sensitivity,
         'bandwidth': bandwidth,
         'obs_freq': obs_frequency,
         'n_pol': n_pol,
