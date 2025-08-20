@@ -1,11 +1,6 @@
 import warnings
 import astropy.units as u
-from astropy.constants import k_B
 import numpy as np
-from atlast_sc.derived_groups import AtmosphereParams
-from atlast_sc.derived_groups import Temperatures
-from atlast_sc.derived_groups import Efficiencies
-from atlast_sc.models import DerivedParams
 from atlast_sc.parameters.derived_parameters import DerivedParameters
 from atlast_sc.utils import DataHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning

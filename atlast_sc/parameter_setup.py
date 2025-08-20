@@ -24,9 +24,11 @@ class ParameterSetup:
         :type instrument_specific: dict
         """
         self.finetune = finetune
+
         new_user_input = UserInput(**user_input)
         new_instrument_specific = InstrumentSpecific(**instrument_specific)
         new_telescope_and_environment = TelescopeAndEnvironment(**telescope_and_environment)
+        
         self._calculation_inputs = \
             CalculationInput(user_input=new_user_input,
                              instrument_specific=new_instrument_specific,
@@ -35,13 +37,6 @@ class ParameterSetup:
         # Make a deep copy of the calculation inputs to enable the
         # calculator to be reset to its initial setup
         self._original_inputs = copy.deepcopy(self._calculation_inputs)
-
-    @property
-    def calculation_inputs(self):
-        """
-        Get the calculation inputs (user input and instrument setup)
-        """
-        return self._calculation_inputs
 
     @property
     def calculation_inputs(self):
@@ -60,9 +55,9 @@ class ParameterSetup:
     @property
     def instrument_specific(self):
         """
-        Instrument setup parameters
+        Instrument specific parameters
         """
-        return self._calculation_inputs.instrument_setup
+        return self._calculation_inputs.instrument_specific
     
     @property
     def telescope_and_environment(self):
