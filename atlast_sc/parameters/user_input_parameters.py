@@ -13,8 +13,8 @@ import numpy as np
 
 class UserInputParameters:
 
-    def __init__(self, config):
-        self.config = config
+    def __init__(self, param_setup):
+        self._param_setup = param_setup
         self._derived_parameters = None
 
     # TODO t_int and sensitivity are a special can se. They can be both
@@ -28,7 +28,7 @@ class UserInputParameters:
         """
         Get or set the integration time
         """
-        return self.config.calculation_inputs.user_input.t_int.value
+        return self._param_setup.calculation_inputs.user_input.t_int.value
 
     @t_int.setter
     @Decorators.validate_value
@@ -46,15 +46,15 @@ class UserInputParameters:
         #   the application. However, not updating it feels odd, since it would
         #   result in a discrepancy between the unit property and the unit
         #   contained in the Quantity object. Think about this...
-        self.config.calculation_inputs.user_input.t_int.value = value
-        self.config.calculation_inputs.user_input.t_int.unit = value.unit
+        self._param_setup.calculation_inputs.user_input.t_int.value = value
+        self._param_setup.calculation_inputs.user_input.t_int.unit = value.unit
 
     @property
     def sensitivity(self):
         """
         Get or set the sensitivity
         """
-        return self.config.calculation_inputs.user_input.sensitivity.value
+        return self._param_setup.calculation_inputs.user_input.sensitivity.value
 
     @sensitivity.setter
     @Decorators.validate_value
@@ -66,71 +66,71 @@ class UserInputParameters:
         #  store or use those stored values.
         #  Need separate "outputs" properties that are used for
         #  subsequent calculations and/or storing results?
-        self.config.calculation_inputs.user_input.sensitivity.value = value
-        self.config.calculation_inputs.user_input.sensitivity.unit = value.unit
+        self._param_setup.calculation_inputs.user_input.sensitivity.value = value
+        self._param_setup.calculation_inputs.user_input.sensitivity.unit = value.unit
 
     @property
     def bandwidth(self):
         """
         Get or set the bandwidth
         """
-        return self.config.calculation_inputs.user_input.bandwidth.value
+        return self._param_setup.calculation_inputs.user_input.bandwidth.value
     # With the new calculation of SEFD over the whole frequency range, SEFD is now dependent on bandwidth and so parameters must be updated every time bandwidth is changed.
     @bandwidth.setter
     @Decorators.validate_and_update_params
     def bandwidth(self, value):
-        self.config.calculation_inputs.user_input.bandwidth.value = value
-        self.config.calculation_inputs.user_input.bandwidth.unit = value.unit
+        self._param_setup.calculation_inputs.user_input.bandwidth.value = value
+        self._param_setup.calculation_inputs.user_input.bandwidth.unit = value.unit
 
     @property
     def obs_freq(self):
         """
         Get or set the sky frequency of the observations
         """
-        return self.config.calculation_inputs.user_input.obs_freq.value
+        return self._param_setup.calculation_inputs.user_input.obs_freq.value
 
     @obs_freq.setter
     @Decorators.validate_and_update_params
     def obs_freq(self, value):
-        self.config.calculation_inputs.user_input.obs_freq.value = value
-        self.config.calculation_inputs.user_input.obs_freq.unit = value.unit
+        self._param_setup.calculation_inputs.user_input.obs_freq.value = value
+        self._param_setup.calculation_inputs.user_input.obs_freq.unit = value.unit
 
     @property
     def n_pol(self):
         """
         Get or set the number of polarisations being observed
         """
-        return self.config.calculation_inputs.user_input.n_pol.value
+        return self._param_setup.calculation_inputs.user_input.n_pol.value
 
     @n_pol.setter
     @Decorators.validate_value
     def n_pol(self, value):
-        self.config.calculation_inputs.user_input.n_pol.value = value
+        self._param_setup.calculation_inputs.user_input.n_pol.value = value
 
     @property
     def weather(self):
         """
         Get or set the relative humidity
         """
-        return self.config.calculation_inputs.user_input.weather.value
+        return self._param_setup.calculation_inputs.user_input.weather.value
 
     @weather.setter
     @Decorators.validate_and_update_params
     def weather(self, value):
-        self.config.calculation_inputs.user_input.weather.value = value
+        self._param_setup.calculation_inputs.user_input.weather.value = value
 
     @property
     def elevation(self):
         """
         Get or set the elevation of the target for calculating air mass
         """
-        return self.config.calculation_inputs.user_input.elevation.value
+        return self._param_setup.calculation_inputs.user_input.elevation.value
 
     @elevation.setter
     @Decorators.validate_and_update_params
     def elevation(self, value):
-        self.config.calculation_inputs.user_input.elevation.value = value
-        self.config.calculation_inputs.user_input.elevation.unit = value.unit
+        self._param_setup.calculation_inputs.user_input.elevation.value = value
+        self._param_setup.calculation_inputs.user_input.elevation.unit = value.unit
 
 
 
@@ -139,7 +139,7 @@ class UserInputParameters:
     @property
     def derived_parameters(self):
         """
-        Parameters calculated from user input and instrument setup
+        Parameters calculated from user input and instrument specific
         """
         return self._derived_parameters
 
@@ -148,13 +148,13 @@ class UserInputParameters:
     def derived_parameters(self, value):
         self._derived_parameters = value
 
-    def _calculate_derived_parameters(self, user_input_params={}, inst_setup_params={}, finetune=False):
+    # def _calculate_derived_parameters(self, user_input_params={}, inst_setup_params={}, tel_and_env_params={}, finetune=False):
+    def _calculate_derived_parameters(self):
         """
         Performs the calculations required to produce the
         set of derived parameters required for the sensitivity
         calculation.
         """
-
         # TODO Technically, it's possible to instantiate each of the
         # classes below using a different observing frequency for each.
         # The resulting derived parameters wouldn't make sense under those
@@ -171,41 +171,22 @@ class UserInputParameters:
         # build of DerivedParams below
         # ------------------------------------------------------------------
 
+        obs_freq = self._param_setup.calculation_inputs.user_input.obs_freq.value
+        weather = self._param_setup.calculation_inputs.user_input.weather.value
+        elevation = self._param_setup.calculation_inputs.user_input.elevation.value
+        bandwidth = self._param_setup.calculation_inputs.user_input.bandwidth.value
+        surface_rms = self._param_setup.calculation_inputs.telescope_and_environment.surface_rms.value
+        dish_radius = self._param_setup.calculation_inputs.telescope_and_environment.dish_radius.value
+        eta_eff = self._param_setup.calculation_inputs.telescope_and_environment.eta_eff.value
+        eta_ill= self._param_setup.calculation_inputs.telescope_and_environment.eta_ill.value
+        eta_spill= self._param_setup.calculation_inputs.telescope_and_environment.eta_spill.value
+        eta_block = self._param_setup.calculation_inputs.telescope_and_environment.eta_block.value
+        T_cmb = self._param_setup.calculation_inputs.telescope_and_environment.T_cmb.value
+        T_amb = self._param_setup.calculation_inputs.telescope_and_environment.T_amb.value
+        eta_pol = self._param_setup.calculation_inputs.instrument_specific.eta_pol.value
+        g = self._param_setup.calculation_inputs.instrument_specific.g.value
+ 
         # Perform efficiencies calculations
-        if not user_input_params:
-            obs_freq = self.config.calculation_inputs.user_input.obs_freq.value
-            weather = self.config.calculation_inputs.user_input.weather.value
-            elevation = self.config.calculation_inputs.user_input.elevation.value
-            bandwidth = self.config.calculation_inputs.user_input.bandwidth.value
-        else:
-            obs_freq = user_input_params.obs_freq
-            weather = user_input_params.weather
-            elevation = user_input_params.elevation
-            bandwidth = user_input_params.bandwidth
-
-        if not inst_setup_params:
-            surface_rms = self.config.calculation_inputs.instrument_setup.surface_rms.value
-            eta_ill= self.config.calculation_inputs.instrument_setup.eta_ill.value
-            eta_spill= self.config.calculation_inputs.instrument_setup.eta_spill.value
-            eta_block = self.config.calculation_inputs.instrument_setup.eta_block.value
-            eta_pol = self.config.calculation_inputs.instrument_setup.eta_pol.value
-            T_cmb = self.config.calculation_inputs.T_cmb.value
-            T_amb = self.config.calculation_inputs.instrument_setup.T_amb.value
-            g = self.config.calculation_inputs.instrument_setup.g.value
-            eta_eff = self.config.calculation_inputs.instrument_setup.eta_eff.value
-            dish_radius = self.config.calculation_inputs.instrument_setup.dish_radius.value
-        else:
-            surface_rms = inst_setup_params.surface_rms
-            eta_ill= inst_setup_params.eta_ill
-            eta_spill= inst_setup_params.eta_spill
-            eta_block = inst_setup_params.eta_block
-            eta_pol = inst_setup_params.eta_pol
-            T_cmb = inst_setup_params.T_cmb
-            T_amb = inst_setup_params.T_amb
-            g = inst_setup_params.g
-            eta_eff = inst_setup_params.eta_eff
-            dish_radius = inst_setup_params.dish_radius
-
         eta = Efficiencies(obs_freq , surface_rms, eta_ill,
                             eta_spill, eta_block, eta_pol)
 
@@ -249,7 +230,7 @@ class UserInputParameters:
 
         # check if there are enough channels for performing the sum,
         # otherwise estimate the single-frequency SEFD
-        if finetune and len(obs_freq_list)>1:
+        if self._param_setup.finetune and len(obs_freq_list)>1:
             
             _sefd = []
             

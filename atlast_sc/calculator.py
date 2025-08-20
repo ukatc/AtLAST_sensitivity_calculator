@@ -25,15 +25,15 @@ class Calculator:
      **NB: usage not tested, and may not be supported in future.**
     :type instrument_setup: dict
     """
-    def __init__(self, config, user_input_params, inst_setup_params, finetune=False):
+    def __init__(self, param_setup, user_input_params, inst_setup_params, tel_and_env_params):
         
-        self.config = config
-        self.finetune = finetune
+        self._param_setup = param_setup
         self._uip = user_input_params
         self._isp = inst_setup_params
+        self._tep = tel_and_env_params
         # self.derived_params =  self._uip._calculate_derived_parameters(user_input_params, inst_setup_params, self.finetune)
         self.derived_params =  self._uip._calculate_derived_parameters()
-        self._dp = DerivedParameters(self.derived_params, config)
+        self._dp = DerivedParameters(self.derived_params)
         self.sensitivity = user_input_params.sensitivity
         self.t_int = None
         
@@ -67,7 +67,7 @@ class Calculator:
             else:
                 DataHelper.validate(self._uip, 't_int', t_int)
         else:
-            t_int = self.config.calculation_inputs.user_input.t_int.value
+            t_int = self._param_setup.calculation_inputs.user_input.t_int.value
         
         if user_input is not None:
             if 'bandwidth' in user_input:
@@ -75,15 +75,15 @@ class Calculator:
                 bandwidth = Quantity(value = float(user_input['bandwidth']['value']),
                                                 unit = (user_input['bandwidth']['unit']))
             else:
-                 bandwidth = self.config.calculation_inputs.user_input.bandwidth.value
+                 bandwidth = self._param_setup.calculation_inputs.user_input.bandwidth.value
             if 'n_pol' in user_input:
                 n_pol = Quantity(value = int(user_input['n_pol']['value']))
             else:
-                n_pol = self.config.calculation_inputs.user_input.n_pol.value
+                n_pol = self._param_setup.calculation_inputs.user_input.n_pol.value
         else:
-            bandwidth = self.config.calculation_inputs.user_input.bandwidth.value
+            bandwidth = self._param_setup.calculation_inputs.user_input.bandwidth.value
             # Retrieve n_pol value from user inputs and convert to Quantity object
-            n_pol = self.config.calculation_inputs.user_input.n_pol.value
+            n_pol = self._param_setup.calculation_inputs.user_input.n_pol.value
 
         sensitivity = \
             self._uip.derived_parameters.sefd / \
@@ -136,7 +136,7 @@ class Calculator:
             else:
                 DataHelper.validate(self, 'sensitivity', sensitivity)
         else:
-            sensitivity = self.config.calculation_inputs.user_input.sensitivity.value
+            sensitivity = self._param_setup.calculation_inputs.user_input.sensitivity.value
 
         if user_input is not None:
             if 'bandwidth' in user_input:
@@ -144,15 +144,15 @@ class Calculator:
                 bandwidth = Quantity(value = float(user_input['bandwidth']['value']),
                                                 unit = (user_input['bandwidth']['unit']))
             else:
-                 bandwidth = self.config.calculation_inputs.user_input.bandwidth.value
+                 bandwidth = self._param_setup.calculation_inputs.user_input.bandwidth.value
             if 'n_pol' in user_input:
                 n_pol = Quantity(value = int(user_input['n_pol']['value']))
             else:
-                n_pol = self.config.calculation_inputs.user_input.n_pol.value
+                n_pol = self._param_setup.calculation_inputs.user_input.n_pol.value
         else:
-            bandwidth = self.config.calculation_inputs.user_input.bandwidth.value
+            bandwidth = self._param_setup.calculation_inputs.user_input.bandwidth.value
             # Retrieve n_pol value from user inputs and convert to Quantity object
-            n_pol = self.config.calculation_inputs.user_input.n_pol.value
+            n_pol = self._param_setup.calculation_inputs.user_input.n_pol.value
         
         t_int = (self._uip.derived_parameters.sefd / (sensitivity * self._uip.derived_parameters.eta_s)) ** 2 \
                 / (n_pol * bandwidth)
@@ -183,8 +183,8 @@ class Calculator:
         """
         Resets all calculator parameters to their initial values.
         """
-        # Reset the config calculation inputs to their original values
-        self.config.reset()
+        # Reset the _param_setup calculation inputs to their original values
+        self._param_setup.reset()
         # Recalculate the derived parameters
         self._uip._calculate_derived_parameters()
 

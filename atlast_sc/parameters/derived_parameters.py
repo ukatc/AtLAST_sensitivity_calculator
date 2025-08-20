@@ -3,10 +3,8 @@
 ###################################
 
 class DerivedParameters:
-    def __init__(self, derived_params, config):
+    def __init__(self, derived_params):
         self._derived_parameters = derived_params
-        
-        self.config = config
 
     @property
     def tau_atm(self):

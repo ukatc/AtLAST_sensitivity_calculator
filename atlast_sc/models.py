@@ -135,8 +135,15 @@ class UserInput(BaseModel):
         return ModelUtils.model_str_rep(self)
 
 
-class InstrumentSetup(BaseModel):
+class InstrumentSpecific(BaseModel):
     g: ValueWithoutUnits = ValueWithoutUnits(value=Data.g.default_value)
+    eta_pol: ValueWithoutUnits = \
+        ValueWithoutUnits(value=Data.eta_pol.default_value)
+
+    def __str__(self):
+        return ModelUtils.model_str_rep(self)
+
+class TelescopeAndEnvironment(BaseModel):
     surface_rms: ValueWithUnits = \
         ValueWithUnits(value=Data.surface_rms.default_value,
                        unit=Data.surface_rms.default_unit)
@@ -146,6 +153,9 @@ class InstrumentSetup(BaseModel):
     T_amb: ValueWithUnits = \
         ValueWithUnits(value=Data.t_amb.default_value,
                        unit=Data.t_amb.default_unit)
+    T_cmb: ValueWithUnits = \
+        ValueWithUnits(value=Data.t_cmb.default_value,
+                       unit=Data.t_cmb.default_unit)
     eta_eff: ValueWithoutUnits = \
         ValueWithoutUnits(value=Data.eta_eff.default_value)
     eta_ill: ValueWithoutUnits = \
@@ -154,9 +164,7 @@ class InstrumentSetup(BaseModel):
         ValueWithoutUnits(value=Data.eta_spill.default_value)
     eta_block: ValueWithoutUnits = \
         ValueWithoutUnits(value=Data.eta_block.default_value)
-    eta_pol: ValueWithoutUnits = \
-        ValueWithoutUnits(value=Data.eta_pol.default_value)
-
+    
     def __str__(self):
         return ModelUtils.model_str_rep(self)
 
@@ -167,7 +175,8 @@ class CalculationInput(BaseModel):
     """
 
     user_input: UserInput = UserInput()
-    instrument_setup: InstrumentSetup = InstrumentSetup()
+    instrument_specific: InstrumentSpecific = InstrumentSpecific()
+    telescope_and_environment: TelescopeAndEnvironment = TelescopeAndEnvironment()
     T_cmb: ValueWithUnits = \
         ValueWithUnits(value=Data.t_cmb.default_value,
                        unit=Data.t_cmb.default_unit)
@@ -179,12 +188,15 @@ class CalculationInput(BaseModel):
         Flatten the field values for convenience
         """
         user_input = field_values['user_input']
-        instrument_setup = field_values['instrument_setup']
+        instrument_specific = field_values['instrument_specific']
+        telescope_and_environment = field_values['telescope_and_environment']
 
         flattened_field_values = {}
         for elem in user_input:
             flattened_field_values[elem[0]] = elem[1].value
-        for elem in instrument_setup:
+        for elem in instrument_specific:
+            flattened_field_values[elem[0]] = elem[1].value
+        for elem in telescope_and_environment:
             flattened_field_values[elem[0]] = elem[1].value
         flattened_field_values['T_cmb'] = field_values['T_cmb'].value
 

@@ -53,8 +53,8 @@ class TestCalculatorUsage:
         # Reset the calculator
         test_calculator.reset()
         # Verify that the calculator has now been reset to its initial state
-        assert test_calculator.config.calculation_inputs == \
-               calculator.config.calculation_inputs
+        assert test_calculator._param_setup.calculation_inputs == \
+               calculator._param_setup.calculation_inputs
         assert test_calculator._uip._derived_parameters \
                == calculator._uip.derived_parameters
 

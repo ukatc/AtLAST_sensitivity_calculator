@@ -158,7 +158,7 @@ class FileHelper:
         # Create and concatenate dictionaries from the user input model and
         # the derived parameters model
         params = {param: val['value']
-                  for param, val in calculator.config.calculation_inputs.user_input.dict().items()} | \
+                  for param, val in calculator._param_setup.calculation_inputs.user_input.dict().items()} | \
             calculator.derived_params.dict()
 
         with open(file_path, "w") as f:
@@ -380,7 +380,7 @@ class DataHelper:
 
         # Validate the new value
         try:
-            uip.config.calculation_inputs. \
+            uip._param_setup.calculation_inputs. \
                 validate_value(param_name, value)
         except ValueError as e:
             raise e
