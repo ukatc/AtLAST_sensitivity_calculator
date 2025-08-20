@@ -177,9 +177,6 @@ class CalculationInput(BaseModel):
     user_input: UserInput = UserInput()
     instrument_specific: InstrumentSpecific = InstrumentSpecific()
     telescope_and_environment: TelescopeAndEnvironment = TelescopeAndEnvironment()
-    T_cmb: ValueWithUnits = \
-        ValueWithUnits(value=Data.t_cmb.default_value,
-                       unit=Data.t_cmb.default_unit)
 
     @root_validator
     @classmethod
@@ -198,7 +195,6 @@ class CalculationInput(BaseModel):
             flattened_field_values[elem[0]] = elem[1].value
         for elem in telescope_and_environment:
             flattened_field_values[elem[0]] = elem[1].value
-        flattened_field_values['T_cmb'] = field_values['T_cmb'].value
 
         # Validate units and values on each field
         for key, val in flattened_field_values.items():
