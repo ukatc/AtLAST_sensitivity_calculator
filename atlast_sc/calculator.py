@@ -20,15 +20,20 @@ class Calculator:
      **NB: usage not tested, and may not be supported in future.**
     :type instrument_setup: dict
     """
-    def __init__(self, param_setup, user_input_params, inst_setup_params, tel_and_env_params):
+    def __init__(self, param_setup, user_input_params, inst_spec_params, tel_and_env_params):
         
         self._param_setup = param_setup
         self._uip = user_input_params
-        self._isp = inst_setup_params
+        self._isp = inst_spec_params
         self._tep = tel_and_env_params
-        # self.derived_params =  self._uip._calculate_derived_parameters(user_input_params, inst_setup_params, self.finetune)
+
+        # We need to keep the derived parameters at this level as with every parameter that 
+        # gets used in the calculation of other parameters change, the derived parameters
+        # also change. Therefore, the derived parameters belong to the current version of 
+        # the calculator at that point.
         self.derived_params =  self._uip._calculate_derived_parameters()
         self._dp = DerivedParameters(self.derived_params)
+
         self.calculated_sensitivity = None
         self.calculated_t_int = None
         

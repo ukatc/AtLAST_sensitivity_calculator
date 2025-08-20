@@ -3,7 +3,6 @@ from atlast_sc.models import UserInput
 from atlast_sc.models import InstrumentSpecific
 from atlast_sc.models import CalculationInput
 from atlast_sc.models import TelescopeAndEnvironment
-from atlast_sc.utils import Decorators
 
 class ParameterSetup:
     """
