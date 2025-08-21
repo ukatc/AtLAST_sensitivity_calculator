@@ -1,7 +1,7 @@
 import copy
 import pytest
 import astropy.units as u
-from atlast_sc.calculator import Calculator, Config
+from atlast_sc.calculator import Calculator
 from atlast_sc.models import DerivedParams, CalculationInput
 from atlast_sc.utils import DataHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
