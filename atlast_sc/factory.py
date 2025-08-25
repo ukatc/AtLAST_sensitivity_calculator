@@ -8,8 +8,11 @@ from atlast_sc.parameters.derived_parameters import DerivedParameters
 
 class CalculatorFactory:
     # def __init__(self, user_input={}, instrument_setup={}, telescope_and_environment= {}, finetune=False):
-    def __init__(self, instrument_name="default"):
-        self.calculator = self._create_calculator(ParameterSetup())
+    def __init__(self, user_input={}, instrument_name="default"):
+        if user_input:
+            self.calculator = self._create_calculator(ParameterSetup(user_input=user_input))
+        else: # use the default values
+            self.calculator = self._create_calculator(ParameterSetup())
 
     #####################
     # Protected methods #

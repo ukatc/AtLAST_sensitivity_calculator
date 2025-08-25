@@ -47,6 +47,13 @@ class Calculator:
         # version of the user input parameters at that point.
         return self.user_input.derived_parameters
     
+    @derived_parameters.setter
+    @Decorators.validate_and_update_derived_params
+    def derived_parameters(self, new_values):
+        breakpoint()
+        self.derived_parameters = new_values
+
+    
     @staticmethod
     def _check_input_param_names(user_input):
         """
@@ -209,6 +216,7 @@ class Calculator:
         """
         Resets all calculator parameters to their initial values.
         """
+        breakpoint()
         # Reset the _param_setup calculation inputs to their original values
         self._param_setup.reset()
         # Recalculate the derived parameters

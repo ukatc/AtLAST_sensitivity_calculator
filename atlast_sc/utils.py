@@ -87,6 +87,56 @@ class Decorators:
 
         return do_update
 
+    @staticmethod
+    def validate_and_update_derived_params(func):
+        """
+        Decorator to support setter methods on calculations input parameters
+        that input to the derived parameters. Validates the value for the
+        target parameter and recalculates derived parameters where necessary.
+
+        :param func: function that updates the calculation input parameter
+        :type func: property setter function
+        """
+
+        @functools.wraps(func)
+        def do_update(calculator, value, **kwargs):
+            """
+            Validates the type, value and units of the value for the target
+            parameter. If the new value is different from the old, derived
+            parameters are recalculated.
+
+            :param calculator: The Calculator object
+            :type calculator: Calculator
+            :param value: The new value
+            :type value: int, float or Quantity
+            """
+            breakpoint()
+            # Ensure integer values are converted to floats (all parameter values
+            # are expected to be floats)
+            if isinstance(value, int):
+                value = float(value)
+
+            # Create an iterable from derived parameters object
+            for param in value:
+                breakpoint()
+                DataHelper.validate(calculator, param[0], param[1])
+            # iter(value.__dict__)
+
+            # Validate the new value
+            # DataHelper.validate(calculator, func.__name__, value)
+
+            # Determine if the old and new values differ
+            attribute = getattr(calculator, func.__name__)
+            dirty = (attribute != value)
+
+            # Update the parameter
+            func(calculator, value, **kwargs)
+
+            # Recalculate derived parameters, if necessary
+            if dirty:
+                calculator.user_input._calculate_derived_parameters()
+
+        return do_update
 
 class FileHelper:
     """
@@ -120,7 +170,6 @@ class FileHelper:
 
         with open(file_path, "r") as file:
             inputs = file_reader(file)
-
         # Try to convert values to floats
         for key, param in inputs.items():
             try:
@@ -130,7 +179,6 @@ class FileHelper:
                 raise TypeError(f'Value "{param["value"]}" is invalid '
                                 f'for parameter "{key}". '
                                 f'Parameter values must be numeric.')
-
         return inputs
 
     @staticmethod
@@ -158,8 +206,8 @@ class FileHelper:
         # Create and concatenate dictionaries from the user input model and
         # the derived parameters model
         params = {param: val['value']
-                  for param, val in calculator._param_setup.calculation_inputs.user_input.dict().items()} | \
-            calculator.derived_params.dict()
+                  for param, val in calculator._param_setup.user_input.dict().items()} | \
+            calculator.derived_parameters.dict()
 
         with open(file_path, "w") as f:
             file_writer(f, params)
