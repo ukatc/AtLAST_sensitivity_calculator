@@ -61,3 +61,10 @@ class DerivedParameters:
         Get the system equivalent flux density
         """
         return self._derived_parameters.sefd
+        
+    def show(self):
+        for name in dir(self.__class__):
+            attr = getattr(self.__class__, name)
+            if isinstance(attr, property):
+                value = getattr(self, name)
+                print(f"  {name}: {value}")

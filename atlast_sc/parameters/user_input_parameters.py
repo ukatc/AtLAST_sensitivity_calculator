@@ -132,10 +132,6 @@ class UserInputParameters:
         self._param_setup.calculation_inputs.user_input.elevation.value = value
         self._param_setup.calculation_inputs.user_input.elevation.unit = value.unit
 
-
-
-    #########
-
     @property
     def derived_parameters(self):
         """
@@ -148,7 +144,6 @@ class UserInputParameters:
     def derived_parameters(self, value):
         self._derived_parameters = value
 
-    # def _calculate_derived_parameters(self, user_input_params={}, inst_setup_params={}, tel_and_env_params={}, finetune=False):
     def _calculate_derived_parameters(self):
         """
         Performs the calculations required to produce the
@@ -279,3 +274,10 @@ class UserInputParameters:
         sefd = (2 * k_B * T_sys) / (eta_a * dish_area)
 
         return sefd
+    
+    def show(self):
+        for name in dir(self.__class__):
+            attr = getattr(self.__class__, name)
+            if isinstance(attr, property):
+                value = getattr(self, name)
+                print(f"  {name}: {value}")

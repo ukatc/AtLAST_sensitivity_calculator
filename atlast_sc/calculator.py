@@ -1,11 +1,12 @@
 import warnings
 import astropy.units as u
 import numpy as np
-from atlast_sc.parameters.derived_parameters import DerivedParameters
 from atlast_sc.utils import DataHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
 from atlast_sc.exceptions import ValueOutOfRangeException
 from astropy.units import Quantity
+from atlast_sc.models import UserInput
+from atlast_sc.utils import Decorators
 
 
 class Calculator:
@@ -20,22 +21,47 @@ class Calculator:
      **NB: usage not tested, and may not be supported in future.**
     :type instrument_setup: dict
     """
-    def __init__(self, param_setup, user_input_params, inst_spec_params, tel_and_env_params):
+    def __init__(self, param_setup, user_input_params, inst_spec_params, tel_and_env_params, derived_params):
         
+        # Default classes
         self._param_setup = param_setup
-        self._uip = user_input_params
-        self._isp = inst_spec_params
-        self._tep = tel_and_env_params
-
-        # We need to keep the derived parameters at this level as with every parameter that 
-        # gets used in the calculation of other parameters change, the derived parameters
-        # also change. Therefore, the derived parameters belong to the current version of 
-        # the calculator at that point.
-        self.derived_params =  self._uip._calculate_derived_parameters()
-        self._dp = DerivedParameters(self.derived_params)
+        self.user_input = user_input_params
+        self.instrument_specific = inst_spec_params
+        self.telescope_and_environment = tel_and_env_params
 
         self.calculated_sensitivity = None
         self.calculated_t_int = None
+
+        # Make sure the user input doesn't contain any unexpected parameter
+        # names
+        # self._check_input_param_names(self.user_input)
+
+    @property
+    def derived_parameters(self):
+        # We need to retrieve the derived parameters from user input class as with every 
+        # parameter that gets used in the calculation of other parameters change, the 
+        # derived parameters also change. It is only the user input parameters that prompts
+        # the derived parameters to change ( TODO: dish radius also prompts derived parameters to
+        # change, however, this might be consciously overlooked). Validation of the user inputs 
+        # are done on the user input level, therefore, the derived parameters belong to the current
+        # version of the user input parameters at that point.
+        return self.user_input.derived_parameters
+    
+    @staticmethod
+    def _check_input_param_names(user_input):
+        """
+        Validates the user input parameters (just the names; value validation
+        is handled by the model)
+
+        :param user_input: Dictionary containing user-defined input parameters
+        :type user_input: dict
+        """
+
+        test_model = UserInput()
+
+        for param in user_input:
+            if param not in test_model.__dict__:
+                raise ValueError(f'"{param}" is not a valid input parameter')
         
     #################################################
     # Public methods for performing sensitivity and #
@@ -63,11 +89,11 @@ class Calculator:
         bandwidth = None
         if t_int is not None:
             if update_calculator:
-                self._uip.t_int = t_int
+                self.user_input.t_int = t_int
             else:
-                DataHelper.validate(self._uip, 't_int', t_int)
+                DataHelper.validate(self.user_input, 't_int', t_int)
         else:
-            t_int = self._param_setup.calculation_inputs.user_input.t_int.value
+            t_int = self.user_input.t_int
         
         if user_input is not None:
             if 'bandwidth' in user_input:
@@ -75,19 +101,19 @@ class Calculator:
                 bandwidth = Quantity(value = float(user_input['bandwidth']['value']),
                                                 unit = (user_input['bandwidth']['unit']))
             else:
-                 bandwidth = self._param_setup.calculation_inputs.user_input.bandwidth.value
+                 bandwidth = self.user_input.bandwidth
             if 'n_pol' in user_input:
                 n_pol = Quantity(value = int(user_input['n_pol']['value']))
             else:
-                n_pol = self._param_setup.calculation_inputs.user_input.n_pol.value
+                n_pol = self.user_input.n_pol
         else:
-            bandwidth = self._param_setup.calculation_inputs.user_input.bandwidth.value
+            bandwidth = self.user_input.bandwidth
             # Retrieve n_pol value from user inputs and convert to Quantity object
-            n_pol = self._param_setup.calculation_inputs.user_input.n_pol.value
+            n_pol = self.user_input.n_pol
 
         sensitivity_result = \
-            self._uip.derived_parameters.sefd / \
-            (self._uip.derived_parameters.eta_s * np.sqrt(n_pol * bandwidth * t_int))
+            self.derived_parameters.sefd / \
+            (self.derived_parameters.eta_s * np.sqrt(n_pol * bandwidth * t_int))
 
         # Convert the output to the most convenient units
         sensitivity_result = sensitivity_result.to(u.mJy)
@@ -132,11 +158,11 @@ class Calculator:
 
         if sensitivity is not None:
             if update_calculator:
-                self._uip.sensitivity = sensitivity
+                self.user_input.sensitivity = sensitivity
             else:
                 DataHelper.validate(self, 'calculated_sensitivity', sensitivity)
         else:
-            sensitivity = self._param_setup.calculation_inputs.user_input.sensitivity.value
+            sensitivity = self.user_input.sensitivity
 
         if user_input is not None:
             if 'bandwidth' in user_input:
@@ -144,17 +170,17 @@ class Calculator:
                 bandwidth = Quantity(value = float(user_input['bandwidth']['value']),
                                                 unit = (user_input['bandwidth']['unit']))
             else:
-                 bandwidth = self._param_setup.calculation_inputs.user_input.bandwidth.value
+                 bandwidth = self.user_input.bandwidth
             if 'n_pol' in user_input:
                 n_pol = Quantity(value = int(user_input['n_pol']['value']))
             else:
-                n_pol = self._param_setup.calculation_inputs.user_input.n_pol.value
+                n_pol = self.user_input.n_pol
         else:
-            bandwidth = self._param_setup.calculation_inputs.user_input.bandwidth.value
+            bandwidth = self.user_input.bandwidth
             # Retrieve n_pol value from user inputs and convert to Quantity object
-            n_pol = self._param_setup.calculation_inputs.user_input.n_pol.value
+            n_pol = self.user_input.n_pol
         
-        t_int_result = (self._uip.derived_parameters.sefd / (sensitivity * self._uip.derived_parameters.eta_s)) ** 2 \
+        t_int_result = (self.derived_parameters.sefd / (sensitivity * self.derived_parameters.eta_s)) ** 2 \
                 / (n_pol * bandwidth)
 
         # Convert the output to the most convenient units
@@ -186,7 +212,7 @@ class Calculator:
         # Reset the _param_setup calculation inputs to their original values
         self._param_setup.reset()
         # Recalculate the derived parameters
-        self._uip._calculate_derived_parameters()
+        self.derived_parameters = self.user_input._calculate_derived_parameters()
 
     @staticmethod
     def _calculated_value_error_msg(calculated_value, validation_error):
@@ -209,4 +235,3 @@ class Calculator:
                   f"Please adjust the input parameters and recalculate."
 
         return message
-

@@ -32,7 +32,7 @@ class ParameterSetup:
             CalculationInput(user_input=new_user_input,
                              instrument_specific=new_instrument_specific,
                              telescope_and_environment=new_telescope_and_environment)
-
+        
         # Make a deep copy of the calculation inputs to enable the
         # calculator to be reset to its initial setup
         self._original_inputs = copy.deepcopy(self._calculation_inputs)

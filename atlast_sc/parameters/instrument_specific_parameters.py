@@ -14,11 +14,19 @@ class InstrumentSpecificParameters:
         """
         Get the sideband ratio
         """
-        return self._param_setup.calculation_inputs.instrument_setup.g.value
+        return self._param_setup.calculation_inputs.instrument_specific.g.value
 
     @property
     def eta_pol(self):
         """
         Get the polarisation efficiency
         """
-        return self._param_setup.calculation_inputs.instrument_setup.eta_pol.value
+        return self._param_setup.calculation_inputs.instrument_specific.eta_pol.value
+    
+        
+    def show(self):
+        for name in dir(self.__class__):
+            attr = getattr(self.__class__, name)
+            if isinstance(attr, property):
+                value = getattr(self, name)
+                print(f"  {name}: {value}")

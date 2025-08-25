@@ -26,8 +26,8 @@ class TelescopeAndEnvironmentParameters:
     @dish_radius.setter
     @Decorators.validate_and_update_params
     def dish_radius(self, value):
-        # TODO Flag to the user somehow that they are varying an instrument
-        #   setup parameter?
+        # TODO: Is this something that is allowed to be changed? The dish radius is the 
+        # radius of the dish of the telescope which is definite? 
         self._param_setup.calculation_inputs.telescope_and_environment.dish_radius.value = value
         self._param_setup.calculation_inputs.telescope_and_environment.dish_radius.unit = value.unit
     
@@ -77,3 +77,11 @@ class TelescopeAndEnvironmentParameters:
         Get the average ambient temperature
         """
         return self._param_setup.calculation_inputs.telescope_and_environment.T_amb.value
+    
+        
+    def show(self):
+        for name in dir(self.__class__):
+            attr = getattr(self.__class__, name)
+            if isinstance(attr, property):
+                value = getattr(self, name)
+                print(f"  {name}: {value}")
