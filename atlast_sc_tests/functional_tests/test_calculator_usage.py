@@ -22,11 +22,11 @@ class TestCalculatorUsage:
         assert test_calculator.calculated_sensitivity.unit == u.uJy
 
         # Update observing frequency
-        test_calculator._uip.obs_freq = 850 * u.GHz
+        test_calculator.user_input.obs_freq = 850 * u.GHz
         # Verify that other parameters that depend on the observing frequency
         # have been updated
-        assert test_calculator._uip._derived_parameters \
-               != calculator._uip.derived_parameters
+        assert test_calculator.user_input.derived_parameters \
+               != calculator.user_input.derived_parameters
 
         # Recalculate the sensitivity
         new_sens = test_calculator.calculate_sensitivity()
@@ -37,7 +37,7 @@ class TestCalculatorUsage:
         test_t_int = 3 * u.h
         test_calculator.calculate_sensitivity(t_int=test_t_int)
         # Verify that the integration time has been updated
-        assert test_calculator._uip.t_int == test_t_int
+        assert test_calculator.user_input.t_int == test_t_int
 
 
         # Calculate sensitivity using a different integration time, but don't
@@ -46,7 +46,7 @@ class TestCalculatorUsage:
         sens = test_calculator.calculate_sensitivity(t_int=test_t_int,
                                                      update_calculator=False)
         # Verify that integration time has not been updated
-        assert test_calculator._uip.t_int != test_t_int
+        assert test_calculator.user_input.t_int != test_t_int
         # Verify that the sensitivity has not been updated
         assert test_calculator.calculated_sensitivity != sens
 
@@ -55,8 +55,8 @@ class TestCalculatorUsage:
         # Verify that the calculator has now been reset to its initial state
         assert test_calculator._param_setup.calculation_inputs == \
                calculator._param_setup.calculation_inputs
-        assert test_calculator._uip._derived_parameters \
-               == calculator._uip.derived_parameters
+        assert test_calculator.user_input.derived_parameters \
+               == calculator.user_input.derived_parameters
 
         # Calculate the integration time with default values
         new_t_int = test_calculator.calculate_t_integration()
@@ -71,7 +71,7 @@ class TestCalculatorUsage:
         test_sens = 300 * u.mJy
         test_calculator.calculate_t_integration(sensitivity=test_sens)
         # Verify that the sensitivity has been updated
-        assert test_calculator._uip.sensitivity == test_sens
+        assert test_calculator.user_input.sensitivity == test_sens
         # Calculate integration time using a different sensitivity, but don't
         # update the calculator
         test_sens = 30 * u.mJy
@@ -90,21 +90,21 @@ class TestCalculatorUsage:
         user_input = FileHelper.read_from_file(test_files_path,
                                                'user_input.yaml')
         
-        calculator_factory = CalculatorFactory(user_input)
+        calculator_factory = CalculatorFactory(user_input=user_input)
         test_calculator = calculator_factory.calculator
 
         # Verify that the calculator has been initialized with the correct
         # user input
-        assert test_calculator._uip.t_int == 150 * u.s
-        assert test_calculator._uip.sensitivity == 30 * u.mJy
-        assert test_calculator._uip.bandwidth == 150 * u.MHz
-        assert test_calculator._uip.obs_freq == 200 * u.GHz
-        assert test_calculator._uip.n_pol == 1
-        assert test_calculator._uip.weather == 30
-        assert test_calculator._uip.elevation == 65 * u.deg
+        assert test_calculator.user_input.t_int == 150 * u.s
+        assert test_calculator.user_input.sensitivity == 30 * u.mJy
+        assert test_calculator.user_input.bandwidth == 150 * u.MHz
+        assert test_calculator.user_input.obs_freq == 200 * u.GHz
+        assert test_calculator.user_input.n_pol == 1
+        assert test_calculator.user_input.weather == 30
+        assert test_calculator.user_input.elevation == 65 * u.deg
 
         # Update the observing frequency
-        test_calculator.obs_freq = 850 * u.GHz
+        test_calculator.user_input.obs_freq = 850 * u.GHz
 
         # Calculate the sensitivity
         test_calculator.calculate_sensitivity(user_input)

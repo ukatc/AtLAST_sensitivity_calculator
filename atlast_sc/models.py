@@ -130,6 +130,19 @@ class UserInput(BaseModel):
             raise ValueError("Please add either a sensitivity or an "
                              "integration time to your input")
         return field_values
+    
+    def validate_value_for_dp(self, value_to_validate, value):
+        """
+        Custom validator called manually (i.e., not as part of the Pydantic
+        framework), e.g., when one of the user input values is updated.
+        """
+
+        try:
+            Validator.validate_field(value_to_validate, value)
+        except ValueError as e:
+            raise e
+
+        return self
 
     def __str__(self):
         return ModelUtils.model_str_rep(self)

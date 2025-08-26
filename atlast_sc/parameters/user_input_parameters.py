@@ -140,7 +140,6 @@ class UserInputParameters:
         return self._derived_parameters
 
     @derived_parameters.setter
-    @Decorators.validate_and_update_params
     def derived_parameters(self, value):
         self._derived_parameters = value
 
@@ -209,7 +208,6 @@ class UserInputParameters:
         # define lower and upper limit of the requested band
         obs_freq_low = (obs_freq-0.50*bandwidth).to('GHz').value
         obs_freq_upp = (obs_freq+0.50*bandwidth).to('GHz').value
-
         # select all the frequencies in the atm tables comprised within the band edges
         obs_freq_list = atm.tau_atm_table[:, 0][np.logical_and(atm.tau_atm_table[:, 0]>obs_freq_low,
                                                                 atm.tau_atm_table[:, 0]<obs_freq_upp)]
@@ -252,7 +250,6 @@ class UserInputParameters:
             DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
                             eta_a=eta.eta_a, eta_s=eta.eta_s, T_sys=temps.T_sys, T_sky=temps.T_sky,
                             sefd=sefd)
-        
         self._derived_parameters = _derived_params
         
         return _derived_params

@@ -110,7 +110,6 @@ class Decorators:
             :param value: The new value
             :type value: int, float or Quantity
             """
-            breakpoint()
             # Ensure integer values are converted to floats (all parameter values
             # are expected to be floats)
             if isinstance(value, int):
@@ -118,12 +117,8 @@ class Decorators:
 
             # Create an iterable from derived parameters object
             for param in value:
-                breakpoint()
-                DataHelper.validate(calculator, param[0], param[1])
-            # iter(value.__dict__)
-
-            # Validate the new value
-            # DataHelper.validate(calculator, func.__name__, value)
+                # Validate the new values
+                DataHelper.validate_dp(calculator, param[0], param[1])
 
             # Determine if the old and new values differ
             attribute = getattr(calculator, func.__name__)
@@ -430,6 +425,29 @@ class DataHelper:
         try:
             uip._param_setup.calculation_inputs. \
                 validate_value(param_name, value)
+        except ValueError as e:
+            raise e
+    
+    @staticmethod
+    def validate_dp(calc, param_name, value):
+        attribute = getattr(calc, param_name)
+
+        # Ensure integer values are converted to floats (all parameter values
+        # are expected to be floats)
+        if isinstance(value, int):
+            value = float(value)
+
+        # Make sure the new value is of the correct type
+        if not isinstance(value, type(attribute)):
+            raise ValueError(f'Value {value} for parameter {param_name} '
+                             f'is of invalid type. '
+                             f'Expected {type(attribute)}. '
+                             f'Received {type(value)}.')
+
+        # Validate the new value
+        try:
+            calc._param_setup.user_input. \
+                validate_value_for_dp(param_name, value)
         except ValueError as e:
             raise e
 

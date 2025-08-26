@@ -8,7 +8,6 @@ from astropy.units import Quantity
 from atlast_sc.models import UserInput
 from atlast_sc.utils import Decorators
 
-
 class Calculator:
     """
     Calculator class that provides an interface to the main
@@ -50,7 +49,6 @@ class Calculator:
     @derived_parameters.setter
     @Decorators.validate_and_update_derived_params
     def derived_parameters(self, new_values):
-        breakpoint()
         self.derived_parameters = new_values
 
     
@@ -216,11 +214,10 @@ class Calculator:
         """
         Resets all calculator parameters to their initial values.
         """
-        breakpoint()
         # Reset the _param_setup calculation inputs to their original values
         self._param_setup.reset()
         # Recalculate the derived parameters
-        self.derived_parameters = self.user_input._calculate_derived_parameters()
+        self.user_input._calculate_derived_parameters()
 
     @staticmethod
     def _calculated_value_error_msg(calculated_value, validation_error):
