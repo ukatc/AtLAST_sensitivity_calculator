@@ -3,6 +3,7 @@ from atlast_sc.derived_groups import AtmosphereParams
 from atlast_sc.derived_groups import Temperatures
 from atlast_sc.derived_groups import Efficiencies
 from atlast_sc.models import DerivedParams
+from atlast_sc.parameters.derived_parameters import DerivedParameters
 import astropy.units as u
 from astropy.constants import k_B
 import numpy as np
@@ -15,7 +16,10 @@ class UserInputParameters:
 
     def __init__(self, param_setup):
         self._param_setup = param_setup
-        self._derived_parameters = None
+        # We are calculating and storing the derived parameters in this class
+        # as they can be recalculated according to new user input. 
+        self.derived_parameters_model = self._calculate_derived_parameters()
+        self.derived_parameters = DerivedParameters(self.derived_parameters_model)
 
     # TODO t_int and sensitivity are a special can se. They can be both
     #   set and calculated. Special care needs to be taken on setting them:
@@ -246,13 +250,13 @@ class UserInputParameters:
         else:
             sefd = self._calculate_sefd(temps.T_sys, eta.eta_a, dish_radius)
 
-        _derived_params = \
+        _derived_params_model = \
             DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
                             eta_a=eta.eta_a, eta_s=eta.eta_s, T_sys=temps.T_sys, T_sky=temps.T_sky,
                             sefd=sefd)
-        self._derived_parameters = _derived_params
+        self.derived_parameters_model = _derived_params_model
         
-        return _derived_params
+        return _derived_params_model
 
     def _calculate_sefd(self, T_sys, eta_a, dish_radius):
         """
@@ -274,7 +278,9 @@ class UserInputParameters:
     
     def show(self):
         for name in dir(self.__class__):
+            if name == "derived_parameters": # Don't show derived_parameters
+                continue
             attr = getattr(self.__class__, name)
             if isinstance(attr, property):
                 value = getattr(self, name)
-                print(f"  {name}: {value}")
+                print(f"{name}: {value}")

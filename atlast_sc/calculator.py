@@ -4,9 +4,11 @@ import numpy as np
 from atlast_sc.utils import DataHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
 from atlast_sc.exceptions import ValueOutOfRangeException
-from astropy.units import Quantity
-from atlast_sc.models import UserInput
 from atlast_sc.utils import Decorators
+
+from atlast_sc.parameters.user_input_parameters import UserInputParameters
+from atlast_sc.parameters.instrument_specific_parameters import InstrumentSpecificParameters
+from atlast_sc.parameters.telescope_and_environment_parameters import TelescopeAndEnvironmentParameters
 
 class Calculator:
     """
@@ -20,20 +22,17 @@ class Calculator:
      **NB: usage not tested, and may not be supported in future.**
     :type instrument_setup: dict
     """
-    def __init__(self, param_setup, user_input_params, inst_spec_params, tel_and_env_params, derived_params):
+    def __init__(self, param_setup):
         
-        # Default classes
+        # Parameter setup class that contains models with default values
         self._param_setup = param_setup
-        self.user_input = user_input_params
-        self.instrument_specific = inst_spec_params
-        self.telescope_and_environment = tel_and_env_params
+        # Special classes for customisation of models
+        self.user_input = UserInputParameters(param_setup)
+        self.instrument_specific = InstrumentSpecificParameters(param_setup)
+        self.telescope_and_environment = TelescopeAndEnvironmentParameters(param_setup)
 
         self.calculated_sensitivity = None
         self.calculated_t_int = None
-
-        # Make sure the user input doesn't contain any unexpected parameter
-        # names
-        # self._check_input_param_names(self.user_input)
 
     @property
     def derived_parameters(self):
@@ -50,30 +49,13 @@ class Calculator:
     @Decorators.validate_and_update_derived_params
     def derived_parameters(self, new_values):
         self.derived_parameters = new_values
-
-    
-    @staticmethod
-    def _check_input_param_names(user_input):
-        """
-        Validates the user input parameters (just the names; value validation
-        is handled by the model)
-
-        :param user_input: Dictionary containing user-defined input parameters
-        :type user_input: dict
-        """
-
-        test_model = UserInput()
-
-        for param in user_input:
-            if param not in test_model.__dict__:
-                raise ValueError(f'"{param}" is not a valid input parameter')
         
     #################################################
     # Public methods for performing sensitivity and #
     # integration time calculations                 #
     #################################################
 
-    def calculate_sensitivity(self, user_input=None, t_int=None, update_calculator=True):
+    def calculate_sensitivity(self, t_int=None, update_calculator=True):
         """
         Calculates the telescope sensitivity (mJy) for a
         given integration time `t_int`.
@@ -88,10 +70,6 @@ class Calculator:
         :return: sensitivity in mJy
         :rtype: astropy.units.Quantity
         """
-
-        # TODO: If update calculator is true then update dp manually with uip derived parameters
-        n_pol = None
-        bandwidth = None
         if t_int is not None:
             if update_calculator:
                 self.user_input.t_int = t_int
@@ -99,26 +77,10 @@ class Calculator:
                 DataHelper.validate(self.user_input, 't_int', t_int)
         else:
             t_int = self.user_input.t_int
-        
-        if user_input is not None:
-            if 'bandwidth' in user_input:
-                # Retrieve bandwidth value from user inputs and convert to Quantity object
-                bandwidth = Quantity(value = float(user_input['bandwidth']['value']),
-                                                unit = (user_input['bandwidth']['unit']))
-            else:
-                 bandwidth = self.user_input.bandwidth
-            if 'n_pol' in user_input:
-                n_pol = Quantity(value = int(user_input['n_pol']['value']))
-            else:
-                n_pol = self.user_input.n_pol
-        else:
-            bandwidth = self.user_input.bandwidth
-            # Retrieve n_pol value from user inputs and convert to Quantity object
-            n_pol = self.user_input.n_pol
 
         sensitivity_result = \
             self.derived_parameters.sefd / \
-            (self.derived_parameters.eta_s * np.sqrt(n_pol * bandwidth * t_int))
+            (self.derived_parameters.eta_s * np.sqrt(self.user_input.n_pol * self.user_input.bandwidth * t_int))
 
         # Convert the output to the most convenient units
         sensitivity_result = sensitivity_result.to(u.mJy)
@@ -144,7 +106,7 @@ class Calculator:
 
         return sensitivity_result
 
-    def calculate_t_integration(self, user_input=None, sensitivity=None,
+    def calculate_t_integration(self, sensitivity=None,
                                 update_calculator=True):
         """
         Calculates the integration time required for a given `sensitivity`
@@ -168,25 +130,9 @@ class Calculator:
                 DataHelper.validate(self, 'calculated_sensitivity', sensitivity)
         else:
             sensitivity = self.user_input.sensitivity
-
-        if user_input is not None:
-            if 'bandwidth' in user_input:
-                # Retrieve bandwidth value from user inputs and convert to Quantity object
-                bandwidth = Quantity(value = float(user_input['bandwidth']['value']),
-                                                unit = (user_input['bandwidth']['unit']))
-            else:
-                 bandwidth = self.user_input.bandwidth
-            if 'n_pol' in user_input:
-                n_pol = Quantity(value = int(user_input['n_pol']['value']))
-            else:
-                n_pol = self.user_input.n_pol
-        else:
-            bandwidth = self.user_input.bandwidth
-            # Retrieve n_pol value from user inputs and convert to Quantity object
-            n_pol = self.user_input.n_pol
         
         t_int_result = (self.derived_parameters.sefd / (sensitivity * self.derived_parameters.eta_s)) ** 2 \
-                / (n_pol * bandwidth)
+                / (self.user_input.n_pol * self.user_input.bandwidth)
 
         # Convert the output to the most convenient units
         t_int_result = t_int_result.to(u.s)

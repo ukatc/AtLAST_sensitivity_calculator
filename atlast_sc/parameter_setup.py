@@ -22,8 +22,11 @@ class ParameterSetup:
         {'param_name':{'value': <value>, 'unit': <unit>}}
         :type instrument_specific: dict
         """
-        self.finetune = finetune
 
+        # Make sure the user input doesn't contain any unexpected parameter names
+        self._check_input_param_names(user_input)
+
+        self.finetune = finetune
         new_user_input = UserInput(**user_input)
         new_instrument_specific = InstrumentSpecific(**instrument_specific)
         new_telescope_and_environment = TelescopeAndEnvironment(**telescope_and_environment)
@@ -73,3 +76,19 @@ class ParameterSetup:
         """
         self._calculation_inputs = \
             self._original_inputs
+        
+    @staticmethod
+    def _check_input_param_names(user_input):
+        """
+        Validates the user input parameters (just the names; value validation
+        is handled by the model)
+
+        :param user_input: Dictionary containing user-defined input parameters
+        :type user_input: dict
+        """
+
+        test_model = UserInput()
+
+        for param in user_input:
+            if param not in test_model.__dict__:
+                raise ValueError(f'"{param}" is not a valid input parameter')

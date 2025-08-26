@@ -7,7 +7,6 @@ from atlast_sc.parameters.derived_parameters import DerivedParameters
 
 
 class CalculatorFactory:
-    # def __init__(self, user_input={}, instrument_setup={}, telescope_and_environment= {}, finetune=False):
     def __init__(self, user_input={}, instrument_name="default"):
         if user_input:
             self.calculator = self._create_calculator(ParameterSetup(user_input=user_input))
@@ -19,9 +18,4 @@ class CalculatorFactory:
     #####################
     @staticmethod
     def _create_calculator(param_setup):
-        default_uip = UserInputParameters(param_setup)
-        default_isp = InstrumentSpecificParameters(param_setup)
-        default_tep = TelescopeAndEnvironmentParameters(param_setup)
-        default_dp_model = default_uip._calculate_derived_parameters()
-        default_dp = DerivedParameters(default_dp_model)
-        return Calculator(param_setup, default_uip, default_isp, default_tep, default_dp)
+        return Calculator(param_setup)

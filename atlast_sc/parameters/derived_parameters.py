@@ -67,4 +67,4 @@ class DerivedParameters:
             attr = getattr(self.__class__, name)
             if isinstance(attr, property):
                 value = getattr(self, name)
-                print(f"  {name}: {value}")
+                print(f"{name}: {value}")
