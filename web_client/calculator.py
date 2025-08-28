@@ -23,8 +23,8 @@ def do_calculation(user_input, calculation):
         case _:
             # TODO: handle error
             pass
-
-    calculated_param = func(user_input, update_calculator=False)
+    
+    calculated_param = func(update_calculator=False)
 
     value = calculated_param.value
     unit = str(calculated_param.unit)
