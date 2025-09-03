@@ -1,0 +1,6 @@
+chai:
+  name: "Chai"
+  allowed_ranges:
+    observing_frequency: [(460.0,500.0),(780.0,820.0)]
+    bandwidth: [(10000.0,1000000.0)]
+  receiver_temperature: [125.0]

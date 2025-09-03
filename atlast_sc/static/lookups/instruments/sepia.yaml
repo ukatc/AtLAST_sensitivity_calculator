@@ -1,0 +1,6 @@
+sepia:
+  name: "Sepia345"
+  allowed_ranges:
+    observing_frequency: [(163.0,211.0),(272.0,376.0),(600.0,722.0)]
+    bandwidth: [(10000.0,5600000.0),(10000.0,32000000.0),(10000.0,10000000.0)]
+  receiver_temperature: [125.0]
