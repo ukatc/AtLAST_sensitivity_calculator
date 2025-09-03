@@ -1,6 +1,5 @@
-muscat:
-  name: "Muscat"
-  allowed_ranges:
-    observing_frequency: [(250.0,300.0)]
-    bandwidth: [(1.0,5.0)]
-  receiver_temperature: [44.7]
+name: "Muscat"
+allowed_ranges:
+  observing_frequency: [(250.0,300.0)]
+  bandwidth: [(1.0,5.0)]
+receiver_temperature: [44.7]

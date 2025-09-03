@@ -1,6 +1,5 @@
-finer:
-  name: "Finer"
-  allowed_ranges:
-    observing_frequency: [(120.0,360.0)]
-    bandwidth: [(10500.0,3000000.0)]
-  receiver_temperature: [45.0,75.0]
+name: "Finer"
+allowed_ranges:
+  observing_frequency: [(120.0,360.0)]
+  bandwidth: [(10500.0,3000000.0)]
+receiver_temperature: [45.0,75.0]

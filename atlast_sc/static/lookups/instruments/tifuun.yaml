@@ -1,6 +1,5 @@
-tifuun:
-  name: "Tifuun"
-  allowed_ranges:
-    observing_frequency: [(90.0,360.0)]
-    bandwidth: [(10.0,1000.0)]
-  receiver_temperature: [72.3]
+name: "Tifuun"
+allowed_ranges:
+  observing_frequency: [(90.0,360.0)]
+  bandwidth: [(10.0,1000.0)]
+receiver_temperature: [72.3]
