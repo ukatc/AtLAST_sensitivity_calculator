@@ -5,7 +5,28 @@ from atlast_sc.utils import Decorators
 from atlast_sc.utils import FileHelper
 from atlast_sc.utils import DataHelper
 from atlast_sc_tests.utils import does_not_raise
+from atlast_sc.parameters import Instrument
 
+
+class TestInstrumentClasses:
+
+        def test_instrument_file_reading(self):
+
+            gltcam = Instrument.GLTCam()
+
+            assert gltcam.name == "GLTCam"
+
+            expected_obs_freq_ranges = ['(130.0', '170.0)', '(190.0', '250.0)', '(250.0', '295.0)', '(330.0', '365.0)', '(385.0', '415.0)', '(630.0', '710.0)']
+            assert gltcam.obs_freq_ranges_and_unit[0] == expected_obs_freq_ranges
+            assert gltcam.obs_freq_ranges_and_unit[1] == 'GHz'
+
+            expected_bandwidth_ranges = ['(1.0', '5.0)']
+            assert gltcam.bandwidth_ranges_and_unit[0] == expected_bandwidth_ranges
+            assert gltcam.bandwidth_ranges_and_unit[1] == 'MHz'
+            
+            expected_receiver_temp_options = [22.0]
+            assert gltcam.receiver_temp_options_and_unit[0] == expected_receiver_temp_options
+            assert gltcam.receiver_temp_options_and_unit[1] == 'K'
 
 class TestDecorators:
 
