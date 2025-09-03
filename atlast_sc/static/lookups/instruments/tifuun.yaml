@@ -1,5 +1,11 @@
 name: "Tifuun"
 allowed_ranges:
-  observing_frequency: [(90.0,360.0)]
-  bandwidth: [(10.0,1000.0)]
-receiver_temperature: [72.3]
+  observing_frequency: 
+    ranges: [(90.0,360.0)]
+    unit: GHz
+  bandwidth: 
+    ranges: [(10.0,1000.0)]
+    unit: MHz
+receiver_temperature: 
+  values: [72.3]
+  unit: K
