@@ -1,8 +1,9 @@
 import os
 import functools
 import json
-from yaml import load, Loader
+from yaml import load, Loader, safe_load
 from astropy.units import Unit
+from types import SimpleNamespace
 
 
 class Decorators:
@@ -144,6 +145,30 @@ class FileHelper:
     _UNSUPPORTED_FILE_TYPE_ERROR_MSG = \
         'Unsupported file type "{file_type}". ' \
         'Must be one of: {supported_extensions}'
+
+    @staticmethod
+    def read_instrument_file(file_name):
+        """
+        Reads the file with name `file_name` located in directory `path`
+        and returns a namespace. The file type is expected as `yaml`.
+
+        :param file_name: The name of the file, excluding the file extension.
+        :type file_name: str
+        :return: namespace object of yaml blocks.
+        :rtype: types
+        """
+        
+        _STATIC_DATA_PATH = os.getcwd() + '/../../atlast_sc/static/'
+        _INSTRUMENTS_PATH = _STATIC_DATA_PATH + 'lookups/instruments/'
+        instrument_file = _INSTRUMENTS_PATH + file_name + ".yaml"
+
+        with open(instrument_file, "r") as file:
+            data = safe_load(file)
+
+        # Create a namespace object with the attributes
+        data = SimpleNamespace(**data)
+
+        return data
 
     @staticmethod
     def read_from_file(path, file_name):
