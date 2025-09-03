@@ -1,8 +1,6 @@
-from atlast_sc.utils import Decorators
-
-#######################################################################
-# Getters and a couple of setters for instrument specific parameters  #
-#######################################################################
+###############################################
+# Getters for instrument specific parameters  #
+###############################################
 
 class InstrumentSpecificParameters:
 
