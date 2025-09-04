@@ -28,6 +28,22 @@ class TestInstrumentClasses:
             assert gltcam.receiver_temp_options_and_unit[0] == expected_receiver_temp_options
             assert gltcam.receiver_temp_options_and_unit[1] == 'K'
 
+        def test_correct_receiver_temperature_set(self):
+    
+            test_obs_freq_1 = 130.0 * u.GHz
+            finer = Instrument.Finer(test_obs_freq_1)
+            
+            assert finer.name == "Finer"
+
+            receiver_temp_1 = finer._set_receiver_temp(test_obs_freq_1)
+            assert receiver_temp_1 == 45.0 * u.K
+
+            test_obs_freq_2 = 215.0 * u.GHz
+            finer.T_rx = test_obs_freq_2
+            receiver_temp_2 = finer._set_receiver_temp(test_obs_freq_2)
+            assert receiver_temp_2 == 75.0 * u.K
+
+
 class TestDecorators:
 
     class MockCalculator:
