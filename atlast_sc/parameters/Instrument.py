@@ -30,9 +30,69 @@ GLTCam instrument parameters
 class GLTCam(Instrument):
 
     def __init__(self):
-        self.gltcamdata = FileHelper.read_instrument_file("gltcam")
-        super().__init__(self.gltcamdata)
+        self.data = FileHelper.read_instrument_file("gltcam")
+        super().__init__(self.data)
         
+    ################################################
+    # Additional instrument specific methods below #
+    ################################################
+
+"""
+TIFUUN instrument parameters
+"""        
+class Tifuun(Instrument):
+    def __init__(self):
+        self.data = FileHelper.read_instrument_file("tifuun")
+        super().__init__(self.data)
+
+    ################################################
+    # Additional instrument specific methods below #
+    ################################################
+
+"""
+MUSCAT instrument parameters
+"""        
+class Muscat(Instrument):
+    def __init__(self):
+        self.data = FileHelper.read_instrument_file("muscat")
+        super().__init__(self.data)
+
+    ################################################
+    # Additional instrument specific methods below #
+    ################################################
+
+"""
+FINER instrument parameters
+"""        
+class Finer(Instrument):
+    def __init__(self):
+        self.data = FileHelper.read_instrument_file("finer")
+        super().__init__(self.data)
+
+    ################################################
+    # Additional instrument specific methods below #
+    ################################################
+
+"""
+CHAI instrument parameters
+"""        
+class Chai(Instrument):
+    def __init__(self):
+        self.data = FileHelper.read_instrument_file("chai")
+        super().__init__(self.data)
+
+    ################################################
+    # Additional instrument specific methods below #
+    ################################################
+
+"""
+SEPIA345 instrument parameters
+"""        
+class Sepia345(Instrument):
+    def __init__(self):
+        self.data = FileHelper.read_instrument_file("sepia")
+        super().__init__(self.data)
+
     ################################################
     # Additional instrument specific methods below #
     ################################################
