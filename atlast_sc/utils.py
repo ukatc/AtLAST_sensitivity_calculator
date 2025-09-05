@@ -88,52 +88,6 @@ class Decorators:
 
         return do_update
 
-    @staticmethod
-    def validate_and_update_derived_params(func):
-        """
-        Decorator to support setter methods on calculations input parameters
-        that input to the derived parameters. Validates the value for the
-        target parameter and recalculates derived parameters where necessary.
-
-        :param func: function that updates the calculation input parameter
-        :type func: property setter function
-        """
-
-        @functools.wraps(func)
-        def do_update(calculator, value, **kwargs):
-            """
-            Validates the type, value and units of the value for the target
-            parameter. If the new value is different from the old, derived
-            parameters are recalculated.
-
-            :param calculator: The Calculator object
-            :type calculator: Calculator
-            :param value: The new value
-            :type value: int, float or Quantity
-            """
-            # Ensure integer values are converted to floats (all parameter values
-            # are expected to be floats)
-            if isinstance(value, int):
-                value = float(value)
-
-            # Create an iterable from derived parameters object
-            for param in value:
-                # Validate the new values
-                DataHelper.validate_dp(calculator, param[0], param[1])
-
-            # Determine if the old and new values differ
-            attribute = getattr(calculator, func.__name__)
-            dirty = (attribute != value)
-
-            # Update the parameter
-            func(calculator, value, **kwargs)
-
-            # Recalculate derived parameters, if necessary
-            if dirty:
-                calculator.user_input._calculate_derived_parameters()
-
-        return do_update
-
 class FileHelper:
     """
     Class that provides support for reading input parameters from a file
@@ -450,29 +404,6 @@ class DataHelper:
         try:
             uip._param_setup.calculation_inputs. \
                 validate_value(param_name, value)
-        except ValueError as e:
-            raise e
-    
-    @staticmethod
-    def validate_dp(calc, param_name, value):
-        attribute = getattr(calc, param_name)
-
-        # Ensure integer values are converted to floats (all parameter values
-        # are expected to be floats)
-        if isinstance(value, int):
-            value = float(value)
-
-        # Make sure the new value is of the correct type
-        if not isinstance(value, type(attribute)):
-            raise ValueError(f'Value {value} for parameter {param_name} '
-                             f'is of invalid type. '
-                             f'Expected {type(attribute)}. '
-                             f'Received {type(value)}.')
-
-        # Validate the new value
-        try:
-            calc._param_setup.user_input. \
-                validate_value_for_dp(param_name, value)
         except ValueError as e:
             raise e
 
