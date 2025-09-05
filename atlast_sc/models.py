@@ -4,7 +4,7 @@ from typing import Union
 from pydantic import BaseModel, root_validator
 from astropy.units import Unit, Quantity
 from atlast_sc.data import Data, Validator
-
+import astropy.units as u
 
 class ModelUtils:
 
@@ -239,21 +239,22 @@ class DerivedParams(BaseModel):
     """
 
     # Atmospheric opacity
-    tau_atm: float
+    tau_atm: float = Data.tau_atm.default_value
     # Atmospheric temperature
-    T_atm: Quantity
+    T_atm: Quantity = Data.T_atm.default_value * Data.T_atm.default_unit
     # Receiver temperature
-    T_rx: Quantity
+    T_rx: Quantity = 23.996215366831105 * u.K
+    T_rx: Quantity = Data.T_rx.default_value * Data.T_rx.default_unit
     # Dish efficiency
-    eta_a: float
+    eta_a: float = Data.eta_a.default_value
     # System efficiency
-    eta_s: float
+    eta_s: float = Data.eta_s.default_value
     # System temperature
-    T_sys: Quantity
+    T_sys: Quantity = Data.T_sys.default_value * Data.T_sys.default_unit
     # Sky temperature
-    T_sky: Quantity
+    T_sky: Quantity = Data.T_sky.default_value * Data.T_sky.default_unit
     # Source equivalent flux density
-    sefd: Quantity
+    sefd: Quantity = Data.sefd.default_value * Data.sefd.default_unit
 
     class Config:
         arbitrary_types_allowed = True
