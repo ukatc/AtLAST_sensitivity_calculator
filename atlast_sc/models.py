@@ -224,24 +224,21 @@ class DerivedParams(BaseModel):
     Derived parameters, calculated from user input and instrument setup
     parameters.
     """
-
-    # Atmospheric opacity
-    tau_atm: float = Data.tau_atm.default_value
+    tau_atm: float
     # Atmospheric temperature
-    T_atm: Quantity = Data.T_atm.default_value * Data.T_atm.default_unit
+    T_atm: Quantity
     # Receiver temperature
-    T_rx: Quantity = 23.996215366831105 * u.K
-    T_rx: Quantity = Data.T_rx.default_value * Data.T_rx.default_unit
+    T_rx: Quantity
     # Dish efficiency
-    eta_a: float = Data.eta_a.default_value
+    eta_a: float
     # System efficiency
-    eta_s: float = Data.eta_s.default_value
+    eta_s: float
     # System temperature
-    T_sys: Quantity = Data.T_sys.default_value * Data.T_sys.default_unit
+    T_sys: Quantity
     # Sky temperature
-    T_sky: Quantity = Data.T_sky.default_value * Data.T_sky.default_unit
+    T_sky: Quantity
     # Source equivalent flux density
-    sefd: Quantity = Data.sefd.default_value * Data.sefd.default_unit
+    sefd: Quantity
 
     class Config:
         arbitrary_types_allowed = True
