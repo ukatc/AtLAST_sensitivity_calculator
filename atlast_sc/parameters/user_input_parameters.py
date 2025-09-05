@@ -18,8 +18,8 @@ class UserInputParameters:
         self._param_setup = param_setup
         # Note: We are calculating and storing the derived parameters in this class
         # as they will be recalculated according to new user input.
-        self._derived_parameters = DerivedParameters(DerivedParams())
         self._derived_parameters_model = self._calculate_derived_parameters() 
+        self._derived_parameters = DerivedParameters(self._derived_parameters_model)
 
     # TODO t_int and sensitivity are a special can se. They can be both
     #   set and calculated. Special care needs to be taken on setting them:
@@ -258,6 +258,11 @@ class UserInputParameters:
         # Update the copy of derived derived parameters within UserInputParameters class 
         # whether it's the first time calculating these parameters from default values
         # or if it's being re-calculated due to change in parameters.
+        # NOTE and TODO: this is currently very hacky!! in initial execution of the method 
+        # _calculate_derived_parameters, the self._derived_parameters variable does not
+        # exist. So technically this line fails. But we still need it here for when 
+        # _calculate_derived_parameters is executed during re-calculation of derived
+        # parameters.
         self.derived_parameters = DerivedParameters(self._derived_parameters_model) 
         
         return self._derived_parameters_model
