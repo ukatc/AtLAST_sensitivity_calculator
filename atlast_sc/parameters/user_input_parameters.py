@@ -16,10 +16,10 @@ class UserInputParameters:
 
     def __init__(self, param_setup):
         self._param_setup = param_setup
-        # We are calculating and storing the derived parameters in this class
-        # as they can be recalculated according to new user input. 
-        self.derived_parameters_model = self._calculate_derived_parameters()
-        self.derived_parameters = DerivedParameters(self.derived_parameters_model)
+        # Note: We are calculating and storing the derived parameters in this class
+        # as they will be recalculated according to new user input.
+        self._derived_parameters = DerivedParameters(DerivedParams())
+        self._derived_parameters_model = self._calculate_derived_parameters() 
 
     # TODO t_int and sensitivity are a special can se. They can be both
     #   set and calculated. Special care needs to be taken on setting them:
@@ -250,13 +250,17 @@ class UserInputParameters:
         else:
             sefd = self._calculate_sefd(temps.T_sys, eta.eta_a, dish_radius)
 
-        _derived_params_model = \
+        self._derived_parameters_model = \
             DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
                             eta_a=eta.eta_a, eta_s=eta.eta_s, T_sys=temps.T_sys, T_sky=temps.T_sky,
                             sefd=sefd)
-        self.derived_parameters_model = _derived_params_model
+
+        # Update the copy of derived derived parameters within UserInputParameters class 
+        # whether it's the first time calculating these parameters from default values
+        # or if it's being re-calculated due to change in parameters.
+        self.derived_parameters = DerivedParameters(self._derived_parameters_model) 
         
-        return _derived_params_model
+        return self._derived_parameters_model
 
     def _calculate_sefd(self, T_sys, eta_a, dish_radius):
         """
