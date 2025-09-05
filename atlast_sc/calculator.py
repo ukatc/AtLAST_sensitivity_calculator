@@ -44,11 +44,6 @@ class Calculator:
         # are done on the user input level, therefore, the derived parameters belong to the current
         # version of the user input parameters at that point.
         return self.user_input.derived_parameters
-    
-    @derived_parameters.setter
-    @Decorators.validate_and_update_derived_params
-    def derived_parameters(self, new_values):
-        self.derived_parameters = new_values
         
     #################################################
     # Public methods for performing sensitivity and #
