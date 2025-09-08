@@ -212,43 +212,6 @@ class Data:
         default_unit=str(u.K)
     )
 
-    # tau_atm = DataType(
-    #     default_value=0.027620396974877098
-    # )
-
-    # T_atm = DataType(
-    #     default_value=401.0943231,
-    #     default_unit=u.K
-    # )
-
-    # T_rx = DataType(
-    #     default_value=23.99621537,
-    #     default_unit=u.K
-    # )
-
-    # eta_a = DataType(
-    #     default_value=0.7030648055535439
-    # )
-
-    # eta_s = DataType(
-    #     default_value=0.99
-    # )
-
-    # T_sys = DataType(
-    #     default_value=54.61020435,
-    #     default_unit=u.K
-    # )
-
-    # T_sky = DataType(
-    #     default_value=13.65278866,
-    #     default_unit=u.K
-    # )
-
-    # sefd = DataType(
-    #     default_value=1.09235005e-24,
-    #     default_unit=u.J / u.m**2
-    # )
-
     param_data_type_dicts = {
         't_int': integration_time,
         'calculated_integration_time': calculated_integration_time,
@@ -268,15 +231,7 @@ class Data:
         'eta_spill': eta_spill,
         'eta_block': eta_block,
         'eta_pol': eta_pol,
-        'T_cmb': t_cmb,
-        # 'tau_atm': tau_atm,
-        # 'T_atm': T_atm,
-        # 'T_rx': T_rx,
-        # 'eta_a': eta_a,
-        # 'eta_s': eta_s,
-        # 'T_sys': T_sys,
-        # 'T_sky': T_sky,
-        # 'sefd': sefd
+        'T_cmb': t_cmb
     }
 
 

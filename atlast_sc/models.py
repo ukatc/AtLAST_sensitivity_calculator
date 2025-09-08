@@ -4,7 +4,6 @@ from typing import Union
 from pydantic import BaseModel, root_validator
 from astropy.units import Unit, Quantity
 from atlast_sc.data import Data, Validator
-import astropy.units as u
 
 class ModelUtils:
 
