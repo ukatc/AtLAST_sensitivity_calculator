@@ -223,6 +223,7 @@ class DerivedParams(BaseModel):
     Derived parameters, calculated from user input and instrument setup
     parameters.
     """
+    # Atmospheric opacity
     tau_atm: float
     # Atmospheric temperature
     T_atm: Quantity
