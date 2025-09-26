@@ -183,6 +183,9 @@ class UserInputParameters:
         T_amb = self._param_setup.calculation_inputs.telescope_and_environment.T_amb.value
         eta_pol = self._param_setup.calculation_inputs.instrument_specific.eta_pol.value
         g = self._param_setup.calculation_inputs.instrument_specific.g.value
+
+        chosen_inst = self._param_setup.get_chosen_instrument()
+        inst_spec_T_rx = chosen_inst.T_rx
  
         # Perform efficiencies calculations
         eta = Efficiencies(obs_freq , surface_rms, eta_ill,
@@ -251,7 +254,7 @@ class UserInputParameters:
             sefd = self._calculate_sefd(temps.T_sys, eta.eta_a, dish_radius)
 
         self._derived_parameters_model = \
-            DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
+            DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=inst_spec_T_rx,
                             eta_a=eta.eta_a, eta_s=eta.eta_s, T_sys=temps.T_sys, T_sky=temps.T_sky,
                             sefd=sefd)
 
