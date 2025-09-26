@@ -1,7 +1,5 @@
-from atlast_sc.utils import FileHelper
 import astropy.units as u
-from atlast_sc.utils import Decorators
-import functools
+from astropy import constants
 
 class Instrument():
     def __init__(self, data):
@@ -26,15 +24,20 @@ class Instrument():
     def set_receiver_temp_options_and_unit(self, data):
         return (data.receiver_temperature["values"],
             data.receiver_temperature["unit"])
+    
+    #####################################
+    # Instrument class specific methods #
+    #####################################
+
+# ATLAST instruments 
    
 """
 GLTCam instrument parameters
 """
 class GLTCam(Instrument):
 
-    def __init__(self):
-        self.data = FileHelper.read_instrument_file("gltcam")
-        super().__init__(self.data)
+    def __init__(self, data):
+        super().__init__(data)
         self._T_rx = self._set_receiver_temp()
 
     ##################################
@@ -61,9 +64,8 @@ class GLTCam(Instrument):
 TIFUUN instrument parameters
 """        
 class Tifuun(Instrument):
-    def __init__(self):
-        self.data = FileHelper.read_instrument_file("tifuun")
-        super().__init__(self.data)
+    def __init__(self, data):
+        super().__init__(data)
         self._T_rx = self._set_receiver_temp()
 
     ##################################
@@ -90,9 +92,8 @@ class Tifuun(Instrument):
 MUSCAT instrument parameters
 """        
 class Muscat(Instrument):
-    def __init__(self):
-        self.data = FileHelper.read_instrument_file("muscat")
-        super().__init__(self.data)
+    def __init__(self, data):
+        super().__init__(data)
         self._T_rx = self._set_receiver_temp()
     
     ##################################
@@ -119,9 +120,8 @@ class Muscat(Instrument):
 FINER instrument parameters
 """        
 class Finer(Instrument):
-    def __init__(self, obs_freq):
-        self.data = FileHelper.read_instrument_file("finer")
-        super().__init__(self.data)
+    def __init__(self, data, obs_freq):
+        super().__init__(data)
         self._T_rx = self._set_receiver_temp(obs_freq)
 
     ##################################
@@ -154,9 +154,8 @@ class Finer(Instrument):
 CHAI instrument parameters
 """        
 class Chai(Instrument):
-    def __init__(self):
-        self.data = FileHelper.read_instrument_file("chai")
-        super().__init__(self.data)
+    def __init__(self, data):
+        super().__init__(data)
         self._T_rx = self._set_receiver_temp()
         
     ##################################
@@ -183,9 +182,8 @@ class Chai(Instrument):
 SEPIA345 instrument parameters
 """        
 class Sepia345(Instrument):
-    def __init__(self):
-        self.data = FileHelper.read_instrument_file("sepia")
-        super().__init__(self.data)
+    def __init__(self, data):
+        super().__init__(data)
         self._T_rx = self._set_receiver_temp()
 
     ##################################
@@ -207,3 +205,31 @@ class Sepia345(Instrument):
     @staticmethod
     def _set_receiver_temp():
         return 125.0 * u.K
+    
+"""
+Default instrument parameters
+"""        
+class Default(Instrument):
+    def __init__(self, data, obs_freq):
+        super().__init__(data)
+        self._T_rx = self._set_receiver_temp(obs_freq)
+
+    ##################################
+    # Instrument specific parameters #
+    ##################################
+        
+    @property 
+    def T_rx(self):
+        return self._T_rx
+    
+    @T_rx.setter
+    def T_rx(self, value):
+        self._T_rx = value
+
+    ################################################
+    # Additional instrument specific methods below #
+    ################################################
+
+    @staticmethod
+    def _set_receiver_temp(obs_freq):
+        return (5 * constants.h * obs_freq / constants.k_B).to(u.K)
