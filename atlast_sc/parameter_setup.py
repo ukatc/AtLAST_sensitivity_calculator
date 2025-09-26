@@ -137,7 +137,7 @@ class ParameterSetup:
         user_bandwidth = self.user_input.bandwidth.value
         # See which instrument those values correspond to
         chosen_inst_name = self.find_applicable_instruments(obs_freq=user_obs_freq, bandwidth=user_bandwidth)
-        chosen_inst = self.get_inst_spec_params_module(inst_name=chosen_inst_name, obs_freq=user_obs_freq)
+        chosen_inst = self.get_inst_spec_params_module(inst_name=chosen_inst_name)
         return chosen_inst
 
     def find_applicable_instruments(self, obs_freq, bandwidth):
