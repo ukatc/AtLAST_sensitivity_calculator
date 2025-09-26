@@ -4,23 +4,27 @@ import astropy.units as u
 from atlast_sc.utils import Decorators
 from atlast_sc.utils import FileHelper
 from atlast_sc.utils import DataHelper
+from atlast_sc.factory import CalculatorFactory
 from atlast_sc_tests.utils import does_not_raise
 from atlast_sc.parameters import Instrument
-
+from atlast_sc.parameter_setup import ParameterSetup
 
 class TestInstrumentClasses:
 
         def test_instrument_file_reading(self):
 
-            gltcam = Instrument.GLTCam()
+            gltcam_data = FileHelper.read_instrument_file("gltcam")
+            gltcam = Instrument.GLTCam(data=gltcam_data)
 
             assert gltcam.name == "GLTCam"
 
-            expected_obs_freq_ranges = ['(130.0', '170.0)', '(190.0', '250.0)', '(250.0', '295.0)', '(330.0', '365.0)', '(385.0', '415.0)', '(630.0', '710.0)']
+            expected_obs_freq_ranges = ['(130.0-170.0)','(190.0-250.0)','(250.0-295.0)',
+                                        '(330.0-365.0)','(385.0-415.0)','(630.0-710.0)']
+
             assert gltcam.obs_freq_ranges_and_unit[0] == expected_obs_freq_ranges
             assert gltcam.obs_freq_ranges_and_unit[1] == 'GHz'
 
-            expected_bandwidth_ranges = ['(1.0', '5.0)']
+            expected_bandwidth_ranges = ['(1.0-5.0)']
             assert gltcam.bandwidth_ranges_and_unit[0] == expected_bandwidth_ranges
             assert gltcam.bandwidth_ranges_and_unit[1] == 'MHz'
             
@@ -29,9 +33,10 @@ class TestInstrumentClasses:
             assert gltcam.receiver_temp_options_and_unit[1] == 'K'
 
         def test_correct_receiver_temperature_set(self):
-    
+            
+            finer_data = FileHelper.read_instrument_file("finer")
             test_obs_freq_1 = 130.0 * u.GHz
-            finer = Instrument.Finer(test_obs_freq_1)
+            finer = Instrument.Finer(data=finer_data, obs_freq=test_obs_freq_1)
             
             assert finer.name == "Finer"
 
@@ -39,9 +44,21 @@ class TestInstrumentClasses:
             assert receiver_temp_1 == 45.0 * u.K
 
             test_obs_freq_2 = 215.0 * u.GHz
-            finer.T_rx = test_obs_freq_2
             receiver_temp_2 = finer._set_receiver_temp(test_obs_freq_2)
             assert receiver_temp_2 == 75.0 * u.K
+
+        def test_applicable_instrument_calculation(self):
+
+            test_obs_freq = 164.0 * u.GHz
+            test_bandwidth = 10001 * u.MHz
+            mock_calc = CalculatorFactory._create_calculator(param_setup=ParameterSetup())
+
+            mock_calc.user_input.obs_freq = test_obs_freq
+            mock_calc.user_input.bandwidth = test_bandwidth
+
+            chosen_inst_module = mock_calc._param_setup.get_chosen_instrument()
+            applicable_inst_name = chosen_inst_module.name
+            assert applicable_inst_name == "Sepia345"
 
 
 class TestDecorators:
