@@ -190,7 +190,6 @@ class ParameterSetup:
 
         # Create a set of both applicable instruments lists and take the intersection
         applicable_instruments = list(set(applicable_obs_freq_instruments) & set(applicable_bandw_instruments))
-
         # If there are more than 1 applicable instrument
         if len(applicable_instruments) > 1:
             # TODO: there might be further logic incorporated to choose which instrument 
@@ -199,7 +198,7 @@ class ParameterSetup:
         if len(applicable_instruments) == 1: # If there is only 1 applicable instrument
             return applicable_instruments[0]
         else: # If there is no applicable instrument
-            return None
+            return "Default"
     
     def get_inst_spec_params_module(self, inst_name):
         """
