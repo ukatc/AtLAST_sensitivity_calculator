@@ -164,12 +164,9 @@ class ParameterSetup:
         obs_freq = float(obs_freq.value)
         bandwidth = float(bandwidth.value)
 
-        # TODO: Check the user input obs_freq and bandwidth unit with the dictionary entries
-
         # Check what instrument/s the observing frequency value falls in
         for instrument, obs_freqs in instrument_obs_freqs.items():
             obs_freq_ranges = obs_freqs[0]
-            obs_freq_ranges_unit = obs_freqs[1]
             for range in obs_freq_ranges:
                 range = re.findall(r"[\d.]+", range)
                 min_freq = float(range[0])
@@ -180,7 +177,6 @@ class ParameterSetup:
         # Check what instrument/s the bandwidth value falls in
         for instrument, bandw_vals in instrument_bandw_vals.items():
             bandw_val_ranges = bandw_vals[0]
-            bandw_val_ranges_unit = bandw_vals[1]
             for range in bandw_val_ranges:
                 range = re.findall(r"[\d.]+", range)
                 min_bandw = float(range[0])
