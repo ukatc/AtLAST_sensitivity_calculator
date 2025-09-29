@@ -1,5 +1,6 @@
 import astropy.units as u
 from astropy import constants
+from atlast_sc.data import Validator, Data
 
 class Instrument():
     def __init__(self, data):
@@ -14,14 +15,24 @@ class Instrument():
         return data.name
 
     def set_obs_freq_ranges_and_unit(self, data):
+        # Validate the unit specified in instrument files
+        Validator.validate_units(data.allowed_ranges["observing_frequency"]["unit"],
+                                 'obs_freq', Data.obs_frequency)
+    
         return ( data.allowed_ranges["observing_frequency"]["ranges"], 
             data.allowed_ranges["observing_frequency"]["unit"] )
        
     def set_bandwidth_ranges_and_unit(self, data):
+        # Validate the unit specified in instrument files
+        Validator.validate_units(data.allowed_ranges["bandwidth"]["unit"],
+                                 'bandwidth', Data.bandwidth)
+
         return ( data.allowed_ranges["bandwidth"]["ranges"], 
             data.allowed_ranges["bandwidth"]["unit"])
     
     def set_receiver_temp_options_and_unit(self, data):
+        # ASC-76 Currently not validating receiver temp units because 
+        # values provided directly in the instrument files are temporary.
         return (data.receiver_temperature["values"],
             data.receiver_temperature["unit"])
     
