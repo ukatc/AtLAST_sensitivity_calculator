@@ -37,6 +37,10 @@ class TestInstrumentClasses:
                 expected_obs_freq_ranges_and_unit,
                 expected_bandwidth_ranges_and_unit,
                 expected_receiver_temp_options_and_unit):
+            
+            """
+            Test instrument YAML files are being read in and processed correctly. 
+            """
 
             gltcam_data = FileHelper.read_instrument_file(instrument_yaml_file_name)
             gltcam = Instrument.GLTCam(data=gltcam_data)
@@ -53,6 +57,10 @@ class TestInstrumentClasses:
             assert gltcam.receiver_temp_options_and_unit['unit'] == expected_receiver_temp_options_and_unit['unit']
 
         def test_correct_receiver_temperature_set(self):
+            """
+            Test correct receiver temperature is set according to observing frequency
+            supplied by the user input. 
+            """
             
             finer_data = FileHelper.read_instrument_file("finer")
             test_obs_freq_1 = 130.0 * u.GHz
@@ -68,6 +76,10 @@ class TestInstrumentClasses:
             assert receiver_temp_2 == 75.0 * u.K
 
         def test_applicable_instrument_calculation(self):
+            """
+            Test correct instrument is chosen according to observing frequency
+            and bandwidth values supplied by the user input.
+            """
 
             test_obs_freq = 164.0 * u.GHz
             test_bandwidth = 10001 * u.MHz
