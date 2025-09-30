@@ -19,22 +19,22 @@ class Instrument():
         Validator.validate_units(data.allowed_ranges["observing_frequency"]["unit"],
                                  'obs_freq', Data.obs_frequency)
     
-        return ( data.allowed_ranges["observing_frequency"]["ranges"], 
-            data.allowed_ranges["observing_frequency"]["unit"] )
+        return ( {'ranges': data.allowed_ranges["observing_frequency"]["ranges"],
+                  'unit': data.allowed_ranges["observing_frequency"]["unit"]} )
        
     def set_bandwidth_ranges_and_unit(self, data):
         # Validate the unit specified in instrument files
         Validator.validate_units(data.allowed_ranges["bandwidth"]["unit"],
                                  'bandwidth', Data.bandwidth)
-
-        return ( data.allowed_ranges["bandwidth"]["ranges"], 
-            data.allowed_ranges["bandwidth"]["unit"])
+        
+        return ( {'ranges': data.allowed_ranges["bandwidth"]["ranges"],
+                  'unit': data.allowed_ranges["bandwidth"]["unit"]} )
     
     def set_receiver_temp_options_and_unit(self, data):
         # ASC-76 Currently not validating receiver temp units because 
         # values provided directly in the instrument files are temporary.
-        return (data.receiver_temperature["values"],
-            data.receiver_temperature["unit"])
+        return ( {'values': data.receiver_temperature["values"],
+                  'unit': data.receiver_temperature["unit"]} )
     
     #####################################
     # Instrument class specific methods #
