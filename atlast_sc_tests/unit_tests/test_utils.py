@@ -10,27 +10,47 @@ from atlast_sc.parameters import Instrument
 from atlast_sc.parameter_setup import ParameterSetup
 
 class TestInstrumentClasses:
+        
+        @pytest.mark.parametrize(
+                'instrument_yaml_file_name, instrument_name, ' \
+                'expected_obs_freq_ranges_and_unit,' \
+                'expected_bandwidth_ranges_and_unit,' \
+                'expected_receiver_temp_options_and_unit',
+                [
+                    (
+                        "gltcam", "GLTCam", 
+                        # observing frequency
+                        {'ranges': ['(130.0-170.0)', '(190.0-250.0)', '(250.0-295.0)', 
+                                    '(330.0-365.0)', '(385.0-415.0)', '(630.0-710.0)'], 
+                                    'unit': 'GHz'},
+                        # bandwidth
+                        {'ranges': ['(1.0-5.0)'], 'unit': 'MHz'},
+                        # receiver temperature
+                        {'values': [22.0], 'unit': 'K'}
+                    )
+                    # NOTE: Other instrument YAML file details can be added here to
+                    # be checked. 
+                ]
+        )
 
-        def test_instrument_file_reading(self):
+        def test_instrument_file_reading(self, instrument_yaml_file_name, instrument_name,
+                expected_obs_freq_ranges_and_unit,
+                expected_bandwidth_ranges_and_unit,
+                expected_receiver_temp_options_and_unit):
 
-            gltcam_data = FileHelper.read_instrument_file("gltcam")
+            gltcam_data = FileHelper.read_instrument_file(instrument_yaml_file_name)
             gltcam = Instrument.GLTCam(data=gltcam_data)
 
-            assert gltcam.name == "GLTCam"
+            assert gltcam.name == instrument_name
 
-            expected_obs_freq_ranges = ['(130.0-170.0)','(190.0-250.0)','(250.0-295.0)',
-                                        '(330.0-365.0)','(385.0-415.0)','(630.0-710.0)']
+            assert gltcam.obs_freq_ranges_and_unit['ranges'] == expected_obs_freq_ranges_and_unit['ranges']
+            assert gltcam.obs_freq_ranges_and_unit['unit'] == expected_obs_freq_ranges_and_unit['unit']
 
-            assert gltcam.obs_freq_ranges_and_unit[0] == expected_obs_freq_ranges
-            assert gltcam.obs_freq_ranges_and_unit[1] == 'GHz'
-
-            expected_bandwidth_ranges = ['(1.0-5.0)']
-            assert gltcam.bandwidth_ranges_and_unit[0] == expected_bandwidth_ranges
-            assert gltcam.bandwidth_ranges_and_unit[1] == 'MHz'
+            assert gltcam.bandwidth_ranges_and_unit['ranges'] == expected_bandwidth_ranges_and_unit['ranges']
+            assert gltcam.bandwidth_ranges_and_unit['unit'] == expected_bandwidth_ranges_and_unit['unit']
             
-            expected_receiver_temp_options = [22.0]
-            assert gltcam.receiver_temp_options_and_unit[0] == expected_receiver_temp_options
-            assert gltcam.receiver_temp_options_and_unit[1] == 'K'
+            assert gltcam.receiver_temp_options_and_unit['values'] == expected_receiver_temp_options_and_unit['values']
+            assert gltcam.receiver_temp_options_and_unit['unit'] == expected_receiver_temp_options_and_unit['unit']
 
         def test_correct_receiver_temperature_set(self):
             
