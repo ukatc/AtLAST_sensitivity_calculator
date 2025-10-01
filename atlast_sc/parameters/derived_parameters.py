@@ -68,3 +68,15 @@ class DerivedParameters:
             if isinstance(attr, property):
                 value = getattr(self, name)
                 print(f"{name}: {value}")
+    
+    def __eq__(self, other):
+        for name in dir(self.__class__):
+            attr = getattr(self.__class__, name)
+            other_attr = getattr(other.__class__, name)
+            if isinstance(attr, property) and isinstance (other_attr, property):
+                value = getattr(self, name)
+                other_value = getattr(other, name)
+                if (value != other_value):
+                    return False
+                else:
+                    return True
