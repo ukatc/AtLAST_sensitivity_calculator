@@ -57,6 +57,8 @@ class TestCalculatorUsage:
                calculator._param_setup.calculation_inputs
         assert test_calculator.user_input.derived_parameters \
                == calculator.user_input.derived_parameters
+        assert test_calculator.derived_parameters \
+               == calculator.derived_parameters
 
         # Calculate the integration time with default values
         new_t_int = test_calculator.calculate_t_integration()
@@ -107,7 +109,7 @@ class TestCalculatorUsage:
         test_calculator.user_input.obs_freq = 850 * u.GHz
 
         # Calculate the sensitivity
-        test_calculator.calculate_sensitivity(user_input)
+        test_calculator.calculate_sensitivity()
 
         # Write the results to a file
         FileHelper.write_to_file(test_calculator, tmp_output_dir,
