@@ -1,7 +1,10 @@
 import copy
 import pytest
 import astropy.units as u
+from atlast_sc.factory import CalculatorFactory
 from atlast_sc.calculator import Calculator
+from atlast_sc.parameter_setup import ParameterSetup
+from atlast_sc.parameters.user_input_parameters import UserInputParameters
 from atlast_sc.models import DerivedParams, CalculationInput
 from atlast_sc.utils import DataHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
@@ -9,6 +12,20 @@ from atlast_sc_tests.utils import does_not_raise
 
 
 class TestCalculator:
+
+    def iterate_over_properties(self, parameter_class):
+        """
+        Iterate over the given class and create a dictionary
+        where the property names are keys and have their 
+        corresponding values.
+        """
+        properties = {}
+        for attr in dir(parameter_class):
+            if not attr.startswith('__') and \
+               not attr.startswith('_') and \
+               attr != 'show':
+                properties[attr] = getattr(parameter_class, attr)
+        return properties
 
     @pytest.mark.parametrize(
         'input_data,expected_custom_values,scenario',
@@ -27,54 +44,74 @@ class TestCalculator:
                                    instrument_setup_dict, mocker):
 
         check_input_param_names_spy \
-            = mocker.spy(Calculator, '_check_input_param_names')
+            = mocker.spy(ParameterSetup, '_check_input_param_names')
         derived_params_spy = \
-            mocker.spy(Calculator,
+            mocker.spy(UserInputParameters,
                        '_calculate_derived_parameters')
 
         # Initialize the calculator
-        test_calculator = Calculator(input_data)
+        test_calculator_factory = CalculatorFactory(user_input=input_data)
+        test_calculator = test_calculator_factory.calculator
 
         # Make sure the param names in user input data were validated
         check_input_param_names_spy.assert_called_with(input_data)
         # Make sure the derived parameters were calculated
         derived_params_spy.assert_called_once()
 
-        # Make sure calculator contains a _param_setup object with
-        # calculation inputs, and a derived params object
-        assert isinstance(test_calculator._param_setup.calculation_inputs,
+        # Initialise the parameter setup object for readability
+        param_setup = test_calculator._param_setup
+
+        # Make sure calculator contains a param_setup object with
+        # calculation inputs
+        assert isinstance(param_setup.calculation_inputs,
                           CalculationInput)
-        assert isinstance(test_calculator._derived_params, DerivedParams)
+        
+        # Make sure user input object contains a derived parameters model
+        assert isinstance(test_calculator.user_input._derived_parameters_model, 
+                          DerivedParams)
 
         # Check that the calculator has been configured with the correct
         # input data
         for user_input_param in user_input_dict:
             if user_input_param not in expected_custom_values:
-                assert getattr(test_calculator, user_input_param) \
+                assert getattr(test_calculator.user_input, user_input_param) \
                        == user_input_dict[user_input_param]
             else:
-                assert getattr(test_calculator, user_input_param) \
+                assert getattr(test_calculator.user_input, user_input_param) \
                        == expected_custom_values[user_input_param]
 
+        # Check that parameter setup has been configured with the correct
+        # instrument, telescope, and environment data
         for instrument_setup_param in instrument_setup_dict:
-            assert getattr(test_calculator, instrument_setup_param) \
-                   == instrument_setup_dict[instrument_setup_param]
+            if instrument_setup_param == 'g' or instrument_setup_param == 'eta_pol':
+                assert getattr(param_setup.instrument_specific, instrument_setup_param).value \
+                    == instrument_setup_dict[instrument_setup_param]
+            else:
+                assert getattr(param_setup.telescope_and_environment, instrument_setup_param).value \
+                    == instrument_setup_dict[instrument_setup_param]
 
         # Check that all the calculator properties are correctly mapped
-        assert test_calculator.calculation_inputs \
-               == test_calculator._param_setup.calculation_inputs
-        assert test_calculator.calculation_inputs.user_input \
-               == test_calculator.user_input
-        assert test_calculator.calculation_inputs.user_input \
-               == test_calculator._param_setup.calculation_inputs.user_input
-        assert test_calculator.calculation_inputs.instrument_setup \
-               == test_calculator.instrument_setup
-        assert test_calculator.calculation_inputs.instrument_setup \
-               == test_calculator._param_setup.calculation_inputs.instrument_setup
+        # User inputs
+        user_input_params = self.iterate_over_properties(test_calculator.user_input)
+        for param, value in user_input_params.items():
+            if param == 'derived_parameters':
+                continue # ignoring derived parameters as it is checked later
+            assert value == getattr(param_setup.calculation_inputs.user_input, param).value
 
-        # Make sure the derived parameters are mapped correctly
-        for param in test_calculator.derived_parameters:
-            assert getattr(test_calculator, param[0]) == param[1]
+        # Instrument specific
+        inst_spec_params = self.iterate_over_properties(test_calculator.instrument_specific)
+        for param, value in inst_spec_params.items():
+            assert value == getattr(param_setup.calculation_inputs.instrument_specific,
+                                    param).value
+        # Telescope and environment
+        tcope_and_env_params = self.iterate_over_properties(test_calculator.telescope_and_environment)
+        for param, value in tcope_and_env_params.items():
+            assert value == getattr(param_setup.calculation_inputs.telescope_and_environment,
+                                    param).value
+        # Derived parameters
+        derived_params = self.iterate_over_properties(test_calculator.derived_parameters)
+        for param, value in derived_params.items():
+            assert value == getattr(test_calculator.user_input.derived_parameters, param)
 
     @pytest.mark.parametrize(
         'user_input,expected_raises',
