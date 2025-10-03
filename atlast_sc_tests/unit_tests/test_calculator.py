@@ -122,7 +122,7 @@ class TestCalculator:
     )
     def test_initialize_calculator_invalid(self, user_input, expected_raises):
         with expected_raises:
-            Calculator(user_input)
+            CalculatorFactory(user_input=user_input)
     # TO DO: Add unit tests for the case where finetune=True
     @pytest.mark.parametrize(
         'param,new_value,derived_params_recalculated,expected_raises,finetuned',
@@ -136,17 +136,19 @@ class TestCalculator:
             ('weather', 35, True, does_not_raise(),False),
             ('elevation', 80 * u.deg, True, does_not_raise(),False),
             ('obs_freq', 700 * u.GHz, True, does_not_raise(),False),
-            # Instrument setup
-            ('dish_radius', 30 * u.m, True, does_not_raise(),False),
+            # Instrument specific
             ('g', 0.9, False, pytest.raises(AttributeError),False),
+            ('eta_pol', 0.7, False, pytest.raises(AttributeError),False),
+            # Telescope and environment
             ('surface_rms', 10 * u.micron, False,
              pytest.raises(AttributeError),False),
-            ('T_amb', 100 * u.K, False, pytest.raises(AttributeError),False),
+            ('dish_radius', 30 * u.m, True, does_not_raise(),False),
             ('eta_eff', 0.7, False, pytest.raises(AttributeError),False),
             ('eta_ill', 0.7, False, pytest.raises(AttributeError),False),
             ('eta_spill', 0.7, False, pytest.raises(AttributeError),False),
+            ('T_cmb', 10 * u.K, False, pytest.raises(AttributeError),False),
+            ('T_amb', 100 * u.K, False, pytest.raises(AttributeError),False),
             ('eta_block', 0.7, False, pytest.raises(AttributeError),False),
-            ('eta_pol', 0.7, False, pytest.raises(AttributeError),False),
             # Derived parameters
             ('tau_atm', 0.3, False, pytest.raises(AttributeError),False),
             ('T_atm', 200 * u.K, False, pytest.raises(AttributeError),False),
@@ -155,9 +157,7 @@ class TestCalculator:
             ('eta_a', 0.7, False, pytest.raises(AttributeError),False),
             ('eta_s', 0.7, False, pytest.raises(AttributeError),False),
             ('sefd', 1e-24 * u.J / (u.m * u.m), False,
-             pytest.raises(AttributeError),False),
-            # Other calculation input
-            ('T_cmb', 10 * u.K, False, pytest.raises(AttributeError),False)
+             pytest.raises(AttributeError),False)
         ]
     )
     def test_update_properties(self, param, new_value,
