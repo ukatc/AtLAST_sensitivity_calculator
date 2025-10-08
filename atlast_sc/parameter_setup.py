@@ -42,12 +42,13 @@ class ParameterSetup:
         new_user_input = UserInput(**user_input)
         new_instrument_specific = InstrumentSpecific(**instrument_specific)
         new_telescope_and_environment = TelescopeAndEnvironment(**telescope_and_environment)
-        self._derived_parameters_model = self._calculate_derived_parameters() 
         
         self._calculation_inputs = \
             CalculationInput(user_input=new_user_input,
                              instrument_specific=new_instrument_specific,
                              telescope_and_environment=new_telescope_and_environment)
+        
+        self._derived_parameters_model = self._calculate_derived_parameters() 
         
         # Make a deep copy of the calculation inputs to enable the
         # calculator to be reset to its initial setup
