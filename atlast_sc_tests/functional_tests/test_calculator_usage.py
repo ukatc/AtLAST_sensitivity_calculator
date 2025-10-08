@@ -6,10 +6,9 @@ import os
 
 class TestCalculatorUsage:
 
-    def test_use_calculator_with_defaults(self, calculator_factory):
+    def test_use_calculator_with_defaults(self, calculator):
 
         # Create a new calculator object using the default parameters
-        calculator = calculator_factory.calculator
         test_calculator = CalculatorFactory().calculator
 
         # Calculate the sensitivity using default parameters
@@ -25,8 +24,8 @@ class TestCalculatorUsage:
         test_calculator.user_input.obs_freq = 850 * u.GHz
         # Verify that other parameters that depend on the observing frequency
         # have been updated
-        assert test_calculator.user_input.derived_parameters \
-               != calculator.user_input.derived_parameters
+        assert test_calculator.derived_parameters \
+               != calculator.derived_parameters
 
         # Recalculate the sensitivity
         new_sens = test_calculator.calculate_sensitivity()
@@ -55,8 +54,6 @@ class TestCalculatorUsage:
         # Verify that the calculator has now been reset to its initial state
         assert test_calculator._param_setup.calculation_inputs == \
                calculator._param_setup.calculation_inputs
-        assert test_calculator.user_input.derived_parameters \
-               == calculator.user_input.derived_parameters
         assert test_calculator.derived_parameters \
                == calculator.derived_parameters
 
