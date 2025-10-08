@@ -515,7 +515,7 @@ class TestCalculator:
                round(calculator.user_input.sensitivity.value, 10)
 
 
-class TestConfig:
+class TestParameterSetup:
 
     @pytest.mark.parametrize(
         'input_data,expected_custom_values,scenario',
@@ -529,12 +529,12 @@ class TestConfig:
              )
         ]
     )
-    def test_initialize_config(self, input_data, expected_custom_values,
+    def test_initialize_parameter_setup(self, input_data, expected_custom_values,
                                scenario, user_input_dict,
                                instrument_setup_dict):
 
-        config = Config(input_data)
+        param_setup = ParameterSetup(user_input=input_data)
 
         # Check that all the config properties are correctly mapped
-        assert config.calculation_inputs == config._calculation_inputs
-        assert config._original_inputs == config._calculation_inputs
+        assert param_setup.calculation_inputs == param_setup._calculation_inputs
+        assert param_setup._original_inputs == param_setup._calculation_inputs
