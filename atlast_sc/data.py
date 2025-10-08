@@ -82,7 +82,7 @@ class Data:
         units=[str(u.s), str(u.min), str(u.h)],
     )
 
-    calculated_integration_time = DataType(
+    calculated_t_int = DataType(
         default_value=6.7636,
         default_unit=str(u.s),
         lower_value=1,
@@ -214,7 +214,7 @@ class Data:
 
     param_data_type_dicts = {
         't_int': integration_time,
-        'calculated_integration_time': calculated_integration_time,
+        'calculated_t_int': calculated_t_int,
         'sensitivity': sensitivity,
         'calculated_sensitivity': calculated_sensitivity,
         'bandwidth': bandwidth,
