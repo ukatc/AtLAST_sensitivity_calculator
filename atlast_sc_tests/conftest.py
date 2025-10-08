@@ -25,9 +25,9 @@ def tmp_output_dir(tmp_path_factory):
 
 
 @pytest.fixture()
-def calculator_factory():
+def calculator():
     # Return a calculator with default parameters
-    return CalculatorFactory()
+    return CalculatorFactory().calculator
 
 
 @pytest.fixture(scope='session')
@@ -35,12 +35,20 @@ def t_int():
     # Return the default integration time
     return _get_param(Data.integration_time)
 
+@pytest.fixture(scope='session')
+def calculated_t_int():
+    # Return the default calculated integration time
+    return _get_param(Data.calculated_t_int)
 
 @pytest.fixture(scope='session')
 def sensitivity():
     # Return the default sensitivity
     return _get_param(Data.sensitivity)
 
+@pytest.fixture(scope='session')
+def calculated_sensitivity():
+    # Return the default calculated sensitivity
+    return _get_param(Data.calculated_sensitivity)
 
 @pytest.fixture(scope='session')
 def bandwidth():
@@ -166,8 +174,8 @@ def eta_s(efficiencies):
 
 
 @pytest.fixture()
-def sefd(calculator, t_sys, eta_a):
-    return calculator._calculate_sefd(t_sys, eta_a)
+def sefd(calculator, t_sys, eta_a, dish_radius):
+    return calculator._param_setup._calculate_sefd(t_sys, eta_a, dish_radius)
 
 
 @pytest.fixture(scope='session')
