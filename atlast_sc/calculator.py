@@ -1,14 +1,14 @@
 import warnings
 import astropy.units as u
 import numpy as np
-from atlast_sc.utils import DataHelper
+from atlast_sc.utils import DataHelper, Decorators
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
 from atlast_sc.exceptions import ValueOutOfRangeException
-from atlast_sc.utils import Decorators
 
 from atlast_sc.parameters.user_input_parameters import UserInputParameters
 from atlast_sc.parameters.instrument_specific_parameters import InstrumentSpecificParameters
 from atlast_sc.parameters.telescope_and_environment_parameters import TelescopeAndEnvironmentParameters
+from atlast_sc.parameters.derived_parameters import DerivedParameters
 
 class Calculator:
     """
@@ -27,23 +27,65 @@ class Calculator:
         # Parameter setup class that contains models with default values
         self._param_setup = param_setup
         # Special classes for customisation of models
-        self.user_input = UserInputParameters(param_setup)
-        self.instrument_specific = InstrumentSpecificParameters(param_setup)
-        self.telescope_and_environment = TelescopeAndEnvironmentParameters(param_setup)
-
-        self.calculated_sensitivity = None
-        self.calculated_t_int = None
+        self._user_input = UserInputParameters(param_setup)
+        self._instrument_specific = InstrumentSpecificParameters(param_setup)
+        self._telescope_and_environment = TelescopeAndEnvironmentParameters(param_setup)
+        self._derived_parameters = DerivedParameters(param_setup)
+        # Calculated value variables of calculation result model
+        self._calculated_sensitivity = self._param_setup.calculation_results.calculated_sensitivity
+        self._calculated_t_int = self._param_setup.calculation_results.calculated_t_int
 
     @property
+    def user_input(self):
+        """
+        User inputs to the calculation
+        """
+        return self._user_input
+
+    @property
+    def instrument_specific(self):
+        """
+        Instrument specific parameters
+        """
+        return self._instrument_specific
+    
+    @property
+    def telescope_and_environment(self):
+        """
+        Telescope and environment parameters
+        """
+        return self._telescope_and_environment
+    
+    @property
     def derived_parameters(self):
-        # We need to retrieve the derived parameters from user input class as with every 
-        # parameter that gets used in the calculation of other parameters change, the 
-        # derived parameters also change. It is only the user input parameters that prompts
-        # the derived parameters to change ( TODO: dish radius also prompts derived parameters to
-        # change, however, this might be consciously overlooked). Validation of the user inputs 
-        # are done on the user input level, therefore, the derived parameters belong to the current
-        # version of the user input parameters at that point.
-        return self.user_input.derived_parameters
+        """
+        Derived parameters
+        """
+        return self._derived_parameters
+
+    @property
+    def calculated_sensitivity(self):
+        """
+        Calculated sensitivity value
+        """
+        return self._calculated_sensitivity.value
+
+    @calculated_sensitivity.setter
+    @Decorators.validate_value
+    def calculated_sensitivity(self, value):
+        self._calculated_sensitivity.value = value
+
+    @property
+    def calculated_t_int(self):
+        """
+        Calculated integration time value
+        """
+        return self._calculated_t_int.value
+
+    @calculated_t_int.setter
+    @Decorators.validate_value
+    def calculated_t_int(self, value):
+        self._calculated_t_int.value = value
         
     #################################################
     # Public methods for performing sensitivity and #
@@ -137,7 +179,6 @@ class Calculator:
             t_int_result = t_int_result.to(u.min)
         elif t_int_result >= 3600*u.s:
             t_int_result = t_int_result.to(u.h)
-
         # Try to update the integration time stored in the calculator
         if update_calculator:
             try:
@@ -158,7 +199,7 @@ class Calculator:
         # Reset the _param_setup calculation inputs to their original values
         self._param_setup.reset()
         # Recalculate the derived parameters
-        self.user_input._calculate_derived_parameters()
+        self._param_setup._calculate_derived_parameters()
 
     @staticmethod
     def _calculated_value_error_msg(calculated_value, validation_error):
