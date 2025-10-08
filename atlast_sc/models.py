@@ -245,3 +245,21 @@ class DerivedParams(BaseModel):
 
     def __str__(self):
         return ModelUtils.model_str_rep(self)
+    
+
+class CalculationResult(BaseModel):
+    """
+    Variables used to store calculated sensitivity or integration
+    time results. 
+    """
+
+    calculated_sensitivity: ValueWithUnits = \
+        ValueWithUnits(value=Data.calculated_sensitivity.default_value,
+                    unit=Data.calculated_sensitivity.default_unit)
+
+    calculated_t_int: ValueWithUnits = \
+        ValueWithUnits(value=Data.calculated_t_int.default_value,
+                    unit=Data.calculated_t_int.default_unit)
+    
+    def __str__(self):
+        return ModelUtils.model_str_rep(self)
