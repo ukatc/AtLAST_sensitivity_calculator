@@ -53,6 +53,8 @@ class TestDecorators:
             self._quantity = 1 * u.GHz
             self._calculation_inputs = \
                 TestDecorators.MockCalculator.MockCalculationInputs()
+            self._param_setup = \
+            TestDecorators.MockCalculator.MockParamSetup()
 
         class MockCalculationInputs:
             @staticmethod
@@ -61,6 +63,11 @@ class TestDecorators:
                     raise ValueError
 
                 return True
+            
+        class MockParamSetup:
+            @staticmethod
+            def _calculate_derived_parameters():
+                pass
 
         @property
         def prop1(self):
@@ -95,10 +102,6 @@ class TestDecorators:
         @property
         def calculation_inputs(self):
             return self._calculation_inputs
-
-        @staticmethod
-        def _calculate_derived_parameters():
-            pass
 
     @staticmethod
     def mock_validate(*args):
@@ -140,9 +143,9 @@ class TestDecorators:
         'new_value,expect_raises,expect_value_updated,'
         'expect_params_recalculated',
         [
-            (2 * u.GHz, does_not_raise(), True, True),
+            (2 * u.GHz, does_not_raise(), True, True), ####
             (1 * u.GHz, does_not_raise(), True, False),
-            (1 * u.MHz, does_not_raise(), True, True),
+            (1 * u.MHz, does_not_raise(), True, True), ####
             ('invalid', pytest.raises(ValueError), False, False)
         ]
     )
@@ -159,7 +162,7 @@ class TestDecorators:
                          side_effect=TestDecorators.mock_validate)
 
         calculate_derived_params_spy = \
-            mocker.spy(TestDecorators.MockCalculator,
+            mocker.spy(TestDecorators.MockCalculator.MockParamSetup,
                        '_calculate_derived_parameters')
 
         with expect_raises:
