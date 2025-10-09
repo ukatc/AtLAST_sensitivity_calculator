@@ -167,7 +167,8 @@ CHAI instrument parameters
 class Chai(Instrument):
     def __init__(self, data):
         super().__init__(data)
-        self._T_rx = self._set_receiver_temp()
+        breakpoint()
+        self._T_rx = self._set_receiver_temp(self.receiver_temp_options_and_unit)
         
     ##################################
     # Instrument specific parameters #
@@ -186,8 +187,10 @@ class Chai(Instrument):
     ################################################
 
     @staticmethod
-    def _set_receiver_temp():
-        return 125.0 * u.K
+    def _set_receiver_temp(receiver_temp_options_and_unit):
+        receiver_temp = u.Quantity(receiver_temp_options_and_unit['values'][0],
+                                    u.K)
+        return receiver_temp
 
 """
 SEPIA345 instrument parameters
