@@ -167,7 +167,6 @@ CHAI instrument parameters
 class Chai(Instrument):
     def __init__(self, data):
         super().__init__(data)
-        breakpoint()
         self._T_rx = self._set_receiver_temp(self.receiver_temp_options_and_unit)
         
     ##################################
