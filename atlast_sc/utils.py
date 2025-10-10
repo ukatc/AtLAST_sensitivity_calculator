@@ -99,7 +99,7 @@ class FileHelper:
         'Must be one of: {supported_extensions}'
 
     @staticmethod
-    def read_instrument_file(file_name):
+    def read_instrument_yaml_file(file_name):
         """
         Reads the file with name `file_name` located in directory `path`
         and returns a namespace. The file type is expected as `yaml`.

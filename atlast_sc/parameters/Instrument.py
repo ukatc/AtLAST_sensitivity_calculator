@@ -33,7 +33,7 @@ GLTCam instrument parameters
 class GLTCam(Instrument):
 
     def __init__(self):
-        self.data = FileHelper.read_instrument_file("gltcam")
+        self.data = FileHelper.read_instrument_yaml_file("gltcam")
         super().__init__(self.data)
         self._T_rx = self._set_receiver_temp()
 
@@ -62,7 +62,7 @@ TIFUUN instrument parameters
 """        
 class Tifuun(Instrument):
     def __init__(self):
-        self.data = FileHelper.read_instrument_file("tifuun")
+        self.data = FileHelper.read_instrument_yaml_file("tifuun")
         super().__init__(self.data)
         self._T_rx = self._set_receiver_temp()
 
@@ -91,7 +91,7 @@ MUSCAT instrument parameters
 """        
 class Muscat(Instrument):
     def __init__(self):
-        self.data = FileHelper.read_instrument_file("muscat")
+        self.data = FileHelper.read_instrument_yaml_file("muscat")
         super().__init__(self.data)
         self._T_rx = self._set_receiver_temp()
     
@@ -120,7 +120,7 @@ FINER instrument parameters
 """        
 class Finer(Instrument):
     def __init__(self, obs_freq):
-        self.data = FileHelper.read_instrument_file("finer")
+        self.data = FileHelper.read_instrument_yaml_file("finer")
         super().__init__(self.data)
         self._T_rx = self._set_receiver_temp(obs_freq)
 
@@ -155,7 +155,7 @@ CHAI instrument parameters
 """        
 class Chai(Instrument):
     def __init__(self):
-        self.data = FileHelper.read_instrument_file("chai")
+        self.data = FileHelper.read_instrument_yaml_file("chai")
         super().__init__(self.data)
         self._T_rx = self._set_receiver_temp()
         
@@ -184,7 +184,7 @@ SEPIA345 instrument parameters
 """        
 class Sepia345(Instrument):
     def __init__(self):
-        self.data = FileHelper.read_instrument_file("sepia")
+        self.data = FileHelper.read_instrument_yaml_file("sepia")
         super().__init__(self.data)
         self._T_rx = self._set_receiver_temp()
 
