@@ -55,10 +55,26 @@ class TestDecorators:
         def __init__(self):
             self._value = 1
             self._quantity = 1 * u.GHz
-            self._calculation_inputs = \
-                TestDecorators.MockCalculator.MockCalculationInputs()
             self._param_setup = \
-            TestDecorators.MockCalculator.MockParamSetup()
+                TestDecorators.MockCalculator.MockParamSetup()
+            self._user_input = \
+                TestDecorators.MockCalculator.MockUserInputParameters(self._param_setup)
+    
+        class MockUserInputParameters:
+            def __init__(self, mock_param_setup):
+                self._param_setup = mock_param_setup
+
+            @property
+            def prop1(self):
+                return 1
+
+            @property
+            def prop2(self):
+                return 2.0
+
+            @property
+            def prop3(self):
+                return '3'
 
         class MockCalculationInputs:
             @staticmethod
@@ -69,21 +85,13 @@ class TestDecorators:
                 return True
             
         class MockParamSetup:
+            def __init__(self):
+                self.calculation_inputs = \
+                    TestDecorators.MockCalculator.MockCalculationInputs()
+
             @staticmethod
             def _calculate_derived_parameters():
                 pass
-
-        @property
-        def prop1(self):
-            return 1
-
-        @property
-        def prop2(self):
-            return 2.0
-
-        @property
-        def prop3(self):
-            return '3'
 
         @property
         def decorated_validate_value(self):
@@ -389,8 +397,10 @@ class TestDataHelper:
              'Validate update int with string'),
             ('prop1', 2.0, pytest.raises(ValueError), False,
              'Validate update int with float'),
+
             ('prop2', 1.0, does_not_raise(), True,
              'Validate update float with float'),
+
             ('prop2', 1, does_not_raise(), True,
              'Validate update float with int (ints are converted to floats)'),
             ('prop3', '2', does_not_raise(), True,
@@ -410,7 +420,7 @@ class TestDataHelper:
                        'validate_value')
 
         with expect_raises:
-            DataHelper.validate(mock_calculator, param_name, value)
+            DataHelper.validate(mock_calculator._user_input, param_name, value)
 
         if expect_validation_performed:
             validate_value_spy.assert_called_once_with(param_name, value)
