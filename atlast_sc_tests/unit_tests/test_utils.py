@@ -4,8 +4,12 @@ import astropy.units as u
 from atlast_sc.utils import Decorators
 from atlast_sc.utils import FileHelper
 from atlast_sc.utils import DataHelper
+
 from atlast_sc_tests.utils import does_not_raise
+
 from atlast_sc.parameters import Instrument
+
+from types import SimpleNamespace
 
 
 class TestInstrumentClasses:
@@ -191,6 +195,25 @@ class TestDecorators:
 
 
 class TestFileHelper:
+
+    @pytest.mark.parametrize(
+        'instrument_name',
+        [
+            ("chai"),
+            ("finer"),
+            ("gltcam"),
+            ("muscat"),
+            ("sepia"),
+            ("tifuun")
+        ]
+    )
+    def test_read_instrument_file(self, instrument_name):
+        """
+        Test that a SimpleNamespace with the instrument data 
+        is read from an instrument YAML file. 
+        """
+        result_namespace = FileHelper.read_instrument_yaml_file(instrument_name)
+        assert isinstance(result_namespace, SimpleNamespace)
 
     @pytest.mark.parametrize(
         'test_file',
