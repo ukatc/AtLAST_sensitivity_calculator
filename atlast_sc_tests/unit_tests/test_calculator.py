@@ -41,7 +41,8 @@ class TestCalculator:
     )
     def test_initialize_calculator(self, input_data, expected_custom_values,
                                    scenario, user_input_dict,
-                                   instrument_setup_dict, mocker):
+                                   telescope_and_environment_dict,
+                                   instrument_specific_dict, mocker):
 
         check_input_param_names_spy \
             = mocker.spy(ParameterSetup, '_check_input_param_names')
@@ -81,14 +82,13 @@ class TestCalculator:
                        == expected_custom_values[user_input_param]
 
         # Check that parameter setup has been configured with the correct
-        # instrument, telescope, and environment data
-        for instrument_setup_param in instrument_setup_dict:
-            if instrument_setup_param == 'g' or instrument_setup_param == 'eta_pol':
-                assert getattr(param_setup.instrument_specific, instrument_setup_param).value \
-                    == instrument_setup_dict[instrument_setup_param]
-            else:
-                assert getattr(param_setup.telescope_and_environment, instrument_setup_param).value \
-                    == instrument_setup_dict[instrument_setup_param]
+        # instrument, telescope and environment data
+        for inst_spec_param in instrument_specific_dict:
+            assert getattr(param_setup.instrument_specific, inst_spec_param).value \
+                == instrument_specific_dict[inst_spec_param]
+        for tel_and_env_param in telescope_and_environment_dict:
+            assert getattr(param_setup.telescope_and_environment, tel_and_env_param).value \
+                == telescope_and_environment_dict[tel_and_env_param]
 
         # Check that all the calculator properties are correctly mapped
         # User inputs
@@ -531,7 +531,8 @@ class TestParameterSetup:
     )
     def test_initialize_parameter_setup(self, input_data, expected_custom_values,
                                scenario, user_input_dict,
-                               instrument_setup_dict):
+                               telescope_and_environment_dict, 
+                               instrument_specific_dict):
 
         param_setup = ParameterSetup(user_input=input_data)
 
