@@ -207,10 +207,10 @@ class TestFileHelper:
             ("tifuun")
         ]
     )
-    def test_read_instrument_file(self, instrument_name):
+    def test_read_instrument_yaml_file(self, instrument_name):
         """
-        Test that a SimpleNamespace with the instrument data 
-        is read from an instrument YAML file. 
+        Test that a SimpleNamespace is created when instrument 
+         data is read from an instrument YAML file. 
         """
         result_namespace = FileHelper.read_instrument_yaml_file(instrument_name)
         assert isinstance(result_namespace, SimpleNamespace)
