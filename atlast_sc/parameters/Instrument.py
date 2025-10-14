@@ -1,3 +1,4 @@
+import re
 import astropy.units as u
 from astropy import constants
 from atlast_sc.data import Validator, Data
@@ -49,7 +50,7 @@ class GLTCam(Instrument):
 
     def __init__(self, data):
         super().__init__(data)
-        self._T_rx = self._set_default_receiver_temp()
+        self._T_rx = self._set_default_receiver_temp(self.receiver_temp_options_and_unit)
 
     ##################################
     # Instrument specific parameters #
@@ -70,13 +71,16 @@ class GLTCam(Instrument):
     def calculate_receiver_temp(self, obs_freq):
         # NOTE: This will be populated with instrument specific 
         # receiver temperature calculation equation.
-        temp = 22.0 * u.K
+        temp_option = float(self.receiver_temp_options_and_unit['values'][0])
+        temp = temp_option * u.K
         self.T_rx = temp
         return temp
 
     @staticmethod
-    def _set_default_receiver_temp():
-        return 22.0 * u.K
+    def _set_default_receiver_temp(receiver_temp_options_and_unit):
+        receiver_temp = u.Quantity(receiver_temp_options_and_unit['values'][0],
+                                    u.K)
+        return receiver_temp
     
 """
 TIFUUN instrument parameters
@@ -84,7 +88,7 @@ TIFUUN instrument parameters
 class Tifuun(Instrument):
     def __init__(self, data):
         super().__init__(data)
-        self._T_rx = self._set_default_receiver_temp()
+        self._T_rx = self._set_default_receiver_temp(self.receiver_temp_options_and_unit)
 
     ##################################
     # Instrument specific parameters #
@@ -105,13 +109,16 @@ class Tifuun(Instrument):
     def calculate_receiver_temp(self, obs_freq):
         # NOTE: This will be populated with instrument specific 
         # receiver temperature calculation equation.
-        temp = 72.3 * u.K
+        temp_option = float(self.receiver_temp_options_and_unit['values'][0])
+        temp = temp_option * u.K
         self.T_rx = temp
         return temp
 
     @staticmethod
-    def _set_default_receiver_temp():
-        return 72.3 * u.K
+    def _set_default_receiver_temp(receiver_temp_options_and_unit):
+        receiver_temp = u.Quantity(receiver_temp_options_and_unit['values'][0],
+                                    u.K)
+        return receiver_temp
 
 """
 MUSCAT instrument parameters
@@ -119,7 +126,7 @@ MUSCAT instrument parameters
 class Muscat(Instrument):
     def __init__(self, data):
         super().__init__(data)
-        self._T_rx = self._set_default_receiver_temp()
+        self._T_rx = self._set_default_receiver_temp(self.receiver_temp_options_and_unit)
     
     ##################################
     # Instrument specific parameters #
@@ -140,13 +147,16 @@ class Muscat(Instrument):
     def calculate_receiver_temp(self, obs_freq):
         # NOTE: This will be populated with instrument specific 
         # receiver temperature calculation equation.
-        temp = 44.7 * u.K
+        temp_option = float(self.receiver_temp_options_and_unit['values'][0])
+        temp = temp_option * u.K
         self.T_rx = temp
         return temp
 
     @staticmethod
-    def _set_default_receiver_temp():
-        return 44.7 * u.K
+    def _set_default_receiver_temp(receiver_temp_options_and_unit):
+        receiver_temp = u.Quantity(receiver_temp_options_and_unit['values'][0],
+                                    u.K)
+        return receiver_temp
 
 """
 FINER instrument parameters
@@ -154,7 +164,7 @@ FINER instrument parameters
 class Finer(Instrument):
     def __init__(self, data):
         super().__init__(data)
-        self._T_rx = self._set_default_receiver_temp()
+        self._T_rx = self._set_default_receiver_temp(self.receiver_temp_options_and_unit)
 
     ##################################
     # Instrument specific parameters #
@@ -173,17 +183,26 @@ class Finer(Instrument):
     ################################################
 
     def calculate_receiver_temp(self, obs_freq):
+        temp_options = re.findall(r"[\d.]+", 
+                           self.receiver_temp_options_and_unit['values'][0])
+        temp_options = [float(temp) for temp in temp_options]
+
         obs_freq = obs_freq.value 
         if obs_freq >= 120.0 and obs_freq <= 210.0:
-            temp = 45.0 * u.K
+            temp = temp_options[0] * u.K
         elif obs_freq > 210.0 and obs_freq <= 360.0:
-            temp = 75.0 * u.K
+            temp = temp_options[1] * u.K
         self.T_rx = temp
         return temp
-        
+    
     @staticmethod
-    def _set_default_receiver_temp():
-        return 45.0 * u.K
+    def _set_default_receiver_temp(receiver_temp_options_and_unit):
+        temp_options = re.findall(r"[\d.]+", 
+                           receiver_temp_options_and_unit['values'][0])
+        temp_options = [float(temp) for temp in temp_options]
+        # NOTE: Currently chooses first receiver temp option as default
+        temp = temp_options[0]
+        return temp
 
 """
 CHAI instrument parameters
@@ -212,7 +231,8 @@ class Chai(Instrument):
     def calculate_receiver_temp(self, obs_freq):
         # NOTE: This will be populated with instrument specific 
         # receiver temperature calculation equation.
-        temp = 125.0 * u.K
+        temp_option = float(self.receiver_temp_options_and_unit['values'][0])
+        temp = temp_option * u.K
         self.T_rx = temp
         return temp
 
@@ -228,7 +248,7 @@ SEPIA345 instrument parameters
 class Sepia345(Instrument):
     def __init__(self, data):
         super().__init__(data)
-        self._T_rx = self._set_default_receiver_temp()
+        self._T_rx = self._set_default_receiver_temp(self.receiver_temp_options_and_unit)
 
     ##################################
     # Instrument specific parameters #
@@ -249,13 +269,16 @@ class Sepia345(Instrument):
     def calculate_receiver_temp(self, obs_freq):
         # NOTE: This will be populated with instrument specific 
         # receiver temperature calculation equation.
-        temp = 125.0 * u.K
+        temp_option = float(self.receiver_temp_options_and_unit['values'][0])
+        temp = temp_option * u.K
         self.T_rx = temp
         return temp
-
+    
     @staticmethod
-    def _set_default_receiver_temp():
-        return 125.0 * u.K
+    def _set_default_receiver_temp(receiver_temp_options_and_unit):
+        receiver_temp = u.Quantity(receiver_temp_options_and_unit['values'][0],
+                                    u.K)
+        return receiver_temp
     
 """
 Default instrument parameters
