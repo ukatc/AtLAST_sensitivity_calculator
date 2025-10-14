@@ -184,7 +184,8 @@ class ParameterSetup:
                     applicable_bandw_instruments.append(instrument)
 
         # Create a set of both applicable instruments lists and take the intersection
-        applicable_instruments = list(set(applicable_obs_freq_instruments) & set(applicable_bandw_instruments))
+        applicable_instruments = list(set(applicable_obs_freq_instruments) & \
+                                      set(applicable_bandw_instruments))
         # If there are more than 1 applicable instrument
         if len(applicable_instruments) > 1:
             # TODO: there might be further logic incorporated to choose which instrument 
@@ -207,7 +208,7 @@ class ParameterSetup:
         """
         if inst_name is not None:
             match inst_name:
-                case "GLTcam":
+                case "GLTCam":
                     return self.loaded_instruments["GLTCam"]
 
                 case "Tifuun":
