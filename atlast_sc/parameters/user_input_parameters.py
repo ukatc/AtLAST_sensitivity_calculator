@@ -184,9 +184,10 @@ class UserInputParameters:
         eta_pol = self._param_setup.calculation_inputs.instrument_specific.eta_pol.value
         g = self._param_setup.calculation_inputs.instrument_specific.g.value
 
+        # Get chosen instrument and its receiver temperature
         chosen_inst = self._param_setup.get_chosen_instrument()
-        inst_spec_T_rx = chosen_inst.T_rx
- 
+        inst_spec_T_rx = chosen_inst.calculate_receiver_temp(obs_freq=obs_freq)
+
         # Perform efficiencies calculations
         eta = Efficiencies(obs_freq , surface_rms, eta_ill,
                             eta_spill, eta_block, eta_pol)
