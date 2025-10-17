@@ -46,4 +46,5 @@ class Finer(Instrument):
         temp_options = [float(temp) for temp in temp_options]
         # NOTE: Currently chooses first receiver temp option as default
         temp = temp_options[0]
+        temp = u.Quantity(temp, receiver_temp_options_and_unit['unit'])
         return temp
