@@ -112,9 +112,9 @@ class FileHelper:
         :return: namespace object of yaml blocks.
         :rtype: types
         """
-        _STATIC_DATA_PATH = str(Path(__file__).resolve().parents[0] / "static")
-        _INSTRUMENTS_PATH = _STATIC_DATA_PATH + '/lookups/instruments/'
-        instrument_file = _INSTRUMENTS_PATH + file_name + ".yaml"
+        _STATIC_DATA_PATH = str(Path(__file__).resolve().parents[0])
+        _INSTRUMENTS_DATA_PATH = _STATIC_DATA_PATH + '/instruments/data/'
+        instrument_file = _INSTRUMENTS_DATA_PATH + file_name + ".yaml"
 
         with open(instrument_file, "r") as file:
             data = safe_load(file)
