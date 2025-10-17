@@ -1,14 +1,15 @@
 import astropy.units as u
 from astropy import constants
 from atlast_sc.instrument import Instrument
+from atlast_sc.data import Data
 
 """
 Default instrument parameters
 """        
 class Default(Instrument):
-    def __init__(self, data, obs_freq):
+    def __init__(self, data):
         super().__init__(data)
-        self._T_rx = self._set_default_receiver_temp(obs_freq)
+        self._T_rx = self._set_default_receiver_temp()
 
     ##################################
     # Instrument specific parameters #
@@ -32,5 +33,7 @@ class Default(Instrument):
         return temp
 
     @staticmethod
-    def _set_default_receiver_temp(obs_freq):
-        return (5 * constants.h * obs_freq / constants.k_B).to(u.K)
+    def _set_default_receiver_temp():
+        default_obs_freq = u.Quantity(Data.obs_frequency.default_value,
+                                        Data.obs_frequency.default_unit)
+        return (5 * constants.h * default_obs_freq / constants.k_B).to(u.K)
