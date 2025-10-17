@@ -149,8 +149,8 @@ class Temperatures:
     Calculates temperature terms
     """
 
-    def __init__(self, obs_freq, T_cmb, T_amb, g, eta_eff, T_atm, tau_atm):
-        self._T_rx = Temperatures._calculate_receiver_temperature(obs_freq)
+    def __init__(self, obs_freq, T_cmb, T_amb, g, eta_eff, T_atm, tau_atm, T_rx):
+        self._T_rx = T_rx
         self._T_sys = \
             self._calculate_system_temperature(g, T_cmb, eta_eff, T_amb,
                                                T_atm, tau_atm)

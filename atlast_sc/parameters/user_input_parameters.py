@@ -200,7 +200,7 @@ class UserInputParameters:
                                                         weather)
         # Calculate the temperatures
         temps = Temperatures(obs_freq, T_cmb, T_amb, g,
-                                eta_eff, T_atm, tau_atm)
+                                eta_eff, T_atm, tau_atm, inst_spec_T_rx)
 
         # LDM
         # ------------------------------------------------------------------
