@@ -5,13 +5,13 @@ from atlast_sc.models import CalculationInput
 from atlast_sc.models import TelescopeAndEnvironment
 from atlast_sc.utils import FileHelper
 
-from atlast_sc.instruments.GLTCam import GLTCam
-from atlast_sc.instruments.Tifuun import Tifuun
-from atlast_sc.instruments.Muscat import Muscat
-from atlast_sc.instruments.Finer import Finer
-from atlast_sc.instruments.Chai import Chai
-from atlast_sc.instruments.Sepia import Sepia
-from atlast_sc.instruments.Default import Default
+from atlast_sc.instruments.classes.GLTCam import GLTCam
+from atlast_sc.instruments.classes.Tifuun import Tifuun
+from atlast_sc.instruments.classes.Muscat import Muscat
+from atlast_sc.instruments.classes.Finer import Finer
+from atlast_sc.instruments.classes.Chai import Chai
+from atlast_sc.instruments.classes.Sepia import Sepia
+from atlast_sc.instruments.classes.Default import Default
 
 class ParameterSetup:
     """
@@ -124,8 +124,7 @@ class ParameterSetup:
             "Finer": Finer(data=FileHelper.read_instrument_file("finer")),
             "Chai": Chai(data=FileHelper.read_instrument_file("chai")),
             "Sepia": Sepia(data=FileHelper.read_instrument_file("sepia")),
-            "Default": Default(data=FileHelper.read_instrument_file("default"),
-                               obs_freq=obs_freq)
+            "Default": Default(data=FileHelper.read_instrument_file("default"))
         }
         return inst_modules
     
