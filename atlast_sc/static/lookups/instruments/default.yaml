@@ -1,11 +1,11 @@
-name: "Finer"
+name: "Default"
 allowed_ranges:
   observing_frequency:
-    ranges: [(120.0-360.0)]
+    ranges: [(35.0-950.0)]
     unit: GHz
   bandwidth: 
-    ranges: [(10500.0-3000000.0)]
+    ranges: []
     unit: MHz
 receiver_temperature: 
-  values: [45.0-75.0]
+  values: []
   unit: K

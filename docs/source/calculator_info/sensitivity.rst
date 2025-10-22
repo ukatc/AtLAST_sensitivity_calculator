@@ -48,14 +48,14 @@ where
 * :math:`T_{sky}` is the sky temperature
 * :math:`T_{amb}` is the ambient temperature
 
-Here we assume a receiver temperature calculated from:
+Here we assume a receiver temperature :math:`T_{rx}` is chosen according to the instrument selection:
 
-.. math::
-    T_{rx} = \frac{5h\nu}{k}
-
-where
-
-* :math:`h` is the Planck constant
+* :math:`GLTCam`: 22.0K
+* :math:`Tifuun`: 72.3K
+* :math:`Muscat`: 44.7K
+* :math:`Finer`: 45.0K if observing frequency is between 120.0 and 210.0, 75.0K if observing frequency is between 210.0 and 360.0
+* :math:`Chai`: 125.0K
+* :math:`Sepia345`: 125.0K
 
 The sky temperature is calculated as:
 

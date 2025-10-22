@@ -1,6 +1,7 @@
 import os
 import functools
 import json
+from pathlib import Path
 from yaml import load, Loader, safe_load
 from astropy.units import Unit
 from types import SimpleNamespace
@@ -111,9 +112,8 @@ class FileHelper:
         :return: namespace object of yaml blocks.
         :rtype: types
         """
-        
-        _STATIC_DATA_PATH = os.getcwd() + '/../../atlast_sc/static/'
-        _INSTRUMENTS_PATH = _STATIC_DATA_PATH + 'lookups/instruments/'
+        _STATIC_DATA_PATH = str(Path(__file__).resolve().parents[0] / "static")
+        _INSTRUMENTS_PATH = _STATIC_DATA_PATH + '/lookups/instruments/'
         instrument_file = _INSTRUMENTS_PATH + file_name + ".yaml"
 
         with open(instrument_file, "r") as file:

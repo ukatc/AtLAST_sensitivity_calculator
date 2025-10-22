@@ -1,5 +1,5 @@
-User input
-----------
+User input parameters
+---------------------
 
 .. list-table::
     :widths: 10 10 10 10 10 10

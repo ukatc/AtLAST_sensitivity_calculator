@@ -4,7 +4,6 @@ import numpy as np
 from atlast_sc.utils import DataHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
 from atlast_sc.exceptions import ValueOutOfRangeException
-from atlast_sc.utils import Decorators
 
 from atlast_sc.parameters.user_input_parameters import UserInputParameters
 from atlast_sc.parameters.instrument_specific_parameters import InstrumentSpecificParameters

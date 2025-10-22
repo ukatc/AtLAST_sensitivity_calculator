@@ -14,9 +14,6 @@ Derived parameters
     * - Atmospheric temperature
       - T_atm
       - K
-    * - Receiver temperature
-      - T_rx
-      - K
     * - Dish efficiency
       - eta_a
       -
