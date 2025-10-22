@@ -1,8 +1,10 @@
 import os
 import functools
 import json
-from yaml import load, Loader
+from pathlib import Path
+from yaml import load, Loader, safe_load
 from astropy.units import Unit
+from types import SimpleNamespace
 
 
 class Decorators:
@@ -54,7 +56,7 @@ class Decorators:
         """
 
         @functools.wraps(func)
-        def do_update(calculator, value, **kwargs):
+        def do_update(uip, value, **kwargs):
             """
             Validates the type, value and units of the value for the target
             parameter. If the new value is different from the old, derived
@@ -72,21 +74,20 @@ class Decorators:
                 value = float(value)
 
             # Validate the new value
-            DataHelper.validate(calculator, func.__name__, value)
+            DataHelper.validate(uip, func.__name__, value)
 
             # Determine if the old and new values differ
-            attribute = getattr(calculator, func.__name__)
+            attribute = getattr(uip, func.__name__)
             dirty = (attribute != value)
 
             # Update the parameter
-            func(calculator, value, **kwargs)
+            func(uip, value, **kwargs)
 
             # Recalculate derived parameters, if necessary
             if dirty:
-                calculator._calculate_derived_parameters()
+                uip._calculate_derived_parameters()
 
         return do_update
-
 
 class FileHelper:
     """
@@ -99,6 +100,29 @@ class FileHelper:
     _UNSUPPORTED_FILE_TYPE_ERROR_MSG = \
         'Unsupported file type "{file_type}". ' \
         'Must be one of: {supported_extensions}'
+
+    @staticmethod
+    def read_instrument_file(file_name):
+        """
+        Reads the file with name `file_name` located in directory `path`
+        and returns a namespace. The file type is expected as `yaml`.
+
+        :param file_name: The name of the file, excluding the file extension.
+        :type file_name: str
+        :return: namespace object of yaml blocks.
+        :rtype: types
+        """
+        _STATIC_DATA_PATH = str(Path(__file__).resolve().parents[0] / "static")
+        _INSTRUMENTS_PATH = _STATIC_DATA_PATH + '/lookups/instruments/'
+        instrument_file = _INSTRUMENTS_PATH + file_name + ".yaml"
+
+        with open(instrument_file, "r") as file:
+            data = safe_load(file)
+
+        # Create a namespace object with the attributes
+        data = SimpleNamespace(**data)
+
+        return data
 
     @staticmethod
     def read_from_file(path, file_name):
@@ -116,12 +140,10 @@ class FileHelper:
         :rtype: dict[str, float]
         """
         file_reader = FileHelper._get_reader(file_name)
-
         file_path = os.path.join(path, file_name)
 
         with open(file_path, "r") as file:
             inputs = file_reader(file)
-
         # Try to convert values to floats
         for key, param in inputs.items():
             try:
@@ -131,7 +153,6 @@ class FileHelper:
                 raise TypeError(f'Value "{param["value"]}" is invalid '
                                 f'for parameter "{key}". '
                                 f'Parameter values must be numeric.')
-
         return inputs
 
     @staticmethod
@@ -159,7 +180,7 @@ class FileHelper:
         # Create and concatenate dictionaries from the user input model and
         # the derived parameters model
         params = {param: val['value']
-                  for param, val in calculator.user_input.dict().items()} | \
+                  for param, val in calculator._param_setup.user_input.dict().items()} | \
             calculator.derived_parameters.dict()
 
         with open(file_path, "w") as f:
@@ -364,8 +385,8 @@ class FileHelper:
 class DataHelper:
 
     @staticmethod
-    def validate(calculator, param_name, value):
-        attribute = getattr(calculator, param_name)
+    def validate(uip, param_name, value):
+        attribute = getattr(uip, param_name)
 
         # Ensure integer values are converted to floats (all parameter values
         # are expected to be floats)
@@ -381,7 +402,7 @@ class DataHelper:
 
         # Validate the new value
         try:
-            calculator.calculation_inputs. \
+            uip._param_setup.calculation_inputs. \
                 validate_value(param_name, value)
         except ValueError as e:
             raise e

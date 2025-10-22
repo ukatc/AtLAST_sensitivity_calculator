@@ -1,0 +1,11 @@
+name: "Muscat"
+allowed_ranges:
+  observing_frequency: 
+    ranges: [(250.0-300.0)]
+    unit: GHz
+  bandwidth: 
+    ranges: [(1.0-5.0)]
+    unit: MHz
+receiver_temperature: 
+  values: [44.7]
+  unit: K

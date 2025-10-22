@@ -1,7 +1,7 @@
 import copy
 import pytest
 import astropy.units as u
-from atlast_sc.calculator import Calculator, Config
+from atlast_sc.calculator import Calculator
 from atlast_sc.models import DerivedParams, CalculationInput
 from atlast_sc.utils import DataHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
@@ -40,9 +40,9 @@ class TestCalculator:
         # Make sure the derived parameters were calculated
         derived_params_spy.assert_called_once()
 
-        # Make sure calculator contains a config object with
+        # Make sure calculator contains a _param_setup object with
         # calculation inputs, and a derived params object
-        assert isinstance(test_calculator._config.calculation_inputs,
+        assert isinstance(test_calculator._param_setup.calculation_inputs,
                           CalculationInput)
         assert isinstance(test_calculator._derived_params, DerivedParams)
 
@@ -62,15 +62,15 @@ class TestCalculator:
 
         # Check that all the calculator properties are correctly mapped
         assert test_calculator.calculation_inputs \
-               == test_calculator._config.calculation_inputs
+               == test_calculator._param_setup.calculation_inputs
         assert test_calculator.calculation_inputs.user_input \
                == test_calculator.user_input
         assert test_calculator.calculation_inputs.user_input \
-               == test_calculator._config.calculation_inputs.user_input
+               == test_calculator._param_setup.calculation_inputs.user_input
         assert test_calculator.calculation_inputs.instrument_setup \
                == test_calculator.instrument_setup
         assert test_calculator.calculation_inputs.instrument_setup \
-               == test_calculator._config.calculation_inputs.instrument_setup
+               == test_calculator._param_setup.calculation_inputs.instrument_setup
 
         # Make sure the derived parameters are mapped correctly
         for param in test_calculator.derived_parameters:

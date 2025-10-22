@@ -6,58 +6,58 @@ from atlast_sc.utils import Decorators
 
 class TelescopeAndEnvironmentParameters:
 
-    def __init__(self, config):
-        self.config = config
+    def __init__(self, param_setup):
+        self._param_setup = param_setup
     
     @property
     def surface_rms(self):
         """
         Get the surface smoothness of the instrument
         """
-        return self.config.calculation_inputs.instrument_setup.surface_rms.value
+        return self._param_setup.calculation_inputs.telescope_and_environment.surface_rms.value
     
     @property
     def dish_radius(self):
         """
         Get the radius of the primary mirror
         """
-        return self.config.calculation_inputs.instrument_setup.dish_radius.value
+        return self._param_setup.calculation_inputs.telescope_and_environment.dish_radius.value
     
     @dish_radius.setter
     @Decorators.validate_and_update_params
     def dish_radius(self, value):
-        # TODO Flag to the user somehow that they are varying an instrument
-        #   setup parameter?
-        self.config.calculation_inputs.instrument_setup.dish_radius.value = value
-        self.config.calculation_inputs.instrument_setup.dish_radius.unit = value.unit
+        # TODO: Is this something that is allowed to be changed? The dish radius is the 
+        # radius of the dish of the telescope which is definite? 
+        self._param_setup.calculation_inputs.telescope_and_environment.dish_radius.value = value
+        self._param_setup.calculation_inputs.telescope_and_environment.dish_radius.unit = value.unit
     
     @property
     def eta_eff(self):
         """
         Get the forward efficiency
         """
-        return self.config.calculation_inputs.instrument_setup.eta_eff.value
+        return self._param_setup.calculation_inputs.telescope_and_environment.eta_eff.value
     # 
     @property
     def eta_ill(self):
         """
         Get the illumination efficiency
         """
-        return self.config.calculation_inputs.instrument_setup.eta_ill.value
+        return self._param_setup.calculation_inputs.telescope_and_environment.eta_ill.value
     
     @property
     def eta_spill(self):
         """
         Get the spillover efficiency
         """
-        return self.config.calculation_inputs.instrument_setup.eta_spill.value
+        return self._param_setup.calculation_inputs.telescope_and_environment.eta_spill.value
     
     @property
     def eta_block(self):
         """
         Get the lowered efficiency due to blocking
         """
-        return self.config.calculation_inputs.instrument_setup.eta_block.value
+        return self._param_setup.calculation_inputs.telescope_and_environment.eta_block.value
     
 
     ##############################################################
@@ -69,11 +69,19 @@ class TelescopeAndEnvironmentParameters:
         """
         Get the temperature of the CMB
         """
-        return self.config.calculation_inputs.T_cmb.value
+        return self._param_setup.calculation_inputs.telescope_and_environment.T_cmb.value
 
     @property
     def T_amb(self):
         """
         Get the average ambient temperature
         """
-        return self.config.calculation_inputs.instrument_setup.T_amb.value
+        return self._param_setup.calculation_inputs.telescope_and_environment.T_amb.value
+    
+        
+    def show(self):
+        for name in dir(self.__class__):
+            attr = getattr(self.__class__, name)
+            if isinstance(attr, property):
+                value = getattr(self, name)
+                print(f"{name}: {value}")
