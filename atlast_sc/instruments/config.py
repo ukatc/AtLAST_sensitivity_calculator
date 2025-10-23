@@ -1,9 +1,8 @@
-import importlib, inspect
-import os
+import importlib, inspect, os
 from atlast_sc.utils import FileHelper
 from atlast_sc.instrument import Instrument
 
-class Config:
+class InstrumentConfig:
     """
     Class for loading available instrument files for calculator to use.
     """
@@ -32,7 +31,7 @@ class Config:
             # TODO: Add your custom instrument here.
         ]
 
-        inst_classes = {}  
+        self._inst_classes = {}
 
         for details in available_instruments:
             # Load the instrument class and populate it with its relevant details.
@@ -40,7 +39,11 @@ class Config:
 
             # Add instrument class to the instrument classes dictionary with the instrument
             # name as the key.
-            inst_classes[inst_name] = inst_class
+            self._inst_classes[inst_name] = inst_class
+
+    @property
+    def instrument_classes(self):
+        return self._inst_classes
 
     def load_instrument_class(self, path, python_package_dir, details):
         """
@@ -58,6 +61,13 @@ class Config:
         :rtype: String, atlast_sc.parameters.Instrument.[module_name]
         """
         module_name = os.path.splitext(details["module"])[0]
+        
+        # If this method is executed in the web client flow, we need to make
+        # some changes to the path we supply to the method that will import
+        # our instrument modules
+        if 'web_client' in os.getcwd().split('/'):
+            path = 'atlast_sc' + '.' + path
+
         module = importlib.import_module(path + '.' + python_package_dir + '.' + module_name)
         
         for name, cls in inspect.getmembers(module, inspect.isclass):

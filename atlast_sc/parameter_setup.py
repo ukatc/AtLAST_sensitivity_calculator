@@ -3,15 +3,8 @@ from atlast_sc.models import UserInput
 from atlast_sc.models import InstrumentSpecific
 from atlast_sc.models import CalculationInput
 from atlast_sc.models import TelescopeAndEnvironment
-from atlast_sc.utils import FileHelper
 
-from atlast_sc.instruments.classes.GLTCam import GLTCam
-from atlast_sc.instruments.classes.Tifuun import Tifuun
-from atlast_sc.instruments.classes.Muscat import Muscat
-from atlast_sc.instruments.classes.Finer import Finer
-from atlast_sc.instruments.classes.Chai import Chai
-from atlast_sc.instruments.classes.Sepia import Sepia
-from atlast_sc.instruments.classes.Default import Default
+from atlast_sc.instruments.config import InstrumentConfig
 
 class ParameterSetup:
     """
@@ -49,7 +42,9 @@ class ParameterSetup:
         # calculator to be reset to its initial setup
         self._original_inputs = copy.deepcopy(self._calculation_inputs)
 
-        self.loaded_instruments = self.load_instrument_modules()
+        # Get instrument config 
+        inst_config = InstrumentConfig()
+        self.loaded_instruments = inst_config.instrument_classes
 
     @property
     def calculation_inputs(self):
@@ -103,31 +98,6 @@ class ParameterSetup:
             if param not in test_model.__dict__:
                 raise ValueError(f'"{param}" is not a valid input parameter')
             
-    
-    def load_instrument_modules(self):
-        """
-        (ASC-76)
-        Reads all instrument YAML files and creates their respective object
-        class. These instrument object classes get assigned as value to a 
-        dictionary where the corresponding instrument class will be pulled 
-        according to the name. 
-        """
-        # TODO: Currently uses observing frequency in a few 
-        # instrument modules according to guidelines provided by
-        # instrument teams. Observing frequency might be used in
-        # other instrument modules when guidelines are clearer.
-        obs_freq = self.user_input.obs_freq.value
-        inst_modules = {
-            "GLTCam": GLTCam(data=FileHelper.read_instrument_file("gltcam")),
-            "Tifuun": Tifuun(data=FileHelper.read_instrument_file("tifuun")),
-            "Muscat": Muscat(data=FileHelper.read_instrument_file("muscat")),
-            "Finer": Finer(data=FileHelper.read_instrument_file("finer")),
-            "Chai": Chai(data=FileHelper.read_instrument_file("chai")),
-            "Sepia": Sepia(data=FileHelper.read_instrument_file("sepia")),
-            "Default": Default(data=FileHelper.read_instrument_file("default"))
-        }
-        return inst_modules
-    
     def get_chosen_instrument(self):
         """
         (ASC-76)
@@ -142,7 +112,8 @@ class ParameterSetup:
         user_bandwidth = self.user_input.bandwidth.value
         # See which instrument those values correspond to
         chosen_inst_name = self.find_applicable_instruments(obs_freq=user_obs_freq, bandwidth=user_bandwidth)
-        chosen_inst = self.get_inst_spec_params_module(inst_name=chosen_inst_name)
+        # Get the instrument module according to instrument name
+        chosen_inst = self.loaded_instruments[chosen_inst_name]
         return chosen_inst
 
     def find_applicable_instruments(self, obs_freq, bandwidth):
@@ -205,39 +176,3 @@ class ParameterSetup:
             return applicable_instruments[0]
         else: # If there is no applicable instrument
             return "Default"
-    
-    def get_inst_spec_params_module(self, inst_name):
-        """
-        Returns the instrument module according to instrument 
-        name and observing frequency value supplied. 
-
-        :param inst_name: instrument name
-        :type inst_name: String
-        :return: instrument module
-        :rtype: atlast_sc.parameters.Instrument
-        """
-        if inst_name is not None:
-            match inst_name:
-                case "GLTCam":
-                    return self.loaded_instruments["GLTCam"]
-
-                case "Tifuun":
-                    return self.loaded_instruments["Tifuun"]
-
-                case "Muscat":
-                    return self.loaded_instruments["Muscat"]
-
-                case "Finer":
-                    return self.loaded_instruments["Finer"]
-
-                case "Chai":
-                    return self.loaded_instruments["Chai"]
-
-                case "Sepia":
-                    return self.loaded_instruments["Sepia"]
-                
-                case "Default":
-                    return self.loaded_instruments["Default"]
-        else:
-           # TODO: Throw an error 
-            return None
