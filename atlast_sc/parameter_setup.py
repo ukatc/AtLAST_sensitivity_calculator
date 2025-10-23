@@ -176,7 +176,7 @@ class ParameterSetup:
                 range = re.findall(r"[\d.]+", range)
                 min_freq = float(range[0])
                 max_freq = float(range[1])
-                if obs_freq > min_freq and obs_freq < max_freq:
+                if obs_freq >= min_freq and obs_freq <= max_freq:
                     applicable_obs_freq_instruments.append(instrument)
 
         # Check what instrument/s the bandwidth value falls in
@@ -186,12 +186,16 @@ class ParameterSetup:
                 range = re.findall(r"[\d.]+", range)
                 min_bandw = float(range[0])
                 max_bandw = float(range[1])
-                if bandwidth > min_bandw and bandwidth < max_bandw:
+                if bandwidth >= min_bandw and bandwidth <= max_bandw:
                     applicable_bandw_instruments.append(instrument)
 
         # Create a set of both applicable instruments lists and take the intersection
         applicable_instruments = list(set(applicable_obs_freq_instruments) & \
                                       set(applicable_bandw_instruments))
+        # NOTE: Adding this sorting functionality to keep consistency until further
+        # logic on how to choose an instrument if there are multiple applicable
+        # instruments
+        applicable_instruments = sorted(applicable_instruments)
         # If there are more than 1 applicable instrument
         if len(applicable_instruments) > 1:
             # TODO: there might be further logic incorporated to choose which instrument 

@@ -26,6 +26,9 @@ class TelescopeAndEnvironmentParameters:
     @dish_radius.setter
     @Decorators.validate_and_update_params
     def dish_radius(self, value):
+        """
+        Set the radius of the primary mirror
+        """
         # TODO: Is this something that is allowed to be changed? The dish radius is the 
         # radius of the dish of the telescope which is definite? 
         self._param_setup.calculation_inputs.telescope_and_environment.dish_radius.value = value
@@ -61,7 +64,7 @@ class TelescopeAndEnvironmentParameters:
     
 
     ##############################################################
-    # Getters and a couple of setters for environment parameters #
+    # Getters for environment parameters #
     ##############################################################
 
     @property

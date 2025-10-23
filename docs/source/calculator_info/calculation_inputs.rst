@@ -10,6 +10,10 @@ Units in the tables are string representations of
 
 .. include:: user_input.rst
 
+.. include:: derived_parameters.rst
+
 .. include:: instrument_setup.rst
 
-.. include:: derived_parameters.rst
+.. include:: instrument_specific.rst
+
+.. include:: telescope_and_environment.rst
