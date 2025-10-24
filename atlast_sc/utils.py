@@ -386,8 +386,8 @@ class FileHelper:
 class DataHelper:
 
     @staticmethod
-    def validate(uip, param_name, value):
-        attribute = getattr(uip, param_name)
+    def validate(cls, param_name, value):
+        attribute = getattr(cls, param_name)
 
         # Ensure integer values are converted to floats (all parameter values
         # are expected to be floats)
@@ -403,8 +403,8 @@ class DataHelper:
 
         # Validate the new value
         try:
-            uip._param_setup.calculation_inputs. \
-                validate_value(param_name, value)
+                cls._param_setup.calculation_inputs. \
+                    validate_value(param_name, value)
         except ValueError as e:
             raise e
 

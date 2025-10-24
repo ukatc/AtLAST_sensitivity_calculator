@@ -2,7 +2,7 @@ import pytest
 from astropy import units as u
 from atlast_sc.factory import CalculatorFactory
 from atlast_sc.utils import FileHelper
-import os
+from atlast_sc.exceptions import CalculatedValueInvalidWarning
 
 class TestCalculatorUsage:
 
@@ -68,7 +68,10 @@ class TestCalculatorUsage:
 
         # Calculate integration time using a different sensitivity
         test_sens = 300 * u.mJy
-        test_calculator.calculate_t_integration(sensitivity=test_sens)
+
+        # Expect a invalid calculated value warning 
+        with pytest.warns(CalculatedValueInvalidWarning):
+            test_calculator.calculate_t_integration(sensitivity=test_sens)
         # Verify that the sensitivity has been updated
         assert test_calculator.user_input.sensitivity == test_sens
         # Calculate integration time using a different sensitivity, but don't
