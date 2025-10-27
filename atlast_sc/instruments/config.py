@@ -11,13 +11,13 @@ class InstrumentConfig:
         path = 'instruments'
         python_package_dir = 'classes'
 
-        default_instrument = {'module': 'Default.py', 'yaml': 'Default.yaml'}
-        chai_instrument = {'module': 'Chai.py', 'yaml': 'Chai.yaml'}
-        finer_instrument = {'module': 'Finer.py', 'yaml': 'Finer.yaml'}
-        gltcam_instrument = {'module': 'GLTCam.py', 'yaml': 'GLTCam.yaml'}
-        muscat_instrument = {'module': 'Muscat.py', 'yaml': 'Muscat.yaml'}
-        sepia_instrument = {'module': 'Sepia.py', 'yaml': 'Sepia.yaml'}
-        tifuun_instrument = {'module': 'Tifuun.py', 'yaml': 'Tifuun.yaml'}
+        default_instrument = {'class': 'Default.py', 'data': 'Default.yaml'}
+        chai_instrument = {'class': 'Chai.py', 'data': 'Chai.yaml'}
+        finer_instrument = {'class': 'Finer.py', 'data': 'Finer.yaml'}
+        gltcam_instrument = {'class': 'GLTCam.py', 'data': 'GLTCam.yaml'}
+        muscat_instrument = {'class': 'Muscat.py', 'data': 'Muscat.yaml'}
+        sepia_instrument = {'class': 'Sepia.py', 'data': 'Sepia.yaml'}
+        tifuun_instrument = {'class': 'Tifuun.py', 'data': 'Tifuun.yaml'}
         # TODO: Add your custom instrument here.
         
         available_instruments = [
@@ -60,11 +60,11 @@ class InstrumentConfig:
         :return: tuple of instrument class name and populated instance of instrument
         :rtype: String, atlast_sc.parameters.Instrument.[module_name]
         """
-        module_name = os.path.splitext(details["module"])[0]
+        module_name = os.path.splitext(details["class"])[0]
         
         # If this method is executed in the web client flow, we need to make
         # some changes to the path we supply to the method that will import
-        # our instrument modules
+        # our instrument classes
         if 'web_client' in os.getcwd().split('/'):
             path = 'atlast_sc' + '.' + path
 
