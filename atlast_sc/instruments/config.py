@@ -60,7 +60,9 @@ class InstrumentConfig:
         :return: tuple of instrument class name and populated instance of instrument
         :rtype: String, atlast_sc.parameters.Instrument.[module_name]
         """
+
         module_name = os.path.splitext(details["class"])[0]
+        module_dir = 'atlast_sc' + '.' + path + '.' + python_package_dir + '.' + module_name
         
         # If this method is executed in the web client flow, we need to make
         # some changes to the path we supply to the method that will import
@@ -68,8 +70,8 @@ class InstrumentConfig:
         if 'web_client' in os.getcwd().split('/'):
             path = 'atlast_sc' + '.' + path
 
-        module = importlib.import_module(path + '.' + python_package_dir + '.' + module_name)
-        
+        module = importlib.import_module(module_dir)
+
         for name, cls in inspect.getmembers(module, inspect.isclass):
             # This will return all classes belonging to the module. We are
             # only interested in each child 'Instruments' class.
