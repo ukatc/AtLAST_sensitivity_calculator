@@ -224,7 +224,7 @@ class DerivedParams(BaseModel):
     parameters.
     """
     # Atmospheric opacity
-    tau_atm: float
+    transmittance: float
     # Atmospheric temperature
     T_atm: Quantity
     # Receiver temperature
