@@ -7,7 +7,8 @@ from atlast_sc.utils import DataHelper
 
 from atlast_sc_tests.utils import does_not_raise
 
-from atlast_sc.parameters import Instrument
+from atlast_sc.instruments.classes.GLTCam import GLTCam
+from atlast_sc.instruments.classes.Finer import Finer
 
 from types import SimpleNamespace
 
@@ -46,7 +47,7 @@ class TestInstrumentClasses:
             """
 
             gltcam_data = FileHelper.read_instrument_file(instrument_yaml_file_name)
-            gltcam = Instrument.GLTCam(data=gltcam_data)
+            gltcam = GLTCam(data=gltcam_data)
 
             assert gltcam.name == instrument_name
 
@@ -67,7 +68,7 @@ class TestInstrumentClasses:
             
             finer_data = FileHelper.read_instrument_file("finer")
             test_obs_freq_1 = 130.0 * u.GHz
-            finer = Instrument.Finer(data=finer_data, obs_freq=test_obs_freq_1)
+            finer = Finer(data=finer_data, obs_freq=test_obs_freq_1)
             
             assert finer.name == "Finer"
 
