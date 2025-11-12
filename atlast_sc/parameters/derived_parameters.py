@@ -26,7 +26,6 @@ class DerivedParameters:
         Get the receiver temperature
         """
         return self._param_setup.derived_parameters_model.T_rx
-
     @property
     def eta_a(self):
         """
@@ -68,7 +67,6 @@ class DerivedParameters:
             if isinstance(attr, property):
                 value = getattr(self, name)
                 print(f"{name}: {value}")
-
     def __eq__(self, other):
         """
         Method to compare each derived parameter

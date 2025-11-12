@@ -2,10 +2,10 @@ import os
 import functools
 import json
 from pathlib import Path
+from pathlib import Path
 from yaml import load, Loader, safe_load
 from astropy.units import Unit
 from types import SimpleNamespace
-
 
 class Decorators:
     """
@@ -21,6 +21,7 @@ class Decorators:
         """
         @functools.wraps(func)
         def do_validation(calculator, value, **kwargs):
+
             """
             Validates the type, value and units of the value for the target
             parameter.
@@ -67,7 +68,6 @@ class Decorators:
             :param value: The new value
             :type value: int, float or Quantity
             """
-
             # Ensure integer values are converted to floats (all parameter values
             # are expected to be floats)
             if isinstance(value, int):
@@ -75,16 +75,18 @@ class Decorators:
 
             # Validate the new value
             DataHelper.validate(param_class, func.__name__, value)
+            DataHelper.validate(param_class, func.__name__, value)
 
             # Determine if the old and new values differ
+            attribute = getattr(param_class, func.__name__)
             attribute = getattr(param_class, func.__name__)
             dirty = (attribute != value)
 
             # Update the parameter
             func(param_class, value, **kwargs)
-
             # Recalculate derived parameters, if necessary
             if dirty:
+                param_class._param_setup._calculate_derived_parameters()
                 param_class._param_setup._calculate_derived_parameters()
 
         return do_update
@@ -180,8 +182,10 @@ class FileHelper:
         # Create and concatenate dictionaries from the user input model and
         # the derived parameters model
         params = {param: val['value']
+                  # NOTE: Derived parameters is a special case where the model is not
+                  # directly accessible within the class structure.
                   for param, val in calculator._param_setup.user_input.dict().items()} | \
-            calculator.derived_parameters.dict()
+            calculator._param_setup._derived_parameters_model.dict()
 
         with open(file_path, "w") as f:
             file_writer(f, params)

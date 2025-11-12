@@ -2,14 +2,13 @@ import pytest
 from astropy import units as u
 from atlast_sc.factory import CalculatorFactory
 from atlast_sc.utils import FileHelper
-import os
+from atlast_sc.exceptions import CalculatedValueInvalidWarning
 
 class TestCalculatorUsage:
 
-    def test_use_calculator_with_defaults(self, calculator_factory):
+    def test_use_calculator_with_defaults(self, calculator):
 
         # Create a new calculator object using the default parameters
-        calculator = calculator_factory.calculator
         test_calculator = CalculatorFactory().calculator
 
         # Calculate the sensitivity using default parameters
@@ -25,8 +24,8 @@ class TestCalculatorUsage:
         test_calculator.user_input.obs_freq = 850 * u.GHz
         # Verify that other parameters that depend on the observing frequency
         # have been updated
-        assert test_calculator.user_input.derived_parameters \
-               != calculator.user_input.derived_parameters
+        assert test_calculator.derived_parameters \
+               != calculator.derived_parameters
 
         # Recalculate the sensitivity
         new_sens = test_calculator.calculate_sensitivity()
@@ -55,8 +54,8 @@ class TestCalculatorUsage:
         # Verify that the calculator has now been reset to its initial state
         assert test_calculator._param_setup.calculation_inputs == \
                calculator._param_setup.calculation_inputs
-        assert test_calculator.user_input.derived_parameters \
-               == calculator.user_input.derived_parameters
+        assert test_calculator.derived_parameters \
+               == calculator.derived_parameters
 
         # Calculate the integration time with default values
         new_t_int = test_calculator.calculate_t_integration()
@@ -69,7 +68,10 @@ class TestCalculatorUsage:
 
         # Calculate integration time using a different sensitivity
         test_sens = 300 * u.mJy
-        test_calculator.calculate_t_integration(sensitivity=test_sens)
+
+        # Expect a invalid calculated value warning 
+        with pytest.warns(CalculatedValueInvalidWarning):
+            test_calculator.calculate_t_integration(sensitivity=test_sens)
         # Verify that the sensitivity has been updated
         assert test_calculator.user_input.sensitivity == test_sens
         # Calculate integration time using a different sensitivity, but don't
@@ -107,7 +109,7 @@ class TestCalculatorUsage:
         test_calculator.user_input.obs_freq = 850 * u.GHz
 
         # Calculate the sensitivity
-        test_calculator.calculate_sensitivity(user_input)
+        test_calculator.calculate_sensitivity()
 
         # Write the results to a file
         FileHelper.write_to_file(test_calculator, tmp_output_dir,

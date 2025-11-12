@@ -48,14 +48,14 @@ class Calculator:
         Instrument specific parameters
         """
         return self._instrument_specific
-
+    
     @property
     def telescope_and_environment(self):
         """
         Telescope and environment parameters
         """
         return self._telescope_and_environment
-
+    
     @property
     def derived_parameters(self):
         """
@@ -179,7 +179,6 @@ class Calculator:
             t_int_result = t_int_result.to(u.min)
         elif t_int_result >= 3600*u.s:
             t_int_result = t_int_result.to(u.h)
-
         # Try to update the integration time stored in the calculator
         if update_calculator:
             try:

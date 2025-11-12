@@ -1,4 +1,4 @@
-name: "Sepia345"
+name: "Sepia"
 allowed_ranges:
   observing_frequency: 
     ranges: [(163.0-211.0),(272.0-376.0),(600.0-722.0)]

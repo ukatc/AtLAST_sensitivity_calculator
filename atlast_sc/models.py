@@ -245,6 +245,7 @@ class DerivedParams(BaseModel):
 
     def __str__(self):
         return ModelUtils.model_str_rep(self)
+    
 
 class CalculationResult(BaseModel):
     """
@@ -259,6 +260,6 @@ class CalculationResult(BaseModel):
     calculated_t_int: ValueWithUnits = \
         ValueWithUnits(value=Data.calculated_t_int.default_value,
                     unit=Data.calculated_t_int.default_unit)
-
+    
     def __str__(self):
         return ModelUtils.model_str_rep(self)
