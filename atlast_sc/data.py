@@ -82,10 +82,10 @@ class Data:
         units=[str(u.s), str(u.min), str(u.h)],
     )
 
-    calculated_integration_time = DataType(
+    calculated_t_int = DataType(
         default_value=6.7636,
         default_unit=str(u.s),
-        lower_value=1,
+        lower_value=0,
         upper_value=float('inf'),
         upper_value_is_ceil=True,
         units=[str(u.s), str(u.min), str(u.h)],
@@ -213,25 +213,25 @@ class Data:
     )
 
     param_data_type_dicts = {
-        't_int': integration_time,
-        'calculated_integration_time': calculated_integration_time,
-        'sensitivity': sensitivity,
+        'calculated_t_int': calculated_t_int,
         'calculated_sensitivity': calculated_sensitivity,
+        't_int': integration_time,
+        'sensitivity': sensitivity,
         'bandwidth': bandwidth,
         'obs_freq': obs_frequency,
         'n_pol': n_pol,
         'weather': weather,
         'elevation': elevation,
-        'g': g,
         'surface_rms': surface_rms,
         'dish_radius': dish_radius,
         'T_amb': t_amb,
+        'T_cmb': t_cmb,
         'eta_eff': eta_eff,
         'eta_ill': eta_ill,
         'eta_spill': eta_spill,
         'eta_block': eta_block,
-        'eta_pol': eta_pol,
-        'T_cmb': t_cmb
+        'g': g,
+        'eta_pol': eta_pol
     }
 
 
