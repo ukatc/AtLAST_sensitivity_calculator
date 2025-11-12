@@ -58,7 +58,6 @@ class Decorators:
 
         @functools.wraps(func)
         def do_update(param_class, value, **kwargs):
-        def do_update(param_class, value, **kwargs):
             """
             Validates the type, value and units of the value for the target
             parameter. If the new value is different from the old, derived
@@ -105,7 +104,6 @@ class FileHelper:
         'Must be one of: {supported_extensions}'
 
     @staticmethod
-    def read_instrument_yaml_file(file_name):
     def read_instrument_yaml_file(file_name):
         """
         Reads the file with name `file_name` located in directory `path`
