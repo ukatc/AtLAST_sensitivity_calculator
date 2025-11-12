@@ -9,6 +9,13 @@ from atlast_sc.data import Validator
 from atlast_sc_tests.utils import does_not_raise
 
 
+from atlast_sc.parameters.user_input_parameters import UserInputParameters
+from atlast_sc.parameters.instrument_specific_parameters import InstrumentSpecificParameters
+from atlast_sc.parameters.telescope_and_environment_parameters import TelescopeAndEnvironmentParameters
+from atlast_sc.parameters.derived_parameters import DerivedParameters
+
+
+
 class TestModelUtils:
 
     @pytest.mark.parametrize(
@@ -89,30 +96,39 @@ class TestModels:
 
     def test_user_input_to_str(self, calculator, mocker):
 
-        model_str_rep_spy = mocker.spy(ModelUtils, 'model_str_rep')
+        model_str_rep_spy = mocker.spy(UserInputParameters, 'show')
 
-        str(calculator.user_input)
+        str(calculator.user_input.show())
 
         model_str_rep_spy.assert_called_once()
 
-    def test_instrument_setup_to_str(self, calculator, mocker):
+    def test_instrument_specific_to_str(self, calculator, mocker):
 
-        model_str_rep_spy = mocker.spy(ModelUtils, 'model_str_rep')
+        model_str_rep_spy = mocker.spy(InstrumentSpecificParameters, 'show')
 
-        str(calculator.instrument_setup)
+        str(calculator.instrument_specific.show())
+
+        model_str_rep_spy.assert_called_once()
+
+    def test_tel_and_env_to_str(self, calculator, mocker):
+
+        model_str_rep_spy = mocker.spy(TelescopeAndEnvironmentParameters, 'show')
+
+        str(calculator.telescope_and_environment.show())
 
         model_str_rep_spy.assert_called_once()
 
     def test_derived_params_to_str(self, calculator, mocker):
 
-        model_str_rep_spy = mocker.spy(ModelUtils, 'model_str_rep')
+        model_str_rep_spy = mocker.spy(DerivedParameters, 'show')
 
-        str(calculator.derived_parameters)
+        str(calculator.derived_parameters.show())
 
         model_str_rep_spy.assert_called_once()
 
     def test_calculation_input_validated(
-            self, user_input_dict, instrument_setup_dict, t_cmb, mocker):
+            self, user_input_dict, instrument_specific_dict, 
+            telescope_and_environment_dict, mocker):
 
         validate_field_spy = mocker.spy(Validator, 'validate_field')
 
@@ -123,10 +139,10 @@ class TestModels:
         # validated
         for key, val in user_input_dict.items():
             expected_validation_calls.append(mocker.call(key, val))
-        for key, val in instrument_setup_dict.items():
+        for key, val in instrument_specific_dict.items():
             expected_validation_calls.append(mocker.call(key, val))
-        # T_cmb should also be validata
-        expected_validation_calls.append(mocker.call('T_cmb', t_cmb))
+        for key, val in telescope_and_environment_dict.items():
+            expected_validation_calls.append(mocker.call(key, val))
 
         assert validate_field_spy.mock_calls == expected_validation_calls
 

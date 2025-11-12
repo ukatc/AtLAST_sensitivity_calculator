@@ -29,8 +29,6 @@ class TelescopeAndEnvironmentParameters:
         """
         Set the radius of the primary mirror
         """
-        # TODO: Is this something that is allowed to be changed? The dish radius is the 
-        # radius of the dish of the telescope which is definite? 
         self._param_setup.calculation_inputs.telescope_and_environment.dish_radius.value = value
         self._param_setup.calculation_inputs.telescope_and_environment.dish_radius.unit = value.unit
     
@@ -40,7 +38,7 @@ class TelescopeAndEnvironmentParameters:
         Get the forward efficiency
         """
         return self._param_setup.calculation_inputs.telescope_and_environment.eta_eff.value
-    # 
+    
     @property
     def eta_ill(self):
         """
@@ -80,7 +78,6 @@ class TelescopeAndEnvironmentParameters:
         Get the average ambient temperature
         """
         return self._param_setup.calculation_inputs.telescope_and_environment.T_amb.value
-    
         
     def show(self):
         for name in dir(self.__class__):

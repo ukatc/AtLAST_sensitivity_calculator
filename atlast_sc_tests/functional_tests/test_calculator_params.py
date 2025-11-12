@@ -8,6 +8,17 @@ from atlast_sc.derived_groups import AtmosphereParams, Temperatures, \
     Efficiencies
 from atlast_sc.parameters.instrument_specific_parameters import \
                                             InstrumentSpecificParameters
+
+from atlast_sc.instruments.classes.Default import Default
+from atlast_sc.instruments.classes.Chai import Chai
+from atlast_sc.instruments.classes.Finer import Finer
+from atlast_sc.instruments.classes.GLTCam import GLTCam
+from atlast_sc.instruments.classes.Muscat import Muscat
+from atlast_sc.instruments.classes.Sepia import Sepia
+from atlast_sc.instruments.classes.Tifuun import Tifuun
+
+from atlast_sc.utils import FileHelper
+
 from atlast_sc_tests.utils import does_not_raise
 
 
@@ -119,7 +130,8 @@ class TestCalculationInput:
 class TestDerivedGroups:
 
     # Variables needed for tests
-    default_inst_module = InstrumentSpecificParameters.GLTCam()
+    default_inst_data = FileHelper.read_instrument_yaml_file("Default")
+    default_inst_module = Default(default_inst_data)
     obs_frequency_bands = [
         (35, "band 1"),
         (60, "opaque"),
@@ -136,12 +148,18 @@ class TestDerivedGroups:
         (850, "band 10"),
     ]
     instrument_modules = [
-        (InstrumentSpecificParameters.GLTCam(), "gltcam", 131.0 * u.GHz),
-        (InstrumentSpecificParameters.Tifuun(), "tifuun", 91.0 * u.GHz),
-        (InstrumentSpecificParameters.Muscat(), "muscat", 251.0 * u.GHz),
-        (InstrumentSpecificParameters.Finer(121.0), "finer", 121.0 * u.GHz),
-        (InstrumentSpecificParameters.Chai(), "chai", 461.0 * u.GHz),
-        (InstrumentSpecificParameters.Sepia345(), "sepia", 164.0 * u.GHz),
+        (GLTCam(FileHelper.read_instrument_yaml_file("GLTCam")),
+          "GLTCam", 131.0 * u.GHz),
+        (Tifuun(FileHelper.read_instrument_yaml_file("Tifuun")), 
+         "Tifuun", 91.0 * u.GHz),
+        (Muscat(FileHelper.read_instrument_yaml_file("Muscat")), 
+         "Muscat", 251.0 * u.GHz),
+        (Finer(FileHelper.read_instrument_yaml_file("Finer")), 
+         "Finer", 121.0 * u.GHz),
+        (Chai(FileHelper.read_instrument_yaml_file("Chai")), 
+         "Chai", 461.0 * u.GHz),
+        (Sepia(FileHelper.read_instrument_yaml_file("Sepia")), 
+         "Sepia", 164.0 * u.GHz),
     ]
 
     # TODO: Review if this test is needed.

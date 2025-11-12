@@ -95,7 +95,7 @@ class InstrumentConfig:
         :rtype: atlast_sc.parameters.Instrument.[module_name]
         """
 
-        inst_data = FileHelper.read_instrument_file(module_name)
+        inst_data = FileHelper.read_instrument_yaml_file(module_name)
         inst_class = inst_class_instance(data=inst_data)
 
         return inst_class

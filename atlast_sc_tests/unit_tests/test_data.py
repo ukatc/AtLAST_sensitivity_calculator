@@ -8,16 +8,17 @@ from atlast_sc_tests.utils import does_not_raise
 
 class TestData:
 
-    def test_param_data_type_dicts(self, instrument_setup_dict,
-                                   user_input_dict, t_cmb):
+    def test_param_data_type_dicts(self, user_input_dict, instrument_specific_dict,
+                                   telescope_and_environment_dict, calculated_params_dict):
 
         # Check that data type dictionary contains the user input parameters,
-        # instrument setup parameters, and T_cmb
+        # instrument specific parameters, telescope and environment parameters.
         expected_keys = \
             [param_name for param_name in
-             (user_input_dict |
-              instrument_setup_dict |
-              {'T_cmb': t_cmb}).keys()]
+             (calculated_params_dict |
+              user_input_dict | 
+              telescope_and_environment_dict |
+              instrument_specific_dict).keys()]
 
         assert list(Data.param_data_type_dicts.keys()) == expected_keys
 
