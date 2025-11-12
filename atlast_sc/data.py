@@ -85,7 +85,7 @@ class Data:
     calculated_t_int = DataType(
         default_value=6.7636,
         default_unit=str(u.s),
-        lower_value=1,
+        lower_value=0,
         upper_value=float('inf'),
         upper_value_is_ceil=True,
         units=[str(u.s), str(u.min), str(u.h)],

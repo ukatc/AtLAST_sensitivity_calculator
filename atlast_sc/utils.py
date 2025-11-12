@@ -2,6 +2,7 @@ import os
 import functools
 import json
 from pathlib import Path
+from pathlib import Path
 from yaml import load, Loader, safe_load
 from astropy.units import Unit
 from types import SimpleNamespace
@@ -57,6 +58,7 @@ class Decorators:
 
         @functools.wraps(func)
         def do_update(param_class, value, **kwargs):
+        def do_update(param_class, value, **kwargs):
             """
             Validates the type, value and units of the value for the target
             parameter. If the new value is different from the old, derived
@@ -74,8 +76,10 @@ class Decorators:
 
             # Validate the new value
             DataHelper.validate(param_class, func.__name__, value)
+            DataHelper.validate(param_class, func.__name__, value)
 
             # Determine if the old and new values differ
+            attribute = getattr(param_class, func.__name__)
             attribute = getattr(param_class, func.__name__)
             dirty = (attribute != value)
 
@@ -83,6 +87,7 @@ class Decorators:
             func(param_class, value, **kwargs)
             # Recalculate derived parameters, if necessary
             if dirty:
+                param_class._param_setup._calculate_derived_parameters()
                 param_class._param_setup._calculate_derived_parameters()
 
         return do_update
@@ -101,6 +106,7 @@ class FileHelper:
 
     @staticmethod
     def read_instrument_yaml_file(file_name):
+    def read_instrument_yaml_file(file_name):
         """
         Reads the file with name `file_name` located in directory `path`
         and returns a namespace. The file type is expected as `yaml`.
@@ -110,10 +116,9 @@ class FileHelper:
         :return: namespace object of yaml blocks.
         :rtype: types
         """
-        
-        _STATIC_DATA_PATH = str(Path(__file__).resolve().parents[0] / "static")
-        _INSTRUMENTS_PATH = _STATIC_DATA_PATH + '/lookups/instruments/'
-        instrument_file = _INSTRUMENTS_PATH + file_name + ".yaml"
+        _STATIC_DATA_PATH = str(Path(__file__).resolve().parents[0])
+        _INSTRUMENTS_DATA_PATH = _STATIC_DATA_PATH + '/instruments/data/'
+        instrument_file = _INSTRUMENTS_DATA_PATH + file_name + ".yaml"
 
         with open(instrument_file, "r") as file:
             data = safe_load(file)
@@ -386,8 +391,8 @@ class FileHelper:
 class DataHelper:
 
     @staticmethod
-    def validate(cls, param_name, value):
-        attribute = getattr(cls, param_name)
+    def validate(param_class, param_name, value):
+        attribute = getattr(param_class, param_name)
 
         # Ensure integer values are converted to floats (all parameter values
         # are expected to be floats)
@@ -403,8 +408,8 @@ class DataHelper:
 
         # Validate the new value
         try:
-                cls._param_setup.calculation_inputs. \
-                    validate_value(param_name, value)
+            param_class._param_setup.calculation_inputs. \
+                validate_value(param_name, value)
         except ValueError as e:
             raise e
 

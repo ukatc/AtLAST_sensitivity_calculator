@@ -1,9 +1,11 @@
-import copy
+import copy, re
 from atlast_sc.models import UserInput
 from atlast_sc.models import InstrumentSpecific
 from atlast_sc.models import CalculationInput
 from atlast_sc.models import CalculationResult
 from atlast_sc.models import TelescopeAndEnvironment
+
+from atlast_sc.instruments.config import InstrumentConfig
 
 from atlast_sc.derived_groups import AtmosphereParams
 from atlast_sc.derived_groups import Temperatures
@@ -42,19 +44,25 @@ class ParameterSetup:
         new_user_input = UserInput(**user_input)
         new_instrument_specific = InstrumentSpecific(**instrument_specific)
         new_telescope_and_environment = TelescopeAndEnvironment(**telescope_and_environment)
-        
+
         self._calculation_inputs = \
             CalculationInput(user_input=new_user_input,
                              instrument_specific=new_instrument_specific,
                              telescope_and_environment=new_telescope_and_environment)
         
-        self._derived_parameters_model = self._calculate_derived_parameters() 
+        self._calculation_results = CalculationResult()
+
+        # Get instrument config 
+        inst_config = InstrumentConfig()
+        # Get loaded instrument classes
+        self.loaded_instruments = inst_config.instrument_classes
+        
+        self._derived_parameters_model = self._calculate_derived_parameters()
         
         # Make a deep copy of the calculation inputs to enable the
         # calculator to be reset to its initial setup
         self._original_inputs = copy.deepcopy(self._calculation_inputs)
-        
-        self._calculation_results = CalculationResult()
+
 
     @property
     def calculation_inputs(self):
@@ -62,7 +70,7 @@ class ParameterSetup:
         The inputs to the calculation (user input and instrument setup)
         """
         return self._calculation_inputs
-
+    
     @property
     def calculation_results(self):
         """
@@ -76,7 +84,7 @@ class ParameterSetup:
         User inputs to the calculation
         """
         return self._calculation_inputs.user_input
-
+  
     @property
     def instrument_specific(self):
         """
@@ -90,21 +98,124 @@ class ParameterSetup:
         Telescope and environment parameters
         """
         return self._calculation_inputs.telescope_and_environment
-    
+      
     @property
     def derived_parameters_model(self):
         """
         Get derived parameters calculated from user input and instrument specific parameters
         """
         return self._derived_parameters_model
-
+    
     @derived_parameters_model.setter
     def derived_parameters_model(self, new_model):
         """
         Set derived parameters calculated from user input and instrument specific parameters
         """
         self._derived_parameters = new_model
-    
+
+    def reset(self):
+        """
+        Resets the calculator configuration parameters (user input and
+        instrument setup to their original values.
+        """
+        self._calculation_inputs = \
+            self._original_inputs
+        
+    @staticmethod
+    def _check_input_param_names(user_input):
+        """
+        Validates the user input parameters (just the names; value validation
+        is handled by the model)
+
+        :param user_input: Dictionary containing user-defined input parameters
+        :type user_input: dict
+        """
+
+        test_model = UserInput()
+
+        for param in user_input:
+            if param not in test_model.__dict__:
+                raise ValueError(f'"{param}" is not a valid input parameter')
+            
+    def get_chosen_instrument(self):
+        """
+        (ASC-76)
+        Retrieve the instrument object class according to observing frequency
+        and bandwidth values the user has provided. 
+
+        :return: instrument module
+        :rtype: atlast_sc.parameters.Instrument
+        """
+        # Look at obs_freq and bandwidth values
+        user_obs_freq = self.user_input.obs_freq.value
+        user_bandwidth = self.user_input.bandwidth.value
+        # See which instrument those values correspond to
+        chosen_inst_name = self.find_applicable_instruments(obs_freq=user_obs_freq, bandwidth=user_bandwidth)
+        # Get the instrument module according to instrument name
+        chosen_inst = self.loaded_instruments[chosen_inst_name]
+        return chosen_inst
+
+    def find_applicable_instruments(self, obs_freq, bandwidth):
+        """
+        Finds what instrument/s the observing frequency and bandwidth values
+        inputted by the user correspond to and choose one to do the further
+        calculations. 
+
+        :return: applicable/chosen instrument name
+        :rtype: String
+        """
+        # TODO: could make the finding applicable ranges more efficient by looking at general ranges first 
+
+        instrument_obs_freqs = {} # Instrument specific observing frequency ranges
+        instrument_bandw_vals = {} # Instrument specific bandwidth value ranges
+        for inst_name, inst_module in self.loaded_instruments.items():
+            instrument_obs_freqs[inst_name] = inst_module.obs_freq_ranges_and_unit
+            instrument_bandw_vals[inst_name] = inst_module.bandwidth_ranges_and_unit
+
+        applicable_obs_freq_instruments = []
+        applicable_bandw_instruments = []
+
+        # Get float value of each parameter to be able to make comparison
+        obs_freq = float(obs_freq.value)
+        bandwidth = float(bandwidth.value)
+
+        # Check what instrument/s the observing frequency value falls in
+        for instrument, obs_freqs in instrument_obs_freqs.items():
+            obs_freq_ranges = obs_freqs['ranges']
+            for range in obs_freq_ranges:
+                range = re.findall(r"[\d.]+", range)
+                min_freq = float(range[0])
+                max_freq = float(range[1])
+                if obs_freq >= min_freq and obs_freq <= max_freq:
+                    applicable_obs_freq_instruments.append(instrument)
+
+        # Check what instrument/s the bandwidth value falls in
+        for instrument, bandw_vals in instrument_bandw_vals.items():
+            bandw_val_ranges = bandw_vals['ranges']
+            for range in bandw_val_ranges:
+                range = re.findall(r"[\d.]+", range)
+                min_bandw = float(range[0])
+                max_bandw = float(range[1])
+                if bandwidth >= min_bandw and bandwidth <= max_bandw:
+                    applicable_bandw_instruments.append(instrument)
+
+        # Create a set of both applicable instruments lists and take the intersection
+        applicable_instruments = list(set(applicable_obs_freq_instruments) & \
+                                      set(applicable_bandw_instruments))
+        # NOTE: Adding this sorting functionality to keep consistency until further
+        # logic on how to choose an instrument if there are multiple applicable
+        # instruments
+        applicable_instruments = sorted(applicable_instruments)
+        # If there are more than 1 applicable instrument
+        if len(applicable_instruments) > 1:
+            # TODO: there might be further logic incorporated to choose which instrument 
+            # will be defaulted currently we are choosing the second applicable instrument
+            return applicable_instruments[1]
+        if len(applicable_instruments) == 1: # If there is only 1 applicable instrument
+            return applicable_instruments[0]
+        else: # If there is no applicable instrument
+            return "Default"
+        
     def _calculate_derived_parameters(self):
         """
         Performs the calculations required to produce the
@@ -140,7 +251,12 @@ class ParameterSetup:
         T_amb = self.calculation_inputs.telescope_and_environment.T_amb.value
         eta_pol = self.calculation_inputs.instrument_specific.eta_pol.value
         g = self.calculation_inputs.instrument_specific.g.value
- 
+
+        # Get chosen instrument and its receiver temperature
+        # chosen_inst = self.chosen_inst
+        chosen_inst = self.get_chosen_instrument()
+        inst_spec_T_rx = chosen_inst.calculate_receiver_temp(obs_freq=obs_freq)
+
         # Perform efficiencies calculations
         eta = Efficiencies(obs_freq , surface_rms, eta_ill,
                             eta_spill, eta_block, eta_pol)
@@ -153,7 +269,7 @@ class ParameterSetup:
                                                         weather)
         # Calculate the temperatures
         temps = Temperatures(obs_freq, T_cmb, T_amb, g,
-                                eta_eff, T_atm, tau_atm)
+                                eta_eff, T_atm, tau_atm, inst_spec_T_rx)
 
         # LDM
         # ------------------------------------------------------------------
@@ -172,7 +288,7 @@ class ParameterSetup:
         # select all the frequencies in the atm tables comprised within the band edges
         obs_freq_list = atm.tau_atm_table[:, 0][np.logical_and(atm.tau_atm_table[:, 0]>obs_freq_low,
                                                                 atm.tau_atm_table[:, 0]<obs_freq_upp)]
-        
+
         # pad the frequency array to include the lower/upper band edges 
         obs_freq_list = np.concatenate(([obs_freq_low],obs_freq_list,[obs_freq_upp]))*u.GHz
 
@@ -186,7 +302,7 @@ class ParameterSetup:
         # otherwise estimate the single-frequency SEFD
         if self.finetune and len(obs_freq_list)>1:
             _sefd = []
-            
+
             obs_band_list = (obs_freq_list[1:]-obs_freq_list[:-1])
             obs_freq_list = (obs_freq_list[1:]+obs_freq_list[:-1])*0.50
 
@@ -211,13 +327,12 @@ class ParameterSetup:
                             eta_a=eta.eta_a, eta_s=eta.eta_s, T_sys=temps.T_sys, T_sky=temps.T_sky,
                             sefd=sefd)
 
-        return self._derived_parameters_model   
-
+        return self._derived_parameters_model
+    
     def _calculate_sefd(self, T_sys, eta_a, dish_radius):
         """
         Calculates the source equivalent flux density, SEFD, from the system
         temperature, T_sys, the dish efficiency eta_A, and the dish area.
-
         :param T_sys: system temperature
         :type T_sys: astropy.units.Quantity
         :param eta_a: the dish efficiency factor
@@ -230,28 +345,3 @@ class ParameterSetup:
         sefd = (2 * k_B * T_sys) / (eta_a * dish_area)
 
         return sefd
-
-    def reset(self):
-
-        """
-        Resets the calculator configuration parameters (user input and
-        instrument setup to their original values.
-        """
-        self._calculation_inputs = \
-            self._original_inputs
-        
-    @staticmethod
-    def _check_input_param_names(user_input):
-        """
-        Validates the user input parameters (just the names; value validation
-        is handled by the model)
-
-        :param user_input: Dictionary containing user-defined input parameters
-        :type user_input: dict
-        """
-
-        test_model = UserInput()
-
-        for param in user_input:
-            if param not in test_model.__dict__:
-                raise ValueError(f'"{param}" is not a valid input parameter')

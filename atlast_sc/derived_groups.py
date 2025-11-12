@@ -3,6 +3,7 @@ from scipy.interpolate import RegularGridInterpolator
 import numpy as np
 import astropy.units as u
 from astropy import constants
+from atlast_sc.parameters.instrument_specific_parameters import InstrumentSpecificParameters
 
 
 class AtmosphereParams:
@@ -149,8 +150,8 @@ class Temperatures:
     Calculates temperature terms
     """
 
-    def __init__(self, obs_freq, T_cmb, T_amb, g, eta_eff, T_atm, tau_atm):
-        self._T_rx = Temperatures._calculate_receiver_temperature(obs_freq)
+    def __init__(self, obs_freq, T_cmb, T_amb, g, eta_eff, T_atm, tau_atm, T_rx):
+        self._T_rx = T_rx
         self._T_sys = \
             self._calculate_system_temperature(g, T_cmb, eta_eff, T_amb,
                                                T_atm, tau_atm)
@@ -177,11 +178,16 @@ class Temperatures:
         return self._T_sky
 
     @staticmethod
-    def _calculate_receiver_temperature(obs_freq):
+    def _calculate_receiver_temperature(inst_spec_module, obs_freq):
         """
-        Calculate the receiver temperature
+        Retrieve instrument specific receiver temperature 
         """
-        return (5 * constants.h * obs_freq / constants.k_B).to(u.K)
+        # TODO: the instrument module selection may not need to be  
+        # done as this check is done previously
+        if inst_spec_module is not None and inst_spec_module.name != "gltcam":
+            return inst_spec_module.T_rx
+        else: # default case 
+            return (5 * constants.h * obs_freq / constants.k_B).to(u.K)
 
     def _calculate_system_temperature(self, g, T_cmb, eta_eff, T_amb,
                                       T_atm, tau_atm):

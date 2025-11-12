@@ -62,7 +62,7 @@ class Calculator:
         Derived parameters
         """
         return self._derived_parameters
-
+    
     @property
     def calculated_sensitivity(self):
         """

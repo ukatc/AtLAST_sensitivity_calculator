@@ -2,11 +2,11 @@ from atlast_sc.calculator import Calculator
 from atlast_sc.parameter_setup import ParameterSetup
 
 class CalculatorFactory:
-    def __init__(self, user_input={}, instrument_name="default"):
+    def __init__(self, user_input={}):
         if user_input:
-            self.calculator = self._create_calculator(ParameterSetup(user_input=user_input))
+            self.calculator = self._create_calculator(param_setup=ParameterSetup(user_input=user_input))
         else: # use the default values
-            self.calculator = self._create_calculator(ParameterSetup())
+            self.calculator = self._create_calculator(param_setup=ParameterSetup())
 
     #####################
     # Protected methods #
