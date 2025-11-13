@@ -233,7 +233,7 @@ class ParameterSetup:
 
         # LDM
         # ------------------------------------------------------------------
-        # T_atm, tau_atm, and the various temps values are not actually used
+        # T_atm, transmittance, and the various temps values are not actually used
         # for computing the sefd, but I kept this part to avoid breaking the
         # build of DerivedParams below
         # ------------------------------------------------------------------
@@ -263,13 +263,13 @@ class ParameterSetup:
 
         # Perform atmospheric model calculations
         atm = AtmosphereParams()
-        tau_atm = atm.calculate_tau_atm(obs_freq,
+        transmittance = atm.calculate_transmittance(obs_freq,
                                         weather, elevation)
         T_atm = atm.calculate_atmospheric_temperature(obs_freq,
                                                         weather)
         # Calculate the temperatures
-        temps = Temperatures(obs_freq, T_cmb, T_amb, g,
-                                eta_eff, T_atm, tau_atm, inst_spec_T_rx)
+        temps = Temperatures(T_cmb, T_amb, g, eta_eff,
+                            T_atm, transmittance, inst_spec_T_rx)
 
         # LDM
         # ------------------------------------------------------------------
@@ -308,11 +308,11 @@ class ParameterSetup:
 
             # compute SEFD for each narrow spectral element
             for freq in obs_freq_list:
-                _tau_atm = atm.calculate_tau_atm(freq,weather,elevation)
+                _transmittance = atm.calculate_transmittance(freq,weather,elevation)
 
                 _T_atm = atm.calculate_atmospheric_temperature(freq,weather)
                 _temps = Temperatures(freq, T_cmb, T_amb, g,
-                                        eta_eff, _T_atm, _tau_atm)
+                                        eta_eff, _T_atm, _transmittance)
 
                 _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a, dish_radius).to('J/m2').value)
             _sefd = np.asarray(_sefd)*(u.J/u.m**2)
@@ -323,7 +323,7 @@ class ParameterSetup:
             sefd = self._calculate_sefd(temps.T_sys, eta.eta_a, dish_radius)
 
         self._derived_parameters_model = \
-            DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
+            DerivedParams(transmittance=transmittance, T_atm=T_atm, T_rx=temps.T_rx,
                             eta_a=eta.eta_a, eta_s=eta.eta_s, T_sys=temps.T_sys, T_sky=temps.T_sky,
                             sefd=sefd)
 
