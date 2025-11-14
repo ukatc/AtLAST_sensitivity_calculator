@@ -1,6 +1,7 @@
+import astropy.units as u
 from atlast_sc.derived_groups import AtmosphereParams, Temperatures, \
     Efficiencies
-
+from atlast_sc_tests.utils import create_default_inst_class, find_chosen_instrument
 
 class TestAtmosphereParams:
 
@@ -33,12 +34,9 @@ class TestEfficiencies:
 
 class TestTemperatures:
 
-    def test__init__(self, obs_freq, weather, elevation, t_cmb, t_amb, g,
+    def test__init__(self, obs_freq, bandwidth, weather, elevation, t_cmb, t_amb, g,
                      eta_eff, atmosphere_params, mocker):
 
-        calculate_receiver_temp_spy = \
-            mocker.spy(Temperatures,
-                       '_calculate_receiver_temperature')
         calculate_system_temp_spy = \
             mocker.spy(Temperatures, '_calculate_system_temperature')
 
@@ -46,14 +44,15 @@ class TestTemperatures:
                                                       elevation)
         T_atm = atmosphere_params.calculate_atmospheric_temperature(obs_freq,
                                                                     weather)
-        temperatures = Temperatures(obs_freq, t_cmb, t_amb, g,
-                                    eta_eff, T_atm, transmittance)
+        
+        chosen_inst = find_chosen_instrument(obs_freq, bandwidth)
+        inst_specific_T_rx = chosen_inst.T_rx
+        temperatures = Temperatures(t_cmb, t_amb, g, eta_eff, T_atm, 
+                                    transmittance, inst_specific_T_rx)
 
         # Check that the receiver temperature has been calculated and the
         # value correctly mapped
-        calculate_receiver_temp_spy.assert_called_once()
-        expected_receiver_temperature = \
-            Temperatures._calculate_receiver_temperature(obs_freq)
+        expected_receiver_temperature = 72.3 * u.K
         assert expected_receiver_temperature == temperatures.T_rx
 
         # Check that the system temperature has been calculated and the
