@@ -118,7 +118,7 @@ class TestCalculatorUsage:
         # Verify that the output file contains the expected list of
         # parameters
         expected_params = ['t_int', 'sensitivity', 'bandwidth', 'n_pol',
-                           'obs_freq', 'weather', 'elevation', 'tau_atm',
+                           'obs_freq', 'weather', 'elevation', 'transmittance',
                            'T_atm', 'T_rx', 'eta_a', 'eta_s', 'T_sys', 'T_sky',
                            'sefd']
         # sort the expected parameters

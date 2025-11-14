@@ -184,7 +184,7 @@ class TestDerivedGroups:
 
 
     @pytest.mark.parametrize('obs_freq,band', obs_frequency_bands)
-    def test_tau_atm(self, obs_freq, band, weather, atmosphere_params):
+    def test_transmittance(self, obs_freq, band, weather, atmosphere_params):
 
         elevations = [5, 45]
 
@@ -193,7 +193,7 @@ class TestDerivedGroups:
         for elevation in elevations:
             elevation = elevation * u.deg
             tau_factors.append(
-                atmosphere_params.calculate_tau_atm(obs_freq, weather,
+                atmosphere_params.calculate_transmittance(obs_freq, weather,
                                                     elevation)
             )
 
@@ -216,7 +216,7 @@ class TestDerivedGroups:
 
         temp = atmosphere_params.calculate_atmospheric_temperature(obs_freq,
                                                                    weather)
-        tau = atmosphere_params.calculate_tau_atm(obs_freq, weather, 90*u.deg)
+        tau = atmosphere_params.calculate_transmittance(obs_freq, weather, 90*u.deg)
         # convert atmospheric temperature to sky temperature at zenith = 0
         temp = temp * (1.00-np.exp(-tau))
 
@@ -227,8 +227,9 @@ class TestDerivedGroups:
         else:
             assert temp < 150 * u.K
 
-    def test_system_temperature(self, t_cmb, t_amb, g, eta_eff, weather,
-                                elevation):
+    @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq', instrument_modules)
+    def test_system_temperature(self,  inst_spec_module, inst_name, obs_freq, 
+                                t_cmb, t_amb, g, eta_eff, weather, elevation):
 
         band_temps = []
 
@@ -237,20 +238,22 @@ class TestDerivedGroups:
             obs_freq = obs_freq_band[0] * u.GHz
             band = obs_freq_band[1]
 
+
+
             atmosphere_params = AtmosphereParams()
-            tau_atm = \
-                atmosphere_params.calculate_tau_atm(obs_freq, weather,
+            transmittance = \
+                atmosphere_params.calculate_transmittance(obs_freq, weather,
                                                     elevation)
             T_atm = \
                 atmosphere_params.calculate_atmospheric_temperature(obs_freq,
                                                                     weather)
-            temperatures = Temperatures(self.default_inst_module, obs_freq, t_cmb, 
-                                            t_amb, g, eta_eff, T_atm, tau_atm)
+            temperatures = Temperatures(t_cmb, t_amb, g, eta_eff, T_atm, 
+                                        transmittance, inst_spec_module.T_rx)
 
             system_temperature = \
                 temperatures._calculate_system_temperature(g, t_cmb, eta_eff,
                                                            t_amb, T_atm,
-                                                           tau_atm)
+                                                           transmittance)
 
             # Confirm that the system temperature is *very* hot for
             # opaque frequencies
