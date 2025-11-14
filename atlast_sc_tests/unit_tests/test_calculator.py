@@ -283,55 +283,32 @@ class TestCalculator:
         'param,new_value,derived_params_recalculated,expected_raises,finetuned',
         [
             # Derived parameters
-            ('tau_atm', 0.3, False, pytest.raises(AttributeError),False),
+            ('transmittance', 0.3, False, pytest.raises(AttributeError),False),
             ('T_atm', 200 * u.K, False, pytest.raises(AttributeError),False),
             ('T_rx', 200 * u.K, False, pytest.raises(AttributeError),False),
             ('T_sys', 200 * u.K, False, pytest.raises(AttributeError),False),
             ('eta_a', 0.7, False, pytest.raises(AttributeError),False),
             ('eta_s', 0.7, False, pytest.raises(AttributeError),False),
-            ('sefd', 1e-24 * u.J / (u.m * u.m), False,
-             pytest.raises(AttributeError),False)
+            ('sefd', 1e-24 * u.J / (u.m * u.m), False, pytest.raises(AttributeError),False)
         ]
     )
     def test_update_properties_derived_parameters(self, param, new_value,
                                derived_params_recalculated, expected_raises, finetuned,
                                t_atm, calculator, mocker, request):
 
-        validation_spy = mocker.spy(DataHelper, 'validate')
-        calculate_derived_params_spy = \
-            mocker.spy(ParameterSetup, '_calculate_derived_parameters')
         original_derived_params = copy.deepcopy(calculator.derived_parameters)
-
-
-        uip = calculator.user_input
         dp = calculator.derived_parameters
+
         # Check that we can update certain properties, but not others
         with expected_raises as e:
             setattr(dp, param, new_value)
 
-        if not e:
-            # Verify that the update was validated
-            validation_spy.assert_called()
-            # Verify that the parameter was updated
-            assert getattr(dp, param) == new_value
-            # Verify that the derived parameters were updated,
-            # where appropriate
-            if derived_params_recalculated:
-                if finetuned:
-                    calculate_derived_params_spy.assert_called()
-                    assert calculator.derived_parameters == original_derived_params                
-                else:
-                    calculate_derived_params_spy.assert_called()
-                    assert False == calculator.derived_parameters.__eq__(original_derived_params)
-                        
-            else:
-                calculate_derived_params_spy.assert_not_called()
-                assert calculator.derived_parameters == \
-                    original_derived_params
-        else:
-            # Verify that that parameter was not updated
-            original_value = request.getfixturevalue(param.lower())
+        if e:
+            # Verify that that parameters were not updated
+            original_value = getattr(original_derived_params, param)
             assert getattr(dp, param) == original_value
+        else:
+            assert False
 
     def test_reset(self, obs_freq, calculator, mocker):
 
@@ -481,26 +458,30 @@ class TestCalculator:
             func = getattr(calculator, func_name)
             func(input_value)
 
-    @pytest.mark.parametrize(
-        'param,input_value,func_name',
-        [
-            ('calculated_t_int', 300 * u.mJy, 'calculate_t_integration'),
-            # Not possible to get the sensitivity down to exactly zero,
-            # and since t_int must be greater than 1s, it's not possible
-            # to reach the upper bound either
-        ]
-    )
-    def test_calculate_invalid_value(self, param, input_value, func_name,
-                                     calculator):
-        # Verify that a warning is raised if the calculated value is outside
-        # its permitted range
-        with pytest.warns(CalculatedValueInvalidWarning):
-            func = getattr(calculator, func_name)
-            calculated_value = func(input_value)
+    # NOTE: Both calculated sensitivity and calculated integration time can be any
+    # value from 0 to inf, therefore, this test has no meaning. Commenting it out
+    # for any future need.
+    #
+    # @pytest.mark.parametrize(
+    #     'param,input_value,func_name',
+    #     [
+    #         ('calculated_t_int', 300 * u.mJy, 'calculate_t_integration'),
+    #         # Not possible to get the sensitivity down to exactly zero,
+    #         # and since t_int must be greater than 1s, it's not possible
+    #         # to reach the upper bound either
+    #     ]
+    # )
+    # def test_calculate_invalid_value(self, param, input_value, func_name,
+    #                                  calculator):
+    #     # Verify that a warning is raised if the calculated value is outside
+    #     # its permitted range
+    #     with pytest.warns(CalculatedValueInvalidWarning):
+    #         func = getattr(calculator, func_name)
+    #         calculated_value = func(input_value)
 
-        # make sure the calculator was not updated with calculated value
-        stored_value = getattr(calculator, param)
-        assert stored_value != calculated_value
+    #     # make sure the calculator was not updated with calculated value
+    #     stored_value = getattr(calculator, param)
+    #     assert stored_value != calculated_value
 
     def test_consistency(self, calculator):
         # Calculate the sensitivity
