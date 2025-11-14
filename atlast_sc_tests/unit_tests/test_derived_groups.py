@@ -42,12 +42,12 @@ class TestTemperatures:
         calculate_system_temp_spy = \
             mocker.spy(Temperatures, '_calculate_system_temperature')
 
-        tau_atm = atmosphere_params.calculate_tau_atm(obs_freq, weather,
+        transmittance = atmosphere_params.calculate_transmittance(obs_freq, weather,
                                                       elevation)
         T_atm = atmosphere_params.calculate_atmospheric_temperature(obs_freq,
                                                                     weather)
         temperatures = Temperatures(obs_freq, t_cmb, t_amb, g,
-                                    eta_eff, T_atm, tau_atm)
+                                    eta_eff, T_atm, transmittance)
 
         # Check that the receiver temperature has been calculated and the
         # value correctly mapped
@@ -61,5 +61,5 @@ class TestTemperatures:
         calculate_system_temp_spy.assert_called_once()
         expected_system_temperature = \
             temperatures._calculate_system_temperature(g, t_cmb, eta_eff,
-                                                       t_amb, T_atm, tau_atm)
+                                                       t_amb, T_atm, transmittance)
         assert expected_system_temperature == temperatures.T_sys
