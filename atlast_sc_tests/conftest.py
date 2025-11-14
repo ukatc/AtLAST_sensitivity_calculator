@@ -159,8 +159,8 @@ def t_atm(obs_freq, weather, atmosphere_params):
 
 
 @pytest.fixture(scope='session')
-def tau_atm(obs_freq, weather, elevation, atmosphere_params):
-    return atmosphere_params.calculate_tau_atm(obs_freq, weather, elevation)
+def transmittance(obs_freq, weather, elevation, atmosphere_params):
+    return atmosphere_params.calculate_transmittance(obs_freq, weather, elevation)
 
 
 @pytest.fixture(scope='session')
@@ -179,8 +179,8 @@ def sefd(calculator, t_sys, eta_a, dish_radius):
 
 
 @pytest.fixture(scope='session')
-def temperatures(obs_freq, t_cmb, t_amb, g, eta_eff, t_atm, tau_atm):
-    return Temperatures(obs_freq, t_cmb, t_amb, g, eta_eff, t_atm, tau_atm)
+def temperatures(obs_freq, t_cmb, t_amb, g, eta_eff, t_atm, transmittance):
+    return Temperatures(obs_freq, t_cmb, t_amb, g, eta_eff, t_atm, transmittance)
 
 
 @pytest.fixture(scope='session')
