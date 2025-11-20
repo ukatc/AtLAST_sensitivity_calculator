@@ -50,7 +50,7 @@ class DerivedParameters:
     @property
     def T_sky(self):
         """
-        Get the system temperature
+        Get the sky temperature
         """
         return self._param_setup.derived_parameters_model.T_sky
 
