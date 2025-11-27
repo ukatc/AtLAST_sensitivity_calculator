@@ -150,11 +150,11 @@ class Temperatures:
     Calculates temperature terms
     """
 
-    def __init__(self, T_cmb, T_amb, g, eta_eff, T_atm, transmittance, T_rx):
-        self._T_rx = T_rx
-        self._T_sys = \
-            self._calculate_system_temperature(g, T_cmb, eta_eff, T_amb,
-                                               T_atm, transmittance)
+    def __init__(self, inst_module, obs_freq, T_cmb, T_amb, g, eta_eff, T_atm, transmittance, T_rx):
+        self._T_rx = inst_module.calculate_receiver_temp(obs_freq=obs_freq)
+        self._T_sky = T_atm * (1 - transmittance) + T_cmb
+        self._T_sys = inst_module.calculate_system_temperature(g, eta_eff, T_amb, self.T_sky,
+                                     transmittance)
 
     @property
     def T_rx(self):
@@ -176,32 +176,3 @@ class Temperatures:
         Get the sky temperature
         """
         return self._T_sky
-
-    @staticmethod
-    def _calculate_receiver_temperature(inst_spec_module, obs_freq):
-        """
-        Retrieve instrument specific receiver temperature 
-        """
-        # TODO: the instrument module selection may not need to be  
-        # done as this check is done previously
-        if inst_spec_module is not None and inst_spec_module.name != "gltcam":
-            return inst_spec_module.T_rx
-        else: # default case 
-            return (5 * constants.h * obs_freq / constants.k_B).to(u.K)
-
-    def _calculate_system_temperature(self, g, T_cmb, eta_eff, T_amb,
-                                      T_atm, transmittance):
-        """
-        Returns system temperature, following calculation in [doc]
-
-        :return: system temperature in Kelvin
-        :rtype: astropy.units.Quantity
-        """
-
-        self._T_sky = T_atm * (1 - transmittance) + T_cmb
-
-        return (1 + g) / (eta_eff * transmittance) * \
-               (self.T_rx
-                + (eta_eff * self._T_sky)
-                + ((1 - eta_eff) * T_amb)
-                )
