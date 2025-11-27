@@ -52,7 +52,11 @@ class Default(Instrument):
         return system_temp
 
     def calculate_receiver_temp(self, obs_freq):
-        temp = (5 * constants.h * obs_freq / constants.k_B).to(u.K)
+        prefactor = 5 # arbitrary scaling of the quantum limit
+
+        # h*f/k is the quantum limit 
+        # scaling prefactor defines how close to that we expect to get
+        temp = (prefactor * constants.h * obs_freq / constants.k_B).to(u.K)
         self.T_rx = temp
         return temp
 
