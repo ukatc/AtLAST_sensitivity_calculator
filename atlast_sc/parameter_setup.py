@@ -253,9 +253,7 @@ class ParameterSetup:
         g = self.calculation_inputs.instrument_specific.g.value
 
         # Get chosen instrument and its receiver temperature
-        # chosen_inst = self.chosen_inst
         chosen_inst = self.get_chosen_instrument()
-        inst_spec_T_rx = chosen_inst.calculate_receiver_temp(obs_freq=obs_freq)
 
         # Perform efficiencies calculations
         eta = Efficiencies(obs_freq , surface_rms, eta_ill,
@@ -269,7 +267,7 @@ class ParameterSetup:
                                                         weather)
         # Calculate the temperatures
         temps = Temperatures(chosen_inst, obs_freq, T_cmb, T_amb, g, eta_eff,
-                            T_atm, transmittance, inst_spec_T_rx)
+                            T_atm, transmittance)
 
         # LDM
         # ------------------------------------------------------------------
@@ -312,7 +310,7 @@ class ParameterSetup:
 
                 _T_atm = atm.calculate_atmospheric_temperature(freq,weather)
                 _temps = Temperatures(chosen_inst, freq, T_cmb, T_amb, g,
-                                        eta_eff, _T_atm, _transmittance, inst_spec_T_rx)
+                                        eta_eff, _T_atm, _transmittance)
 
                 _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a, dish_radius).to('J/m2').value)
             _sefd = np.asarray(_sefd)*(u.J/u.m**2)
