@@ -23,9 +23,33 @@ class Default(Instrument):
     def T_rx(self, value):
         self._T_rx = value
 
+    @property 
+    def T_sys(self):
+        return self._T_sys
+    
+    @T_sys.setter
+    def T_sys(self, value):
+        self._T_sys = value
+
     ################################################
     # Additional instrument specific methods below #
     ################################################
+
+    def calculate_system_temperature(self, g, eta_eff, T_amb, T_sky,
+                                     transmittance):
+        """
+        Returns system temperature, following calculation in [doc]
+
+        :return: system temperature in Kelvin
+        :rtype: astropy.units.Quantity
+        """
+        system_temp = (1 + g) / (eta_eff * transmittance) * \
+            (self.T_rx
+            + (eta_eff * T_sky)
+            + ((1 - eta_eff) * T_amb)
+            )
+        self.T_sys = system_temp
+        return system_temp
 
     def calculate_receiver_temp(self, obs_freq):
         temp = (5 * constants.h * obs_freq / constants.k_B).to(u.K)
