@@ -268,7 +268,7 @@ class ParameterSetup:
         T_atm = atm.calculate_atmospheric_temperature(obs_freq,
                                                         weather)
         # Calculate the temperatures
-        temps = Temperatures(T_cmb, T_amb, g, eta_eff,
+        temps = Temperatures(chosen_inst, obs_freq, T_cmb, T_amb, g, eta_eff,
                             T_atm, transmittance, inst_spec_T_rx)
 
         # LDM
@@ -311,8 +311,8 @@ class ParameterSetup:
                 _transmittance = atm.calculate_transmittance(freq,weather,elevation)
 
                 _T_atm = atm.calculate_atmospheric_temperature(freq,weather)
-                _temps = Temperatures(freq, T_cmb, T_amb, g,
-                                        eta_eff, _T_atm, _transmittance)
+                _temps = Temperatures(chosen_inst, freq, T_cmb, T_amb, g,
+                                        eta_eff, _T_atm, _transmittance, inst_spec_T_rx)
 
                 _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a, dish_radius).to('J/m2').value)
             _sefd = np.asarray(_sefd)*(u.J/u.m**2)
