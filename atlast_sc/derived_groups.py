@@ -3,7 +3,6 @@ from scipy.interpolate import RegularGridInterpolator
 import numpy as np
 import astropy.units as u
 from astropy import constants
-from atlast_sc.parameters.instrument_specific_parameters import InstrumentSpecificParameters
 
 
 class AtmosphereParams:

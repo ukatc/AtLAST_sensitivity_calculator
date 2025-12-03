@@ -6,8 +6,6 @@ from astropy import units as u
 from atlast_sc.calculator import Calculator
 from atlast_sc.derived_groups import AtmosphereParams, Temperatures, \
     Efficiencies
-from atlast_sc.parameters.instrument_specific_parameters import \
-                                            InstrumentSpecificParameters
 
 from atlast_sc.instruments.classes.Default import Default
 from atlast_sc.instruments.classes.Chai import Chai

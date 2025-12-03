@@ -1,6 +1,5 @@
 import copy, re
 from atlast_sc.models import UserInput
-from atlast_sc.models import InstrumentSpecific
 from atlast_sc.models import CalculationInput
 from atlast_sc.models import CalculationResult
 from atlast_sc.models import TelescopeAndEnvironment
@@ -21,18 +20,18 @@ class ParameterSetup:
     Class that holds the user input and instrument setup parameters
     used to perform the sensitivity calculations.
     """
-    def __init__(self, user_input={}, instrument_specific={}, telescope_and_environment={}, finetune=False):
+    def __init__(self, user_input={}, telescope_and_environment={}, finetune=False):
         """
         Initialises all the required parameters from user_input and
-        instrument_specific.
+        telescope_and_environment.
 
         :param user_input: A dictionary of user inputs of structure
         {'param_name':{'value': <value>, 'unit': <unit>}}
         :type user_input: dict
-        :param instrument_specific: A dictionary of instrument setup parameters
-        of structure
+        :param telescope_and_environment: A dictionary of telescope and
+        environment parameters of structure
         {'param_name':{'value': <value>, 'unit': <unit>}}
-        :type instrument_specific: dict
+        :type telescope_and_environment: dict
         """
 
         # Make sure the user input doesn't contain any unexpected parameter names
@@ -42,12 +41,10 @@ class ParameterSetup:
 
         # Parameters
         new_user_input = UserInput(**user_input)
-        new_instrument_specific = InstrumentSpecific(**instrument_specific)
         new_telescope_and_environment = TelescopeAndEnvironment(**telescope_and_environment)
 
         self._calculation_inputs = \
             CalculationInput(user_input=new_user_input,
-                             instrument_specific=new_instrument_specific,
                              telescope_and_environment=new_telescope_and_environment)
         
         self._calculation_results = CalculationResult()
@@ -84,13 +81,6 @@ class ParameterSetup:
         User inputs to the calculation
         """
         return self._calculation_inputs.user_input
-  
-    @property
-    def instrument_specific(self):
-        """
-        Instrument specific parameters
-        """
-        return self._calculation_inputs.instrument_specific
     
     @property
     def telescope_and_environment(self):
@@ -249,7 +239,7 @@ class ParameterSetup:
         eta_block = self.calculation_inputs.telescope_and_environment.eta_block.value
         T_cmb = self.calculation_inputs.telescope_and_environment.T_cmb.value
         T_amb = self.calculation_inputs.telescope_and_environment.T_amb.value
-        eta_pol = self.calculation_inputs.instrument_specific.eta_pol.value
+        eta_pol = self.calculation_inputs.telescope_and_environment.eta_pol.value
 
         # Get chosen instrument and its receiver temperature
         chosen_inst = self.get_chosen_instrument()
