@@ -170,11 +170,6 @@ def eta_s(efficiencies):
 def sefd(calculator, t_sys, eta_a, dish_radius):
     return calculator._param_setup._calculate_sefd(t_sys, eta_a, dish_radius)
 
-# @pytest.fixture()
-# def inst_module():
-
-
-
 @pytest.fixture(scope='session')
 def temperatures(inst_module, obs_freq, t_cmb, t_amb, eta_eff, t_atm, transmittance):
     return Temperatures(inst_module, obs_freq, t_cmb, t_amb, eta_eff, t_atm, transmittance)
