@@ -36,7 +36,7 @@ class Tifuun(Instrument):
 
     # TODO: Adding the default system temp calculation in to test
     # Default instrument calculations in CLI
-    def calculate_system_temperature(self, g, eta_eff, T_amb, T_sky,
+    def calculate_system_temperature(self, eta_eff, T_amb, T_sky,
                                      transmittance):
         """
         Returns system temperature, following calculation in [doc]
@@ -44,7 +44,7 @@ class Tifuun(Instrument):
         :return: system temperature in Kelvin
         :rtype: astropy.units.Quantity
         """
-        system_temp = (1 + g) / (eta_eff * transmittance) * \
+        system_temp = 1 / (eta_eff * transmittance) * \
             (self.T_rx
             + (eta_eff * T_sky)
             + ((1 - eta_eff) * T_amb)

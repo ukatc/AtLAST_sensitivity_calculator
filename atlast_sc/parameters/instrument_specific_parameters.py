@@ -8,13 +8,6 @@ class InstrumentSpecificParameters:
         self._param_setup = param_setup
 
     @property
-    def g(self):
-        """
-        Get the sideband ratio
-        """
-        return self._param_setup.calculation_inputs.instrument_specific.g.value
-
-    @property
     def eta_pol(self):
         """
         Get the polarisation efficiency

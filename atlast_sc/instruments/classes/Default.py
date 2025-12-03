@@ -35,7 +35,7 @@ class Default(Instrument):
     # Additional instrument specific methods below #
     ################################################
 
-    def calculate_system_temperature(self, g, eta_eff, T_amb, T_sky,
+    def calculate_system_temperature(self, eta_eff, T_amb, T_sky,
                                      transmittance):
         """
         Returns system temperature, following calculation in [doc]
@@ -43,7 +43,7 @@ class Default(Instrument):
         :return: system temperature in Kelvin
         :rtype: astropy.units.Quantity
         """
-        system_temp = (1 + g) / (eta_eff * transmittance) * \
+        system_temp = 1 / (eta_eff * transmittance) * \
             (self.T_rx
             + (eta_eff * T_sky)
             + ((1 - eta_eff) * T_amb)

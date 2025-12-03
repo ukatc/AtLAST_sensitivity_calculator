@@ -150,10 +150,10 @@ class Temperatures:
     Calculates temperature terms
     """
 
-    def __init__(self, inst_module, obs_freq, T_cmb, T_amb, g, eta_eff, T_atm, transmittance):
+    def __init__(self, inst_module, obs_freq, T_cmb, T_amb, eta_eff, T_atm, transmittance):
         self._T_rx = inst_module.calculate_receiver_temp(obs_freq=obs_freq)
         self._T_sky = T_atm * (1 - transmittance) + T_cmb
-        self._T_sys = inst_module.calculate_system_temperature(g, eta_eff, T_amb, self.T_sky,
+        self._T_sys = inst_module.calculate_system_temperature(eta_eff, T_amb, self.T_sky,
                                      transmittance)
 
     @property

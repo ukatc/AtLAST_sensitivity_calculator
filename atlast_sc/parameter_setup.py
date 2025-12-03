@@ -250,7 +250,6 @@ class ParameterSetup:
         T_cmb = self.calculation_inputs.telescope_and_environment.T_cmb.value
         T_amb = self.calculation_inputs.telescope_and_environment.T_amb.value
         eta_pol = self.calculation_inputs.instrument_specific.eta_pol.value
-        g = self.calculation_inputs.instrument_specific.g.value
 
         # Get chosen instrument and its receiver temperature
         chosen_inst = self.get_chosen_instrument()
@@ -266,7 +265,7 @@ class ParameterSetup:
         T_atm = atm.calculate_atmospheric_temperature(obs_freq,
                                                         weather)
         # Calculate the temperatures
-        temps = Temperatures(chosen_inst, obs_freq, T_cmb, T_amb, g, eta_eff,
+        temps = Temperatures(chosen_inst, obs_freq, T_cmb, T_amb, eta_eff,
                             T_atm, transmittance)
 
         # LDM
@@ -309,7 +308,7 @@ class ParameterSetup:
                 _transmittance = atm.calculate_transmittance(freq,weather,elevation)
 
                 _T_atm = atm.calculate_atmospheric_temperature(freq,weather)
-                _temps = Temperatures(chosen_inst, freq, T_cmb, T_amb, g,
+                _temps = Temperatures(chosen_inst, freq, T_cmb, T_amb,
                                         eta_eff, _T_atm, _transmittance)
 
                 _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a, dish_radius).to('J/m2').value)
