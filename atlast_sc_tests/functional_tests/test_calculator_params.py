@@ -173,8 +173,7 @@ class TestDerivedGroups:
     @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq', instrument_modules)
     def test_instrument_specific_receiver_temperature(self, inst_spec_module, 
                                                         obs_freq, inst_name):
-        receiver_temperature = Temperatures._calculate_receiver_temperature(\
-                                                inst_spec_module, obs_freq* u.GHz)
+        receiver_temperature = inst_spec_module.calculate_receiver_temp(obs_freq* u.GHz)
 
         # Make sure the temperature is returned in Kelvin
         assert receiver_temperature.unit == "K"
@@ -227,7 +226,7 @@ class TestDerivedGroups:
 
     @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq', instrument_modules)
     def test_system_temperature(self,  inst_spec_module, inst_name, obs_freq, 
-                                t_cmb, t_amb, g, eta_eff, weather, elevation):
+                                t_cmb, t_amb, eta_eff, weather, elevation):
 
         band_temps = []
 
@@ -236,8 +235,6 @@ class TestDerivedGroups:
             obs_freq = obs_freq_band[0] * u.GHz
             band = obs_freq_band[1]
 
-
-
             atmosphere_params = AtmosphereParams()
             transmittance = \
                 atmosphere_params.calculate_transmittance(obs_freq, weather,
@@ -245,13 +242,10 @@ class TestDerivedGroups:
             T_atm = \
                 atmosphere_params.calculate_atmospheric_temperature(obs_freq,
                                                                     weather)
-            temperatures = Temperatures(t_cmb, t_amb, g, eta_eff, T_atm, 
-                                        transmittance, inst_spec_module.T_rx)
+            temperatures = Temperatures(inst_spec_module, obs_freq, t_cmb, t_amb, eta_eff,
+                                         T_atm, transmittance)
 
-            system_temperature = \
-                temperatures._calculate_system_temperature(g, t_cmb, eta_eff,
-                                                           t_amb, T_atm,
-                                                           transmittance)
+            system_temperature = temperatures.T_sys
 
             # Confirm that the system temperature is *very* hot for
             # opaque frequencies
