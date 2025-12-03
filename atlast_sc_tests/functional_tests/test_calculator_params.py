@@ -188,25 +188,25 @@ class TestDerivedGroups:
 
         elevations = [5, 45]
 
-        tau_factors = []
+        transmittance_factors = []
         obs_freq = obs_freq * u.GHz
         for elevation in elevations:
             elevation = elevation * u.deg
-            tau_factors.append(
+            transmittance_factors.append(
                 atmosphere_params.calculate_transmittance(obs_freq, weather,
                                                     elevation)
             )
 
-        # Check that the tau factor for the lower elevation is greater than the
-        #   tau factor for the higher elevation
-        assert tau_factors[0] > tau_factors[1]
+        # Check that the transmittance factor for the lower elevation is less than the
+        #   transmittance factor for the higher elevation
+        assert transmittance_factors[0] < transmittance_factors[1]
 
-        # Check that the tau factor is "high" for frequencies between bands
-        for tau_factor in tau_factors:
+        # Check that the tau factor is "low" for frequencies between bands
+        for transmittance_factor in transmittance_factors:
             if band == "opaque":
-                assert tau_factor > 10
+                assert transmittance_factor < 1e-4
             else:
-                assert tau_factor < 10
+                assert transmittance_factor > 1e-4
 
     @pytest.mark.parametrize('obs_freq,band', obs_frequency_bands)
     def test_atmospheric_temperature(self, obs_freq, band, weather, elevation,
@@ -216,9 +216,9 @@ class TestDerivedGroups:
 
         temp = atmosphere_params.calculate_atmospheric_temperature(obs_freq,
                                                                    weather)
-        tau = atmosphere_params.calculate_transmittance(obs_freq, weather, 90*u.deg)
+        transmittance = atmosphere_params.calculate_transmittance(obs_freq, weather, 90*u.deg)
         # convert atmospheric temperature to sky temperature at zenith = 0
-        temp = temp * (1.00-np.exp(-tau))
+        temp = temp * (1.00-transmittance)
 
         # Check that the atmospheric temperature is "cold" for transparent
         # frequencies and "hot" for opaque frequencies
