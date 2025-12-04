@@ -34,6 +34,22 @@ class Sepia(Instrument):
     # Additional instrument specific methods below #
     ################################################
 
+    def calculate_system_temperature(self, eta_eff, T_amb, T_sky,
+                                     transmittance):
+        """
+        Returns system temperature, following calculation in [doc]
+
+        :return: system temperature in Kelvin
+        :rtype: astropy.units.Quantity
+        """
+        system_temp = 1 / (eta_eff * transmittance) * \
+            (self.T_rx
+            + (eta_eff * T_sky)
+            + ((1 - eta_eff) * T_amb)
+            )
+        self.T_sys = system_temp
+        return system_temp
+
     def calculate_receiver_temp(self, obs_freq):
         temp_options = re.findall(r"[\d.]+", 
                            self.receiver_temp_options_and_unit['values'][0])
