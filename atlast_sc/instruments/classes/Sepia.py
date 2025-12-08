@@ -58,8 +58,7 @@ class Sepia(Instrument):
         :rtype: astropy.units.Quantity
         """
         # Extract instrument receiver temperature options
-        temp_options = re.findall(r"[\d.]+", 
-                           self.receiver_temp_options_and_unit['values'][0])
+        temp_options = self.receiver_temp_options_and_unit['values']
         temp_options = [float(temp) for temp in temp_options]
         # Extract instrument observing frequency ranges
         freq_options = self.obs_freq_ranges_and_unit['ranges']
@@ -95,9 +94,7 @@ class Sepia(Instrument):
         :return: receiver temperature in Kelvin
         :rtype: astropy.units.Quantity
         """
-        temp_options = re.findall(r"[\d.]+", 
-                           receiver_temp_options_and_unit['values'][0])
-        temp_options = [float(temp) for temp in temp_options] # convert to float ranges
+        temp_options = receiver_temp_options_and_unit['values']
         temp = temp_options[0] # first receiver temp option
         temp = u.Quantity(temp, receiver_temp_options_and_unit['unit'])
         return temp
