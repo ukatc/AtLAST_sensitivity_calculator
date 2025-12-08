@@ -88,7 +88,7 @@ class TestInstrumentClasses:
             and bandwidth values supplied by the user input.
             """
 
-            test_obs_freq = 164.0 * u.GHz
+            test_obs_freq = 273.0 * u.GHz
             test_bandwidth = 10001 * u.MHz
             mock_calc = CalculatorFactory._create_calculator(param_setup=ParameterSetup())
 
