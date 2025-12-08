@@ -51,26 +51,34 @@ class Sepia(Instrument):
         return system_temp
 
     def calculate_receiver_temp(self, obs_freq):
+        """
+        Returns receiver temperature, following calculation in [doc]
+
+        :return: receiver temperature in Kelvin
+        :rtype: astropy.units.Quantity
+        """
+        # Extract instrument receiver temperature options
         temp_options = re.findall(r"[\d.]+", 
                            self.receiver_temp_options_and_unit['values'][0])
         temp_options = [float(temp) for temp in temp_options]
+        # Extract instrument observing frequency ranges
         freq_options = self.obs_freq_ranges_and_unit['ranges']
-
         freq_ranges = []
-
         for freq_range in freq_options:
             range = re.findall(r"[\d.]+", freq_range)
-            range = [float(val) for val in range]
-            freq_ranges.append(range)
+            range = [float(val) for val in range] # convert to float ranges
+            freq_ranges.append(range) 
 
         obs_freq = obs_freq.value
-        t_rx_low = temp_options[0]
-        t_rx_high = temp_options[1]
+        t_rx_low = temp_options[0] # low receiver temp specified in the YAML
+        t_rx_high = temp_options[1] # high receiver temp specified in the YAML
         freq_200k = 370 * u.GHz
 
         temp = None
+        # If the observing frequency is in the first range 
         if obs_freq >= freq_ranges[0][0] and obs_freq <= freq_ranges[0][1]:
             temp = t_rx_low * u.K
+        # If the observing frequency is in the second range
         elif obs_freq > freq_ranges[1][0] and obs_freq <= freq_ranges[1][1]:
             temp = t_rx_low + (t_rx_high - t_rx_low) * (obs_freq-freq_ranges[1][0]) / \
                 (freq_200k - obs_freq-freq_ranges[1][0]) * u.K
@@ -80,11 +88,17 @@ class Sepia(Instrument):
     
     @staticmethod
     def _set_default_receiver_temp(receiver_temp_options_and_unit):
+        """
+        Sets default receiver temperature, currently chooses first receiver
+        temp option as default.
+
+        :return: receiver temperature in Kelvin
+        :rtype: astropy.units.Quantity
+        """
         temp_options = re.findall(r"[\d.]+", 
                            receiver_temp_options_and_unit['values'][0])
-        temp_options = [float(temp) for temp in temp_options]
-        # NOTE: Currently chooses first receiver temp option as default
-        temp = temp_options[0]
+        temp_options = [float(temp) for temp in temp_options] # convert to float ranges
+        temp = temp_options[0] # first receiver temp option
         temp = u.Quantity(temp, receiver_temp_options_and_unit['unit'])
         return temp
     
