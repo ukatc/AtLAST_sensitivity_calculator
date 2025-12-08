@@ -230,7 +230,6 @@ class Data:
         'eta_ill': eta_ill,
         'eta_spill': eta_spill,
         'eta_block': eta_block,
-        'g': g,
         'eta_pol': eta_pol
     }
 

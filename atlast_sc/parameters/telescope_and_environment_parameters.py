@@ -60,7 +60,13 @@ class TelescopeAndEnvironmentParameters:
         """
         return self._param_setup.calculation_inputs.telescope_and_environment.eta_block.value
     
-
+    @property
+    def eta_pol(self):
+        """
+        Get the polarisation efficiency
+        """
+        return self._param_setup.calculation_inputs.telescope_and_environment.eta_pol.value
+    
     ##############################################################
     # Getters for environment parameters #
     ##############################################################
