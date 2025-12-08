@@ -66,15 +66,16 @@ class Sepia(Instrument):
         obs_freq = obs_freq.value
         t_rx_low = temp_options[0]
         t_rx_high = temp_options[1]
-        freq_1 = 370 * u.GHz
+        freq_200k = 370 * u.GHz
 
+        temp = None
         if obs_freq >= freq_ranges[0][0] and obs_freq <= freq_ranges[0][1]:
             temp = t_rx_low * u.K
         elif obs_freq > freq_ranges[1][0] and obs_freq <= freq_ranges[1][1]:
             temp = t_rx_low + (t_rx_high - t_rx_low) * (obs_freq-freq_ranges[1][0]) / \
-                (freq_1 - obs_freq-freq_ranges[1][0]) * u.K
-            
+                (freq_200k - obs_freq-freq_ranges[1][0]) * u.K
         self.T_rx = temp
+        
         return temp
     
     @staticmethod
