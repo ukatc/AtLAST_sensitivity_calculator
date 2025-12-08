@@ -52,6 +52,12 @@ class Default(Instrument):
         return system_temp
 
     def calculate_receiver_temp(self, obs_freq):
+        """
+        Returns receiver temperature, following calculation in [doc]
+
+        :return: receiver temperature in Kelvin
+        :rtype: astropy.units.Quantity
+        """
         prefactor = 5 # arbitrary scaling of the quantum limit
 
         # h*f/k is the quantum limit 
@@ -62,6 +68,13 @@ class Default(Instrument):
 
     @staticmethod
     def _set_default_receiver_temp():
+        """
+        Sets default receiver temperature, currently chooses first receiver
+        temp option as default.
+
+        :return: receiver temperature in Kelvin
+        :rtype: astropy.units.Quantity
+        """
         default_obs_freq = u.Quantity(Data.obs_frequency.default_value,
                                         Data.obs_frequency.default_unit)
         return (5 * constants.h * default_obs_freq / constants.k_B).to(u.K)
