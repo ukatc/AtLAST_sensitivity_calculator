@@ -170,6 +170,47 @@ class ParameterSetup:
         # Get the instrument module according to instrument name
         chosen_inst = self.loaded_instruments[chosen_inst_name]
         return chosen_inst
+    
+    def compare_and_modify_bandwidth_units(self, bandwidth, instrument_bandw_vals):
+        """
+        (ASC-108)
+        Compares user inputted bandwidth unit with the instrument 
+        YAML file bandwidth units and converts each to Hz equivalent 
+        value for instrument selection.
+
+        :return: tuple of converted user input bandwidth value and 
+                converted dictionary of instrument bandwidth ranges 
+        :rtype: Quantity
+        """
+        # Convert user input bandwidth value to Hz
+        bandwidth = bandwidth.to(u.Hz)
+
+        for _, bandwidths_and_unit in instrument_bandw_vals.items():
+            bandwidth_ranges = bandwidths_and_unit['ranges']
+            yaml_unit = u.Unit(bandwidths_and_unit['unit'])
+
+            for range in bandwidth_ranges:
+                range_count = 0 # start a counter to find the range of the instrument
+                range = re.findall(r"[\d.e]+", range)
+
+                # Create Quantity object for min and max freq
+                min_freq = u.Quantity(float(range[0]), yaml_unit)
+                max_freq = u.Quantity(float(range[1]), yaml_unit)
+
+                # Convert min and max Quantity to Hz
+                min_freq_hz = min_freq.to(u.Hz)
+                max_freq_hz = max_freq.to(u.Hz)
+
+                # Replace bandwidths_and_unit dict with new Hz values to be 
+                # ready for comparison
+                bandwidths_and_unit['ranges'][range_count] = '(' + str(min_freq_hz.value) + \
+                                                            '-' + str(max_freq_hz.value) + ')'
+                range_count += 1
+
+            # Change unit to Hz in the bandwidths_and_unit dict here to avoid
+            #  unconversion of units where bandwidth ranges are non-existent
+            bandwidths_and_unit['unit'] = str(u.Hz)
+        return bandwidth, instrument_bandw_vals 
 
     def find_applicable_instruments(self, obs_freq, bandwidth, 
                                     instrument_obs_freqs, instrument_bandw_vals):
@@ -183,6 +224,10 @@ class ParameterSetup:
         """
         applicable_obs_freq_instruments = []
         applicable_bandw_instruments = []
+
+        # Compare units of user inputs and instrument YAML file
+        bandwidth, instrument_bandw_vals = \
+                                    self.compare_and_modify_bandwidth_units(bandwidth, instrument_bandw_vals)
 
         # Get float value of each parameter to be able to make comparison
         obs_freq = float(obs_freq.value)
