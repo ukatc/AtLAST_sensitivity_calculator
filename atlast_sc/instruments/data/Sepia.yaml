@@ -4,8 +4,8 @@ allowed_ranges:
     ranges: [(272.0-330.0),(330.0-376.0)]
     unit: GHz
   bandwidth: 
-    ranges: [(10000.0-5600000.0),(10000.0-32000000.0),(10000.0-10000000.0)]
-    unit: MHz
+    ranges: [(6.25e4-1.8e8)]
+    unit: Hz
 receiver_temperature: 
   values: [90.0,200.0]
   unit: K
