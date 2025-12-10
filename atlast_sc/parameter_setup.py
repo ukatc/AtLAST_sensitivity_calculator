@@ -55,14 +55,28 @@ class ParameterSetup:
         # Get instrument config 
         inst_config = InstrumentConfig()
         # Get loaded instrument classes
-        self.loaded_instruments = inst_config.instrument_classes
-        
+        self._loaded_instruments = inst_config.instrument_classes
+
+        # Create dictionaries of each instrument and their observing frequency
+        # and bandwidth ranges.
+        self.instrument_obs_freqs = {} # Instrument specific observing frequency ranges
+        self.instrument_bandw_vals = {} # Instrument specific bandwidth value ranges
+        for inst_name, inst_module in self.loaded_instruments.items():
+            self.instrument_obs_freqs[inst_name] = inst_module.obs_freq_ranges_and_unit
+            self.instrument_bandw_vals[inst_name] = inst_module.bandwidth_ranges_and_unit
+
         self._derived_parameters_model = self._calculate_derived_parameters()
         
         # Make a deep copy of the calculation inputs to enable the
         # calculator to be reset to its initial setup
         self._original_inputs = copy.deepcopy(self._calculation_inputs)
 
+    @property
+    def loaded_instruments(self):
+        """
+        Dictionary of all loaded instruments and their classes
+        """
+        return self._loaded_instruments
 
     @property
     def calculation_inputs(self):
@@ -150,12 +164,56 @@ class ParameterSetup:
         user_obs_freq = self.user_input.obs_freq.value
         user_bandwidth = self.user_input.bandwidth.value
         # See which instrument those values correspond to
-        chosen_inst_name = self.find_applicable_instruments(obs_freq=user_obs_freq, bandwidth=user_bandwidth)
+        chosen_inst_name = self.find_applicable_instruments(user_obs_freq, user_bandwidth,
+                                                            self.instrument_obs_freqs,
+                                                            self.instrument_bandw_vals)
         # Get the instrument module according to instrument name
         chosen_inst = self.loaded_instruments[chosen_inst_name]
         return chosen_inst
+    
+    def compare_and_modify_bandwidth_units(self, bandwidth, instrument_bandw_vals):
+        """
+        (ASC-108)
+        Compares user inputted bandwidth unit with the instrument 
+        YAML file bandwidth units and converts each to Hz equivalent 
+        value for instrument selection.
 
-    def find_applicable_instruments(self, obs_freq, bandwidth):
+        :return: tuple of converted user input bandwidth value and 
+                converted dictionary of instrument bandwidth ranges 
+        :rtype: Quantity
+        """
+        # Convert user input bandwidth value to Hz
+        bandwidth = bandwidth.to(u.Hz)
+
+        for _, bandwidths_and_unit in instrument_bandw_vals.items():
+            bandwidth_ranges = bandwidths_and_unit['ranges']
+            yaml_unit = u.Unit(bandwidths_and_unit['unit'])
+
+            for range in bandwidth_ranges:
+                range_count = 0 # start a counter to find the range of the instrument
+                range = re.findall(r"[\d.e]+", range)
+
+                # Create Quantity object for min and max freq
+                min_freq = u.Quantity(float(range[0]), yaml_unit)
+                max_freq = u.Quantity(float(range[1]), yaml_unit)
+
+                # Convert min and max Quantity to Hz
+                min_freq_hz = min_freq.to(u.Hz)
+                max_freq_hz = max_freq.to(u.Hz)
+
+                # Replace bandwidths_and_unit dict with new Hz values to be 
+                # ready for comparison
+                bandwidths_and_unit['ranges'][range_count] = '(' + str(min_freq_hz.value) + \
+                                                            '-' + str(max_freq_hz.value) + ')'
+                range_count += 1
+
+            # Change unit to Hz in the bandwidths_and_unit dict here to avoid
+            #  unconversion of units where bandwidth ranges are non-existent
+            bandwidths_and_unit['unit'] = str(u.Hz)
+        return bandwidth, instrument_bandw_vals 
+
+    def find_applicable_instruments(self, obs_freq, bandwidth, 
+                                    instrument_obs_freqs, instrument_bandw_vals):
         """
         Finds what instrument/s the observing frequency and bandwidth values
         inputted by the user correspond to and choose one to do the further
@@ -164,16 +222,12 @@ class ParameterSetup:
         :return: applicable/chosen instrument name
         :rtype: String
         """
-        # TODO: could make the finding applicable ranges more efficient by looking at general ranges first 
-
-        instrument_obs_freqs = {} # Instrument specific observing frequency ranges
-        instrument_bandw_vals = {} # Instrument specific bandwidth value ranges
-        for inst_name, inst_module in self.loaded_instruments.items():
-            instrument_obs_freqs[inst_name] = inst_module.obs_freq_ranges_and_unit
-            instrument_bandw_vals[inst_name] = inst_module.bandwidth_ranges_and_unit
-
         applicable_obs_freq_instruments = []
         applicable_bandw_instruments = []
+
+        # Compare units of user inputs and instrument YAML file
+        bandwidth, instrument_bandw_vals = \
+                                    self.compare_and_modify_bandwidth_units(bandwidth, instrument_bandw_vals)
 
         # Get float value of each parameter to be able to make comparison
         obs_freq = float(obs_freq.value)
