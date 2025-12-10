@@ -10,6 +10,7 @@ class Default(Instrument):
     def __init__(self, data):
         super().__init__(data)
         self._T_rx = self._set_default_receiver_temp()
+        self.prefactor = data.prefactor
 
     ##################################
     # Instrument specific parameters #
@@ -58,11 +59,10 @@ class Default(Instrument):
         :return: receiver temperature in Kelvin
         :rtype: astropy.units.Quantity
         """
-        prefactor = 5 # arbitrary scaling of the quantum limit
 
         # h*f/k is the quantum limit 
         # scaling prefactor defines how close to that we expect to get
-        temp = (prefactor * constants.h * obs_freq / constants.k_B).to(u.K)
+        temp = (self.prefactor * constants.h * obs_freq / constants.k_B).to(u.K)
         self.T_rx = temp
         return temp
 
