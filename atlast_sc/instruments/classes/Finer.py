@@ -22,29 +22,78 @@ class Finer(Instrument):
     def T_rx(self, value):
         self._T_rx = value
 
+    @property 
+    def T_sys(self):
+        return self._T_sys
+    
+    @T_sys.setter
+    def T_sys(self, value):
+        self._T_sys = value
+
     ################################################
     # Additional instrument specific methods below #
     ################################################
 
-    def calculate_receiver_temp(self, obs_freq):
-        temp_options = re.findall(r"[\d.]+", 
-                           self.receiver_temp_options_and_unit['values'][0])
-        temp_options = [float(temp) for temp in temp_options]
+    def calculate_system_temperature(self, eta_eff, T_amb, T_sky,
+                                     transmittance):
+        """
+        Returns system temperature, following calculation in [doc]
 
-        obs_freq = obs_freq.value 
-        if obs_freq >= 120.0 and obs_freq <= 210.0:
-            temp = temp_options[0] * u.K
-        elif obs_freq > 210.0 and obs_freq <= 360.0:
-            temp = temp_options[1] * u.K
+        :return: system temperature in Kelvin
+        :rtype: astropy.units.Quantity
+        """
+        system_temp = 1 / (eta_eff * transmittance) * \
+            (self.T_rx
+            + (eta_eff * T_sky)
+            + ((1 - eta_eff) * T_amb)
+            )
+        self.T_sys = system_temp
+        return system_temp
+
+    def calculate_receiver_temp(self, obs_freq):
+        """
+        Returns receiver temperature, following calculation in [doc]
+
+        :return: receiver temperature in Kelvin
+        :rtype: astropy.units.Quantity
+        """
+        # Extract instrument receiver temperature options
+        temp_options = self.receiver_temp_options_and_unit['values']
+        temp_options = [float(temp) for temp in temp_options]
+        # Extract instrument observing frequency ranges
+        freq_options = self.obs_freq_ranges_and_unit['ranges']
+        freq_ranges = []
+        for freq_range in freq_options:
+            range = re.findall(r"[\d.]+", freq_range)
+            range = [float(val) for val in range] # convert to float ranges
+            freq_ranges.append(range) 
+
+        obs_freq = obs_freq.value
+        t_rx_low = temp_options[0] # low receiver temp specified in the YAML
+        t_rx_high = temp_options[1] # high receiver temp specified in the YAML
+        separating_t_rx_val = 210.0
+
+        temp = None
+        # If the observing frequency is in the first range 
+        if obs_freq >= freq_ranges[0][0] and obs_freq <= separating_t_rx_val:
+            temp = t_rx_low * u.K
+        # If the observing frequency is in the second range
+        elif obs_freq > separating_t_rx_val and obs_freq <= freq_ranges[0][1]:
+            temp = t_rx_high * u.K
         self.T_rx = temp
+        
         return temp
     
     @staticmethod
     def _set_default_receiver_temp(receiver_temp_options_and_unit):
-        temp_options = re.findall(r"[\d.]+", 
-                           receiver_temp_options_and_unit['values'][0])
-        temp_options = [float(temp) for temp in temp_options]
-        # NOTE: Currently chooses first receiver temp option as default
-        temp = temp_options[0]
+        """
+        Sets default receiver temperature, currently chooses first receiver
+        temp option as default.
+
+        :return: receiver temperature in Kelvin
+        :rtype: astropy.units.Quantity
+        """
+        temp_options = receiver_temp_options_and_unit['values']
+        temp = temp_options[0] # first receiver temp option
         temp = u.Quantity(temp, receiver_temp_options_and_unit['unit'])
         return temp
