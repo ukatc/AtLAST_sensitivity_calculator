@@ -2,9 +2,6 @@ import re
 import astropy.units as u
 from atlast_sc.instrument import Instrument
 
-import bisect
-from typing import List
-
 """
 FINER instrument parameters
 """        
