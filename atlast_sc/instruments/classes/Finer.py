@@ -2,6 +2,9 @@ import re
 import astropy.units as u
 from atlast_sc.instrument import Instrument
 
+import bisect
+from typing import List
+
 """
 FINER instrument parameters
 """        
@@ -69,17 +72,17 @@ class Finer(Instrument):
             freq_ranges.append(range) 
 
         obs_freq = obs_freq.value
-        t_rx_low = temp_options[0] # low receiver temp specified in the YAML
-        t_rx_high = temp_options[1] # high receiver temp specified in the YAML
-        separating_t_rx_val = 210.0
-
         temp = None
-        # If the observing frequency is in the first range 
-        if obs_freq >= freq_ranges[0][0] and obs_freq <= separating_t_rx_val:
-            temp = t_rx_low * u.K
-        # If the observing frequency is in the second range
-        elif obs_freq > separating_t_rx_val and obs_freq <= freq_ranges[0][1]:
-            temp = t_rx_high * u.K
+        temp_index_count = 0
+        for range in freq_ranges:
+            if obs_freq >= range[0] and obs_freq <= range[1]:
+                if temp == None: # If there is not an assigned temp already
+                    # NOTE: This allows us to do open range assignments to temperatures
+                    temp = temp_options[temp_index_count] * u.K
+            # Only increase the temperature option index if the next increment
+            # is within the total amount of temperature options
+            if temp_index_count+1 < len(temp_options):
+                temp_index_count += 1
         self.T_rx = temp
         
         return temp

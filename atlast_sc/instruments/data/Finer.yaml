@@ -1,7 +1,7 @@
 name: "Finer"
 allowed_ranges:
   observing_frequency:
-    ranges: [(120.0-360.0)]
+    ranges: [(120.0-210.0),(210.0-360.0)]
     unit: GHz
   bandwidth: 
     ranges: [(8.8e4-1.8e8)]
