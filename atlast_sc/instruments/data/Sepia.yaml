@@ -7,5 +7,5 @@ allowed_ranges:
     ranges: [(6.25e4-1.8e8)]
     unit: Hz
 receiver_temperature: 
-  values: [90.0,200.0]
+  values: [90.0,216.5]
   unit: K
