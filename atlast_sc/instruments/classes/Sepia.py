@@ -74,13 +74,16 @@ class Sepia(Instrument):
         freq_200k = 370 * u.GHz
 
         temp = None
-        # If the observing frequency is in the first range 
-        if obs_freq >= freq_ranges[0][0] and obs_freq <= freq_ranges[0][1]:
-            temp = t_rx_low * u.K
-        # If the observing frequency is in the second range
-        elif obs_freq > freq_ranges[1][0] and obs_freq <= freq_ranges[1][1]:
-            temp = t_rx_low + (t_rx_high - t_rx_low) * (obs_freq-freq_ranges[1][0]) / \
-                (freq_200k - obs_freq-freq_ranges[1][0]) * u.K
+        temp_index_count = 0
+        for range in freq_ranges:
+            if obs_freq >= range[0] and obs_freq <= range[1]:
+                if temp == None: # If there is not an assigned temp already
+                    # NOTE: This allows us to do open range assignments to temperatures
+                    temp = temp_options[temp_index_count] * u.K
+            # Only increase the temperature option index if the next increment
+            # is within the total amount of temperature options
+            if temp_index_count+1 < len(temp_options):
+                temp_index_count += 1
         self.T_rx = temp
         
         return temp
