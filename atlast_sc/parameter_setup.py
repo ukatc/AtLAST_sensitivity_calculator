@@ -365,7 +365,7 @@ class ParameterSetup:
             sefd = self._calculate_sefd(temps.T_sys, eta.eta_a, dish_radius)
 
         self._derived_parameters_model = \
-            DerivedParams(transmittance=transmittance, T_atm=T_atm, T_rx=temps.T_rx,
+            DerivedParams(transmittance=transmittance, T_atm=T_atm,
                             eta_a=eta.eta_a, eta_s=eta.eta_s, T_sys=temps.T_sys, T_sky=temps.T_sky,
                             sefd=sefd)
 

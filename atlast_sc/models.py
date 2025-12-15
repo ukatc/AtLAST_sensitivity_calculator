@@ -215,8 +215,6 @@ class DerivedParams(BaseModel):
     transmittance: float
     # Atmospheric temperature
     T_atm: Quantity
-    # Receiver temperature
-    T_rx: Quantity
     # Dish efficiency
     eta_a: float
     # System efficiency

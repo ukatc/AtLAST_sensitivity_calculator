@@ -9,7 +9,6 @@ TIFUUN instrument parameters
 class Tifuun(Instrument):
     def __init__(self, data):
         super().__init__(data)
-        self._T_rx = self._set_default_receiver_temp(self.receiver_temp_options_and_unit)
         self.eta_chip = self.data.chip_efficiency['value']
         self.eta_co = self.data.cold_optics_efficiency['value']
         self.T_co = self.create_Quantity(self.data.cold_optics_temperature)
@@ -19,14 +18,6 @@ class Tifuun(Instrument):
     ##################################
     # Instrument specific parameters #
     ##################################
-        
-    @property 
-    def T_rx(self):
-        return self._T_rx
-    
-    @T_rx.setter
-    def T_rx(self, value):
-        self._T_rx = value
 
     @property 
     def T_sys(self):
@@ -100,17 +91,3 @@ class Tifuun(Instrument):
         
         self.T_sys = system_temp
         return system_temp
-
-    def calculate_receiver_temp(self, obs_freq):
-        # NOTE: This will be populated with instrument specific 
-        # receiver temperature calculation equation.
-        temp_option = float(self.receiver_temp_options_and_unit['values'][0])
-        temp = temp_option * u.K
-        self.T_rx = temp
-        return temp
-
-    @staticmethod
-    def _set_default_receiver_temp(receiver_temp_options_and_unit):
-        receiver_temp = u.Quantity(receiver_temp_options_and_unit['values'][0],
-                                    u.K)
-        return receiver_temp

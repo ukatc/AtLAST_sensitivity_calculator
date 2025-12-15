@@ -31,5 +31,9 @@ class Instrument():
     def set_receiver_temp_options_and_unit(self, data):
         # ASC-76 Currently not validating receiver temp units because 
         # values provided directly in the instrument files are temporary.
-        return ( {'values': data.receiver_temperature["values"],
-                  'unit': data.receiver_temperature["unit"]} )
+        if hasattr(data, 'receiver_temperature'): 
+            # If the instrument YAML file has receiver temperature specified
+            return ( {'values': data.receiver_temperature["values"],
+                    'unit': data.receiver_temperature["unit"]} )
+        else:
+            return None
