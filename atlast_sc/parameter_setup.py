@@ -353,8 +353,8 @@ class ParameterSetup:
                 _transmittance = atm.calculate_transmittance(freq,weather,elevation)
 
                 _T_atm = atm.calculate_atmospheric_temperature(freq,weather)
-                _temps = Temperatures(chosen_inst, freq, T_cmb, T_amb,
-                                        eta_eff, _T_atm, _transmittance)
+                _temps = Temperatures(chosen_inst, obs_freq, bandwidth, T_cmb, T_amb, eta_eff,
+                            T_atm, transmittance, n_pol)
 
                 _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a, dish_radius).to('J/m2').value)
             _sefd = np.asarray(_sefd)*(u.J/u.m**2)
