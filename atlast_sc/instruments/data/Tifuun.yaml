@@ -9,13 +9,15 @@ allowed_ranges:
 receiver_temperature: 
   values: [72.3]
   unit: K
-eta_chip: # eta_circuit*eta_lens_antenna_rad (0.32*0.81) from TIFUUN SC
+chip_efficiency: # eta_circuit*eta_lens_antenna_rad (0.32*0.81) from TIFUUN SC
   value: 0.2592 
-eta_co: # from TIFUUN SC
+cold_optics_efficiency: # from TIFUUN SC
   value: 0.65 
-T_co: # from TIFUUN SC
+cold_optics_temperature: # from TIFUUN SC
   value: 4
   unit: K
-del_tag: # from Akira's equations
+band_gap: # from Akira's equations
   value: 188e-6
   unit: eV
+pair_breaking_efficiency: # from Akira's equations
+  value: 0.4
