@@ -230,7 +230,6 @@ class TestCalculator:
             # Derived parameters
             ('transmittance', 0.3, False, pytest.raises(AttributeError),False),
             ('T_atm', 200 * u.K, False, pytest.raises(AttributeError),False),
-            ('T_rx', 200 * u.K, False, pytest.raises(AttributeError),False),
             ('T_sys', 200 * u.K, False, pytest.raises(AttributeError),False),
             ('eta_a', 0.7, False, pytest.raises(AttributeError),False),
             ('eta_s', 0.7, False, pytest.raises(AttributeError),False),
