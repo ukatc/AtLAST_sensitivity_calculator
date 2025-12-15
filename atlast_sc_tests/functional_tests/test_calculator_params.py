@@ -147,32 +147,32 @@ class TestDerivedGroups:
     ]
     instrument_modules = [
         (GLTCam(FileHelper.read_instrument_yaml_file("GLTCam")),
-          "GLTCam", 131.0 * u.GHz),
+         "GLTCam", 631.0 * u.GHz, 11 * u.GHz),
         (Tifuun(FileHelper.read_instrument_yaml_file("Tifuun")), 
-         "Tifuun", 91.0 * u.GHz),
+         "Tifuun", 91.0 * u.GHz, 9 * u.GHz),
         (Muscat(FileHelper.read_instrument_yaml_file("Muscat")), 
-         "Muscat", 251.0 * u.GHz),
+         "Muscat", 251.0 * u.GHz, 2 * u.MHz),
         (Finer(FileHelper.read_instrument_yaml_file("Finer")), 
-         "Finer", 121.0 * u.GHz),
+         "Finer", 210.0 * u.GHz, 8.8e4 * u.Hz),
         (Chai(FileHelper.read_instrument_yaml_file("Chai")), 
-         "Chai", 461.0 * u.GHz),
+         "Chai", 461.0 * u.GHz, 6.1e4 * u.Hz),
         (Sepia(FileHelper.read_instrument_yaml_file("Sepia")), 
-         "Sepia", 273.0 * u.GHz)
+         "Sepia", 273.0 * u.GHz, 6.25e4 * u.Hz)
     ]
 
     # TODO: Review if this test is needed.
     # Not sure if it is needed. Probably can ignore this as this is
     # checked when test_instrument_specific_receiver_temperature()
     # is executed anyway.
-    @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq', instrument_modules)
-    def test_instrument_modules(self, inst_spec_module, inst_name, obs_freq):
+    @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq,bandwidth', instrument_modules)
+    def test_instrument_modules(self, inst_spec_module, inst_name, obs_freq, bandwidth):
         # Ensure that the instrument modules correspond to correct
         # instrument names
         assert inst_spec_module.name == inst_name
 
-    @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq', instrument_modules)
+    @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq,bandwidth', instrument_modules)
     def test_instrument_specific_receiver_temperature(self, inst_spec_module, 
-                                                        obs_freq, inst_name):
+                                                        obs_freq, inst_name, bandwidth):
         receiver_temperature = inst_spec_module.calculate_receiver_temp(obs_freq* u.GHz)
 
         # Make sure the temperature is returned in Kelvin
@@ -224,9 +224,9 @@ class TestDerivedGroups:
         else:
             assert temp < 150 * u.K
 
-    @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq', instrument_modules)
-    def test_system_temperature(self,  inst_spec_module, inst_name, obs_freq,
-                                t_cmb, t_amb, eta_eff, weather, elevation):
+    @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq,bandwidth', instrument_modules)
+    def test_system_temperature(self,  inst_spec_module, inst_name, obs_freq, bandwidth,
+                                n_pol, t_cmb, t_amb, eta_eff, weather, elevation):
 
         atmosphere_params = AtmosphereParams()
         transmittance = \
@@ -235,8 +235,8 @@ class TestDerivedGroups:
         T_atm = \
             atmosphere_params.calculate_atmospheric_temperature(obs_freq,
                                                                 weather)
-        temperatures = Temperatures(inst_spec_module, obs_freq, t_cmb, t_amb, eta_eff,
-                                        T_atm, transmittance)
+        temperatures = Temperatures(inst_spec_module, obs_freq, bandwidth, t_cmb, t_amb, eta_eff,
+                                        T_atm, transmittance, n_pol)
 
         system_temperature = temperatures.T_sys
         assert inst_spec_module.T_sys == system_temperature
