@@ -31,7 +31,7 @@ class TestInstrumentClasses:
                                     '(330.0-365.0)', '(385.0-415.0)', '(630.0-710.0)'], 
                                     'unit': 'GHz'},
                         # bandwidth
-                        {'ranges': ['(1.0-5.0)'], 'unit': 'MHz'},
+                        {'ranges': ['(10.0-80.0)'], 'unit': 'GHz'},
                         # receiver temperature
                         {'values': [22.0], 'unit': 'K'}
                     )
@@ -88,7 +88,7 @@ class TestInstrumentClasses:
             and bandwidth values supplied by the user input.
             """
 
-            test_obs_freq = 164.0 * u.GHz
+            test_obs_freq = 273.0 * u.GHz
             test_bandwidth = 10001 * u.MHz
             mock_calc = CalculatorFactory._create_calculator(param_setup=ParameterSetup())
 

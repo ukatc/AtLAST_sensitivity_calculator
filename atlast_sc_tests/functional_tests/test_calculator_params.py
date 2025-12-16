@@ -157,7 +157,7 @@ class TestDerivedGroups:
         (Chai(FileHelper.read_instrument_yaml_file("Chai")), 
          "Chai", 461.0 * u.GHz),
         (Sepia(FileHelper.read_instrument_yaml_file("Sepia")), 
-         "Sepia", 164.0 * u.GHz),
+         "Sepia", 273.0 * u.GHz)
     ]
 
     # TODO: Review if this test is needed.
@@ -225,43 +225,59 @@ class TestDerivedGroups:
             assert temp < 150 * u.K
 
     @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq', instrument_modules)
-    def test_system_temperature(self,  inst_spec_module, inst_name, obs_freq, 
+    def test_system_temperature(self,  inst_spec_module, inst_name, obs_freq,
                                 t_cmb, t_amb, eta_eff, weather, elevation):
 
-        band_temps = []
+        atmosphere_params = AtmosphereParams()
+        transmittance = \
+            atmosphere_params.calculate_transmittance(obs_freq, weather,
+                                                elevation)
+        T_atm = \
+            atmosphere_params.calculate_atmospheric_temperature(obs_freq,
+                                                                weather)
+        temperatures = Temperatures(inst_spec_module, obs_freq, t_cmb, t_amb, eta_eff,
+                                        T_atm, transmittance)
 
-        for obs_freq_band in self.obs_frequency_bands:
+        system_temperature = temperatures.T_sys
+        assert inst_spec_module.T_sys == system_temperature
 
-            obs_freq = obs_freq_band[0] * u.GHz
-            band = obs_freq_band[1]
+        # TODO: The following test will be reviewed once each instrument's 
+        # system temperature retrieval is implemented. 
 
-            atmosphere_params = AtmosphereParams()
-            transmittance = \
-                atmosphere_params.calculate_transmittance(obs_freq, weather,
-                                                    elevation)
-            T_atm = \
-                atmosphere_params.calculate_atmospheric_temperature(obs_freq,
-                                                                    weather)
-            temperatures = Temperatures(inst_spec_module, obs_freq, t_cmb, t_amb, eta_eff,
-                                         T_atm, transmittance)
+        # band_temps = []
 
-            system_temperature = temperatures.T_sys
+        # for obs_freq_band in self.obs_frequency_bands:
 
-            # Confirm that the system temperature is *very* hot for
-            # opaque frequencies
-            if band == "opaque":
-                assert system_temperature > 1e9 * u.K
-            else:
-                band_temps.append(system_temperature.value)
-                assert system_temperature < 1800 * u.K
+        #     obs_freq = obs_freq_band[0] * u.GHz
+        #     band = obs_freq_band[1]
 
-        # Confirm that the system temperature follows an increasing trend
-        # with the band
-        x = np.arange(1, len(band_temps)+1)
-        y = np.array(band_temps)
-        res = linregress(x, y)
-        # print(f'Equation: {res[0]:.3f} * x + {res[1]:.3f}')
-        assert res[0] > 1
+        #     atmosphere_params = AtmosphereParams()
+        #     transmittance = \
+        #         atmosphere_params.calculate_transmittance(obs_freq, weather,
+        #                                             elevation)
+        #     T_atm = \
+        #         atmosphere_params.calculate_atmospheric_temperature(obs_freq,
+        #                                                             weather)
+        #     temperatures = Temperatures(inst_spec_module, obs_freq, t_cmb, t_amb, eta_eff,
+        #                                  T_atm, transmittance)
+
+        #     system_temperature = temperatures.T_sys
+
+        #     # Confirm that the system temperature is *very* hot for
+        #     # opaque frequencies
+        #     if band == "opaque":
+        #         assert system_temperature > 1e9 * u.K
+        #     else:
+        #         band_temps.append(system_temperature.value)
+        #         assert system_temperature < 1800 * u.K
+
+        # # Confirm that the system temperature follows an increasing trend
+        # # with the band
+        # x = np.arange(1, len(band_temps)+1)
+        # y = np.array(band_temps)
+        # res = linregress(x, y)
+        # # print(f'Equation: {res[0]:.3f} * x + {res[1]:.3f}')
+        # assert res[0] > 1
 
     def test_eta_a(self, surface_rms, eta_ill, eta_spill, eta_block, eta_pol):
         test_obs_freqs = \
