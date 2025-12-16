@@ -10,7 +10,6 @@ from atlast_sc.derived_groups import AtmosphereParams, Temperatures, \
 from atlast_sc.instruments.classes.Default import Default
 from atlast_sc.instruments.classes.Chai import Chai
 from atlast_sc.instruments.classes.Finer import Finer
-from atlast_sc.instruments.classes.GLTCam import GLTCam
 from atlast_sc.instruments.classes.Muscat import Muscat
 from atlast_sc.instruments.classes.Sepia import Sepia
 from atlast_sc.instruments.classes.Tifuun import Tifuun
@@ -146,8 +145,6 @@ class TestDerivedGroups:
         (850, "band 10"),
     ]
     instrument_modules = [
-        (GLTCam(FileHelper.read_instrument_yaml_file("GLTCam")),
-         "GLTCam", 631.0 * u.GHz, 11 * u.GHz),
         (Tifuun(FileHelper.read_instrument_yaml_file("Tifuun")), 
          "Tifuun", 91.0 * u.GHz, 9 * u.GHz),
         (Muscat(FileHelper.read_instrument_yaml_file("Muscat")), 
