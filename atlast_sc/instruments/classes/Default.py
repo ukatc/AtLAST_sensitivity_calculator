@@ -10,7 +10,7 @@ class Default(Instrument):
     def __init__(self, data):
         super().__init__(data)
         self._T_rx = self._set_default_receiver_temp()
-        self.prefactor = data.prefactor
+        self.prefactor = data.prefactor['value']
 
     ##################################
     # Instrument specific parameters #
