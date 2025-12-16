@@ -6,6 +6,15 @@ allowed_ranges:
   bandwidth: 
     ranges: [(0.18-10)]
     unit: GHz
-receiver_temperature: 
-  values: [72.3]
+chip_efficiency: # eta_circuit*eta_lens_antenna_rad (0.32*0.81) from TIFUUN SC
+  value: 0.2592 
+cold_optics_efficiency: # from TIFUUN SC
+  value: 0.65 
+cold_optics_temperature: # from TIFUUN SC
+  value: 4
   unit: K
+band_gap: # from Akira's equations
+  value: 188e-6
+  unit: eV
+pair_breaking_efficiency: # from Akira's equations
+  value: 0.4

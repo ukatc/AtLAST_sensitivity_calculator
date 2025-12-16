@@ -149,18 +149,11 @@ class Temperatures:
     Calculates temperature terms
     """
 
-    def __init__(self, inst_module, obs_freq, T_cmb, T_amb, eta_eff, T_atm, transmittance):
-        self._T_rx = inst_module.calculate_receiver_temp(obs_freq=obs_freq)
+    def __init__(self, inst_module, obs_freq, bandwidth, T_cmb, T_amb, eta_eff, T_atm, transmittance, n_pol):
         self._T_sky = T_atm * (1 - transmittance) + T_cmb
-        self._T_sys = inst_module.calculate_system_temperature(eta_eff, T_amb, self.T_sky,
-                                     transmittance)
-
-    @property
-    def T_rx(self):
-        """
-        Get the receiver temperature
-        """
-        return self._T_rx
+        self._T_sys = inst_module.calculate_system_temperature(obs_freq, bandwidth, T_cmb, eta_eff, 
+                                                               T_atm, T_amb, self.T_sky,
+                                                               transmittance, n_pol)
 
     @property
     def T_sys(self):

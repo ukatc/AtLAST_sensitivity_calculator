@@ -285,6 +285,7 @@ class ParameterSetup:
         weather = self.calculation_inputs.user_input.weather.value
         elevation = self.calculation_inputs.user_input.elevation.value
         bandwidth = self.calculation_inputs.user_input.bandwidth.value
+        n_pol = self.calculation_inputs.user_input.n_pol.value
         surface_rms = self.calculation_inputs.telescope_and_environment.surface_rms.value
         dish_radius = self.calculation_inputs.telescope_and_environment.dish_radius.value
         eta_eff = self.calculation_inputs.telescope_and_environment.eta_eff.value
@@ -309,8 +310,8 @@ class ParameterSetup:
         T_atm = atm.calculate_atmospheric_temperature(obs_freq,
                                                         weather)
         # Calculate the temperatures
-        temps = Temperatures(chosen_inst, obs_freq, T_cmb, T_amb, eta_eff,
-                            T_atm, transmittance)
+        temps = Temperatures(chosen_inst, obs_freq, bandwidth, T_cmb, T_amb, eta_eff,
+                            T_atm, transmittance, n_pol)
 
         # LDM
         # ------------------------------------------------------------------
@@ -352,8 +353,8 @@ class ParameterSetup:
                 _transmittance = atm.calculate_transmittance(freq,weather,elevation)
 
                 _T_atm = atm.calculate_atmospheric_temperature(freq,weather)
-                _temps = Temperatures(chosen_inst, freq, T_cmb, T_amb,
-                                        eta_eff, _T_atm, _transmittance)
+                _temps = Temperatures(chosen_inst, obs_freq, bandwidth, T_cmb, T_amb, eta_eff,
+                            T_atm, transmittance, n_pol)
 
                 _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a, dish_radius).to('J/m2').value)
             _sefd = np.asarray(_sefd)*(u.J/u.m**2)
@@ -364,7 +365,7 @@ class ParameterSetup:
             sefd = self._calculate_sefd(temps.T_sys, eta.eta_a, dish_radius)
 
         self._derived_parameters_model = \
-            DerivedParams(transmittance=transmittance, T_atm=T_atm, T_rx=temps.T_rx,
+            DerivedParams(transmittance=transmittance, T_atm=T_atm,
                             eta_a=eta.eta_a, eta_s=eta.eta_s, T_sys=temps.T_sys, T_sky=temps.T_sky,
                             sefd=sefd)
 

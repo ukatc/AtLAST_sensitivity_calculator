@@ -36,7 +36,7 @@ class TestEfficiencies:
 class TestTemperatures:
 
     def test__init__(self, obs_freq, bandwidth, weather, elevation, t_cmb, t_amb,
-                     eta_eff, atmosphere_params, mocker):
+                     eta_eff, atmosphere_params, n_pol, mocker):
 
         transmittance = atmosphere_params.calculate_transmittance(obs_freq, weather,
                                                       elevation)
@@ -47,14 +47,14 @@ class TestTemperatures:
         calculate_system_temp_spy = \
             mocker.spy(chosen_inst, 'calculate_system_temperature')
         
-        temperatures = Temperatures(chosen_inst, obs_freq, t_cmb, t_amb, eta_eff, T_atm, 
-                                    transmittance)
+        temperatures = Temperatures(chosen_inst, obs_freq, bandwidth, t_cmb, t_amb, eta_eff, T_atm, 
+                                    transmittance, n_pol)
 
         # Check that the receiver temperature has been calculated and the
         # value correctly mapped for Default instrument
         expected_receiver_temperature = 23.99621537 * u.K
-        assert pytest.approx(expected_receiver_temperature.value) == temperatures.T_rx.value
-        assert expected_receiver_temperature.unit == temperatures.T_rx.unit
+        assert pytest.approx(expected_receiver_temperature.value) == chosen_inst.T_rx.value
+        assert expected_receiver_temperature.unit == chosen_inst.T_rx.unit
 
         # Check that the system temperature has been calculated and the
         # value correctly mapped
