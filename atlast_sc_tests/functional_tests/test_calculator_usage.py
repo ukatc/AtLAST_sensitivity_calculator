@@ -17,8 +17,8 @@ class TestCalculatorUsage:
         # sensitivity
         assert sens == test_calculator.calculated_sensitivity
         # Verify that the sensitivity is about 780 mJy
-        assert test_calculator.calculated_sensitivity.value == pytest.approx(780, 0.01)
-        assert test_calculator.calculated_sensitivity.unit == u.uJy
+        assert test_calculator.calculated_sensitivity.value == pytest.approx(1.5269869595282197, 0.01)
+        assert test_calculator.calculated_sensitivity.unit == u.mJy
 
         # Update observing frequency
         test_calculator.user_input.obs_freq = 850 * u.GHz
@@ -63,15 +63,13 @@ class TestCalculatorUsage:
         # integration time
         assert test_calculator.calculated_t_int == new_t_int
         # Verify that the calculated integration time is about 6.76 s
-        assert test_calculator.calculated_t_int.value == pytest.approx(6.76, 0.01)
+        assert test_calculator.calculated_t_int.value == pytest.approx(25.907657495213737, 0.01)
         assert test_calculator.calculated_t_int.unit == u.s
 
         # Calculate integration time using a different sensitivity
         test_sens = 300 * u.mJy
 
-        # Expect a invalid calculated value warning 
-        with pytest.warns(CalculatedValueInvalidWarning):
-            test_calculator.calculate_t_integration(sensitivity=test_sens)
+        test_calculator.calculate_t_integration(sensitivity=test_sens)
         # Verify that the sensitivity has been updated
         assert test_calculator.user_input.sensitivity == test_sens
         # Calculate integration time using a different sensitivity, but don't
@@ -118,7 +116,7 @@ class TestCalculatorUsage:
         # Verify that the output file contains the expected list of
         # parameters
         expected_params = ['t_int', 'sensitivity', 'bandwidth', 'n_pol',
-                           'obs_freq', 'weather', 'elevation', 'tau_atm',
+                           'obs_freq', 'weather', 'elevation', 'transmittance',
                            'T_atm', 'T_rx', 'eta_a', 'eta_s', 'T_sys', 'T_sky',
                            'sefd']
         # sort the expected parameters

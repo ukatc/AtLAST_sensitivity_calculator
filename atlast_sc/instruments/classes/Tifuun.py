@@ -21,9 +21,36 @@ class Tifuun(Instrument):
     def T_rx(self, value):
         self._T_rx = value
 
+    @property 
+    def T_sys(self):
+        return self._T_sys
+    
+    @T_sys.setter
+    def T_sys(self, value):
+        self._T_sys = value
+
+
     ################################################
     # Additional instrument specific methods below #
     ################################################
+
+    # TODO: Adding the default system temp calculation in to test
+    # Default instrument calculations in CLI
+    def calculate_system_temperature(self, eta_eff, T_amb, T_sky,
+                                     transmittance):
+        """
+        Returns system temperature, following calculation in [doc]
+
+        :return: system temperature in Kelvin
+        :rtype: astropy.units.Quantity
+        """
+        system_temp = 1 / (eta_eff * transmittance) * \
+            (self.T_rx
+            + (eta_eff * T_sky)
+            + ((1 - eta_eff) * T_amb)
+            )
+        self.T_sys = system_temp
+        return system_temp
 
     def calculate_receiver_temp(self, obs_freq):
         # NOTE: This will be populated with instrument specific 

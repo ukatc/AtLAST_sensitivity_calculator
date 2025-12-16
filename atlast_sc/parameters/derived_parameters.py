@@ -7,11 +7,11 @@ class DerivedParameters:
         self._param_setup = param_setup
 
     @property
-    def tau_atm(self):
+    def transmittance(self):
         """
         Get the atmospheric transmittance
         """
-        return self._param_setup.derived_parameters_model.tau_atm
+        return self._param_setup.derived_parameters_model.transmittance
 
     @property
     def T_atm(self):
@@ -50,7 +50,7 @@ class DerivedParameters:
     @property
     def T_sky(self):
         """
-        Get the system temperature
+        Get the sky temperature
         """
         return self._param_setup.derived_parameters_model.T_sky
 

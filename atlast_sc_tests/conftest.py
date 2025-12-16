@@ -91,13 +91,6 @@ def t_amb():
     # Return the default ambient temperature
     return _get_param(Data.t_amb)
 
-
-@pytest.fixture(scope='session')
-def g():
-    # Return the default sideband ratio
-    return _get_param(Data.g)
-
-
 @pytest.fixture(scope='session')
 def eta_eff():
     # Return the default forward efficiency
@@ -159,8 +152,8 @@ def t_atm(obs_freq, weather, atmosphere_params):
 
 
 @pytest.fixture(scope='session')
-def tau_atm(obs_freq, weather, elevation, atmosphere_params):
-    return atmosphere_params.calculate_tau_atm(obs_freq, weather, elevation)
+def transmittance(obs_freq, weather, elevation, atmosphere_params):
+    return atmosphere_params.calculate_transmittance(obs_freq, weather, elevation)
 
 
 @pytest.fixture(scope='session')
@@ -177,10 +170,9 @@ def eta_s(efficiencies):
 def sefd(calculator, t_sys, eta_a, dish_radius):
     return calculator._param_setup._calculate_sefd(t_sys, eta_a, dish_radius)
 
-
 @pytest.fixture(scope='session')
-def temperatures(obs_freq, t_cmb, t_amb, g, eta_eff, t_atm, tau_atm):
-    return Temperatures(obs_freq, t_cmb, t_amb, g, eta_eff, t_atm, tau_atm)
+def temperatures(inst_module, obs_freq, t_cmb, t_amb, eta_eff, t_atm, transmittance):
+    return Temperatures(inst_module, obs_freq, t_cmb, t_amb, eta_eff, t_atm, transmittance)
 
 
 @pytest.fixture(scope='session')
@@ -213,7 +205,7 @@ def user_input_dict(t_int, sensitivity, bandwidth, obs_freq, n_pol,
 
 @pytest.fixture(scope='session')
 def telescope_and_environment_dict(surface_rms, dish_radius, t_amb, t_cmb, 
-                                   eta_eff, eta_ill, eta_spill, eta_block):
+                                   eta_eff, eta_ill, eta_spill, eta_block, eta_pol):
 
     telescope_and_environment_params = {
         'surface_rms': surface_rms,
@@ -223,20 +215,11 @@ def telescope_and_environment_dict(surface_rms, dish_radius, t_amb, t_cmb,
         'eta_eff': eta_eff,
         'eta_ill': eta_ill,
         'eta_spill': eta_spill,
-        'eta_block': eta_block
-    }
-
-    return telescope_and_environment_params
-
-@pytest.fixture(scope='session')
-def instrument_specific_dict(g, eta_pol):
-
-    instrument_specific_params = {
-        'g': g,
+        'eta_block': eta_block,
         'eta_pol': eta_pol
     }
 
-    return instrument_specific_params
+    return telescope_and_environment_params
 
 @pytest.fixture(scope='session')
 def calculated_params_dict(calculated_t_int, calculated_sensitivity):

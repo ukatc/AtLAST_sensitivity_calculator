@@ -6,8 +6,6 @@ from astropy import units as u
 from atlast_sc.calculator import Calculator
 from atlast_sc.derived_groups import AtmosphereParams, Temperatures, \
     Efficiencies
-from atlast_sc.parameters.instrument_specific_parameters import \
-                                            InstrumentSpecificParameters
 
 from atlast_sc.instruments.classes.Default import Default
 from atlast_sc.instruments.classes.Chai import Chai
@@ -175,8 +173,7 @@ class TestDerivedGroups:
     @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq', instrument_modules)
     def test_instrument_specific_receiver_temperature(self, inst_spec_module, 
                                                         obs_freq, inst_name):
-        receiver_temperature = Temperatures._calculate_receiver_temperature(\
-                                                inst_spec_module, obs_freq* u.GHz)
+        receiver_temperature = inst_spec_module.calculate_receiver_temp(obs_freq* u.GHz)
 
         # Make sure the temperature is returned in Kelvin
         assert receiver_temperature.unit == "K"
@@ -184,29 +181,29 @@ class TestDerivedGroups:
 
 
     @pytest.mark.parametrize('obs_freq,band', obs_frequency_bands)
-    def test_tau_atm(self, obs_freq, band, weather, atmosphere_params):
+    def test_transmittance(self, obs_freq, band, weather, atmosphere_params):
 
         elevations = [5, 45]
 
-        tau_factors = []
+        transmittance_factors = []
         obs_freq = obs_freq * u.GHz
         for elevation in elevations:
             elevation = elevation * u.deg
-            tau_factors.append(
-                atmosphere_params.calculate_tau_atm(obs_freq, weather,
+            transmittance_factors.append(
+                atmosphere_params.calculate_transmittance(obs_freq, weather,
                                                     elevation)
             )
 
-        # Check that the tau factor for the lower elevation is greater than the
-        #   tau factor for the higher elevation
-        assert tau_factors[0] > tau_factors[1]
+        # Check that the transmittance factor for the lower elevation is less than the
+        #   transmittance factor for the higher elevation
+        assert transmittance_factors[0] < transmittance_factors[1]
 
-        # Check that the tau factor is "high" for frequencies between bands
-        for tau_factor in tau_factors:
+        # Check that the tau factor is "low" for frequencies between bands
+        for transmittance_factor in transmittance_factors:
             if band == "opaque":
-                assert tau_factor > 10
+                assert transmittance_factor < 1e-4
             else:
-                assert tau_factor < 10
+                assert transmittance_factor > 1e-4
 
     @pytest.mark.parametrize('obs_freq,band', obs_frequency_bands)
     def test_atmospheric_temperature(self, obs_freq, band, weather, elevation,
@@ -216,9 +213,9 @@ class TestDerivedGroups:
 
         temp = atmosphere_params.calculate_atmospheric_temperature(obs_freq,
                                                                    weather)
-        tau = atmosphere_params.calculate_tau_atm(obs_freq, weather, 90*u.deg)
+        transmittance = atmosphere_params.calculate_transmittance(obs_freq, weather, 90*u.deg)
         # convert atmospheric temperature to sky temperature at zenith = 0
-        temp = temp * (1.00-np.exp(-tau))
+        temp = temp * (1.00-transmittance)
 
         # Check that the atmospheric temperature is "cold" for transparent
         # frequencies and "hot" for opaque frequencies
@@ -227,8 +224,9 @@ class TestDerivedGroups:
         else:
             assert temp < 150 * u.K
 
-    def test_system_temperature(self, t_cmb, t_amb, g, eta_eff, weather,
-                                elevation):
+    @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq', instrument_modules)
+    def test_system_temperature(self,  inst_spec_module, inst_name, obs_freq, 
+                                t_cmb, t_amb, eta_eff, weather, elevation):
 
         band_temps = []
 
@@ -238,19 +236,16 @@ class TestDerivedGroups:
             band = obs_freq_band[1]
 
             atmosphere_params = AtmosphereParams()
-            tau_atm = \
-                atmosphere_params.calculate_tau_atm(obs_freq, weather,
+            transmittance = \
+                atmosphere_params.calculate_transmittance(obs_freq, weather,
                                                     elevation)
             T_atm = \
                 atmosphere_params.calculate_atmospheric_temperature(obs_freq,
                                                                     weather)
-            temperatures = Temperatures(self.default_inst_module, obs_freq, t_cmb, 
-                                            t_amb, g, eta_eff, T_atm, tau_atm)
+            temperatures = Temperatures(inst_spec_module, obs_freq, t_cmb, t_amb, eta_eff,
+                                         T_atm, transmittance)
 
-            system_temperature = \
-                temperatures._calculate_system_temperature(g, t_cmb, eta_eff,
-                                                           t_amb, T_atm,
-                                                           tau_atm)
+            system_temperature = temperatures.T_sys
 
             # Confirm that the system temperature is *very* hot for
             # opaque frequencies
