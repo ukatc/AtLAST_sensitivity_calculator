@@ -11,7 +11,7 @@ class Muscat(Instrument):
         super().__init__(data)
         self.eta_chip_co = self.data.chip_and_cold_optics_efficiency['value']
         # self.T_co = self.create_Quantity(self.data.cold_optics_temperature) # not currently used
-        self.del_tag = self.create_Quantity(self.data.band_gap)
+        self.delta_g = self.create_Quantity(self.data.band_gap)
         self.eta_pb = self.data.pair_breaking_efficiency['value']
     
     ##################################
@@ -79,7 +79,7 @@ class Muscat(Instrument):
         # calculate noise equivalent power
         nep = (sqrt(2 * pkid * constants.h * obs_freq +
                     2 * pkid**2 / (n_pol * bandwidth) +
-                    4 * self.del_tag * pkid / self.eta_pb))
+                    4 * self.delta_g * pkid / self.eta_pb))
 
         system_temp = (nep / (constants.k_B * eta_eff * transmittance *
                self.eta_chip_co *
