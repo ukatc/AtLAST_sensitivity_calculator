@@ -9,10 +9,9 @@ MUSCAT instrument parameters
 class Muscat(Instrument):
     def __init__(self, data):
         super().__init__(data)
-        self._T_rx = self._set_default_receiver_temp(self.receiver_temp_options_and_unit)
         self.eta_chip_co = self.data.chip_and_cold_optics_efficiency['value']
         # self.T_co = self.create_Quantity(self.data.cold_optics_temperature) # not currently used
-        self.del_tag = self.create_Quantity(self.data.band_gap)
+        self.delta_g = self.create_Quantity(self.data.band_gap)
         self.eta_pb = self.data.pair_breaking_efficiency['value']
     
     ##################################
@@ -20,12 +19,12 @@ class Muscat(Instrument):
     ##################################
 
     @property 
-    def T_rx(self):
-        return self._T_rx
+    def T_sys(self):
+        return self._T_sys
     
-    @T_rx.setter
-    def T_rx(self, value):
-        self._T_rx = value
+    @T_sys.setter
+    def T_sys(self, value):
+        self._T_sys = value
 
     ################################################
     # Additional instrument specific methods below #
@@ -80,7 +79,7 @@ class Muscat(Instrument):
         # calculate noise equivalent power
         nep = (sqrt(2 * pkid * constants.h * obs_freq +
                     2 * pkid**2 / (n_pol * bandwidth) +
-                    4 * self.del_tag * pkid / self.eta_pb))
+                    4 * self.delta_g * pkid / self.eta_pb))
 
         system_temp = (nep / (constants.k_B * eta_eff * transmittance *
                self.eta_chip_co *
@@ -88,17 +87,3 @@ class Muscat(Instrument):
         
         self.T_sys = system_temp
         return system_temp
-
-    def calculate_receiver_temp(self, obs_freq):
-        # NOTE: This will be populated with instrument specific 
-        # receiver temperature calculation equation.
-        temp_option = float(self.receiver_temp_options_and_unit['values'][0])
-        temp = temp_option * u.K
-        self.T_rx = temp
-        return temp
-
-    @staticmethod
-    def _set_default_receiver_temp(receiver_temp_options_and_unit):
-        receiver_temp = u.Quantity(receiver_temp_options_and_unit['values'][0],
-                                    u.K)
-        return receiver_temp
