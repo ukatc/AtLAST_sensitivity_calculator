@@ -14,7 +14,6 @@ class InstrumentConfig:
         default_instrument = {'class': 'Default.py', 'data': 'Default.yaml'}
         chai_instrument = {'class': 'Chai.py', 'data': 'Chai.yaml'}
         finer_instrument = {'class': 'Finer.py', 'data': 'Finer.yaml'}
-        gltcam_instrument = {'class': 'GLTCam.py', 'data': 'GLTCam.yaml'}
         muscat_instrument = {'class': 'Muscat.py', 'data': 'Muscat.yaml'}
         sepia_instrument = {'class': 'Sepia.py', 'data': 'Sepia.yaml'}
         tifuun_instrument = {'class': 'Tifuun.py', 'data': 'Tifuun.yaml'}
@@ -24,7 +23,6 @@ class InstrumentConfig:
             default_instrument,
             chai_instrument,
             finer_instrument,
-            gltcam_instrument,
             muscat_instrument,
             sepia_instrument,
             tifuun_instrument
