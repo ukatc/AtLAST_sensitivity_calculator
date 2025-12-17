@@ -21,12 +21,6 @@ class DerivedParameters:
         return self._param_setup.derived_parameters_model.T_atm
 
     @property
-    def T_rx(self):
-        """
-        Get the receiver temperature
-        """
-        return self._param_setup.derived_parameters_model.T_rx
-    @property
     def eta_a(self):
         """
         Get the dish efficiency
