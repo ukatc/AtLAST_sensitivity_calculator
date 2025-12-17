@@ -71,21 +71,18 @@ class Sepia(Instrument):
         obs_freq = obs_freq.value
         t_rx_low = temp_options[0] # low receiver temp specified in the YAML
         t_rx_high = temp_options[1] # high receiver temp specified in the YAML
-        freq_200k = 370 * u.GHz
+        freq_high_min = freq_ranges[1][0] # min freq of second obs_freq range
+        freq_high_max = freq_ranges[1][1] # max freq of second obs_freq range
 
         temp = None
-        temp_index_count = 0
-        for range in freq_ranges:
-            if obs_freq >= range[0] and obs_freq <= range[1]:
-                if temp == None: # If there is not an assigned temp already
-                    # NOTE: This allows us to do open range assignments to temperatures
-                    temp = temp_options[temp_index_count] * u.K
-            # Only increase the temperature option index if the next increment
-            # is within the total amount of temperature options
-            if temp_index_count+1 < len(temp_options):
-                temp_index_count += 1
+        # If the observing frequency is in the first range 
+        if obs_freq >= freq_ranges[0][0] and obs_freq <= freq_ranges[0][1]:
+            temp = t_rx_low * u.K
+        # If the observing frequency is in the second range
+        elif obs_freq > freq_ranges[1][0] and obs_freq <= freq_ranges[1][1]:
+            temp = ( t_rx_low + (t_rx_high - t_rx_low) * (obs_freq - freq_high_min) \
+            / (freq_high_max - freq_high_min) ) * u.K
         self.T_rx = temp
-        
         return temp
     
     @staticmethod
