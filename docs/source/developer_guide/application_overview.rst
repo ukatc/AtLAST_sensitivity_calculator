@@ -22,28 +22,37 @@ Below is an overview description of each of the modules included in the
 :doc:`Public API <../code_docs/public_api>` and :doc:`UML diagrams <../code_docs/uml>`
 sections.
 
+calculator_factory
+++++++++++++++++++
+This module creates a calculator instance according to user input that has been specified. 
+
 calculator
 ++++++++++
 This module contains the main ``Calculator`` class that provides the interface
 for performing sensitivity and integration time calculations. A ``Calculator``
-object may be instantiated with default user input parameters, or by passing
-one or more parameters as arguments to the constructor.
+object may be instantiated with default parameter setup object, or by passing
+user input parameters as arguments to the parameter setup object constructor.
 
-.. note::
-    The ``Calculator`` may also be instantiated with user-defined instrument
-    setup parameters. However, this is not intended to be standard functionality
-    and could or should be removed. Note that the functionality has not been
-    tested and so is not guaranteed to work.
+This module provides methods exclusively for calculating sensitivity and integration time.
+It retrieves parameter sets —including user inputs, telescope and environmental 
+conditions, and derived parameters— through the parameter setup object. This design 
+simplifies the process for users by providing a unified interface to access information 
+from each parameter class.
 
-This module also contains the ``Config`` class, which stores the calculation
-inputs (user input and instrument setup). The class also stores a copy of the
+parameter_setup
++++++++++++++++
+This class serves as a centralised container for all parameter classes. When a parameter is 
+updates in its respective class, the new value is can be retrieved through this class. It 
+provides access to all models used in calculations and methods for operations related to 
+identifying applicable instruments. The class also stores a copy of the
 parameters used to initialize the calculator, allowing the user to revert to
 the initial state.
 
 data
 ++++
-The ``Data`` class stores all of the configuration information for each of the user input
-and instrument setup parameters used by the calculator (default values, default units, etc.).
+The ``Data`` class stores all of the configuration information for each of the user input, 
+telescope and environment parameters used by the calculator (default values, default units, etc.), 
+and calculated parameters.
 
 The ``Validator`` class provides methods for validating data provided to the calculator.
 
@@ -59,9 +68,9 @@ derived_groups
 ++++++++++++++
 This module contains classes that logically group derived parameters used by
 the calculator. Derived parameters are those that are dependent on the data
-provided to the calculator (user input and instrument setup). They are calculated
-at runtime when the calculator is instantiated, and when any of the independent
-parameters are updated.
+provided to the calculator (user input and telescope and environment). They are 
+calculated at runtime when the calculator is instantiated, and when any of the 
+independent parameters are updated.
 
 The derived group classes are ``AtmosphereParams``, ``Efficiencies``, and
 ``Temperatures``. Although these classes are accessible via the public API, they
