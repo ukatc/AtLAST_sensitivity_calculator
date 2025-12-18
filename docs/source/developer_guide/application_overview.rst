@@ -42,7 +42,7 @@ from each parameter class.
 parameter_setup
 +++++++++++++++
 This class serves as a centralised container for all parameter classes. When a parameter is 
-updates in its respective class, the new value is can be retrieved through this class. It 
+updated in its respective class, the new value can be retrieved through this class. It 
 provides access to all models used in calculations and methods for operations related to 
 identifying applicable instruments. The class also stores a copy of the
 parameters used to initialize the calculator, allowing the user to revert to
@@ -85,12 +85,17 @@ utils
 This is a utility module that contains classes and methods used throughout the application.
 
 Class Structure
-^^^^^^^
-General class structure can be visualised with the UML diagrams below. 
-.. figure:: imgs/calculator_class.png
+^^^^^^^^^^^^^^^
+General class structure can be visualised with the UML diagrams below.
+
+.. image:: imgs/calculator_class.png
     :alt: Diagram of relation between Calculator and CalculatorFactory class
-    
-.. figure:: imgs/parameter_classes.png
+
+The above diagram shows how the CalculatorFactory class has the Calculator class as a dependency. 
+The below diagram shows how each of the parameter classes depend on each other and how the 
+ParameterSetup class acts as the container for the current state of each parameter class.
+
+.. image:: imgs/parameter_classes.png
     :alt: Diagram of parameter classes that make up the calculation process
 
 The web application
