@@ -84,6 +84,14 @@ utils
 +++++
 This is a utility module that contains classes and methods used throughout the application.
 
+Class Structure
+^^^^^^^
+General class structure can be visualised with the UML diagrams below. 
+.. figure:: imgs/calculator_class.png
+    :alt: Diagram of relation between Calculator and CalculatorFactory class
+.. figure:: imgs/parameter_classes.png
+    :alt: Diagram of parameter classes that make up the calculation process
+
 The web application
 -------------------
 The web client consists of a backend based on the `FastAPI web framework <https://fastapi.tiangolo.com/lo/>`__,

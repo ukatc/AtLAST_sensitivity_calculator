@@ -161,7 +161,7 @@ class ParameterSetup:
         chosen_inst = self.loaded_instruments[chosen_inst_name]
         return chosen_inst
     
-    def compare_and_modify_bandwidth_units(self, bandwidth, instrument_bandw_vals):
+    def _compare_and_modify_bandwidth_units(self, bandwidth, instrument_bandw_vals):
         """
         (ASC-108)
         Compares user inputted bandwidth unit with the instrument 
@@ -217,7 +217,7 @@ class ParameterSetup:
 
         # Compare units of user inputs and instrument YAML file
         bandwidth, instrument_bandw_vals = \
-                                    self.compare_and_modify_bandwidth_units(bandwidth, instrument_bandw_vals)
+                                    self._compare_and_modify_bandwidth_units(bandwidth, instrument_bandw_vals)
 
         # Get float value of each parameter to be able to make comparison
         obs_freq = float(obs_freq.value)
