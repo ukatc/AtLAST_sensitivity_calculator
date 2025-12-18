@@ -75,10 +75,8 @@ class Decorators:
 
             # Validate the new value
             DataHelper.validate(param_class, func.__name__, value)
-            DataHelper.validate(param_class, func.__name__, value)
 
             # Determine if the old and new values differ
-            attribute = getattr(param_class, func.__name__)
             attribute = getattr(param_class, func.__name__)
             dirty = (attribute != value)
 
@@ -86,7 +84,6 @@ class Decorators:
             func(param_class, value, **kwargs)
             # Recalculate derived parameters, if necessary
             if dirty:
-                param_class._param_setup._calculate_derived_parameters()
                 param_class._param_setup._calculate_derived_parameters()
 
         return do_update

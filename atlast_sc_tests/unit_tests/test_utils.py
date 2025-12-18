@@ -4,10 +4,12 @@ import astropy.units as u
 from atlast_sc.utils import Decorators
 from atlast_sc.utils import FileHelper
 from atlast_sc.utils import DataHelper
+from atlast_sc.factory import CalculatorFactory
 
 from atlast_sc_tests.utils import does_not_raise
 
-from atlast_sc.instruments.classes.GLTCam import GLTCam
+from atlast_sc.parameter_setup import ParameterSetup
+from atlast_sc.instruments.classes.Sepia import Sepia
 from atlast_sc.instruments.classes.Finer import Finer
 
 from types import SimpleNamespace
@@ -22,15 +24,14 @@ class TestInstrumentClasses:
                 'expected_receiver_temp_options_and_unit',
                 [
                     (
-                        "gltcam", "GLTCam", 
+                        "Sepia", "Sepia", 
                         # observing frequency
-                        {'ranges': ['(130.0-170.0)', '(190.0-250.0)', '(250.0-295.0)', 
-                                    '(330.0-365.0)', '(385.0-415.0)', '(630.0-710.0)'], 
+                        {'ranges': ['(272.0-330.0)','(330.0-376.0)'], 
                                     'unit': 'GHz'},
                         # bandwidth
-                        {'ranges': ['(1.0-5.0)'], 'unit': 'MHz'},
+                        {'ranges': ['(6.25e4-1.8e8)'], 'unit': 'Hz'},
                         # receiver temperature
-                        {'values': [22.0], 'unit': 'K'}
+                        {'values': [90.0,216.5], 'unit': 'K'}
                     )
                     # NOTE: Other instrument YAML file details can be added here to
                     # be checked. 
@@ -46,19 +47,19 @@ class TestInstrumentClasses:
             Test instrument YAML files are being read in and processed correctly. 
             """
 
-            gltcam_data = FileHelper.read_instrument_file(instrument_yaml_file_name)
-            gltcam = GLTCam(data=gltcam_data)
+            inst_data = FileHelper.read_instrument_yaml_file(instrument_yaml_file_name)
+            sepia = Sepia(data=inst_data)
 
-            assert gltcam.name == instrument_name
+            assert sepia.name == instrument_name
 
-            assert gltcam.obs_freq_ranges_and_unit['ranges'] == expected_obs_freq_ranges_and_unit['ranges']
-            assert gltcam.obs_freq_ranges_and_unit['unit'] == expected_obs_freq_ranges_and_unit['unit']
+            assert sepia.obs_freq_ranges_and_unit['ranges'] == expected_obs_freq_ranges_and_unit['ranges']
+            assert sepia.obs_freq_ranges_and_unit['unit'] == expected_obs_freq_ranges_and_unit['unit']
 
-            assert gltcam.bandwidth_ranges_and_unit['ranges'] == expected_bandwidth_ranges_and_unit['ranges']
-            assert gltcam.bandwidth_ranges_and_unit['unit'] == expected_bandwidth_ranges_and_unit['unit']
+            assert sepia.bandwidth_ranges_and_unit['ranges'] == expected_bandwidth_ranges_and_unit['ranges']
+            assert sepia.bandwidth_ranges_and_unit['unit'] == expected_bandwidth_ranges_and_unit['unit']
             
-            assert gltcam.receiver_temp_options_and_unit['values'] == expected_receiver_temp_options_and_unit['values']
-            assert gltcam.receiver_temp_options_and_unit['unit'] == expected_receiver_temp_options_and_unit['unit']
+            assert sepia.receiver_temp_options_and_unit['values'] == expected_receiver_temp_options_and_unit['values']
+            assert sepia.receiver_temp_options_and_unit['unit'] == expected_receiver_temp_options_and_unit['unit']
 
         def test_correct_receiver_temperature_set(self):
             """
@@ -66,17 +67,17 @@ class TestInstrumentClasses:
             supplied by the user input. 
             """
             
-            finer_data = FileHelper.read_instrument_file("finer")
+            finer_data = FileHelper.read_instrument_yaml_file("finer")
             test_obs_freq_1 = 130.0 * u.GHz
-            finer = Finer(data=finer_data, obs_freq=test_obs_freq_1)
+            finer = Finer(data=finer_data)
             
             assert finer.name == "Finer"
 
-            receiver_temp_1 = finer._set_receiver_temp(test_obs_freq_1)
+            receiver_temp_1 = finer.calculate_receiver_temp(test_obs_freq_1)
             assert receiver_temp_1 == 45.0 * u.K
 
             test_obs_freq_2 = 215.0 * u.GHz
-            receiver_temp_2 = finer._set_receiver_temp(test_obs_freq_2)
+            receiver_temp_2 = finer.calculate_receiver_temp(test_obs_freq_2)
             assert receiver_temp_2 == 75.0 * u.K
 
         def test_applicable_instrument_calculation(self):
@@ -85,7 +86,7 @@ class TestInstrumentClasses:
             and bandwidth values supplied by the user input.
             """
 
-            test_obs_freq = 164.0 * u.GHz
+            test_obs_freq = 273.0 * u.GHz
             test_bandwidth = 10001 * u.MHz
             mock_calc = CalculatorFactory._create_calculator(param_setup=ParameterSetup())
 
@@ -94,7 +95,7 @@ class TestInstrumentClasses:
 
             chosen_inst_module = mock_calc._param_setup.get_chosen_instrument()
             applicable_inst_name = chosen_inst_module.name
-            assert applicable_inst_name == "Sepia345"
+            assert applicable_inst_name == "Sepia"
 
 
 class TestDecorators:
@@ -258,7 +259,6 @@ class TestFileHelper:
         [
             ("chai"),
             ("finer"),
-            ("gltcam"),
             ("muscat"),
             ("sepia"),
             ("tifuun")
