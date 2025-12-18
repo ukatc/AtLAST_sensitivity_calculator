@@ -90,6 +90,7 @@ General class structure can be visualised with the UML diagrams below.
 
 .. image:: imgs/calculator_class.png
     :alt: Diagram of relation between Calculator and CalculatorFactory class
+    :align: center
 
 The above diagram shows how the CalculatorFactory class has the Calculator class as a dependency. 
 The below diagram shows how each of the parameter classes depend on each other and how the 
@@ -97,6 +98,7 @@ ParameterSetup class acts as the container for the current state of each paramet
 
 .. image:: imgs/parameter_classes.png
     :alt: Diagram of parameter classes that make up the calculation process
+    :align: center
 
 The web application
 -------------------
