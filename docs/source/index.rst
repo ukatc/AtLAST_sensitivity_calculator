@@ -13,6 +13,7 @@ AtLAST Sensitivity Calculator
 
    calculator_info/sensitivity
    calculator_info/calculation_inputs
+   calculator_info/calculation_results
    calculator_info/weather
 
 .. Python Package User Guide section
