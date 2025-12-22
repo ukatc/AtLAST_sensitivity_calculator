@@ -1,7 +1,7 @@
 Inputs to the Calculation
 =========================
 
-The tables below show the user input parameters, instrument setup parameters,
+The tables below show the user input parameters, teelscope and environment parameters,
 and derived parameters used by the Calculator to calculate the integration time
 or sensitivity.
 
@@ -10,10 +10,6 @@ Units in the tables are string representations of
 
 .. include:: user_input.rst
 
-.. include:: derived_parameters.rst
-
-.. include:: instrument_setup.rst
-
-.. include:: instrument_specific.rst
-
 .. include:: telescope_and_environment.rst
+
+.. include:: derived_parameters.rst
