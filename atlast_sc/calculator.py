@@ -1,4 +1,5 @@
 import warnings
+import yaml
 import astropy.units as u
 import numpy as np
 from atlast_sc.utils import DataHelper, Decorators
@@ -79,8 +80,37 @@ class Calculator:
         self._calculated_t_int.value = value
 
     @property
+    def loaded_instruments(self):
+        """
+        List of names of the loaded instruments with their respective
+        specified observing frequency and bandwidth ranges
+        """
+        loaded_instrument_list = []
+        loaded_instrument_modules = self._param_setup.loaded_instruments
+        for inst_name, inst_module in loaded_instrument_modules.items():
+            inst_obs_freq_list = inst_module.obs_freq_ranges_and_unit
+            inst_bandwidth_list = inst_module.bandwidth_ranges_and_unit
+            loaded_instrument_list.append({inst_name: {
+                                           'obs_freq': inst_obs_freq_list,
+                                           'bandwidth': inst_bandwidth_list}
+                                           })
+        return yaml.dump(loaded_instrument_list, default_flow_style=False)
+
+    @property
     def chosen_instrument(self):
-        return self._param_setup.chosen_instrument
+        """
+        Name of chosen instrument
+        """
+        return self._param_setup.chosen_instrument.name
+    
+    @chosen_instrument.setter
+    def chosen_instrument(self, instrument_name):
+        try:
+            self._param_setup.chosen_instrument = \
+                self._param_setup.loaded_instruments[instrument_name]
+        except KeyError as e:
+            print('Instrument provided is not available. Check '\
+                  'the list of loaded instrument names again.')
         
     #################################################
     # Public methods for performing sensitivity and #
