@@ -1,6 +1,5 @@
 import copy, re
 from atlast_sc.models import UserInput
-from atlast_sc.models import InstrumentSpecific
 from atlast_sc.models import CalculationInput
 from atlast_sc.models import CalculationResult
 from atlast_sc.models import TelescopeAndEnvironment
@@ -21,18 +20,18 @@ class ParameterSetup:
     Class that holds the user input and instrument setup parameters
     used to perform the sensitivity calculations.
     """
-    def __init__(self, user_input={}, instrument_specific={}, telescope_and_environment={}, finetune=False):
+    def __init__(self, user_input={}, telescope_and_environment={}, finetune=False):
         """
         Initialises all the required parameters from user_input and
-        instrument_specific.
+        telescope_and_environment.
 
         :param user_input: A dictionary of user inputs of structure
         {'param_name':{'value': <value>, 'unit': <unit>}}
         :type user_input: dict
-        :param instrument_specific: A dictionary of instrument setup parameters
-        of structure
+        :param telescope_and_environment: A dictionary of telescope and
+        environment parameters of structure
         {'param_name':{'value': <value>, 'unit': <unit>}}
-        :type instrument_specific: dict
+        :type telescope_and_environment: dict
         """
 
         # Make sure the user input doesn't contain any unexpected parameter names
@@ -42,12 +41,10 @@ class ParameterSetup:
 
         # Parameters
         new_user_input = UserInput(**user_input)
-        new_instrument_specific = InstrumentSpecific(**instrument_specific)
         new_telescope_and_environment = TelescopeAndEnvironment(**telescope_and_environment)
 
         self._calculation_inputs = \
             CalculationInput(user_input=new_user_input,
-                             instrument_specific=new_instrument_specific,
                              telescope_and_environment=new_telescope_and_environment)
         
         self._calculation_results = CalculationResult()
@@ -55,14 +52,30 @@ class ParameterSetup:
         # Get instrument config 
         inst_config = InstrumentConfig()
         # Get loaded instrument classes
-        self.loaded_instruments = inst_config.instrument_classes
-        
+        self._loaded_instruments = inst_config.instrument_classes
+        self._chosen_inst = None
+
+        # Create dictionaries of each instrument and their observing frequency
+        # and bandwidth ranges.
+        self.instrument_obs_freqs = {} # Instrument specific observing frequency ranges
+        self.instrument_bandw_vals = {} # Instrument specific bandwidth value ranges
+        for inst_name, inst_module in self.loaded_instruments.items():
+            self.instrument_obs_freqs[inst_name] = inst_module.obs_freq_ranges_and_unit
+            self.instrument_bandw_vals[inst_name] = inst_module.bandwidth_ranges_and_unit
+
         self._derived_parameters_model = self._calculate_derived_parameters()
         
         # Make a deep copy of the calculation inputs to enable the
         # calculator to be reset to its initial setup
         self._original_inputs = copy.deepcopy(self._calculation_inputs)
 
+
+    @property
+    def loaded_instruments(self):
+        """
+        Dictionary of all loaded instruments and their classes
+        """
+        return self._loaded_instruments
 
     @property
     def calculation_inputs(self):
@@ -84,13 +97,6 @@ class ParameterSetup:
         User inputs to the calculation
         """
         return self._calculation_inputs.user_input
-  
-    @property
-    def instrument_specific(self):
-        """
-        Instrument specific parameters
-        """
-        return self._calculation_inputs.instrument_specific
     
     @property
     def telescope_and_environment(self):
@@ -112,6 +118,20 @@ class ParameterSetup:
         Set derived parameters calculated from user input and instrument specific parameters
         """
         self._derived_parameters = new_model
+
+    @property
+    def chosen_instrument(self):
+        """
+        Get chosen instrument module
+        """
+        return self._chosen_inst
+    
+    @chosen_instrument.setter
+    def chosen_instrument(self, instrument):
+        """
+        Set chosen instrument module according to user inputs
+        """
+        self._chosen_inst = instrument
 
     def reset(self):
         """
@@ -150,12 +170,57 @@ class ParameterSetup:
         user_obs_freq = self.user_input.obs_freq.value
         user_bandwidth = self.user_input.bandwidth.value
         # See which instrument those values correspond to
-        chosen_inst_name = self.find_applicable_instruments(obs_freq=user_obs_freq, bandwidth=user_bandwidth)
+        chosen_inst_name = self.find_applicable_instruments(user_obs_freq, user_bandwidth,
+                                                            self.instrument_obs_freqs,
+                                                            self.instrument_bandw_vals)
         # Get the instrument module according to instrument name
         chosen_inst = self.loaded_instruments[chosen_inst_name]
+        self.chosen_instrument = chosen_inst
         return chosen_inst
+    
+    def compare_and_modify_bandwidth_units(self, bandwidth, instrument_bandw_vals):
+        """
+        (ASC-108)
+        Compares user inputted bandwidth unit with the instrument 
+        YAML file bandwidth units and converts each to Hz equivalent 
+        value for instrument selection.
 
-    def find_applicable_instruments(self, obs_freq, bandwidth):
+        :return: tuple of converted user input bandwidth value and 
+                converted dictionary of instrument bandwidth ranges 
+        :rtype: Quantity
+        """
+        # Convert user input bandwidth value to Hz
+        bandwidth = bandwidth.to(u.Hz)
+
+        for _, bandwidths_and_unit in instrument_bandw_vals.items():
+            bandwidth_ranges = bandwidths_and_unit['ranges']
+            yaml_unit = u.Unit(bandwidths_and_unit['unit'])
+
+            for range in bandwidth_ranges:
+                range_count = 0 # start a counter to find the range of the instrument
+                range = re.findall(r"[\d.e]+", range)
+
+                # Create Quantity object for min and max freq
+                min_freq = u.Quantity(float(range[0]), yaml_unit)
+                max_freq = u.Quantity(float(range[1]), yaml_unit)
+
+                # Convert min and max Quantity to Hz
+                min_freq_hz = min_freq.to(u.Hz)
+                max_freq_hz = max_freq.to(u.Hz)
+
+                # Replace bandwidths_and_unit dict with new Hz values to be 
+                # ready for comparison
+                bandwidths_and_unit['ranges'][range_count] = '(' + str(min_freq_hz.value) + \
+                                                            '-' + str(max_freq_hz.value) + ')'
+                range_count += 1
+
+            # Change unit to Hz in the bandwidths_and_unit dict here to avoid
+            #  unconversion of units where bandwidth ranges are non-existent
+            bandwidths_and_unit['unit'] = str(u.Hz)
+        return bandwidth, instrument_bandw_vals 
+
+    def find_applicable_instruments(self, obs_freq, bandwidth, 
+                                    instrument_obs_freqs, instrument_bandw_vals):
         """
         Finds what instrument/s the observing frequency and bandwidth values
         inputted by the user correspond to and choose one to do the further
@@ -164,16 +229,12 @@ class ParameterSetup:
         :return: applicable/chosen instrument name
         :rtype: String
         """
-        # TODO: could make the finding applicable ranges more efficient by looking at general ranges first 
-
-        instrument_obs_freqs = {} # Instrument specific observing frequency ranges
-        instrument_bandw_vals = {} # Instrument specific bandwidth value ranges
-        for inst_name, inst_module in self.loaded_instruments.items():
-            instrument_obs_freqs[inst_name] = inst_module.obs_freq_ranges_and_unit
-            instrument_bandw_vals[inst_name] = inst_module.bandwidth_ranges_and_unit
-
         applicable_obs_freq_instruments = []
         applicable_bandw_instruments = []
+
+        # Compare units of user inputs and instrument YAML file
+        bandwidth, instrument_bandw_vals = \
+                                    self.compare_and_modify_bandwidth_units(bandwidth, instrument_bandw_vals)
 
         # Get float value of each parameter to be able to make comparison
         obs_freq = float(obs_freq.value)
@@ -233,7 +294,7 @@ class ParameterSetup:
 
         # LDM
         # ------------------------------------------------------------------
-        # T_atm, tau_atm, and the various temps values are not actually used
+        # T_atm, transmittance, and the various temps values are not actually used
         # for computing the sefd, but I kept this part to avoid breaking the
         # build of DerivedParams below
         # ------------------------------------------------------------------
@@ -241,6 +302,7 @@ class ParameterSetup:
         weather = self.calculation_inputs.user_input.weather.value
         elevation = self.calculation_inputs.user_input.elevation.value
         bandwidth = self.calculation_inputs.user_input.bandwidth.value
+        n_pol = self.calculation_inputs.user_input.n_pol.value
         surface_rms = self.calculation_inputs.telescope_and_environment.surface_rms.value
         dish_radius = self.calculation_inputs.telescope_and_environment.dish_radius.value
         eta_eff = self.calculation_inputs.telescope_and_environment.eta_eff.value
@@ -249,13 +311,10 @@ class ParameterSetup:
         eta_block = self.calculation_inputs.telescope_and_environment.eta_block.value
         T_cmb = self.calculation_inputs.telescope_and_environment.T_cmb.value
         T_amb = self.calculation_inputs.telescope_and_environment.T_amb.value
-        eta_pol = self.calculation_inputs.instrument_specific.eta_pol.value
-        g = self.calculation_inputs.instrument_specific.g.value
+        eta_pol = self.calculation_inputs.telescope_and_environment.eta_pol.value
 
         # Get chosen instrument and its receiver temperature
-        # chosen_inst = self.chosen_inst
         chosen_inst = self.get_chosen_instrument()
-        inst_spec_T_rx = chosen_inst.calculate_receiver_temp(obs_freq=obs_freq)
 
         # Perform efficiencies calculations
         eta = Efficiencies(obs_freq , surface_rms, eta_ill,
@@ -263,13 +322,13 @@ class ParameterSetup:
 
         # Perform atmospheric model calculations
         atm = AtmosphereParams()
-        tau_atm = atm.calculate_tau_atm(obs_freq,
+        transmittance = atm.calculate_transmittance(obs_freq,
                                         weather, elevation)
         T_atm = atm.calculate_atmospheric_temperature(obs_freq,
                                                         weather)
         # Calculate the temperatures
-        temps = Temperatures(obs_freq, T_cmb, T_amb, g,
-                                eta_eff, T_atm, tau_atm, inst_spec_T_rx)
+        temps = Temperatures(chosen_inst, obs_freq, bandwidth, T_cmb, T_amb, eta_eff,
+                            T_atm, transmittance, n_pol)
 
         # LDM
         # ------------------------------------------------------------------
@@ -308,11 +367,11 @@ class ParameterSetup:
 
             # compute SEFD for each narrow spectral element
             for freq in obs_freq_list:
-                _tau_atm = atm.calculate_tau_atm(freq,weather,elevation)
+                _transmittance = atm.calculate_transmittance(freq,weather,elevation)
 
                 _T_atm = atm.calculate_atmospheric_temperature(freq,weather)
-                _temps = Temperatures(freq, T_cmb, T_amb, g,
-                                        eta_eff, _T_atm, _tau_atm)
+                _temps = Temperatures(chosen_inst, obs_freq, bandwidth, T_cmb, T_amb, eta_eff,
+                            T_atm, transmittance, n_pol)
 
                 _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a, dish_radius).to('J/m2').value)
             _sefd = np.asarray(_sefd)*(u.J/u.m**2)
@@ -323,7 +382,7 @@ class ParameterSetup:
             sefd = self._calculate_sefd(temps.T_sys, eta.eta_a, dish_radius)
 
         self._derived_parameters_model = \
-            DerivedParams(tau_atm=tau_atm, T_atm=T_atm, T_rx=temps.T_rx,
+            DerivedParams(transmittance=transmittance, T_atm=T_atm,
                             eta_a=eta.eta_a, eta_s=eta.eta_s, T_sys=temps.T_sys, T_sky=temps.T_sky,
                             sefd=sefd)
 

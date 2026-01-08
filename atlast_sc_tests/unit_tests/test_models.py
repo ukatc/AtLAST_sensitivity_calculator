@@ -10,7 +10,6 @@ from atlast_sc_tests.utils import does_not_raise
 
 
 from atlast_sc.parameters.user_input_parameters import UserInputParameters
-from atlast_sc.parameters.instrument_specific_parameters import InstrumentSpecificParameters
 from atlast_sc.parameters.telescope_and_environment_parameters import TelescopeAndEnvironmentParameters
 from atlast_sc.parameters.derived_parameters import DerivedParameters
 
@@ -102,14 +101,6 @@ class TestModels:
 
         model_str_rep_spy.assert_called_once()
 
-    def test_instrument_specific_to_str(self, calculator, mocker):
-
-        model_str_rep_spy = mocker.spy(InstrumentSpecificParameters, 'show')
-
-        str(calculator.instrument_specific.show())
-
-        model_str_rep_spy.assert_called_once()
-
     def test_tel_and_env_to_str(self, calculator, mocker):
 
         model_str_rep_spy = mocker.spy(TelescopeAndEnvironmentParameters, 'show')
@@ -127,7 +118,7 @@ class TestModels:
         model_str_rep_spy.assert_called_once()
 
     def test_calculation_input_validated(
-            self, user_input_dict, instrument_specific_dict, 
+            self, user_input_dict, 
             telescope_and_environment_dict, mocker):
 
         validate_field_spy = mocker.spy(Validator, 'validate_field')
@@ -138,8 +129,6 @@ class TestModels:
         # Check that the user input and instrument setup parameters were
         # validated
         for key, val in user_input_dict.items():
-            expected_validation_calls.append(mocker.call(key, val))
-        for key, val in instrument_specific_dict.items():
             expected_validation_calls.append(mocker.call(key, val))
         for key, val in telescope_and_environment_dict.items():
             expected_validation_calls.append(mocker.call(key, val))

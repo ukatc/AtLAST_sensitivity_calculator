@@ -6,7 +6,6 @@ from atlast_sc.exceptions import CalculatedValueInvalidWarning
 from atlast_sc.exceptions import ValueOutOfRangeException
 
 from atlast_sc.parameters.user_input_parameters import UserInputParameters
-from atlast_sc.parameters.instrument_specific_parameters import InstrumentSpecificParameters
 from atlast_sc.parameters.telescope_and_environment_parameters import TelescopeAndEnvironmentParameters
 from atlast_sc.parameters.derived_parameters import DerivedParameters
 
@@ -28,7 +27,6 @@ class Calculator:
         self._param_setup = param_setup
         # Special classes for customisation of models
         self._user_input = UserInputParameters(param_setup)
-        self._instrument_specific = InstrumentSpecificParameters(param_setup)
         self._telescope_and_environment = TelescopeAndEnvironmentParameters(param_setup)
         self._derived_parameters = DerivedParameters(param_setup)
         # Calculated value variables of calculation result model
@@ -41,13 +39,6 @@ class Calculator:
         User inputs to the calculation
         """
         return self._user_input
-
-    @property
-    def instrument_specific(self):
-        """
-        Instrument specific parameters
-        """
-        return self._instrument_specific
     
     @property
     def telescope_and_environment(self):
@@ -86,6 +77,10 @@ class Calculator:
     @Decorators.validate_value
     def calculated_t_int(self, value):
         self._calculated_t_int.value = value
+
+    @property
+    def chosen_instrument(self):
+        return self._param_setup.chosen_instrument
         
     #################################################
     # Public methods for performing sensitivity and #

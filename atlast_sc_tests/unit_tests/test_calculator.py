@@ -42,7 +42,7 @@ class TestCalculator:
     def test_initialize_calculator(self, input_data, expected_custom_values,
                                    scenario, user_input_dict,
                                    telescope_and_environment_dict,
-                                   instrument_specific_dict, mocker):
+                                   mocker):
 
         check_input_param_names_spy \
             = mocker.spy(ParameterSetup, '_check_input_param_names')
@@ -82,10 +82,7 @@ class TestCalculator:
                        == expected_custom_values[user_input_param]
 
         # Check that parameter setup has been configured with the correct
-        # instrument, telescope and environment data
-        for inst_spec_param in instrument_specific_dict:
-            assert getattr(param_setup.instrument_specific, inst_spec_param).value \
-                == instrument_specific_dict[inst_spec_param]
+        # telescope and environment data
         for tel_and_env_param in telescope_and_environment_dict:
             assert getattr(param_setup.telescope_and_environment, tel_and_env_param).value \
                 == telescope_and_environment_dict[tel_and_env_param]
@@ -98,11 +95,6 @@ class TestCalculator:
                 continue # ignoring derived parameters as it is checked later
             assert value == getattr(param_setup.calculation_inputs.user_input, param).value
 
-        # Instrument specific
-        inst_spec_params = self.iterate_over_properties(test_calculator.instrument_specific)
-        for param, value in inst_spec_params.items():
-            assert value == getattr(param_setup.calculation_inputs.instrument_specific,
-                                    param).value
         # Telescope and environment
         tcope_and_env_params = self.iterate_over_properties(test_calculator.telescope_and_environment)
         for param, value in tcope_and_env_params.items():
@@ -179,54 +171,6 @@ class TestCalculator:
     @pytest.mark.parametrize(
         'param,new_value,derived_params_recalculated,expected_raises,finetuned',
         [
-            # Instrument specific
-            ('g', 0.9, False, pytest.raises(AttributeError),False),
-            ('eta_pol', 0.7, False, pytest.raises(AttributeError),False)
-        ]
-    )
-
-    def test_update_properties_instrument_specific(self, param, new_value,
-                               derived_params_recalculated, expected_raises, finetuned,
-                               t_atm, calculator, mocker, request):
-
-        validation_spy = mocker.spy(DataHelper, 'validate')
-        calculate_derived_params_spy = \
-            mocker.spy(ParameterSetup, '_calculate_derived_parameters')
-        original_derived_params = copy.deepcopy(calculator.derived_parameters)
-
-        uip = calculator.user_input
-        isp = calculator.instrument_specific
-        # Check that we can update certain properties, but not others
-        with expected_raises as e:
-            setattr(isp, param, new_value)
-
-        if not e:
-            # Verify that the update was validated
-            validation_spy.assert_called()
-            # Verify that the parameter was updated
-            assert getattr(isp, param) == new_value
-            # Verify that the derived parameters were updated,
-            # where appropriate
-            if derived_params_recalculated:
-                if finetuned:
-                    calculate_derived_params_spy.assert_called()
-                    assert calculator.derived_parameters == original_derived_params                
-                else:
-                    calculate_derived_params_spy.assert_called()
-                    assert False == calculator.derived_parameters.__eq__(original_derived_params)
-                        
-            else:
-                calculate_derived_params_spy.assert_not_called()
-                assert calculator.derived_parameters == \
-                    original_derived_params
-        else:
-            # Verify that that parameter was not updated
-            original_value = request.getfixturevalue(param.lower())
-            assert getattr(isp, param) == original_value
-
-    @pytest.mark.parametrize(
-        'param,new_value,derived_params_recalculated,expected_raises,finetuned',
-        [
             # Telescope and environment
             ('surface_rms', 10 * u.micron, False,
              pytest.raises(AttributeError),False),
@@ -236,7 +180,8 @@ class TestCalculator:
             ('eta_spill', 0.7, False, pytest.raises(AttributeError),False),
             ('T_cmb', 10 * u.K, False, pytest.raises(AttributeError),False),
             ('T_amb', 100 * u.K, False, pytest.raises(AttributeError),False),
-            ('eta_block', 0.7, False, pytest.raises(AttributeError),False)
+            ('eta_block', 0.7, False, pytest.raises(AttributeError),False),
+            ('eta_pol', 0.7, False, pytest.raises(AttributeError),False)
         ]
     )
     def test_update_properties_telescope_and_environment(self, param, new_value,
@@ -283,55 +228,31 @@ class TestCalculator:
         'param,new_value,derived_params_recalculated,expected_raises,finetuned',
         [
             # Derived parameters
-            ('tau_atm', 0.3, False, pytest.raises(AttributeError),False),
+            ('transmittance', 0.3, False, pytest.raises(AttributeError),False),
             ('T_atm', 200 * u.K, False, pytest.raises(AttributeError),False),
-            ('T_rx', 200 * u.K, False, pytest.raises(AttributeError),False),
             ('T_sys', 200 * u.K, False, pytest.raises(AttributeError),False),
             ('eta_a', 0.7, False, pytest.raises(AttributeError),False),
             ('eta_s', 0.7, False, pytest.raises(AttributeError),False),
-            ('sefd', 1e-24 * u.J / (u.m * u.m), False,
-             pytest.raises(AttributeError),False)
+            ('sefd', 1e-24 * u.J / (u.m * u.m), False, pytest.raises(AttributeError),False)
         ]
     )
     def test_update_properties_derived_parameters(self, param, new_value,
                                derived_params_recalculated, expected_raises, finetuned,
                                t_atm, calculator, mocker, request):
 
-        validation_spy = mocker.spy(DataHelper, 'validate')
-        calculate_derived_params_spy = \
-            mocker.spy(ParameterSetup, '_calculate_derived_parameters')
         original_derived_params = copy.deepcopy(calculator.derived_parameters)
-
-
-        uip = calculator.user_input
         dp = calculator.derived_parameters
+
         # Check that we can update certain properties, but not others
         with expected_raises as e:
             setattr(dp, param, new_value)
 
-        if not e:
-            # Verify that the update was validated
-            validation_spy.assert_called()
-            # Verify that the parameter was updated
-            assert getattr(dp, param) == new_value
-            # Verify that the derived parameters were updated,
-            # where appropriate
-            if derived_params_recalculated:
-                if finetuned:
-                    calculate_derived_params_spy.assert_called()
-                    assert calculator.derived_parameters == original_derived_params                
-                else:
-                    calculate_derived_params_spy.assert_called()
-                    assert False == calculator.derived_parameters.__eq__(original_derived_params)
-                        
-            else:
-                calculate_derived_params_spy.assert_not_called()
-                assert calculator.derived_parameters == \
-                    original_derived_params
-        else:
-            # Verify that that parameter was not updated
-            original_value = request.getfixturevalue(param.lower())
+        if e:
+            # Verify that that parameters were not updated
+            original_value = getattr(original_derived_params, param)
             assert getattr(dp, param) == original_value
+        else:
+            assert False
 
     def test_reset(self, obs_freq, calculator, mocker):
 
@@ -481,26 +402,30 @@ class TestCalculator:
             func = getattr(calculator, func_name)
             func(input_value)
 
-    @pytest.mark.parametrize(
-        'param,input_value,func_name',
-        [
-            ('calculated_t_int', 300 * u.mJy, 'calculate_t_integration'),
-            # Not possible to get the sensitivity down to exactly zero,
-            # and since t_int must be greater than 1s, it's not possible
-            # to reach the upper bound either
-        ]
-    )
-    def test_calculate_invalid_value(self, param, input_value, func_name,
-                                     calculator):
-        # Verify that a warning is raised if the calculated value is outside
-        # its permitted range
-        with pytest.warns(CalculatedValueInvalidWarning):
-            func = getattr(calculator, func_name)
-            calculated_value = func(input_value)
+    # NOTE: Both calculated sensitivity and calculated integration time can be any
+    # value from 0 to inf, therefore, this test has no meaning. Commenting it out
+    # for any future need.
+    #
+    # @pytest.mark.parametrize(
+    #     'param,input_value,func_name',
+    #     [
+    #         ('calculated_t_int', 300 * u.mJy, 'calculate_t_integration'),
+    #         # Not possible to get the sensitivity down to exactly zero,
+    #         # and since t_int must be greater than 1s, it's not possible
+    #         # to reach the upper bound either
+    #     ]
+    # )
+    # def test_calculate_invalid_value(self, param, input_value, func_name,
+    #                                  calculator):
+    #     # Verify that a warning is raised if the calculated value is outside
+    #     # its permitted range
+    #     with pytest.warns(CalculatedValueInvalidWarning):
+    #         func = getattr(calculator, func_name)
+    #         calculated_value = func(input_value)
 
-        # make sure the calculator was not updated with calculated value
-        stored_value = getattr(calculator, param)
-        assert stored_value != calculated_value
+    #     # make sure the calculator was not updated with calculated value
+    #     stored_value = getattr(calculator, param)
+    #     assert stored_value != calculated_value
 
     def test_consistency(self, calculator):
         # Calculate the sensitivity
@@ -531,8 +456,7 @@ class TestParameterSetup:
     )
     def test_initialize_parameter_setup(self, input_data, expected_custom_values,
                                scenario, user_input_dict,
-                               telescope_and_environment_dict, 
-                               instrument_specific_dict):
+                               telescope_and_environment_dict):
 
         param_setup = ParameterSetup(user_input=input_data)
 

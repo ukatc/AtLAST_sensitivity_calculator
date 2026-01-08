@@ -9,3 +9,5 @@ allowed_ranges:
 receiver_temperature: 
   values: []
   unit: K
+prefactor:
+  value: 5
