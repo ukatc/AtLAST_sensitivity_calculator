@@ -100,6 +100,24 @@ ParameterSetup class acts as the container for the current state of each paramet
     :alt: Diagram of parameter classes that make up the calculation process
     :align: center
 
+Integration Overview
+--------------------
+The overall calculation process is kickstarted with a creation of a Calculator object using CalculatorFactory.
+Initially, the calculator is created with default values. If the user is using the calculator via the Python 
+CLI, they can change any of the user input parameters before calculating the sensitivity/integration time. If
+they don't, the calculations will be done with default values. In the UI, the first calculation is done with
+the default values and any specified user input parameters will be considered within the calculations once the
+user clicks the "Calculate" button. 
+
+The application will choose an instrument to use specific equations when calculating sensitivity/integration
+time according to the user input parameters. In the case where the user input parameters correspond to more than
+one instrument, the application will choose the first applicable instrument. The user can also change the 
+chosen instrument manually. [TODO: populate with the workings of instrument choice when implemented]
+
+Once the instrument has been selected by the appropriate method, the calculator will use any instrument specific
+equations or parameters -where available- to calculate sensitivity/integration time. These instrument specific 
+equations or parameters would have been defined within the relative instrument YAML files and classes. 
+
 The web application
 -------------------
 The web client consists of a backend based on the `FastAPI web framework <https://fastapi.tiangolo.com/lo/>`__,
