@@ -51,7 +51,7 @@ class AtmosphereParams:
     
     def calculate_transmittance(self, obs_freq, weather, elevation):
         """
-        Calculate the atmospheric transmittance
+        Calculate the atmospheric optical depth, tau_atm
 
         :param obs_freq: the central observing frequency
         :type obs_freq: astropy.units.Quantity

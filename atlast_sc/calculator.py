@@ -77,6 +77,10 @@ class Calculator:
     @Decorators.validate_value
     def calculated_t_int(self, value):
         self._calculated_t_int.value = value
+
+    @property
+    def chosen_instrument(self):
+        return self._param_setup.chosen_instrument
         
     #################################################
     # Public methods for performing sensitivity and #

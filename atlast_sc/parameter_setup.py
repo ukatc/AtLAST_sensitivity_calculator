@@ -53,6 +53,7 @@ class ParameterSetup:
         inst_config = InstrumentConfig()
         # Get loaded instrument classes
         self._loaded_instruments = inst_config.instrument_classes
+        self._chosen_inst = None
 
         # Create dictionaries of each instrument and their observing frequency
         # and bandwidth ranges.
@@ -67,6 +68,7 @@ class ParameterSetup:
         # Make a deep copy of the calculation inputs to enable the
         # calculator to be reset to its initial setup
         self._original_inputs = copy.deepcopy(self._calculation_inputs)
+
 
     @property
     def loaded_instruments(self):
@@ -117,6 +119,20 @@ class ParameterSetup:
         """
         self._derived_parameters = new_model
 
+    @property
+    def chosen_instrument(self):
+        """
+        Get chosen instrument module
+        """
+        return self._chosen_inst
+    
+    @chosen_instrument.setter
+    def chosen_instrument(self, instrument):
+        """
+        Set chosen instrument module according to user inputs
+        """
+        self._chosen_inst = instrument
+
     def reset(self):
         """
         Resets the calculator configuration parameters (user input and
@@ -159,6 +175,7 @@ class ParameterSetup:
                                                             self.instrument_bandw_vals)
         # Get the instrument module according to instrument name
         chosen_inst = self.loaded_instruments[chosen_inst_name]
+        self.chosen_instrument = chosen_inst
         return chosen_inst
     
     def _compare_and_modify_bandwidth_units(self, bandwidth, instrument_bandw_vals):

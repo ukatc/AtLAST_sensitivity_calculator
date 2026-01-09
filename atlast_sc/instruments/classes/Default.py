@@ -9,7 +9,7 @@ Default instrument parameters
 class Default(Instrument):
     def __init__(self, data):
         super().__init__(data)
-        self._T_rx = self._set_default_receiver_temp()
+        self._T_rx = None
         self.prefactor = data.prefactor['value']
 
     ##################################
@@ -44,6 +44,7 @@ class Default(Instrument):
         :return: system temperature in Kelvin
         :rtype: astropy.units.Quantity
         """
+        self.T_rx = self.calculate_receiver_temp(obs_freq)
         system_temp = 1 / (eta_eff * transmittance) * \
             (self.T_rx
             + (eta_eff * T_sky)
@@ -65,16 +66,3 @@ class Default(Instrument):
         temp = (self.prefactor * constants.h * obs_freq / constants.k_B).to(u.K)
         self.T_rx = temp
         return temp
-
-    @staticmethod
-    def _set_default_receiver_temp():
-        """
-        Sets default receiver temperature, currently chooses first receiver
-        temp option as default.
-
-        :return: receiver temperature in Kelvin
-        :rtype: astropy.units.Quantity
-        """
-        default_obs_freq = u.Quantity(Data.obs_frequency.default_value,
-                                        Data.obs_frequency.default_unit)
-        return (5 * constants.h * default_obs_freq / constants.k_B).to(u.K)
