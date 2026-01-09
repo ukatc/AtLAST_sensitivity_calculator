@@ -111,21 +111,6 @@ class Calculator:
                 'bandwidth': inst_bandwidth_list}
 
         return loaded_instrument_dict
-                
-    def list_instruments(self):
-        """
-        Show loaded instruments and their observing frequency and
-        bandwidth ranges in a pretty format. 
-        """
-        # Pretty print the instrument dictionary
-        pretty_dict = yaml.dump(self.loaded_instruments, default_flow_style=False)
-        output = pretty_dict
-        instructions = '\nTo select an instrument, specify the instrument as:\n'+\
-                        'calculator.chosen_instrument = \"Finer\"'
-        # Print the instrument specification instructions afterwards
-        output += "\n" + instructions + "\n"
-
-        print(output)
         
     #################################################
     # Public methods for performing sensitivity and #
@@ -240,6 +225,21 @@ class Calculator:
         self._param_setup.reset()
         # Recalculate the derived parameters
         self._param_setup._calculate_derived_parameters()
+
+    def list_instruments(self):
+        """
+        Show loaded instruments and their observing frequency and
+        bandwidth ranges in a pretty format. 
+        """
+        # Pretty print the instrument dictionary
+        pretty_dict = yaml.dump(self.loaded_instruments, default_flow_style=False)
+        output = pretty_dict
+        instructions = '\nTo select an instrument, specify the instrument as:\n'+\
+                        'calculator.chosen_instrument = \"Finer\"'
+        # Print the instrument specification instructions afterwards
+        output += "\n" + instructions + "\n"
+
+        print(output)
 
     @staticmethod
     def _calculated_value_error_msg(calculated_value, validation_error):
