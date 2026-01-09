@@ -1,5 +1,5 @@
 import warnings
-import yaml
+import yaml, pprint
 import astropy.units as u
 import numpy as np
 from atlast_sc.utils import DataHelper, Decorators
@@ -80,23 +80,6 @@ class Calculator:
         self._calculated_t_int.value = value
 
     @property
-    def loaded_instruments(self):
-        """
-        List of names of the loaded instruments with their respective
-        specified observing frequency and bandwidth ranges
-        """
-        loaded_instrument_list = []
-        loaded_instrument_modules = self._param_setup.loaded_instruments
-        for inst_name, inst_module in loaded_instrument_modules.items():
-            inst_obs_freq_list = inst_module.obs_freq_ranges_and_unit
-            inst_bandwidth_list = inst_module.bandwidth_ranges_and_unit
-            loaded_instrument_list.append({inst_name: {
-                                           'obs_freq': inst_obs_freq_list,
-                                           'bandwidth': inst_bandwidth_list}
-                                           })
-        return yaml.dump(loaded_instrument_list, default_flow_style=False)
-
-    @property
     def chosen_instrument(self):
         """
         Name of chosen instrument
@@ -111,6 +94,41 @@ class Calculator:
         except KeyError as e:
             print('Instrument provided is not available. Check '\
                   'the list of loaded instrument names again.')
+
+    @property
+    def loaded_instruments(self):
+        """
+        Dictionary of each loaded instrument with its respective
+        specified observing frequency and bandwidth ranges
+        """
+        loaded_instrument_dict = {}
+        loaded_instrument_modules = self._param_setup.loaded_instruments
+        for inst_name, inst_module in loaded_instrument_modules.items():
+            inst_obs_freq_list = inst_module.obs_freq_ranges_and_unit
+            inst_bandwidth_list = inst_module.bandwidth_ranges_and_unit
+            loaded_instrument_dict[inst_name] = {
+                'obs_freq': inst_obs_freq_list,
+                'bandwidth': inst_bandwidth_list}
+
+        return loaded_instrument_dict
+            
+    def show_loaded_instruments(self, format):
+        """
+        Show loaded instruments and their observing frequency and
+        bandwidth ranges in a pretty format. User should supply 
+        which format they are using this method in to get a pretty
+        version of the output according to the format.
+
+        :param format: Specified format (options: 'interactive', 'inline')
+        :type format: String
+        """
+        if format == 'interactive':
+            return pprint.pp(self.loaded_instruments)
+        elif format == 'inline':
+            return yaml.dump(self.loaded_instruments, default_flow_style=False)
+        else:
+            return ValueError("Make sure you supply either \'interactive\' or "+
+                              "\'inline\' to the method.")
         
     #################################################
     # Public methods for performing sensitivity and #
