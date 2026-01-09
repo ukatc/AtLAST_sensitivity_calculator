@@ -1,5 +1,5 @@
 import warnings
-import yaml, pprint
+import yaml
 import astropy.units as u
 import numpy as np
 from atlast_sc.utils import DataHelper, Decorators
@@ -111,24 +111,21 @@ class Calculator:
                 'bandwidth': inst_bandwidth_list}
 
         return loaded_instrument_dict
-            
-    def show_loaded_instruments(self, format):
+                
+    def list_instruments(self):
         """
         Show loaded instruments and their observing frequency and
-        bandwidth ranges in a pretty format. User should supply 
-        which format they are using this method in to get a pretty
-        version of the output according to the format.
-
-        :param format: Specified format (options: 'interactive', 'inline')
-        :type format: String
+        bandwidth ranges in a pretty format. 
         """
-        if format == 'interactive':
-            return pprint.pp(self.loaded_instruments)
-        elif format == 'inline':
-            return yaml.dump(self.loaded_instruments, default_flow_style=False)
-        else:
-            return ValueError("Make sure you supply either \'interactive\' or "+
-                              "\'inline\' to the method.")
+        # Pretty print the instrument dictionary
+        pretty_dict = yaml.dump(self.loaded_instruments, default_flow_style=False)
+        output = pretty_dict
+        instructions = '\nTo select an instrument, specify the instrument as:\n'+\
+                        'calculator.chosen_instrument = \"Finer\"'
+        # Print the instrument specification instructions afterwards
+        output += "\n" + instructions + "\n"
+
+        print(output)
         
     #################################################
     # Public methods for performing sensitivity and #
