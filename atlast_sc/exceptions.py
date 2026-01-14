@@ -92,3 +92,21 @@ class ValueNotAllowedException(ValueError):
                  f"{'.' if not self.units else ' ' + str(self.units) + '.'}"
 
         super().__init__(self.message)
+
+class InstrumentNotApplicableException(ValueError):
+    """
+    Exception raised when attempting to choose an inapplicable instrument 
+    due to mismatch between observing frequency and/or bandwidth with 
+    instrument
+    """
+
+    def __init__(self, instrument_name, applicable_inst_name, message=None):
+        self.message = message \
+            if message\
+            else f"Specified observing frequency and/or bandwidth values do not " \
+                 f"correspond to the chosen instrument '{instrument_name}' ranges. " \
+                 f"Change the observing frequency and/or bandwidth values to use " \
+                 f"this instrument or choose another instrument. The set of " \
+                 f"parameters provided correspond to instrument '{applicable_inst_name}'."
+
+        super().__init__(self.message)

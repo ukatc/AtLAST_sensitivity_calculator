@@ -1,10 +1,10 @@
-import warnings
-import yaml
+import warnings, yaml, re
 import astropy.units as u
 import numpy as np
 from atlast_sc.utils import DataHelper, Decorators
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
 from atlast_sc.exceptions import ValueOutOfRangeException
+from atlast_sc.exceptions import InstrumentNotApplicableException
 
 from atlast_sc.parameters.user_input_parameters import UserInputParameters
 from atlast_sc.parameters.telescope_and_environment_parameters import TelescopeAndEnvironmentParameters
@@ -88,12 +88,61 @@ class Calculator:
     
     @chosen_instrument.setter
     def chosen_instrument(self, instrument_name):
+        inst_can_be_chosen = False
         try:
-            self._param_setup.chosen_instrument = \
-                self._param_setup.loaded_instruments[instrument_name]
+            requested_inst_name = \
+                self._param_setup.loaded_instruments[instrument_name].name
         except KeyError as e:
             print('Instrument provided is not available. Check '\
                   'the list of loaded instrument names again.')
+            
+        chosen_inst_obs_freq = self.user_input.obs_freq.value
+        chosen_inst_bandwidth = self.user_input.bandwidth.value
+        # Requested instrument ranges
+        obs_freq_ranges_list = \
+            self.loaded_instruments[requested_inst_name]['obs_freq']['ranges']
+        bandwidth_ranges_list = \
+            self.loaded_instruments[requested_inst_name]['bandwidth']['ranges']
+
+        # Check if user inputted observing frequency value
+        # fall in range of instrument ranges
+        for range in obs_freq_ranges_list:
+            range = re.findall(r"[\d.]+", range)
+            min_freq = float(range[0])
+            max_freq = float(range[1])
+            if chosen_inst_obs_freq >= min_freq and \
+                chosen_inst_obs_freq <= max_freq:
+                inst_can_be_chosen = True
+            else:
+                continue
+
+        # Check if user inputted bandwidth values fall in 
+        # range of instrument ranges
+        for range in bandwidth_ranges_list:
+            range = re.findall(r"[\d.]+", range)
+            min_bandw = float(range[0])
+            max_bandw = float(range[1])
+            if chosen_inst_bandwidth >= min_bandw and \
+                chosen_inst_bandwidth <= max_bandw:
+                inst_can_be_chosen = True
+            else:
+                continue
+        
+        try:
+            # User specified obs_freq and bandwidth are in range
+            if inst_can_be_chosen:
+                self._param_setup.chosen_instrument = (
+                    self._param_setup.loaded_instruments[requested_inst_name]
+                )
+            else:
+                # If the user specified obs_freq and bandwidth are not 
+                # in range of the instrument, throw an error
+                raise InstrumentNotApplicableException(
+                    requested_inst_name,
+                    self.chosen_instrument
+                )
+        except InstrumentNotApplicableException as e:
+            raise
 
     @property
     def loaded_instruments(self):
