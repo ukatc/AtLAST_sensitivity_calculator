@@ -6,4 +6,6 @@ Python code. See the :doc:`Installation Guide <python_package_installation>` for
 on setting up an isolated environment for your work and installing the
 Sensitivity Calculator package.
 
+.. _input data:
+
 .. include:: using_the_calculator.rst
