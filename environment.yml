@@ -15,6 +15,7 @@ dependencies:
   - nbsphinx==0.9
   - python-dotenv=0.21
   - pydantic=2.12
+  - pydantic
   - pandoc
   - build
   - flake8

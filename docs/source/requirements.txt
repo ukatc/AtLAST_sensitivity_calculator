@@ -1,5 +1,5 @@
 sphinx-rtd-theme>=2.0.0
-nbsphinx==0.9
+nbsphinx==0.9.8
 sphinx-copybutton
 sphinxcontrib.plantuml==0.25
 myst-parser==2.0.0
