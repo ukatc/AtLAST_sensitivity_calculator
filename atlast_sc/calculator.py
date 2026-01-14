@@ -1,4 +1,5 @@
 import warnings
+import yaml
 import astropy.units as u
 import numpy as np
 from atlast_sc.utils import DataHelper, Decorators
@@ -80,7 +81,36 @@ class Calculator:
 
     @property
     def chosen_instrument(self):
-        return self._param_setup.chosen_instrument
+        """
+        Name of chosen instrument
+        """
+        return self._param_setup.chosen_instrument.name
+    
+    @chosen_instrument.setter
+    def chosen_instrument(self, instrument_name):
+        try:
+            self._param_setup.chosen_instrument = \
+                self._param_setup.loaded_instruments[instrument_name]
+        except KeyError as e:
+            print('Instrument provided is not available. Check '\
+                  'the list of loaded instrument names again.')
+
+    @property
+    def loaded_instruments(self):
+        """
+        Dictionary of each loaded instrument with its respective
+        specified observing frequency and bandwidth ranges
+        """
+        loaded_instrument_dict = {}
+        loaded_instrument_modules = self._param_setup.loaded_instruments
+        for inst_name, inst_module in loaded_instrument_modules.items():
+            inst_obs_freq_list = inst_module.obs_freq_ranges_and_unit
+            inst_bandwidth_list = inst_module.bandwidth_ranges_and_unit
+            loaded_instrument_dict[inst_name] = {
+                'obs_freq': inst_obs_freq_list,
+                'bandwidth': inst_bandwidth_list}
+
+        return loaded_instrument_dict
         
     #################################################
     # Public methods for performing sensitivity and #
@@ -195,6 +225,21 @@ class Calculator:
         self._param_setup.reset()
         # Recalculate the derived parameters
         self._param_setup._calculate_derived_parameters()
+
+    def list_instruments(self):
+        """
+        Show loaded instruments and their observing frequency and
+        bandwidth ranges in a pretty format. 
+        """
+        # Pretty print the instrument dictionary
+        pretty_dict = yaml.dump(self.loaded_instruments, default_flow_style=False)
+        output = pretty_dict
+        instructions = '\nTo select an instrument, specify the instrument as:\n'+\
+                        'calculator.chosen_instrument = \"Finer\"'
+        # Print the instrument specification instructions afterwards
+        output += "\n" + instructions + "\n"
+
+        print(output)
 
     @staticmethod
     def _calculated_value_error_msg(calculated_value, validation_error):
