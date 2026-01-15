@@ -53,7 +53,7 @@ class ValueWithUnits(BaseModel):
     value: Union[float, Quantity]
     unit: Union[str, None]
 
-    @root_validator
+    @root_validator(skip_on_failure=True)
     @classmethod
     def validate_fields(cls, field_values):
         """
