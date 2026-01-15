@@ -160,12 +160,12 @@ following format:
 
     name: "Example"
     allowed_ranges:
-    observing_frequency:
-        ranges: [(500.0-600.0),(700.0-800.0)]
-        unit: GHz
-    bandwidth: 
-        ranges: [(10.9e4-1.8e8)]
-        unit: Hz
+        observing_frequency:
+            ranges: [(500.0-600.0),(700.0-800.0)]
+            unit: GHz
+        bandwidth: 
+            ranges: [(10.9e4-1.8e8)]
+            unit: Hz
     receiver_temperature: 
         values: [30.0,40.0]
         unit: K
