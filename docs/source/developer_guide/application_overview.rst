@@ -167,8 +167,8 @@ following format:
         ranges: [(10.9e4-1.8e8)]
         unit: Hz
     receiver_temperature: 
-    values: [30.0,40.0]
-    unit: K
+        values: [30.0,40.0]
+        unit: K
 
 Any other instrument specific parameter should be added following the same format. The
 Default instrument YAML file could be taken as a template and the other instrument 
