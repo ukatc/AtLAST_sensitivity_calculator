@@ -144,6 +144,64 @@ values, the calculator will throw an error.
 The applicable observing frequency and bandwidth ranges for each instrument along with some
 other information can be accessed by listing the instruments on the CLI. 
 
+Adding a new instrument
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Creating the instrument YAML file
++++++++++++++++++++++++++++++++++
+If an instrument needs to be added, this should be done by executing a couple of steps
+within the *atlast_sc/instruments* directory.
+
+Firstly, a YAML file with the name of the instrument should be creating in the 
+sub-directory called *data*. It should include details of the instrument in the 
+following format: 
+
+.. code-block:: yaml
+
+    name: "Example"
+    allowed_ranges:
+    observing_frequency:
+        ranges: [(500.0-600.0),(700.0-800.0)]
+        unit: GHz
+    bandwidth: 
+        ranges: [(10.9e4-1.8e8)]
+        unit: Hz
+    receiver_temperature: 
+    values: [30.0,40.0]
+    unit: K
+
+Any other instrument specific parameter should be added following the same format. The
+Default instrument YAML file could be taken as a template and the other instrument 
+YAML files could be taken as example on how these files could be customised. 
+
+Creating the instrument Python module
++++++++++++++++++++++++++++++++++++++
+Secondly, a Python module should be created in the *classes* sub-directory with the 
+new instrument name. Following the example above, the name of the module file should 
+be "Example.py" and it should include the following class format: 
+
+.. code-block:: python 
+
+    """
+    Example instrument parameters
+    """        
+    class Example(Instrument):
+        def __init__(self, data):
+            super().__init__(data)
+
+For more detail on how to construct the module, the Default instrument Python module
+could be taken as an example and other instrument Python modules could be taken as
+example on how these modules could be customised. 
+
+Modifying the configuration file to add the new instrument
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Thirdly, a couple of lines should be modified in ``config.py`` where they are 
+indicated within the configuration file with comments. In the initilisation 
+method, a dictionary containing pointers to the new instrument's Python module 
+and YAML file name should be added in similar format to the existing instruments. 
+After creating the dictionary variable for the new instrument, it should be added 
+to the ``available_instruments`` list.
+
 The web application
 -------------------
 The web client consists of a backend based on the `FastAPI web framework <https://fastapi.tiangolo.com/lo/>`__,
