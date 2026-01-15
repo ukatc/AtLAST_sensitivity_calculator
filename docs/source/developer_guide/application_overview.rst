@@ -102,21 +102,47 @@ ParameterSetup class acts as the container for the current state of each paramet
 
 Integration Overview
 --------------------
-The overall calculation process is kickstarted with a creation of a Calculator object using CalculatorFactory.
-Initially, the calculator is created with default values. If the user is using the calculator via the Python 
-CLI, they can change any of the user input parameters before calculating the sensitivity/integration time. If
-they don't, the calculations will be done with default values. In the UI, the first calculation is done with
-the default values and any specified user input parameters will be considered within the calculations once the
-user clicks the "Calculate" button. 
+The overall calculation process is kickstarted with a creation of a Calculator object using 
+CalculatorFactory.Initially, the calculator is created with default values. If the calculator 
+is used via the Python CLI, any of the user input parameters can be changed before calculating 
+the sensitivity/integration time. If they don't, the calculations will be done with default 
+values. In the UI, the first calculation is done with the default values and any specified user
+input parameters will be considered within the calculations once the user clicks the "Calculate" 
+button. 
 
-The application will choose an instrument to use specific equations when calculating sensitivity/integration
-time according to the user input parameters. In the case where the user input parameters correspond to more than
-one instrument, the application will choose the first applicable instrument. The user can also change the 
-chosen instrument manually. [TODO: populate with the workings of instrument choice when implemented]
+The application will choose an instrument to use specific equations when calculating 
+sensitivity/integration time according to the user input parameters. The user can also change
+the chosen instrument manually. Currently, only the CLI users are able to choose a specific 
+instrument to use in their calculations. For more details about the instrument selection 
+process refer to the Instrument selection section.
 
-Once the instrument has been selected by the appropriate method, the calculator will use any instrument specific
-equations or parameters -where available- to calculate sensitivity/integration time. These instrument specific 
-equations or parameters would have been defined within the relative instrument YAML files and classes. 
+Once the instrument has been selected by the appropriate method, the calculator will use any 
+instrument specific equations or parameters -where available- to calculate sensitivity/integration 
+time. These instrument specific equations or parameters would have been defined within the
+relative instrument YAML files and classes. 
+
+Instrument Selection
+--------------------
+Instrument selection on the UI is executed in the background when the user inputs observing 
+frequency and bandwidth values in the boxes specified and clicks the "Calculate" button. The
+calculator retrieves the observing frequency and bandwidth entered by the user and verifies 
+them against the supported ranges for each instrument and chooses the applicable instrument.
+In the case where the user input parameters correspond to more than one instrument, the 
+calculator will choose the first applicable instrument. If there are no applicable instruments,
+the calculator will proceed with the Default instrument. 
+
+However, on the CLI, the user can make an instrument selection. This selection should be 
+executed in a specific order in relation to other parameter assignments. Any user input 
+parameter should be specified before selecting an instrument. For example, if the user 
+wants to set a specific observing frequency to do calculations and also select an instrument, 
+they have to make sure that the observing frequency they are specifying falls into the
+observing frequency ranges of the instrument they want to select. They should also take
+care to do the same with the bandwidth values. In the case where the user attempts to 
+select an instrument before specifying the appropriate observing frequency and bandwidthv
+values, the calculator will throw an error. 
+
+The applicable observing frequency and bandwidth ranges for each instrument along with some
+other information can be accessed by listing the instruments on the CLI. 
 
 The web application
 -------------------
