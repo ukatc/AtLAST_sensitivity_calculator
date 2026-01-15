@@ -118,7 +118,7 @@ class UserInput(BaseModel):
         ValueWithUnits(value=Data.elevation.default_value,
                        unit=Data.elevation.default_unit)
 
-    @root_validator
+    @root_validator(skip_on_failure=True)
     @classmethod
     def validate_t_int_or_sens_initialised(cls, field_values):
         """
@@ -172,7 +172,7 @@ class CalculationInput(BaseModel):
         ValueWithUnits(value=Data.t_cmb.default_value,
                        unit=Data.t_cmb.default_unit)
 
-    @root_validator
+    @root_validator(skip_on_failure=True)
     @classmethod
     def validate_fields(cls, field_values):
         """
