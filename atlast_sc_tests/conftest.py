@@ -7,7 +7,7 @@ from atlast_sc.derived_groups import Temperatures
 from atlast_sc.derived_groups import AtmosphereParams
 from atlast_sc.derived_groups import Efficiencies
 from atlast_sc.data import Data, DataHelper
-from atlast_sc.calculator import Calculator
+from atlast_sc.factory import CalculatorFactory
 from atlast_sc.models import ValueWithoutUnits, ValueWithUnits
 
 
@@ -27,7 +27,7 @@ def tmp_output_dir(tmp_path_factory):
 @pytest.fixture()
 def calculator():
     # Return a calculator with default parameters
-    return Calculator()
+    return CalculatorFactory().calculator
 
 
 @pytest.fixture(scope='session')
@@ -35,12 +35,20 @@ def t_int():
     # Return the default integration time
     return _get_param(Data.integration_time)
 
+@pytest.fixture(scope='session')
+def calculated_t_int():
+    # Return the default calculated integration time
+    return _get_param(Data.calculated_t_int)
 
 @pytest.fixture(scope='session')
 def sensitivity():
     # Return the default sensitivity
     return _get_param(Data.sensitivity)
 
+@pytest.fixture(scope='session')
+def calculated_sensitivity():
+    # Return the default calculated sensitivity
+    return _get_param(Data.calculated_sensitivity)
 
 @pytest.fixture(scope='session')
 def bandwidth():
@@ -82,13 +90,6 @@ def t_cmb():
 def t_amb():
     # Return the default ambient temperature
     return _get_param(Data.t_amb)
-
-
-@pytest.fixture(scope='session')
-def g():
-    # Return the default sideband ratio
-    return _get_param(Data.g)
-
 
 @pytest.fixture(scope='session')
 def eta_eff():
@@ -151,8 +152,8 @@ def t_atm(obs_freq, weather, atmosphere_params):
 
 
 @pytest.fixture(scope='session')
-def tau_atm(obs_freq, weather, elevation, atmosphere_params):
-    return atmosphere_params.calculate_tau_atm(obs_freq, weather, elevation)
+def transmittance(obs_freq, weather, elevation, atmosphere_params):
+    return atmosphere_params.calculate_transmittance(obs_freq, weather, elevation)
 
 
 @pytest.fixture(scope='session')
@@ -166,13 +167,12 @@ def eta_s(efficiencies):
 
 
 @pytest.fixture()
-def sefd(calculator, t_sys, eta_a):
-    return calculator._calculate_sefd(t_sys, eta_a)
-
+def sefd(calculator, t_sys, eta_a, dish_radius):
+    return calculator._param_setup._calculate_sefd(t_sys, eta_a, dish_radius)
 
 @pytest.fixture(scope='session')
-def temperatures(obs_freq, t_cmb, t_amb, g, eta_eff, t_atm, tau_atm):
-    return Temperatures(obs_freq, t_cmb, t_amb, g, eta_eff, t_atm, tau_atm)
+def temperatures(inst_module, obs_freq, t_cmb, t_amb, eta_eff, t_atm, transmittance):
+    return Temperatures(inst_module, obs_freq, t_cmb, t_amb, eta_eff, t_atm, transmittance)
 
 
 @pytest.fixture(scope='session')
@@ -203,16 +203,15 @@ def user_input_dict(t_int, sensitivity, bandwidth, obs_freq, n_pol,
 
     return input_params
 
-
 @pytest.fixture(scope='session')
-def instrument_setup_dict(g, surface_rms, dish_radius, t_amb, eta_eff, eta_ill,
-                          eta_spill, eta_block, eta_pol):
+def telescope_and_environment_dict(surface_rms, dish_radius, t_amb, t_cmb, 
+                                   eta_eff, eta_ill, eta_spill, eta_block, eta_pol):
 
-    instrument_setup_parms = {
-        'g': g,
+    telescope_and_environment_params = {
         'surface_rms': surface_rms,
         'dish_radius': dish_radius,
         'T_amb': t_amb,
+        'T_cmb': t_cmb,
         'eta_eff': eta_eff,
         'eta_ill': eta_ill,
         'eta_spill': eta_spill,
@@ -220,8 +219,17 @@ def instrument_setup_dict(g, surface_rms, dish_radius, t_amb, eta_eff, eta_ill,
         'eta_pol': eta_pol
     }
 
-    return instrument_setup_parms
+    return telescope_and_environment_params
 
+@pytest.fixture(scope='session')
+def calculated_params_dict(calculated_t_int, calculated_sensitivity):
+
+    calculated_params = {
+        'calculated_t_int': calculated_t_int,
+        'calculated_sensitivity': calculated_sensitivity
+    }
+
+    return calculated_params
 
 @pytest.fixture(scope='session')
 def test_model_with_values():

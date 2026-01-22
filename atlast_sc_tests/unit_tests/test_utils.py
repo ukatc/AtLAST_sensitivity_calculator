@@ -4,7 +4,98 @@ import astropy.units as u
 from atlast_sc.utils import Decorators
 from atlast_sc.utils import FileHelper
 from atlast_sc.utils import DataHelper
+from atlast_sc.factory import CalculatorFactory
+
 from atlast_sc_tests.utils import does_not_raise
+
+from atlast_sc.parameter_setup import ParameterSetup
+from atlast_sc.instruments.classes.Sepia import Sepia
+from atlast_sc.instruments.classes.Finer import Finer
+
+from types import SimpleNamespace
+
+
+class TestInstrumentClasses:
+        
+        @pytest.mark.parametrize(
+                'instrument_yaml_file_name, instrument_name, ' \
+                'expected_obs_freq_ranges_and_unit,' \
+                'expected_bandwidth_ranges_and_unit,' \
+                'expected_receiver_temp_options_and_unit',
+                [
+                    (
+                        "Sepia", "Sepia", 
+                        # observing frequency
+                        {'ranges': ['(272.0-330.0)','(330.0-376.0)'], 
+                                    'unit': 'GHz'},
+                        # bandwidth
+                        {'ranges': ['(6.25e4-1.8e8)'], 'unit': 'Hz'},
+                        # receiver temperature
+                        {'values': [90.0,216.5], 'unit': 'K'}
+                    )
+                    # NOTE: Other instrument YAML file details can be added here to
+                    # be checked. 
+                ]
+        )
+
+        def test_instrument_file_reading(self, instrument_yaml_file_name, instrument_name,
+                expected_obs_freq_ranges_and_unit,
+                expected_bandwidth_ranges_and_unit,
+                expected_receiver_temp_options_and_unit):
+            
+            """
+            Test instrument YAML files are being read in and processed correctly. 
+            """
+
+            inst_data = FileHelper.read_instrument_yaml_file(instrument_yaml_file_name)
+            sepia = Sepia(data=inst_data)
+
+            assert sepia.name == instrument_name
+
+            assert sepia.obs_freq_ranges_and_unit['ranges'] == expected_obs_freq_ranges_and_unit['ranges']
+            assert sepia.obs_freq_ranges_and_unit['unit'] == expected_obs_freq_ranges_and_unit['unit']
+
+            assert sepia.bandwidth_ranges_and_unit['ranges'] == expected_bandwidth_ranges_and_unit['ranges']
+            assert sepia.bandwidth_ranges_and_unit['unit'] == expected_bandwidth_ranges_and_unit['unit']
+            
+            assert sepia.receiver_temp_options_and_unit['values'] == expected_receiver_temp_options_and_unit['values']
+            assert sepia.receiver_temp_options_and_unit['unit'] == expected_receiver_temp_options_and_unit['unit']
+
+        def test_correct_receiver_temperature_set(self):
+            """
+            Test correct receiver temperature is set according to observing frequency
+            supplied by the user input. 
+            """
+            
+            finer_data = FileHelper.read_instrument_yaml_file("finer")
+            test_obs_freq_1 = 130.0 * u.GHz
+            finer = Finer(data=finer_data)
+            
+            assert finer.name == "Finer"
+
+            receiver_temp_1 = finer.calculate_receiver_temp(test_obs_freq_1)
+            assert receiver_temp_1 == 45.0 * u.K
+
+            test_obs_freq_2 = 215.0 * u.GHz
+            receiver_temp_2 = finer.calculate_receiver_temp(test_obs_freq_2)
+            assert receiver_temp_2 == 75.0 * u.K
+
+        def test_applicable_instrument_calculation(self):
+            """
+            Test correct instrument is chosen according to observing frequency
+            and bandwidth values supplied by the user input.
+            """
+
+            test_obs_freq = 273.0 * u.GHz
+            test_bandwidth = 10001 * u.MHz
+            mock_calc = CalculatorFactory._create_calculator(param_setup=ParameterSetup())
+
+            mock_calc.user_input.obs_freq = test_obs_freq
+            mock_calc.user_input.bandwidth = test_bandwidth
+
+            chosen_inst_module = mock_calc._param_setup.get_chosen_instrument()
+            applicable_inst_name = chosen_inst_module.name
+            assert applicable_inst_name == "Sepia"
 
 
 class TestDecorators:
@@ -14,8 +105,26 @@ class TestDecorators:
         def __init__(self):
             self._value = 1
             self._quantity = 1 * u.GHz
-            self._calculation_inputs = \
-                TestDecorators.MockCalculator.MockCalculationInputs()
+            self._param_setup = \
+                TestDecorators.MockCalculator.MockParamSetup()
+            self._user_input = \
+                TestDecorators.MockCalculator.MockUserInputParameters(self._param_setup)
+    
+        class MockUserInputParameters:
+            def __init__(self, mock_param_setup):
+                self._param_setup = mock_param_setup
+
+            @property
+            def prop1(self):
+                return 1
+
+            @property
+            def prop2(self):
+                return 2.0
+
+            @property
+            def prop3(self):
+                return '3'
 
         class MockCalculationInputs:
             @staticmethod
@@ -24,18 +133,15 @@ class TestDecorators:
                     raise ValueError
 
                 return True
+            
+        class MockParamSetup:
+            def __init__(self):
+                self.calculation_inputs = \
+                    TestDecorators.MockCalculator.MockCalculationInputs()
 
-        @property
-        def prop1(self):
-            return 1
-
-        @property
-        def prop2(self):
-            return 2.0
-
-        @property
-        def prop3(self):
-            return '3'
+            @staticmethod
+            def _calculate_derived_parameters():
+                pass
 
         @property
         def decorated_validate_value(self):
@@ -58,10 +164,6 @@ class TestDecorators:
         @property
         def calculation_inputs(self):
             return self._calculation_inputs
-
-        @staticmethod
-        def _calculate_derived_parameters():
-            pass
 
     @staticmethod
     def mock_validate(*args):
@@ -103,9 +205,9 @@ class TestDecorators:
         'new_value,expect_raises,expect_value_updated,'
         'expect_params_recalculated',
         [
-            (2 * u.GHz, does_not_raise(), True, True),
+            (2 * u.GHz, does_not_raise(), True, True), ####
             (1 * u.GHz, does_not_raise(), True, False),
-            (1 * u.MHz, does_not_raise(), True, True),
+            (1 * u.MHz, does_not_raise(), True, True), ####
             ('invalid', pytest.raises(ValueError), False, False)
         ]
     )
@@ -122,7 +224,7 @@ class TestDecorators:
                          side_effect=TestDecorators.mock_validate)
 
         calculate_derived_params_spy = \
-            mocker.spy(TestDecorators.MockCalculator,
+            mocker.spy(TestDecorators.MockCalculator.MockParamSetup,
                        '_calculate_derived_parameters')
 
         with expect_raises:
@@ -151,6 +253,24 @@ class TestDecorators:
 
 
 class TestFileHelper:
+
+    @pytest.mark.parametrize(
+        'instrument_name',
+        [
+            ("chai"),
+            ("finer"),
+            ("muscat"),
+            ("sepia"),
+            ("tifuun")
+        ]
+    )
+    def test_read_instrument_yaml_file(self, instrument_name):
+        """
+        Test that a SimpleNamespace is created when instrument 
+         data is read from an instrument YAML file. 
+        """
+        result_namespace = FileHelper.read_instrument_yaml_file(instrument_name)
+        assert isinstance(result_namespace, SimpleNamespace)
 
     @pytest.mark.parametrize(
         'test_file',
@@ -326,8 +446,10 @@ class TestDataHelper:
              'Validate update int with string'),
             ('prop1', 2.0, pytest.raises(ValueError), False,
              'Validate update int with float'),
+
             ('prop2', 1.0, does_not_raise(), True,
              'Validate update float with float'),
+
             ('prop2', 1, does_not_raise(), True,
              'Validate update float with int (ints are converted to floats)'),
             ('prop3', '2', does_not_raise(), True,
@@ -347,7 +469,7 @@ class TestDataHelper:
                        'validate_value')
 
         with expect_raises:
-            DataHelper.validate(mock_calculator, param_name, value)
+            DataHelper.validate(mock_calculator._user_input, param_name, value)
 
         if expect_validation_performed:
             validate_value_spy.assert_called_once_with(param_name, value)

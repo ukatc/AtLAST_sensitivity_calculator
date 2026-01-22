@@ -8,6 +8,7 @@ Edit at will.
 import math
 import os
 import astropy.units as u
+from atlast_sc.factory import CalculatorFactory
 from atlast_sc.calculator import Calculator
 from atlast_sc.utils import FileHelper
 
@@ -16,7 +17,9 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 # Read the user input from a yaml file
 user_input = FileHelper.read_from_file('input_data', 'user_inputs.yaml')
 # Initialise the Calculator with user inputs dictionary
-calculator = Calculator(user_input)
+calculator_factory = CalculatorFactory(user_input)
+calculator = calculator_factory.calculator
+
 # calculator = Calculator()
 
 # Calculate sensitivity or t_int depending on input
@@ -46,7 +49,7 @@ print("-----------")
 # calculator.bandwidth = 10*u.GHz
 sens = 10*u.mJy
 calculated_t_int = \
-    calculator.calculate_t_integration(sens, False)
+    calculator.calculate_t_integration(calculator._uip, sens, False)
 print("Integration time: {:0.2f} to obtain a sensitivity of {:0.2f}"
       .format(calculated_t_int, sens))
 

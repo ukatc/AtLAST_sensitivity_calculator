@@ -36,8 +36,20 @@ class AtmosphereParams:
                                                         AtmosphereParams._WEATHER),
                                                         self.tau_atm_table[:, 1:])
 
+    def calculate_atmospheric_temperature(self, obs_freq, weather):
+        """
+        Calculate the atmospheric temperature T_atm
 
-    def calculate_tau_atm(self, obs_freq, weather, elevation):
+        :param obs_freq: the central observing frequency
+        :type obs_freq: astropy.units.Quantity
+        :param weather: the precipitable water vapour
+        :type weather: float
+        :return: Atmospheric temperature
+        :rtype: astropy.units.Quantity
+        """
+        return float(self._interp_T_atm((obs_freq, weather))) * u.K
+    
+    def calculate_transmittance(self, obs_freq, weather, elevation):
         """
         Calculate the atmospheric optical depth, tau_atm
 
@@ -53,21 +65,9 @@ class AtmosphereParams:
         tau_z = self._interp_tau_atm((obs_freq, weather))
         zenith = 90.0 * u.deg - elevation
         tau_atm = tau_z / np.cos(zenith)
-
-        return float(tau_atm)
-
-    def calculate_atmospheric_temperature(self, obs_freq, weather):
-        """
-        Calculate the atmospheric temperature T_atm
-
-        :param obs_freq: the central observing frequency
-        :type obs_freq: astropy.units.Quantity
-        :param weather: the precipitable water vapour
-        :type weather: float
-        :return: Atmospheric temperature
-        :rtype: astropy.units.Quantity
-        """
-        return float(self._interp_T_atm((obs_freq, weather))) * u.K
+        transmittance = np.exp(-tau_atm)
+        
+        return float(transmittance)
 
 
 class Efficiencies:
@@ -149,18 +149,11 @@ class Temperatures:
     Calculates temperature terms
     """
 
-    def __init__(self, obs_freq, T_cmb, T_amb, g, eta_eff, T_atm, tau_atm):
-        self._T_rx = Temperatures._calculate_receiver_temperature(obs_freq)
-        self._T_sys = \
-            self._calculate_system_temperature(g, T_cmb, eta_eff, T_amb,
-                                               T_atm, tau_atm)
-
-    @property
-    def T_rx(self):
-        """
-        Get the receiver temperature
-        """
-        return self._T_rx
+    def __init__(self, inst_module, obs_freq, bandwidth, T_cmb, T_amb, eta_eff, T_atm, transmittance, n_pol):
+        self._T_sky = T_atm * (1 - transmittance) + T_cmb
+        self._T_sys = inst_module.calculate_system_temperature(obs_freq, bandwidth, T_cmb, eta_eff, 
+                                                               T_atm, T_amb, self.T_sky,
+                                                               transmittance, n_pol)
 
     @property
     def T_sys(self):
@@ -175,28 +168,3 @@ class Temperatures:
         Get the sky temperature
         """
         return self._T_sky
-
-    @staticmethod
-    def _calculate_receiver_temperature(obs_freq):
-        """
-        Calculate the receiver temperature
-        """
-        return (5 * constants.h * obs_freq / constants.k_B).to(u.K)
-
-    def _calculate_system_temperature(self, g, T_cmb, eta_eff, T_amb,
-                                      T_atm, tau_atm):
-        """
-        Returns system temperature, following calculation in [doc]
-
-        :return: system temperature in Kelvin
-        :rtype: astropy.units.Quantity
-        """
-
-        transmittance = np.exp(-tau_atm)
-        self._T_sky = T_atm * (1 - transmittance) + T_cmb
-
-        return (1 + g) / (eta_eff * transmittance) * \
-               (self.T_rx
-                + (eta_eff * self._T_sky)
-                + ((1 - eta_eff) * T_amb)
-                )
