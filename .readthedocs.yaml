@@ -33,8 +33,10 @@ python:
      path: .
 
 # Build documentation in the "docs/" directory with Sphinx
+# Fail on warning enabled so that it's clear if there are any issues creating any of the pages
 sphinx:
    configuration: docs/source/conf.py
+   fail_on_warning: true
 
 # Optionally build your docs in additional formats such as PDF and ePub
 formats:
