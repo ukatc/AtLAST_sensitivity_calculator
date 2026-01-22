@@ -9,6 +9,7 @@ from atlast_sc.models import DerivedParams, CalculationInput
 from atlast_sc.utils import DataHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
 from atlast_sc_tests.utils import does_not_raise
+from pydantic import ValidationError
 
 
 class TestCalculator:
@@ -109,7 +110,7 @@ class TestCalculator:
         'user_input,expected_raises',
         [
             ({'tint': {'value': 1, 'unit': 's'}}, pytest.raises(ValueError)),
-            ({'t_int': {'val': 1, 'unit': 's'}}, pytest.raises(KeyError))
+            ({'t_int': {'val': 1, 'unit': 's'}}, pytest.raises(ValidationError))
         ]
     )
     def test_initialize_calculator_invalid(self, user_input, expected_raises):
