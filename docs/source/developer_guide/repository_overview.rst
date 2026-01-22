@@ -51,3 +51,12 @@ AM atmospheric modelling
 The ``am_code`` directory contains files and code that was used to generate a grid
 of atmospheric parameters used by the calculator. This directory could be removed
 from the repository.
+
+Changes from calculator v1.0
+----------------------------
+- Introduced instrument modules -includes instrument selection option in the CLI
+  (see section `Instrument Selection` in :doc:`Application Overview <application_overview>` 
+  for more details).
+- Updated calculation input parameter classes, renamed and refactored to align with
+  the new instrument module structure (see :doc:`UML Diagrams <../code_docs/data_model_uml>` 
+  for high level view of the new structure).

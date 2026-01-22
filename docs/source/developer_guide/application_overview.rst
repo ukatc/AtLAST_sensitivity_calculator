@@ -114,12 +114,14 @@ The application will choose an instrument to use specific equations when calcula
 sensitivity/integration time according to the user input parameters. The user can also change
 the chosen instrument manually. Currently, only the CLI users are able to choose a specific 
 instrument to use in their calculations. For more details about the instrument selection 
-process refer to the Instrument selection section.
+process refer to the :ref:`Instrument Selection <instrument selection>` section.
 
 Once the instrument has been selected by the appropriate method, the calculator will use any 
 instrument specific equations or parameters -where available- to calculate sensitivity/integration 
 time. These instrument specific equations or parameters would have been defined within the
 relative instrument YAML files and classes. 
+
+.. _instrument selection:
 
 Instrument Selection
 --------------------
