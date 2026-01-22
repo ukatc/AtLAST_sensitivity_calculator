@@ -1,7 +1,7 @@
 from math import log10, floor
 from numpy import floating
 from typing import Union
-from pydantic import BaseModel, root_validator
+from pydantic import BaseModel, ConfigDict, model_validator
 from astropy.units import Unit, Quantity
 from atlast_sc.data import Data, Validator
 
@@ -52,39 +52,32 @@ class ModelUtils:
 class ValueWithUnits(BaseModel):
     value: Union[float, Quantity]
     unit: Union[str, None]
+    
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    @root_validator
-    @classmethod
-    def validate_fields(cls, field_values):
+    @model_validator(mode='after')
+    def validate_fields(self): 
         """
         Validate the unit and convert the value to an astropy Quantity object
         """
-        if isinstance(field_values['value'], float) or \
-                isinstance(field_values['value'], int):
+        if isinstance(self.value, (float, int)):
             try:
-                unit = Unit(field_values['unit'])
-                field_values['value'] = \
-                    field_values['value'] * unit
+                unit = Unit(self.unit)
+                self.value = self.value * unit
             except (ValueError, TypeError):
-                raise ValueError(f'\'{field_values["unit"]}\' is not a '
-                                 f'valid unit')
+                raise ValueError(f'\'{self.unit}\' is not a valid unit')
         else:
             # If 'unit' is provided, check if it matches the unit of the
             # Quantity assigned to 'value'
-            if field_values['unit'] and \
-                    not field_values['unit'] == field_values['value'].unit:
+            if self.unit and not self.unit == str(self.value.unit):
                 raise ValueError(f'Ambiguous definition: unit '
-                                 f'\'{field_values["unit"]}\' '
-                                 f'does not match '
-                                 f'\'{field_values["value"].unit}\' '
-                                 f'from parameter \'value\'')
+                               f'\'{self.unit}\' does not match '
+                               f'\'{str(self.value.unit)}\' '
+                               f'from parameter \'value\'')
             else:
-                field_values['unit'] = str(field_values['value'].unit)
+                self.unit = str(self.value.unit)
 
-        return field_values
-
-    class Config:
-        arbitrary_types_allowed = True
+        return self
 
 
 class ValueWithoutUnits(BaseModel):
@@ -118,15 +111,14 @@ class UserInput(BaseModel):
         ValueWithUnits(value=Data.elevation.default_value,
                        unit=Data.elevation.default_unit)
 
-    @root_validator
-    @classmethod
-    def validate_t_int_or_sens_initialised(cls, field_values):
+    @model_validator(mode='after')
+    def validate_t_int_or_sens_initialised(field_values):
         """
         Validate that at least one of 't_int' and 'sensitivity'
         has been initialised
         """
-        if field_values["t_int"].value == 0 and \
-                field_values["sensitivity"].value == 0:
+        if field_values.t_int.value == 0 and \
+                field_values.sensitivity.value == 0:
             raise ValueError("Please add either a sensitivity or an "
                              "integration time to your input")
         return field_values
@@ -172,21 +164,20 @@ class CalculationInput(BaseModel):
         ValueWithUnits(value=Data.t_cmb.default_value,
                        unit=Data.t_cmb.default_unit)
 
-    @root_validator
-    @classmethod
-    def validate_fields(cls, field_values):
+    @model_validator(mode='after')
+    def validate_fields(field_values):
         """
         Flatten the field values for convenience
         """
-        user_input = field_values['user_input']
-        instrument_setup = field_values['instrument_setup']
+        user_input = field_values.user_input
+        instrument_setup = field_values.instrument_setup
 
         flattened_field_values = {}
         for elem in user_input:
             flattened_field_values[elem[0]] = elem[1].value
         for elem in instrument_setup:
             flattened_field_values[elem[0]] = elem[1].value
-        flattened_field_values['T_cmb'] = field_values['T_cmb'].value
+        flattened_field_values['T_cmb'] = field_values.T_cmb.value
 
         # Validate units and values on each field
         for key, val in flattened_field_values.items():
@@ -234,8 +225,7 @@ class DerivedParams(BaseModel):
     # Source equivalent flux density
     sefd: Quantity
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def __str__(self):
         return ModelUtils.model_str_rep(self)

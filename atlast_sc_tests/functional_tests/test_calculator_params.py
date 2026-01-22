@@ -11,14 +11,14 @@ from atlast_sc_tests.utils import does_not_raise
 
 
 class TestCalculationInput:
-    unit_exception = 'unitexception'
-    value_out_of_range_exception = 'valueoutofrangeexception'
-    value_too_high_exception = 'valuetoohighexception'
-    value_too_low_exception = 'valuetoolowexception'
-    value_not_allowed_exception = 'valuenotallowedexception'
+    unit_exception = 'must have one of the following units'
+    value_out_of_range_exception = 'must be in the range'
+    value_too_high_exception = 'must be less than'
+    value_too_low_exception = 'must be greater than'
+    value_not_allowed_exception = 'must have one of the following values'
 
     @pytest.mark.parametrize(
-        'input_data,expect_raises,exception_name',
+        'input_data,expect_raises,exception_match_string',
         [
             ({'t_int': {'value': 1, 'unit': 's'}}, does_not_raise(), None),
             ({'t_int': {'value': 1, 'unit': 'min'}}, does_not_raise(), None),
@@ -96,20 +96,29 @@ class TestCalculationInput:
         ]
     )
     def test_data_validation_on_init(self, input_data, expect_raises,
-                                     exception_name):
+                                     exception_match_string):
         # Ensure that parameters can only be initialised with data within the
         # permitted range (inclusive or exclusive), or with one of the
         # permitted values, and with incorrect units, where applicable
 
-        with expect_raises as e:
+        with expect_raises as exception_info:
             Calculator(input_data)
 
-        if exception_name:
-            # The details of the custom exception are buried somewhere
-            # in the guts of the pydantic ValidationError, so this check (and
-            # others like it) are a bit of a clunky hack. Would be nice to
-            # find a more elegant solution
-            assert exception_name in str(e.value)
+        
+        if exception_match_string:
+            # Note: errors returns a list of dictionaries, we are interested in the first
+            # one. This still feels a bit shonky as if pydantic change how 
+            # they structure things again this may change.
+
+            # all of these errors show up as value errors
+            validation_error = exception_info.value  
+            validation_error_type = validation_error.errors()[0]["type"]
+            assert validation_error_type == "value_error"
+
+            # for a wee bit more garnualrity can check for part of the 
+            # exception generated
+            error_string = str(validation_error).lower()
+            assert exception_match_string in error_string
 
 
 class TestDerivedGroups:
