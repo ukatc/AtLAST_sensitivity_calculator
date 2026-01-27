@@ -1,7 +1,7 @@
 Inputs to the Calculation
 =========================
 
-The tables below show the user input parameters, teelscope and environment parameters,
+The tables below show the user input parameters, telescope and environment parameters,
 and derived parameters used by the Calculator to calculate the integration time
 or sensitivity.
 

@@ -204,8 +204,7 @@ The project documentation is hosted at https://atlast-sensitivity-calculator.rea
    .readthedocs.yaml
    docs/source/requirements.txt
 
-The documentation is automatically updated using webhooks.
-
+The documentation is automatically updated with each new merge using webhooks.
 
 Generating UML diagrams
 -----------------------

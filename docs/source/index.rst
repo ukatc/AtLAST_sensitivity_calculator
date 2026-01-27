@@ -13,7 +13,6 @@ AtLAST Sensitivity Calculator
 
    calculator_info/sensitivity
    calculator_info/calculation_inputs
-   calculator_info/calculation_results
    calculator_info/weather
 
 .. Python Package User Guide section
@@ -36,7 +35,7 @@ AtLAST Sensitivity Calculator
    :caption: Web Client User Guide
    :hidden:
 
-   /user_guide/running_the_web_client
+   user_guide/running_the_web_client
 
 .. Developer Guide section
    Hidden toctree to manage the sidebar navigation.
