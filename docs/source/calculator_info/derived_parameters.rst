@@ -9,7 +9,7 @@ Derived parameters
       - Label
       - Unit
     * - Atmospheric optical depth
-      - tau_atm
+      - transmittance
       -
     * - Atmospheric temperature
       - T_atm
