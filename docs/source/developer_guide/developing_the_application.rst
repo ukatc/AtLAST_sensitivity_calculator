@@ -25,7 +25,7 @@ Setting up your development environment
    conda activate sens-calc
 
 
-The Python package
+The Python Package
 ------------------
 Building and deploying the Python package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -52,15 +52,15 @@ The ``buildpythonpackage`` target in the ``makefile`` performs this step.
     FUTURE WORK: The ``atlast_sc`` package will be hosted on a publicly available server.
     Building and deploying the package should be automated using GitHub actions.
 
-The web client
+The Web Client
 --------------
 The web client can be run directly in your development environment from the command line. Alternatively, it can be
 run in a docker container. Instructions for each method are provided below.
 
-Running the web client directly
+Running the web client locally
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. Ensure you have created and activated the conda environment as per the instructions above.
+1. Ensure you have created and activated your environment as per the instructions above.
 2. Run the web client with the following command:
 
 .. code-block:: bash
@@ -82,8 +82,7 @@ the web client application in a docker container.
     application dependencies in the container. This requirements file is not used by any other part of the
     application.
 
-As part of the build process, the Dockerfile installs the ``atlast_sc`` Python package from the AtLast Sensitivity
-Calculator GitHub repository.
+As part of the build process, the Dockerfile installs the ``atlast_sc`` Python package from the AtLAST Sensitivity Calculator GitHub repository.
 
 At present, the repository is private. You therefore need to provide your credentials as "secrets" to the
 Docker build process. To do this:
@@ -127,11 +126,9 @@ Building and deploying the web client container image
 The web client container image can be built and pushed to the GitHub Container Registry using the ``makefile`` in the
 root directory of the repository.
 
-To do this, you will first have to create a GitHub Personal Access Token with the
-appropriate scopes. See `here <https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic>`__
-for more information.
-
-Next, add the following two variables to your local ``.env`` file (in the ``web_client/secrets`` directory):
+To do this, create a GitHub Personal Access Token with the
+appropriate scopes (See `here <https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic>`__
+for more information), and then  add the following two variables to your local ``.env`` file (in the ``web_client/secrets`` directory):
 
 .. code-block:: bash
 
@@ -139,7 +136,7 @@ Next, add the following two variables to your local ``.env`` file (in the ``web_
    GIT_CR_REPO=ghcr.io/ukatc/atlast_sensitivity_calculator/atlast_sc_client
 
 
-The are two targets in the ``makefile`` for building and pushing the container image:
+The are two targets in the ``makefile``, one for building and the other for pushing the container image:
 
 * ``buildwebclientimage``: This builds the image and tags it with the name of your current git branch (e.g., ``main``). The
   current branch name is also passed as an argument to the build process. This is then used to install the Python package
@@ -213,7 +210,9 @@ UML diagrams for the ``atlast_sc`` package can be generated using ``pyreverse``.
 utilities for reverse engineering Python code that is integrated into ``pylint``.
 
 This project uses `PlantUML <https://en.wikipedia.org/wiki/PlantUML>`__ to specify and
-visualize UML diagrams.
+visualize UML diagrams. UML diagrams can be rendered in the sphinx documentation using the
+``sphinxcontrib-plantuml`` extension. The ``code_docs`` directory contains a
+number of examples of how to use the sphinx PlantUML extension.
 
 To generate package and class ``puml`` files using ``pyreverse``, navigate to the ``atlast_sc`` directory
 and execute the following:
@@ -234,6 +233,4 @@ information on how to use ``pyreverse``.
 If you are using PyCharm IDE, a ``PlantUML`` plugin for rendering ``puml`` files is
 available `here <https://plugins.jetbrains.com/plugin/7017-plantuml-integration>`__.
 
-UML diagrams can be rendered in the sphinx documentation using the
-``sphinxcontrib-plantuml`` extension. The ``code_docs`` directory contains a
-number of examples of how to use the sphinx PlantUML extension.
+
