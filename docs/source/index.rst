@@ -14,6 +14,7 @@ AtLAST Sensitivity Calculator
    calculator_info/sensitivity
    calculator_info/calculation_inputs
    calculator_info/weather
+   calculator_info/tsys_index
 
 .. User Guide section
    Hidden toctree to manage the sidebar navigation.
