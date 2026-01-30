@@ -16,7 +16,7 @@ where
 * :math:`\eta_{co}` is the cold optics optical efficiency
 * :math:`\mathfrak{t}` is the atmospheric transmittance, defined as :math:`\mathfrak{t} = \textrm{exp}^{(-\tau_{atm})}.`
 
-The Noise Equivalent Power is calculated as:
+The Noise Equivalent Power is the square root of the sum of the Poisson noise, bunching (wave) noise and quasiparticle recombination noise and calculated as:
 
 .. math::
     \mathrm{NEP} = \sqrt{2\,P_\mathrm{KID}\,h\,\nu+2\,P_\mathrm{KID}^2/(n_\mathrm{pol}\Delta \nu)+4\,\Delta_\mathrm{g}\,P_\mathrm{KID}/\eta_{pb}}
@@ -27,7 +27,7 @@ where
 * :math:`\Delta_\mathrm{g}` is the gap energy of the superconductor
 * :math:`\eta_{pb}` is the pair-breaking efficiency.
 
-The power received by the KID (:math:`P_\mathrm{KID}`) is dependent on the power spectral density (:math:`PSD_\mathrm{KID}`) and calculated as:
+The power received by the KID (:math:`P_\mathrm{KID}`) is dependent on the power spectral density (:math:`PSD_\mathrm{KID}`), which is the sum of the contributions of the noise sources and calculated as:
 
 .. math::
     P_\mathrm{KID}(\nu_\mathrm{0}) = \int^{\nu_\mathrm{max}}_{\nu_\mathrm{min}} PSD_\mathrm{KID}(\nu)\: d\nu \sim PSD_\mathrm{KID}(\nu_\mathrm{0}) \Delta \nu
