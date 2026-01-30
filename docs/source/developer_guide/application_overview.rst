@@ -103,7 +103,7 @@ ParameterSetup class acts as the container for the current state of each paramet
 Integration Overview
 --------------------
 The overall calculation process is kickstarted with a creation of a Calculator object using 
-CalculatorFactory.Initially, the calculator is created with default values. If the calculator 
+CalculatorFactory. Initially, the calculator is created with default values. If the calculator 
 is used via the Python CLI, any of the user input parameters can be changed before calculating 
 the sensitivity/integration time. If they don't, the calculations will be done with default 
 values. In the UI, the first calculation is done with the default values and any specified user
@@ -154,7 +154,7 @@ Creating the instrument YAML file
 If an instrument needs to be added, this should be done by executing a couple of steps
 within the *atlast_sc/instruments* directory.
 
-Firstly, a YAML file with the name of the instrument should be creating in the 
+Firstly, a YAML file with the name of the instrument should be created in the 
 sub-directory called *data*. It should include details of the instrument in the 
 following format: 
 
