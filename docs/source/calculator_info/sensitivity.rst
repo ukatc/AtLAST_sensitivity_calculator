@@ -16,10 +16,10 @@ or conversely, to obtain the integration time required for a given sensitivity :
 
 where 
 
-* :math:`SEFD` is the system equivalent flux density
-* :math:`\eta_{s}` is the system efficiency
+* :math:`SEFD` is the system equivalent flux density, a measure of the inherent noise in the observations that comes from the system.
+* :math:`\eta_{s}` is the system efficiency on a scale of 0 to 1
 * :math:`n_{pol}` is the number of polarizations
-* :math:`\Delta \nu` is the bandwidth
+* :math:`\Delta \nu` is the bandwidth of the observation
 
 
 The system equivalent flux density is calculated as:
@@ -30,11 +30,11 @@ The system equivalent flux density is calculated as:
 where
 
 * :math:`k` is the Boltzman constant
-* :math:`T_{sys}` is the system temperature
 * :math:`\eta_{A}` is the dish efficiency
 * :math:`A_{g}` is the geometric dish area
+* :math:`T_{sys}` is the system temperature
 
-The system temperature is dependent on the selected instrument as described in the following pages:
+The system temperature is dependent on sky transmittance and includes terms from both the telescope and selected reciever/instrumet. The system temperature is calculated differently depending on which instrument is selected for the calculation. These equations are described in the following pages:
 
 * :doc:`Default heterodyne <default_tsys>`
 * :doc:`CHAI <chai_tsys>`
@@ -44,13 +44,15 @@ The system temperature is dependent on the selected instrument as described in t
 Efficiencies
 ------------
 
+No system is 100% efficient, and efficiency terms are used in the sensitivty calculations to reflect in-efficiencies in the real world systems. These unitless efficiencies (:math:`\eta`) are scaled from 0 (completely inefficient) to 1 (completely efficient). Below we describe the efficiencies used in the calculator
+
 :math:`\eta_{A}`, the dish efficiency, is given by:
 
 .. math::
     \eta_{A} = \eta_{ill} \times \eta_{spill} \times \eta_{pol} \times \eta_{block} \times exp^{(-(\frac{4\pi \times RMS}{\lambda})^2)}
 
 
-where the exponential term accounts for Ruze losses due to the RMS of the dish surface roughness, and
+where the exponential term accounts for Ruze losses due to the RMS of the dish surface accuracy, and
 
 * :math:`\eta_{ill}` is the illumination efficiency
 * :math:`\eta_{spill}` is the spillover efficiency
