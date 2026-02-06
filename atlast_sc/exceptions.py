@@ -107,6 +107,7 @@ class InstrumentNotApplicableException(ValueError):
                  f"correspond to the chosen instrument '{instrument_name}' ranges. " \
                  f"Change the observing frequency and/or bandwidth values to use " \
                  f"this instrument or choose another instrument. The set of " \
-                 f"parameters provided correspond to instrument '{applicable_inst_name}'."
+                 f"parameters provided correspond to other instrument/s, e.g. " \
+                 f"\'{applicable_inst_name}'."
 
         super().__init__(self.message)
