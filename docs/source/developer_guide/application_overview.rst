@@ -198,11 +198,27 @@ example on how these modules could be customised.
 Modifying the configuration file to add the new instrument
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Thirdly, a couple of lines should be modified in ``config.py`` where they are 
-indicated within the configuration file with comments. In the initilisation 
-method, a dictionary containing pointers to the new instrument's Python module 
-and YAML file name should be added in similar format to the existing instruments. 
+indicated within the configuration file with comments. 
+
+In the initilisation method, a dictionary containing pointers to the new instrument's 
+Python module and YAML file name should be added in similar format to the existing 
+instruments. After adding the new instrument information in, the following section 
+within the config file should look as below. 
+
+.. image:: imgs/instrument_dict.png
+    :alt: Screenshot of new instrument dictionary 
+    :align: center
+
 After creating the dictionary variable for the new instrument, it should be added 
-to the ``available_instruments`` list.
+to the ``available_instruments`` list. The list should look like below once the 
+new instrument is added. 
+
+.. image:: imgs/available_instruments.png
+    :alt: Screenshot of updated available instruments list
+    :align: center
+
+Once these additions are made to the appropriate places mentioned above, the 
+calculator will recognise the added instrument in the new calculations. 
 
 The web application
 -------------------
