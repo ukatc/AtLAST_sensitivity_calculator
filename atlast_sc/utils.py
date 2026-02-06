@@ -82,8 +82,10 @@ class Decorators:
 
             # Update the parameter
             func(param_class, value, **kwargs)
-            # Recalculate derived parameters, if necessary
+            # Recalculate derived parameters and change instrument, if necessary
             if dirty:
+                param_class._param_setup.chosen_instrument = \
+                    param_class._param_setup.get_chosen_instrument_class()
                 param_class._param_setup._calculate_derived_parameters()
 
         return do_update

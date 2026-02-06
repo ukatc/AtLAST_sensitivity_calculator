@@ -88,61 +88,38 @@ class Calculator:
     
     @chosen_instrument.setter
     def chosen_instrument(self, instrument_name):
-        inst_can_be_chosen = False
         try:
             requested_inst_name = \
                 self._param_setup.loaded_instruments[instrument_name].name
-        except KeyError as e:
-            print('Instrument provided is not available. Check '\
-                  'the list of loaded instrument names again.')
             
-        chosen_inst_obs_freq = self.user_input.obs_freq.value
-        chosen_inst_bandwidth = self.user_input.bandwidth.value
-        # Requested instrument ranges
-        obs_freq_ranges_list = \
-            self.loaded_instruments[requested_inst_name]['obs_freq']['ranges']
-        bandwidth_ranges_list = \
-            self.loaded_instruments[requested_inst_name]['bandwidth']['ranges']
+            # Check if the requested instrument can be selected given the 
+            # existing user input parameters
+            requested_inst_is_applicable = \
+                self.requested_inst_is_applicable(requested_inst_name)
 
-        # Check if user inputted observing frequency value
-        # fall in range of instrument ranges
-        for range in obs_freq_ranges_list:
-            range = re.findall(r"[\d.]+", range)
-            min_freq = float(range[0])
-            max_freq = float(range[1])
-            if chosen_inst_obs_freq >= min_freq and \
-                chosen_inst_obs_freq <= max_freq:
-                inst_can_be_chosen = True
-            else:
-                continue
-
-        # Check if user inputted bandwidth values fall in 
-        # range of instrument ranges
-        for range in bandwidth_ranges_list:
-            range = re.findall(r"[\d.]+", range)
-            min_bandw = float(range[0])
-            max_bandw = float(range[1])
-            if chosen_inst_bandwidth >= min_bandw and \
-                chosen_inst_bandwidth <= max_bandw:
-                inst_can_be_chosen = True
-            else:
-                continue
+            try:
+                # User inputted obs_freq and bandwidth are in range
+                if requested_inst_is_applicable:
+                    self._param_setup.chosen_instrument = (
+                        self._param_setup.loaded_instruments[requested_inst_name]
+                    )
+                    # Recalculate derived parameters because new
+                    # instrument has been chosen
+                    self._param_setup._calculate_derived_parameters()
+                else:
+                    # User inputted obs_freq and bandwidth are not 
+                    # in range of the requested instrument
+                    raise InstrumentNotApplicableException(
+                        requested_inst_name,
+                        self.chosen_instrument
+                    )
+            except InstrumentNotApplicableException as e:
+                raise
+        except KeyError as e:
+            print('Instrument name provided is not available. '\
+                  'Proceeding with an applicable instrument from '\
+                  'the list of instruments.')
         
-        try:
-            # User specified obs_freq and bandwidth are in range
-            if inst_can_be_chosen:
-                self._param_setup.chosen_instrument = (
-                    self._param_setup.loaded_instruments[requested_inst_name]
-                )
-            else:
-                # If the user specified obs_freq and bandwidth are not 
-                # in range of the instrument, throw an error
-                raise InstrumentNotApplicableException(
-                    requested_inst_name,
-                    self.chosen_instrument
-                )
-        except InstrumentNotApplicableException as e:
-            raise
 
     @property
     def loaded_instruments(self):
@@ -274,6 +251,70 @@ class Calculator:
         self._param_setup.reset()
         # Recalculate the derived parameters
         self._param_setup._calculate_derived_parameters()
+
+    def requested_inst_is_applicable(self, requested_inst_name):
+        """
+        Check if the requested instrument can be selected to be used in the
+        calculations. The already existing user input parameters will be 
+        cross checked with the applicable ranges of the requested instrument.
+
+        :param requested_inst_name: name of the requested instrument
+        :type requested_inst_name: String
+        :return: applicability of requested instrument
+        :rtype: boolean
+        """
+        inst_applicable = False
+        obs_freq_applicable = False
+        bandwidth_applicable = False
+
+        # See if the requested instrument fits the existent user input values
+        user_obs_freq = self.user_input.obs_freq
+        # Check if obs_freq units are the same 
+        user_obs_freq_unit = str(self.user_input.obs_freq.unit)
+        requested_inst_obs_freq_unit = self.loaded_instruments[requested_inst_name]['obs_freq']['unit']
+        # If the units are not the same, convert user input obs_freq to the unit
+        # of the requested instrument obs_freq ranges
+        if user_obs_freq_unit != requested_inst_obs_freq_unit:
+            user_obs_freq = user_obs_freq.to(u.Unit(requested_inst_obs_freq_unit))
+        user_obs_freq = user_obs_freq.value
+            
+        # Convert bandwidth value to Hz
+        user_bandwidth = self.user_input.bandwidth
+        user_bandwidth = user_bandwidth.to(u.Hz)
+        user_bandwidth = user_bandwidth.value
+
+        # Requested instrument ranges
+        instrument_obs_freqs = \
+            self.loaded_instruments[requested_inst_name]['obs_freq']['ranges']
+        instrument_bandw_vals = \
+            self.loaded_instruments[requested_inst_name]['bandwidth']['ranges']
+        
+        # Check if user inputted observing frequency value falls in 
+        # the range of the requested instrument ranges
+        for range in instrument_obs_freqs:
+            range = re.findall(r"[\d.]+", range)
+            min_freq = float(range[0])
+            max_freq = float(range[1])
+            if user_obs_freq >= min_freq and user_obs_freq <= max_freq:
+                obs_freq_applicable = True
+
+        # Check if user inputted bandwidth value falls in the range of 
+        # the requested instrument ranges
+        if requested_inst_name != 'Default':
+            for range in instrument_bandw_vals:
+                range = re.findall(r"[\d.]+", range)
+                min_bandw = float(range[0])
+                max_bandw = float(range[1])
+                if user_bandwidth >= min_bandw and user_bandwidth <= max_bandw:
+                    bandwidth_applicable = True
+        else: # If the requested instrument is Default
+            bandwidth_applicable = True
+
+        # If both user inputted parameters fall in the requested
+        # instrument range
+        if obs_freq_applicable and bandwidth_applicable:
+            inst_applicable = True
+        return inst_applicable
 
     def list_instruments(self):
         """

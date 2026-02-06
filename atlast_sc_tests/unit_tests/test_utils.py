@@ -93,7 +93,7 @@ class TestInstrumentClasses:
             mock_calc.user_input.obs_freq = test_obs_freq
             mock_calc.user_input.bandwidth = test_bandwidth
 
-            chosen_inst_module = mock_calc._param_setup.get_chosen_instrument()
+            chosen_inst_module = mock_calc._param_setup.get_chosen_instrument_class()
             applicable_inst_name = chosen_inst_module.name
             assert applicable_inst_name == "Sepia"
 
