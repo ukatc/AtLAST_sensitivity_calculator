@@ -88,6 +88,7 @@ class Calculator:
     
     @chosen_instrument.setter
     def chosen_instrument(self, instrument_name):
+        instrument_name = instrument_name.capitalize()
         try:
             requested_inst_name = \
                 self._param_setup.loaded_instruments[instrument_name].name
