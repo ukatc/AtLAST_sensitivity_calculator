@@ -107,7 +107,8 @@ class InstrumentNotApplicableException(ValueError):
                  f"correspond to the chosen instrument '{instrument_name}' ranges. " \
                  f"Change the observing frequency and/or bandwidth values to use " \
                  f"this instrument or choose another instrument. The set of " \
-                 f"parameters provided correspond to other instrument/s, e.g. " \
-                 f"\'{applicable_inst_name}'."
+                 f"parameters provided corresponds to other instrument/s, e.g. " \
+                 f"\'{applicable_inst_name}'. To check the frequency and bandwidth " \
+                 f"ranges of the installed instruments type calculator.list_instruments()."
 
         super().__init__(self.message)
