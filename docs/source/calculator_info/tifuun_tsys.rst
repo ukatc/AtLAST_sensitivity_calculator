@@ -1,7 +1,7 @@
 TIFUUN system temperature
 =========================
 
-Terahertz IFU with Universal Nanotechnology TIFUUN is being built for the ASTE Observatory. TIFUUN is a KID (Kinetic Inductance Detector) instrument. It covers the frequency range between 90 and 360 GHz. It is set-up to cover channel spacings from 180 MHz to 10 GHz.  (See `Rybak et al. 2024 <https://zenodo.org/records/12202439>`__ for more details.)
+Terahertz IFU with Universal Nanotechnology (TIFUUN) is being built for the ASTE Observatory. TIFUUN is a KID (Kinetic Inductance Detector) instrument. It covers the frequency range between 90 and 360 GHz. It is set-up to cover channel spacings from 180 MHz to 10 GHz.  (See `Rybak et al. 2024 <https://zenodo.org/records/12202439>`__ for more details.)
 
 The system temperature is calculated as:
 
