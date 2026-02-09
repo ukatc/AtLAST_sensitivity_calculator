@@ -88,7 +88,8 @@ class Decorators:
                 param_class._param_setup.chosen_instrument = \
                     param_class._param_setup.get_chosen_instrument_class()
                 new_inst_name = param_class._param_setup.chosen_instrument.name
-                print("Instrument has been changed from " + old_inst_name + " to " + \
+                if old_inst_name != new_inst_name: 
+                    print("Instrument has been changed from " + old_inst_name + " to " + \
                       new_inst_name + ".")
                 param_class._param_setup._calculate_derived_parameters()
 
