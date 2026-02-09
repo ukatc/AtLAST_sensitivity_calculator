@@ -88,6 +88,7 @@ class Calculator:
     
     @chosen_instrument.setter
     def chosen_instrument(self, instrument_name):
+        old_inst_name = self._param_setup.chosen_instrument.name
         instrument_name = instrument_name.capitalize()
         try:
             requested_inst_name = \
@@ -107,6 +108,9 @@ class Calculator:
                     # Recalculate derived parameters because new
                     # instrument has been chosen
                     self._param_setup._calculate_derived_parameters()
+                    new_inst_name = self._param_setup.chosen_instrument.name
+                    print("Instrument has been changed from " + old_inst_name + " to " + \
+                          new_inst_name + ".")
                 else:
                     # User inputted obs_freq and bandwidth are not 
                     # in range of the requested instrument
