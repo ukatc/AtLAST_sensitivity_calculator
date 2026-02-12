@@ -106,6 +106,46 @@ You can also specify a sensitivity to perform the integration time calculation:
     If any of the parameters stored in the Calculator object are updated, the
     sensitivity or integration time will *not* be recalculated automatically.
 
+.. _section_instrument_selection:
+
+Instrument selection
+^^^^^^^^^^^^^^^^^^^^
+
+The calculator supports a range of instruments as described in the 
+:doc:`instrument overview <../calculator_info/instrument_overview>`. The calculator will 
+automatically pick an appropriate instrument based on the observing frequency and bandwidth. 
+The user will be notified whenever the instrument changes. For example:
+
+.. code-block:: python
+
+    >>> calculator.user_input.obs_freq = 270*u.GHz
+    Instrument has been changed from Sepia to Finer.
+
+The currently selected instrument can be checked using:
+
+.. code-block:: python
+
+    >>> calculator.chosen_instrument
+
+The instrument can also be changed using this as follows (note that this is case 
+insensitive):
+
+.. code-block:: python
+
+    >>> calculator.chosen_instrument = 'finer'
+
+.. warning::
+    
+    Choosing an instrument that is not appropriate for the current observing frequency and 
+    bandwidth will result in an error. 
+
+The observing frequency and bandwidth ranges for the 
+instruments can be checked with:
+
+.. code-block:: python
+
+    >>> calculator.list_instruments()
+
 
 Resetting the calculator
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -125,7 +165,7 @@ using the :meth:`reset <atlast_sc.calculator.Calculator.reset>` method:
         calculator.reset()
 
         # check the bandwidth value stored in the calculator
-        print('bandwidth', calculator.bandwidth)
+        print('bandwidth', calculator.user_input.bandwidth)
         # expected output
         # bandwidth 100.0 MHz
 
@@ -140,7 +180,7 @@ parameters to the console as follows:
 .. code-block:: bash
 
     # Check the user input parameters
-    >>> calculator.user_input.show())
+    >>> calculator.user_input.show()
     bandwidth: 100.0 MHz
     elevation: 45.0 deg
     n_pol: 2.0
