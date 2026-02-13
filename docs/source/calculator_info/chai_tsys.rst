@@ -26,7 +26,7 @@ Through consultation with the developers of the CHAI instrument, we assume a con
             200\,\mbox{K} & \mbox{for} & 780<\nu<820\,\mbox{GHz} 
             \end{array}\right.
 
-These values are used in the :math:`T_{sys}` equation above, which is in turn used to calculate the System Equivalent Flux Density used in the overall sensitivty (or integration time) calculation.
+These values are used in the :math:`T_{sys}` equation above, which is in turn used to calculate the System Equivalent Flux Density used in the overall sensitivity (or integration time) calculation.
 
 
 The sky temperature is calculated as:
