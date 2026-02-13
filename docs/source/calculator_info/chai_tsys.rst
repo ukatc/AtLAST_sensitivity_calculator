@@ -5,14 +5,14 @@ The CCAT Heterodyne Array Instrument (`CHAI <https://www.ccatobservatory.org/cha
 
 Here in the AtLAST sensitivity calculator, we use it as an exemplar of a heterodyne instrument capable of working at these frequencies.
 
-In this module, we calculate the system temperature used in the overall sensitivity equation **MARK TO ADD TEXT AROUND HOW THIS INFORMS THAT CALCULATION AND A LINK BACK TO THE MAIN PAGE WHERE THAT CALCULATION IS EXPLAINED**. For a CHAI like system, the system temperature is calculated as:
+In this module, we calculate the system temperature used in the overall ::doc::`sensitivity equation <sensitivity>`. For a CHAI like system, the system temperature is calculated as:
 
 .. math::
     T_{sys} = \frac{1}{\eta_{eff} \mathfrak{t}} \times [T_{rx} + (\eta_{eff} T_{sky}) + (1-\eta_{eff}) T_{amb}]
 
 where
 
-* :math:`\eta_{eff}` is the forward efficiency **MARK: IS THIS OF THE TELESCOPE OR THE INSTRUMENT?**
+* :math:`\eta_{eff}` is the forward efficiency of the telescope
 * :math:`\mathfrak{t}` is the atmospheric transmittance, defined as :math:`\mathfrak{t} = \textrm{exp}^{(-\tau_{atm})}`
 * :math:`T_{rx}` is the receiver temperature
 * :math:`T_{sky}` is the sky temperature
@@ -29,7 +29,6 @@ Through consultation with the developers of the CHAI instrument, we assume a con
 These values are used in the :math:`T_{sys}` equation above, which is in turn used to calculate the System Equivalent Flux Density used in the overall sensitivty (or integration time) calculation.
 
 
-**MARK: this needs updating**
 The sky temperature is calculated as:
 
 .. math::
