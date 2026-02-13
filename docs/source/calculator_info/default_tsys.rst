@@ -1,7 +1,7 @@
 Default instrument system temperature
 ==================
 
-The default instrument is a heterodyne instrument with a receiver temperature that increases as a function of frequency. It is valid for all ranges of observing frequency and bandwidth. The system temperature is calculated as:
+For the parameter space in which there is no pre-defined instrument that can be used to calculate the telescope sensitivity, we default to the more generic representation of a receiver with a specified receiver temperature. This setup is valid for all ranges of observing frequency and bandwidth, and from it, the system temperature is calculated as:
 
 .. math::
     T_{sys} = \frac{1}{\eta_{eff} \mathfrak{t}} \times [T_{rx} + (\eta_{eff} T_{sky}) + (1-\eta_{eff}) T_{amb}]
@@ -14,14 +14,12 @@ where
 * :math:`T_{sky}` is the sky temperature
 * :math:`T_{amb}` is the ambient temperature
 
-Here we assume a receiver temperature calculated from:
+The receiver temperature is the only instrument dependent component of the above equation, and we assume a reasonably efficient instrument near the quantum limit. Specifically:
 
 .. math::
     T_{rx} = \frac{5h\nu}{k}
 
-where the factor of 5 is a conservative estimate of the receiver temperature that could be reached and
-
-* :math:`h` is the Planck constant
+where :math:`h` and :math:`k` are the Planck and Boltzmann constants (respectively), :math:`\nu` is the frequency of the observation, and the factor 5 is a conservative estimate of how close to the quantum limit receivers can get. The fundamental limit achievable when including mixer and Local oscilator terms is 3, but most receivers do not achieve that efficiency.
 
 The sky temperature is calculated as:
 
