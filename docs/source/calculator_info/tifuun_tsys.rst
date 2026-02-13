@@ -3,18 +3,20 @@ TIFUUN system temperature
 
 Terahertz IFU with Universal Nanotechnology (TIFUUN) is being built for the ASTE Observatory. TIFUUN is a KID (Kinetic Inductance Detector) instrument. It covers the frequency range between 90 and 360 GHz. It is set-up to cover channel spacings from 180 MHz to 10 GHz.  (See `Rybak et al. 2024 <https://zenodo.org/records/12202439>`__ for more details.)
 
-The system temperature is calculated as:
+TIFUUN is being used to demonstrate the capabilities of a KID based integral field unit (IFU) instrument that can observe at these frequencies on AtLAST.
+
+To feed into the System Equivalent Flux Density equation **MARK: ADD SIMILAR DESCRIPTION TO WHAT I WROTE IN THE CHAI DOCUMENT**, we calculate the system temperature through the TIFUUN optical path as:
 
 .. math::
     T_{sys} = \frac{\mathrm{NEP}}{k\,\eta_\mathrm{chip}\,\eta_\mathrm{co}\,\eta_\mathrm{eff}\,\mathfrak{t}\,\sqrt{2n_\mathrm{pol}\,\Delta\nu} }
 
 where
 
-* :math:`\mathrm{NEP}` is the Noise Equivalent Power
 * :math:`\eta_{eff}` is the forward efficiency
 * :math:`\eta_{chip}` is the chip optical efficiency
 * :math:`\eta_{co}` is the cold optics optical efficiency
-* :math:`\mathfrak{t}` is the atmospheric transmittance, defined as :math:`\mathfrak{t} = \textrm{exp}^{(-\tau_{atm})}.`
+* :math:`\mathfrak{t}` is the atmospheric transmittance, defined as :math:`\mathfrak{t} = \textrm{exp}^{(-\tau_{atm})}`
+* :math:`\mathrm{NEP}` is the Noise Equivalent Power.
 
 The Noise Equivalent Power is the square root of the sum of the Poisson noise, bunching (wave) noise and quasiparticle recombination noise and calculated as:
 
@@ -23,9 +25,9 @@ The Noise Equivalent Power is the square root of the sum of the Poisson noise, b
 
 where
 
-* :math:`P_\mathrm{KID}` is the power received by the KID
 * :math:`\Delta_\mathrm{g}` is the gap energy of the superconductor
-* :math:`\eta_{pb}` is the pair-breaking efficiency.
+* :math:`\eta_{pb}` is the pair-breaking efficiency
+* :math:`P_\mathrm{KID}` is the power received by the KID.
 
 The power received by the KID (:math:`P_\mathrm{KID}`) is dependent on the power spectral density (:math:`PSD_\mathrm{KID}`), which is the sum of the contributions of the noise sources and calculated as:
 
