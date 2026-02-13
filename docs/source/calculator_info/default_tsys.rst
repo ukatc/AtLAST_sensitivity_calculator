@@ -14,8 +14,6 @@ where
 * :math:`T_{sky}` is the sky temperature
 * :math:`T_{amb}` is the ambient temperature
 
-The forward efficiency (:math:`\eta_{eff}`) is set to **MARK TO ADD VALUE**, consistent with the forward efficiencies used in **MARK TO DESCRIBE WHERE WE GOT OUR VALUES FROM**. How the atmospheric transmittance and :math:`T_{sky}` are derived is explained in more detail below, and :math:`T_{amb}` is set to a fixed value of **MARK TO ADD VALUE AND EXPLAIN WHY**. 
-
 The receiver temperature is the only instrument dependent component of the above equation, and we assume a reasonably efficient instrument near the quantum limit. Specifically:
 
 .. math::
@@ -23,7 +21,7 @@ The receiver temperature is the only instrument dependent component of the above
 
 where :math:`h` and :math:`k` are the Planck and Boltzmann constants (respectively), :math:`\nu` is the frequency of the observation, and the factor 5 is a conservative estimate of how close to the quantum limit receivers can get. The fundamental limit achievable when including mixer and Local oscilator terms is 3, but most receivers do not achieve that efficiency.
 
-The sky temperature and transmission are **MARK TO UPDATE THIS SECTION BASED ON EMAIL DISCUSSIONS** is calculated as:
+The sky temperature is calculated as:
 
 .. math::
     T_{sky} = (1-\mathfrak{t})\times T_{atm} + T_{cmb}
