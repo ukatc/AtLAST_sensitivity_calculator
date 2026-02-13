@@ -5,7 +5,7 @@ Terahertz IFU with Universal Nanotechnology (TIFUUN) is being built for the ASTE
 
 TIFUUN is being used to demonstrate the capabilities of a KID based integral field unit (IFU) instrument that can observe at these frequencies on AtLAST.
 
-As a KID instrument, the sensitivity is calculated slightly differently to the heterodyne instruments as Poisson noise and quasiparticle recombination noise are important in addition to the wave noise, as described in detail in this `note <https://github.com/ukatc/AtLAST_sensitivity_calculator/wiki/Sensitivity-Calculation-for-a-Single%E2%80%90mode-KID-based-Instrument>`. Re-arranging the equations, we find that we can incorporate this instrument into our ::doc::`sensitivity calculation <sensitivity>` by determining an equivalent system temperature that is dependent on the Noise Equivalent Power (NEP) as follows:
+As a KID instrument, the sensitivity is calculated slightly differently to the heterodyne instruments as Poisson noise and quasiparticle recombination noise are important in addition to the wave noise, as described in detail in this `note <https://github.com/ukatc/AtLAST_sensitivity_calculator/wiki/Sensitivity-Calculation-for-a-Single%E2%80%90mode-KID-based-Instrument>`__. Re-arranging the equations, we find that we can incorporate this instrument into our :doc:`sensitivity calculation <sensitivity>` by determining an equivalent system temperature that is dependent on the Noise Equivalent Power (NEP) as follows:
 
 .. math::
     T_{sys} = \frac{\mathrm{NEP}}{k\,\eta_\mathrm{chip}\,\eta_\mathrm{co}\,\eta_\mathrm{eff}\,\mathfrak{t}\,\sqrt{2n_\mathrm{pol}\,\Delta\nu} }

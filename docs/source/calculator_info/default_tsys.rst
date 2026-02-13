@@ -1,5 +1,5 @@
 Default instrument system temperature
-==================
+=====================================
 
 For the parameter space in which there is no pre-defined instrument that can be used to calculate the telescope sensitivity, we default to the more generic representation of a receiver with a specified receiver temperature. This setup is valid for all ranges of observing frequency and bandwidth, and from it, the system temperature is calculated as:
 

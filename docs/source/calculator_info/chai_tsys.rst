@@ -1,5 +1,5 @@
 CHAI system temperature
-========
+=======================
 
 The CCAT Heterodyne Array Instrument (`CHAI <https://www.ccatobservatory.org/chai/>`__) is being built for the CCAT Observatory. It covers the frequency ranges between 460 and 500 GHz and 780 and 820 GHz. It is set-up to cover channel spacings from 61 kHz to 4 GHz. It has a receiver temperature of 100 K for the lower frequency range and 200 K for the higher frequency range. (See `Barrueto et al. 2023 <https://articles.adsabs.harvard.edu/pdf/2023pcsf.conf..346B>`__ for more details.)
 
