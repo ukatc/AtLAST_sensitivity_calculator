@@ -93,9 +93,9 @@ class TestInstrumentClasses:
             mock_calc.user_input.obs_freq = test_obs_freq
             mock_calc.user_input.bandwidth = test_bandwidth
 
-            chosen_inst_module = mock_calc._param_setup.get_chosen_instrument()
+            chosen_inst_module = mock_calc._param_setup.get_chosen_instrument_class()
             applicable_inst_name = chosen_inst_module.name
-            assert applicable_inst_name == "Sepia"
+            assert applicable_inst_name == "Muscat"
 
 
 class TestDecorators:
@@ -134,14 +134,36 @@ class TestDecorators:
 
                 return True
             
+        class MockInstrument:
+            def __init__(self):
+                self.name = "Mock"
+            
         class MockParamSetup:
             def __init__(self):
-                self.calculation_inputs = \
+                self._calculation_inputs = \
                     TestDecorators.MockCalculator.MockCalculationInputs()
+                self._chosen_instrument = \
+                    TestDecorators.MockCalculator.MockInstrument()
 
             @staticmethod
             def _calculate_derived_parameters():
                 pass
+            
+            @staticmethod
+            def get_chosen_instrument_class():
+                return TestDecorators.MockCalculator.MockInstrument()
+            
+            @property
+            def calculation_inputs(self):
+                return self._calculation_inputs
+        
+            @property
+            def chosen_instrument(self):
+                return self._chosen_instrument
+            
+            @chosen_instrument.setter
+            def chosen_instrument(self, new_value):
+                self._chosen_instrument = new_value
 
         @property
         def decorated_validate_value(self):
@@ -160,10 +182,6 @@ class TestDecorators:
         @Decorators.validate_and_update_params
         def decorated_validate_and_update_params(self, new_quantity):
             self._quantity = new_quantity
-
-        @property
-        def calculation_inputs(self):
-            return self._calculation_inputs
 
     @staticmethod
     def mock_validate(*args):
@@ -205,9 +223,9 @@ class TestDecorators:
         'new_value,expect_raises,expect_value_updated,'
         'expect_params_recalculated',
         [
-            (2 * u.GHz, does_not_raise(), True, True), ####
+            (2 * u.GHz, does_not_raise(), True, True), 
             (1 * u.GHz, does_not_raise(), True, False),
-            (1 * u.MHz, does_not_raise(), True, True), ####
+            (1 * u.MHz, does_not_raise(), True, True), 
             ('invalid', pytest.raises(ValueError), False, False)
         ]
     )
