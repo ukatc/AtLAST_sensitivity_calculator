@@ -151,7 +151,7 @@ class TestDecorators:
             
             @staticmethod
             def get_chosen_instrument_class():
-                pass
+                return TestDecorators.MockCalculator.MockInstrument()
             
             @property
             def calculation_inputs(self):
@@ -182,10 +182,6 @@ class TestDecorators:
         @Decorators.validate_and_update_params
         def decorated_validate_and_update_params(self, new_quantity):
             self._quantity = new_quantity
-
-
-        
-     
 
     @staticmethod
     def mock_validate(*args):
@@ -227,9 +223,9 @@ class TestDecorators:
         'new_value,expect_raises,expect_value_updated,'
         'expect_params_recalculated',
         [
-            (2 * u.GHz, does_not_raise(), True, True), ####
+            (2 * u.GHz, does_not_raise(), True, True), 
             (1 * u.GHz, does_not_raise(), True, False),
-            (1 * u.MHz, does_not_raise(), True, True), ####
+            (1 * u.MHz, does_not_raise(), True, True), 
             ('invalid', pytest.raises(ValueError), False, False)
         ]
     )
