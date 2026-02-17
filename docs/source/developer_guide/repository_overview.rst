@@ -6,6 +6,19 @@ atlast_sc package
 The ``atlast_sc`` directory contains all of the code and files that make up the
 calculator Python package.
 
+instruments
+###########
+Contains instrument data files and their respective Python classes, as well as the
+configuration file to set each instrument up.
+
+parameters
+##########
+Classes for each of the calculation parameter category.
+
+static/lookups
+##############
+Tabular information files for parameters X,X,X [TODO]
+
 atlast_sc tests
 ---------------
 Unit and functional tests for the ``atlast_sc`` package are contained in the
