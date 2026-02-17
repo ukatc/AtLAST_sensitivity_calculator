@@ -35,6 +35,7 @@ am_code
 | ├── **am_code**
 | │   ├── configs
 | │   └── output
+| 
 
 The ``am_code`` directory contains AM atmospheric modelling files and code that was 
 used to generate a grid of atmospheric parameters used by the calculator. This 
@@ -48,6 +49,7 @@ atlast_sc package
 | │       ├── data
 | │   ├── parameters
 | │   └── static/lookups
+| 
 
 The ``atlast_sc`` directory contains all of the code and files that make up the
 calculator Python package.
@@ -70,6 +72,7 @@ atlast_sc tests
 | ├── **atlast_sc_tests**
 | │   ├── functional_tests
 | │   └── unit_tests
+| 
 
 Unit and functional tests for the ``atlast_sc`` package are contained in the
 ``atlast_sc_tests`` directory.
@@ -89,6 +92,7 @@ Documentation
 -------------
 | ├── **docs**
 | │   ├── source
+| 
 
 | ├── **source**
 | │  ├── calculator_info
@@ -96,6 +100,7 @@ Documentation
 | │  ├── code_docs
 | │  ├── developer_guide
 | │  ├── user_guide
+| 
 
 The ``docs`` directory contains all the files and scripts used to generate (this)
 documentation. The documentation is generated using Sphinx.
@@ -106,6 +111,7 @@ Web client
 | │   ├── scripts
 | │   ├── static
 | │   ├── templates
+| 
 
 The ``web_client`` directory contains all the web application files and scripts.
 This directory also contains a ``Dockerfile`` that can be used to build a docker
