@@ -38,7 +38,11 @@ The system temperature is dependent on sky transmittance and includes terms from
 
 * :doc:`Default heterodyne <default_tsys>`
 * :doc:`CHAI <chai_tsys>`
+* :doc:`FINER <finer_tsys>`
+* :doc:`MUSCAT <muscat_tsys>`
+* :doc:`SEPIA <sepia_tsys>`
 * :doc:`TIFUUN <tifuun_tsys>`
+
 
 
 Efficiencies
