@@ -148,6 +148,7 @@ The are two targets in the ``makefile`` for building and pushing the container i
 * ``pushwebclientimage``: This first executes the ``buildwebclientimage`` target, then pushes the built image to the GitHub
   Container Registry.
 
+.. note::
 ..
     FUTURE WORK: The web client will be hosted on a publicly available server.
     Building and deploying the application should be automated using GitHub actions.
@@ -188,6 +189,7 @@ This will create the HTML and other resources in ``docs/build/``.
 
 Open the file ``docs/build/html/index.html`` in your browser to view the built documentation.
 
+.. note::
 ..
     FUTURE WORK: The sphinx documentation will be hosted on a publicly available server.
     Building and deploying the documentation should be automated using GitHub actions.

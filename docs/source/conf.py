@@ -33,7 +33,6 @@ release = '0.1.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-   'myst_parser',
    'sphinx.ext.duration',
    'sphinx.ext.doctest',
    'sphinx.ext.autodoc',
@@ -43,16 +42,6 @@ extensions = [
    'sphinx_copybutton',
    'sphinxcontrib.plantuml',
 ]
-
-# added as enablers for extended markdown and platuml extension 
-# see  https://www.devhowto.dev/misc/sphinx-readthedocs-plantuml.html and
-#      https://myst-parser.readthedocs.io/en/latest/
-myst_enable_extensions = [
-  'colon_fence',
-  'strikethrough',
-  'attrs_block',
-]
-
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

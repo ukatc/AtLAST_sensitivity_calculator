@@ -15,12 +15,14 @@ build:
     # rust: "1.64"
     # golang: "1.19"
 
-  # We need this in combination with sphinxcontrib-plantuml (python/pip
-  # dependency)so PlantUML diagrams can be generated and embedded into
-  # the output during build.
-  #
-  apt_packages:
-   - plantuml
+# Build documentation in the "docs/" directory with Sphinx
+sphinx:
+   configuration: docs/source/conf.py
+
+# Optionally build your docs in additional formats such as PDF and ePub
+# formats:
+#    - pdf
+#    - epub
 
 # Optional but recommended, declare the Python requirements required
 # to build your documentation
@@ -28,16 +30,3 @@ build:
 python:
    install:
    - requirements: docs/source/requirements.txt
-   # Install our python package before building the docs
-   - method: pip
-     path: .
-
-# Build documentation in the "docs/" directory with Sphinx
-sphinx:
-   configuration: docs/source/conf.py
-
-# Optionally build your docs in additional formats such as PDF and ePub
-formats:
-   - pdf
-   - epub
-
