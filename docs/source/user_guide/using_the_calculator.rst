@@ -172,7 +172,6 @@ parameters to the console as follows:
     T_sky: 13.652788658783503 K
     sefd: 1.0923500468071407e-24 J / m2
 
-.. _input data:
 
 Providing input data to the calculator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
