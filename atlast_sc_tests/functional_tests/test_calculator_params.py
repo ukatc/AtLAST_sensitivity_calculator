@@ -3,6 +3,7 @@ import numpy as np
 import pytest
 from pydantic import ValidationError
 from astropy import units as u
+from atlast_sc.parameter_setup import ParameterSetup
 from atlast_sc.calculator import Calculator
 from atlast_sc.derived_groups import AtmosphereParams, Temperatures, \
     Efficiencies
@@ -113,8 +114,8 @@ class TestCalculationInput:
         # permitted values, and with incorrect units, where applicable
 
         with expect_raises as exception_info:
-            Calculator(input_data)
-
+            test_param_setup = ParameterSetup(input_data)
+            Calculator(test_param_setup)
         
         if exception_match_string:
             # Note: errors returns a list of dictionaries, we are interested in the first
