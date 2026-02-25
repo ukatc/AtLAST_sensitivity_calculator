@@ -95,7 +95,7 @@ class TestInstrumentClasses:
 
             chosen_inst_module = mock_calc._param_setup.get_chosen_instrument()
             applicable_inst_name = chosen_inst_module.name
-            assert applicable_inst_name == "Sepia"
+            assert applicable_inst_name == "Muscat"
 
 
 class TestDecorators:
