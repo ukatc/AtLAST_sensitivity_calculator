@@ -117,7 +117,7 @@ class TestCalculatorUsage:
         # parameters
         expected_params = ['t_int', 'sensitivity', 'bandwidth', 'n_pol',
                            'obs_freq', 'weather', 'elevation', 'transmittance',
-                           'T_atm', 'T_rx', 'eta_a', 'eta_s', 'T_sys', 'T_sky',
+                           'T_atm', 'T_sky', 'T_sys', 'eta_a', 'eta_s',
                            'sefd']
         # sort the expected parameters
         expected_params.sort()
