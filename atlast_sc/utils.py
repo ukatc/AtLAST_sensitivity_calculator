@@ -186,10 +186,8 @@ class FileHelper:
         # Create and concatenate dictionaries from the user input model and
         # the derived parameters model
         params = {param: val['value']
-                  # NOTE: Derived parameters is a special case where the model is not
-                  # directly accessible within the class structure.
-                  for param, val in calculator._param_setup.user_input.dict().items()} | \
-            calculator._param_setup._derived_parameters_model.dict()
+                  for param, val in calculator._param_setup.user_input.model_dump().items()} | \
+            calculator._param_setup.derived_parameters_model.model_dump()
 
         with open(file_path, "w") as f:
             file_writer(f, params)
