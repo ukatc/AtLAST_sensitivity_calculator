@@ -10,7 +10,7 @@ To go beyond this, in order to approximate the future instrumentation available 
 
     "CHAI", CCAT, https://www.ccatobservatory.org/chai/
     "FINER", LMT, https://finerreceiver.github.io/
-    "MUSCAT", LMT, 
+    "MUSCAT", LMT, https://muscat-docs.astro.cf.ac.uk/
     "SEPIA", APEX, https://www.apex-telescope.org/ns/observing/the-telescope/instruments/sepia/sepia345/
     "TIFUUN", ASTE,
 
