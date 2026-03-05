@@ -2,7 +2,9 @@
 ++++++++++++++++++++++++++
 - Refactored code to improve flexibility
 - Changed the names and workings of calculation input parameter classes to make more sense with the addition of instrument modules
-- Added instrument modules for CHAI, FINER, MUSCAT, SEPIA, TIFUUN
+- Added functionality for instrument modules to be introduced for calculating the system temperature
+- Added specific instrument modules to represent CHAI, FINER, MUSCAT, SEPIA, TIFUUN
+- Added automatic instrument selection based on observing frequency and bandwidth input by user
 - Added instrument selection option on the CLI 
 - Added functionality to see if requested instrument can be chosen
 - Added functionality to show a list of instruments with their observing frequency and bandwidth ranges
