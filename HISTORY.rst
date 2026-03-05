@@ -1,3 +1,16 @@
+2.0.0-alpha.1 (2026-03-05)
+++++++++++++++++++++++++++
+- Refactored code to improve flexibility
+- Changed the names and workings of calculation input parameter classes to make more sense with the addition of instrument modules
+- Added instrument modules for CHAI, FINER, MUSCAT, SEPIA, TIFUUN
+- Added instrument selection option on the CLI 
+- Added functionality to see if requested instrument can be chosen
+- Added functionality to show a list of instruments with their observing frequency and bandwidth ranges
+- Made instrument name specification case insensitive
+- Modified unit tests according to the new structure
+- More explanatory exception messages
+- Documentation updates to take account of these changes
+
 1.1.1 (2025-01-22)
 ++++++++++++++++++
 - Updates to readthedocs files to enable readthedocs to display API and UML pages and to automatically create a pdf.
@@ -9,5 +22,4 @@
 
 1.0.1 (2023-10-31)
 ++++++++++++++++++
-
 - Update numpy and astropy requirements so that the calculator is compatible with Python 3.12.
