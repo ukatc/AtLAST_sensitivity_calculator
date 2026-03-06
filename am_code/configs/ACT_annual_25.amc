@@ -35,13 +35,13 @@
 ?  am ACT_annual_25.amc  0 GHz  300 GHz  10 MHz  0 deg  1.0
 ?
 f %1 %2  %3 %4  %5 %6
-output f GHz  tau  Tb K
+output f GHz  tau  Trj K
 za %7 %8
 tol 1e-4
 
 Nscale troposphere h2o %9
 
-T0 2.7 K
+T0 0 K
 
 layer mesosphere
 Pbase 0.1 mbar
