@@ -177,7 +177,7 @@ class ParameterSetup:
         chosen_inst = self.loaded_instruments[chosen_inst_name]
         return chosen_inst
     
-    def compare_and_modify_bandwidth_units(self, bandwidth, instrument_bandw_vals):
+    def _compare_and_modify_bandwidth_units(self, bandwidth, instrument_bandw_vals):
         """
         (ASC-108)
         Compares user inputted bandwidth unit with the instrument 
