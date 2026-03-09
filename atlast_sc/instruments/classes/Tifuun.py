@@ -2,6 +2,7 @@ from numpy import expm1, sqrt
 import astropy.units as u
 from astropy import constants
 from atlast_sc.instrument import Instrument
+from atlast_sc.derived_groups import noise_temperature
 
 """
 TIFUUN instrument parameters
@@ -48,15 +49,7 @@ class Tifuun(Instrument):
         quantity = u.Quantity(value=value, unit=unit)
         return quantity
 
-    @staticmethod
-    def bose_einstein(obs_freq, temp):
-        """
-        Bose-Einstein photon-occupation number calculation
-        """
-        # expm1(x) = exp(x)-1 
-        return 1/(expm1(constants.h * obs_freq / (constants.k_B * temp)))
-
-    def calculate_system_temperature(self, obs_freq, bandwidth, T_cmb, eta_eff, T_atm, 
+    def calculate_system_temperature(self, obs_freq, bandwidth, eta_eff, 
                                      T_amb, T_sky, transmittance, n_pol):
         """
         Returns system temperature, following calculation in [doc]
@@ -65,16 +58,9 @@ class Tifuun(Instrument):
         :rtype: astropy.units.Quantity
         """
         # calculate power spectral density
-        psdkid = (self.eta_chip * (1 - self.eta_co) * constants.h * obs_freq * \
-                self.bose_einstein(obs_freq, self.T_co) +
-                self.eta_chip * self.eta_co * (1 - eta_eff) * constants.h *
-                obs_freq * self.bose_einstein(obs_freq, T_amb) +
-                self.eta_chip * self.eta_co * eta_eff * (1 - transmittance)
-                * constants.h * obs_freq *
-                self.bose_einstein(obs_freq, T_atm) +
-                self.eta_chip * self.eta_co * eta_eff * transmittance
-                * constants.h * obs_freq *
-                self.bose_einstein(obs_freq, T_cmb)
+        psdkid = constants.k_B * (self.eta_chip * (1 - self.eta_co) * noise_temperature(self.T_co, obs_freq) +
+                self.eta_chip * self.eta_co * (1 - eta_eff) * noise_temperature(T_amb, obs_freq) +
+                self.eta_chip * self.eta_co * eta_eff * T_sky
                 )
 
         # calculate power absorbed by instrument

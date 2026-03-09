@@ -1,6 +1,7 @@
 import re
 import astropy.units as u
 from atlast_sc.instrument import Instrument
+from atlast_sc.derived_groups import noise_temperature
 
 """
 SEPIA instrument parameters
@@ -34,7 +35,7 @@ class Sepia(Instrument):
     # Additional instrument specific methods below #
     ################################################
 
-    def calculate_system_temperature(self, obs_freq, bandwidth, T_cmb, eta_eff, T_atm, 
+    def calculate_system_temperature(self, obs_freq, bandwidth, eta_eff, 
                                      T_amb, T_sky, transmittance, n_pol):
         """
         Returns system temperature, following calculation in [doc]
@@ -46,7 +47,7 @@ class Sepia(Instrument):
         system_temp = 1 / (eta_eff * transmittance) * \
             (self.T_rx
             + (eta_eff * T_sky)
-            + ((1 - eta_eff) * T_amb)
+            + ((1 - eta_eff) * noise_temperature(T_amb, obs_freq))
             )
         self.T_sys = system_temp
         return system_temp
