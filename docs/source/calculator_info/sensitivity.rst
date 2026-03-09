@@ -16,10 +16,10 @@ or conversely, to obtain the integration time required for a given sensitivity :
 
 where 
 
-* :math:`SEFD` is the system equivalent flux density
-* :math:`\eta_{s}` is the system efficiency
+* :math:`SEFD` is the system equivalent flux density, a measure of the inherent noise in the observations that comes from the system.
+* :math:`\eta_{s}` is the system efficiency on a scale of 0 to 1
 * :math:`n_{pol}` is the number of polarizations
-* :math:`\Delta \nu` is the bandwidth
+* :math:`\Delta \nu` is the bandwidth of the observation
 
 
 The system equivalent flux density is calculated as:
@@ -30,46 +30,25 @@ The system equivalent flux density is calculated as:
 where
 
 * :math:`k` is the Boltzman constant
-* :math:`T_{sys}` is the system temperature
 * :math:`\eta_{A}` is the dish efficiency
 * :math:`A_{g}` is the geometric dish area
+* :math:`T_{sys}` is the system temperature
 
-The system temperature is calculated as:
+The system temperature is dependent on sky transmittance and includes terms from both the telescope and selected receiver/instrument. The system temperature is calculated differently depending on which instrument is selected for the calculation. These equations are described in the following pages:
 
-.. math::
-    T_{sys} = \frac{1+g}{\eta_{eff} \mathfrak{t}} \times [T_{rx} + (\eta_{eff} T_{sky}) + (1-\eta_{eff}) T_{amb}]
+* :doc:`Default heterodyne <default_tsys>`
+* :doc:`CHAI <chai_tsys>`
+* :doc:`FINER <finer_tsys>`
+* :doc:`MUSCAT <muscat_tsys>`
+* :doc:`SEPIA <sepia_tsys>`
+* :doc:`TIFUUN <tifuun_tsys>`
 
-where
-
-* :math:`g` is the sideband ratio
-* :math:`\eta_{eff}` is the forward efficiency
-* :math:`\mathfrak{t}` is the atmospheric transmittance, defined as :math:`\mathfrak{t} = \textrm{exp}^{(-\tau_{atm})}`
-* :math:`T_{rx}` is the receiver temperature
-* :math:`T_{sky}` is the sky temperature
-* :math:`T_{amb}` is the ambient temperature
-
-Here we assume a receiver temperature :math:`T_{rx}` is chosen according to the instrument selection:
-
-* :math:`GLTCam`: 22.0K
-* :math:`Tifuun`: 72.3K
-* :math:`Muscat`: 44.7K
-* :math:`Finer`: 45.0K if observing frequency is between 120.0 and 210.0, 75.0K if observing frequency is between 210.0 and 360.0
-* :math:`Chai`: 125.0K
-* :math:`Sepia345`: 125.0K
-
-The sky temperature is calculated as:
-
-.. math::
-    T_{sky} = (1-\mathfrak{t})\times T_{atm} + T_{cmb}
-
-where
-
-* :math:`T_{atm}` is the atmospheric temperature calculated from the model grid described in :doc:`Weather Calculations <weather>`
-* :math:`T_{cmb}` is the temperature of the cosmic microwave background.
 
 
 Efficiencies
 ------------
+
+No system is 100% efficient, and efficiency terms are used in the sensitivity calculations to reflect in-efficiencies in the real world systems. These unitless efficiencies (:math:`\eta`) are scaled from 0 (completely inefficient) to 1 (completely efficient). Below we describe the efficiencies used in the calculator
 
 :math:`\eta_{A}`, the dish efficiency, is given by:
 
@@ -77,7 +56,7 @@ Efficiencies
     \eta_{A} = \eta_{ill} \times \eta_{spill} \times \eta_{pol} \times \eta_{block} \times exp^{(-(\frac{4\pi \times RMS}{\lambda})^2)}
 
 
-where the exponential term accounts for Ruze losses due to the RMS of the dish surface roughness, and
+where the exponential term accounts for Ruze losses due to the RMS of the dish surface accuracy, and
 
 * :math:`\eta_{ill}` is the illumination efficiency
 * :math:`\eta_{spill}` is the spillover efficiency
@@ -88,7 +67,7 @@ where the exponential term accounts for Ruze losses due to the RMS of the dish s
 Broad-band Sensitivity
 ----------------------
 
-For continuum observations, the bandwidth used is very broad. In these cases, :math:`\mathfrak{t}` and :math:`T_{atm}` can vary greatly across the bandwidth and it is no longer appropriate to simply use the value at the central frequency. For this reason, we have implemented an option to integrate across the band that can be activated by intialising the calculator with ``Calculator(finetune=True)``. Instead of rescaling the :math:`SEFD` term by the square root of the bandwidth, it generates an effective :math:`SEFD` by discretizing the :math:`SEFD` estimation over the frequency values from the input atmospheric tables to gain the :math:`SEFD_i` for each discrete frequency :math:`\nu_i` with bandwidth :math:`d\nu_i=0.5[\nu_{i+1}-\nu_{i-1}]`. The output effective :math:`SEFD` to be used in the sensitivity estimation is thus:
+For continuum observations, the bandwidth used is very broad. In these cases, :math:`\mathfrak{t}` and :math:`T_{atm}` can vary greatly across the bandwidth and it is no longer appropriate to simply use the value at the central frequency. For this reason, we have implemented an option to integrate across the band that can be activated by initialising the calculator with ``Calculator(finetune=True)``. Instead of rescaling the :math:`SEFD` term by the square root of the bandwidth, it generates an effective :math:`SEFD` by discretizing the :math:`SEFD` estimation over the frequency values from the input atmospheric tables to gain the :math:`SEFD_i` for each discrete frequency :math:`\nu_i` with bandwidth :math:`d\nu_i=0.5[\nu_{i+1}-\nu_{i-1}]`. The output effective :math:`SEFD` to be used in the sensitivity estimation is thus:
 
 .. math::
     SEFD = \sqrt{\Delta \nu/\sum_i(d\nu_i/SEFD_i^2)}

@@ -1,4 +1,4 @@
-The AtLast Sensitivity Calculator can be used to calculate the required
+The AtLAST Sensitivity Calculator can be used to calculate the required
 exposure time to achieve a given sensitivity or, conversely, the sensitivity
 obtained for a given exposure time.
 
@@ -14,7 +14,7 @@ Sections 2.8 through to 2.13 describe in more detail how the package was constru
 
 Installation and Usage
 ----------------------
-The calculator is available both as a web-based application and as a standalone
+The calculator is available both as a web-based application and as a stand-alone
 Python package.
 
 The :doc:`Installation Guide <user_guide/python_package_installation>` provides

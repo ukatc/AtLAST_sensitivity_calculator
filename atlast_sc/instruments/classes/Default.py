@@ -1,7 +1,6 @@
 import astropy.units as u
 from astropy import constants
 from atlast_sc.instrument import Instrument
-from atlast_sc.data import Data
 
 """
 Default instrument parameters

@@ -1,4 +1,4 @@
-Telescope and Environment setup parameters
+Telescope and Environment parameters
 ------------------------------------------
 
 .. list-table::
@@ -51,3 +51,8 @@ Telescope and Environment setup parameters
       - 0.94
       -
       -
+    * - Polarisation efficiency
+      - eta_pol
+      - 0.995
+      - 
+      - 
