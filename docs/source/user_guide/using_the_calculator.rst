@@ -213,7 +213,6 @@ parameters to the console as follows:
     transmittance: 0.9727575584355762
 
 
-.. _input data:
 
 Providing input data to the calculator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -157,7 +157,7 @@ class ParameterSetup:
             if param not in test_model.__dict__:
                 raise ValueError(f'"{param}" is not a valid input parameter')
             
-    def get_chosen_instrument(self):
+    def get_chosen_instrument_class(self):
         """
         (ASC-76)
         Retrieve the instrument object class according to observing frequency
@@ -175,7 +175,6 @@ class ParameterSetup:
                                                             self.instrument_bandw_vals)
         # Get the instrument module according to instrument name
         chosen_inst = self.loaded_instruments[chosen_inst_name]
-        self.chosen_instrument = chosen_inst
         return chosen_inst
     
     def _compare_and_modify_bandwidth_units(self, bandwidth, instrument_bandw_vals):
@@ -234,7 +233,7 @@ class ParameterSetup:
 
         # Compare units of user inputs and instrument YAML file
         bandwidth, instrument_bandw_vals = \
-                                    self._compare_and_modify_bandwidth_units(bandwidth, instrument_bandw_vals)
+                self.compare_and_modify_bandwidth_units(bandwidth, instrument_bandw_vals)
 
         # Get float value of each parameter to be able to make comparison
         obs_freq = float(obs_freq.value)
@@ -313,8 +312,10 @@ class ParameterSetup:
         T_amb = self.calculation_inputs.telescope_and_environment.T_amb.value
         eta_pol = self.calculation_inputs.telescope_and_environment.eta_pol.value
 
-        # Get chosen instrument and its receiver temperature
-        chosen_inst = self.get_chosen_instrument()
+        # If chosen instrument is empty, assign an applicable instrument
+        if self.chosen_instrument is None:
+            chosen_inst = self.get_chosen_instrument_class()        
+            self.chosen_instrument = chosen_inst
 
         # Perform efficiencies calculations
         eta = Efficiencies(obs_freq , surface_rms, eta_ill,
@@ -327,7 +328,7 @@ class ParameterSetup:
         T_atm = atm.calculate_atmospheric_temperature(obs_freq,
                                                         weather)
         # Calculate the temperatures
-        temps = Temperatures(chosen_inst, obs_freq, bandwidth, T_cmb, T_amb, eta_eff,
+        temps = Temperatures(self.chosen_instrument, obs_freq, bandwidth, T_cmb, T_amb, eta_eff,
                             T_atm, transmittance, n_pol)
 
         # LDM
@@ -370,7 +371,7 @@ class ParameterSetup:
                 _transmittance = atm.calculate_transmittance(freq,weather,elevation)
 
                 _T_atm = atm.calculate_atmospheric_temperature(freq,weather)
-                _temps = Temperatures(chosen_inst, obs_freq, bandwidth, T_cmb, T_amb, eta_eff,
+                _temps = Temperatures(self.chosen_instrument, obs_freq, bandwidth, T_cmb, T_amb, eta_eff,
                             T_atm, transmittance, n_pol)
 
                 _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a, dish_radius).to('J/m2').value)
