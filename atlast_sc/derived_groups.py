@@ -3,7 +3,6 @@ from scipy.interpolate import RegularGridInterpolator
 import numpy as np
 import astropy.units as u
 from astropy import constants
-from numpy import expm1
 
 # I'm not sure if this is the best place for this function.
 # It's needed both here and also in the instrument modules. 
@@ -15,7 +14,7 @@ def noise_temperature(temperature, frequency):
     Temperature and frequency will need to have astropy units. 
     """
     ratio = (constants.h*frequency)/(constants.k_B*temperature)
-    noise_temp = temperature*(ratio/expm1(ratio))
+    noise_temp = temperature*(ratio/np.expm1(ratio))
     return noise_temp
 
 class AtmosphereParams:
@@ -23,7 +22,7 @@ class AtmosphereParams:
     Class used to retrieve atmospheric parameters from a model.
 
     The AM model was used to produce a grid of T_atm and tau_atm.
-    (Use of AM model described in am_code/REAME.md.)
+    (Use of AM model described in am_code/README.md.)
     The code interpolates over the grids to get the correct values for tau_atm
     and T_atm.
     """
