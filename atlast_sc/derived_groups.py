@@ -51,8 +51,7 @@ class AtmosphereParams:
     def calculate_atmospheric_temperature(self, obs_freq, weather):
         """
         Calculate the atmospheric temperature T_atm
-        N.B. This is a brightness temperature and not a physical temperature
-
+    
         :param obs_freq: the central observing frequency
         :type obs_freq: astropy.units.Quantity
         :param weather: the precipitable water vapour
