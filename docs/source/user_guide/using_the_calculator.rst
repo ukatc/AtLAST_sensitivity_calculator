@@ -193,14 +193,13 @@ parameters to the console as follows:
     >>> calculator.telescope_and_environment.show()
     T_amb: 270.0 K
     T_cmb: 2.726 K
-    dish_radius: 30.0 m
+    dish_radius: 25.0 m
     eta_block: 0.94
     eta_eff: 0.95
     eta_ill: 0.8
     eta_pol: 0.995
     eta_spill: 0.95
     surface_rms: 25.0 micron
-
 
     # Check the derived parameters
     >>> calculator.derived_parameters.show()
