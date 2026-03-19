@@ -14,13 +14,13 @@ To go beyond this, in order to approximate the future instrumentation available 
     "SEPIA", APEX, https://www.apex-telescope.org/ns/observing/the-telescope/instruments/sepia/sepia345/
     "TIFUUN", ASTE,
 
-Frequency and bandwidth ranges
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Observing frequency and channel bandwidth ranges
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Each instrument has a specified range of frequencies and bandwidths as shown in the table and plot below. The calculator will select the appropriate instrument based on the user input frequency and bandwidth, with the default heterodyne being selected for any regions of parameter space not covered by the following instruments. For cases where two or more instruments overlap in parameter space, an arbitrary instrument will be selected. This can then be changed by the user as described in the :ref:`user guide <section_instrument_selection>`.
+Each instrument has a specified range of frequencies and bandwidths (note by bandwidth here we mean either the continuum bandwidth or the desired spectral resolution) as shown in the table and plot below. The calculator will select the appropriate instrument based on the user input frequency and bandwidth, with the default heterodyne being selected for any regions of parameter space not covered by the following instruments. For cases where two or more instruments overlap in parameter space, an arbitrary instrument will be selected. This can then be changed by the user as described in the :ref:`user guide <section_instrument_selection>`.
 
 .. csv-table::
-    :header: "Name", "Freq_min (GHz)", "Freq_max (GHz)", "Band_min (Hz)", "Band_max (Hz)"
+    :header: "Name", "Minimum frequency (GHz)", "Maximum frequency (GHz)", "Minimum continuum bandwidth / spectral resolution (Hz)", "Maximum continuum bandwidth / spectral resolution (Hz)"
 
     "FINER", 120, 210, 8.80E+04, 1.80E+08
     "FINER", 210, 360, 8.80E+04, 1.80E+08
@@ -42,7 +42,6 @@ More information on the instruments and a detailed explanation of the equations 
 .. toctree::
     :maxdepth: 2
     
-    default_tsys
     chai_tsys
     finer_tsys
     muscat_tsys
