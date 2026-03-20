@@ -5,7 +5,7 @@ The CCAT Heterodyne Array Instrument (`CHAI <https://www.ccatobservatory.org/cha
 
 Here in the AtLAST sensitivity calculator, we use it as an exemplar of a heterodyne instrument capable of working at these frequencies.
 
-In this module, we calculate the system temperature used in the overall ::doc::`sensitivity equation <sensitivity>`. For a CHAI like system, the system temperature is calculated as:
+In this module, we calculate the system temperature used in the overall :doc:`sensitivity equation <sensitivity>`. For a CHAI like system, the system temperature is calculated as:
 
 .. math::
     T_{sys} = \frac{1}{\eta_{eff} \mathfrak{t}} \times [T_\mathrm{rx} + (\eta_\mathrm{eff} T_\mathrm{sky}) + (1-\eta_\mathrm{eff}) O(\nu, T_\mathrm{amb})]

@@ -52,14 +52,14 @@ Here, :math:`O(\nu, T)` converts a physical temperature to a Rayleigh-Jeans brig
 .. math::
     O(\nu, T) = T\frac{h\nu/kT}{\exp(h\nu/kT)-1}
 
-where :math:`h` is the Planck constant.
+where :math:`\nu` is the frequency of the observation and :math:`h` is the Planck constant.
 
 The receiver temperature is the only instrument dependent component of the above equation, and we assume a reasonably efficient instrument near the quantum limit. Specifically:
 
 .. math::
     T_{rx} = \frac{5h\nu}{k}
 
-where :math:`\nu` is the frequency of the observation, and the factor 5 is a conservative estimate of how close to the quantum limit receivers can get. The fundamental limit achievable when including mixer and Local oscillator terms is 3, but most receivers do not achieve that efficiency.
+where the factor 5 is a conservative estimate of how close to the quantum limit receivers can get. The fundamental limit achievable when including mixer and local oscillator terms is 3, but most receivers do not achieve that efficiency.
 
 The sky temperature is calculated as:
 

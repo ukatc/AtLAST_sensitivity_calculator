@@ -5,7 +5,7 @@ The Far-Infrared Nebular Emission Receiver (`FINER <https://finerreceiver.github
 
 Here in the AtLAST sensitivity calculator, we use it as an exemplar of a heterodyne instrument capable of working at these frequencies.
 
-In this module, we calculate the system temperature used in the overall ::doc::`sensitivity equation <sensitivity>`. For a FINER like system, the system temperature is calculated as:
+In this module, we calculate the system temperature used in the overall :doc:`sensitivity equation <sensitivity>`. For a FINER like system, the system temperature is calculated as:
 
 .. math::
     T_{sys} = \frac{1}{\eta_\mathrm{eff} \mathfrak{t}} \times [T_\mathrm{rx} + (\eta_\mathrm{eff} T_\mathrm{sky}) + (1-\eta_\mathrm{eff}) O(\nu, T_\mathrm{amb})]
