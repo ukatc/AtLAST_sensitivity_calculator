@@ -1,43 +1,43 @@
 The Sensitivity Calculation
 ===========================
 
-The following is a description of the underlying calculations that the software performs.
+The following is a description of the underlying calculations that the software performs. Values for the telescope and environment parameters can be found in the :doc:`Inputs to the Calculation <calculation_inputs>` page.
 
 The sensitivity of a single dish telescope for an integration time :math:`t` is given by:
 
 .. math::
-    \Delta S = \frac{SEFD}{\eta_{s}\sqrt{n_{pol} \Delta \nu t}}
+    \Delta S = \frac{SEFD}{\eta_\mathrm{s}\sqrt{n_\mathrm{pol} \Delta \nu t}}
 
 or conversely, to obtain the integration time required for a given sensitivity :math:`\Delta S`, 
 
 .. math::
-    t = \left(\frac{SEFD}{ \Delta S  \eta_s }\right)^2 \times \frac{1}{n_{pol} \Delta \nu}
+    t = \left(\frac{SEFD}{ \Delta S  \eta_s }\right)^2 \times \frac{1}{n_\mathrm{pol} \Delta \nu}
 
 
 where 
 
 * :math:`SEFD` is the system equivalent flux density, a measure of the inherent noise in the observations that comes from the system.
-* :math:`\eta_{s}` is the system efficiency on a scale of 0 to 1
-* :math:`n_{pol}` is the number of polarizations
+* :math:`\eta_\mathrm{s}` is the system efficiency on a scale of 0 to 1
+* :math:`n_\mathrm{pol}` is the number of polarizations
 * :math:`\Delta \nu` is the bandwidth of the observation
 
 
 The system equivalent flux density is calculated as:
 
 .. math::
-    SEFD = \frac{2kT_{sys}}{\eta_{A}A_{g}}
+    SEFD = \frac{2kT_\mathrm{sys}}{\eta_\mathrm{A}A_\mathrm{g}}
 
 where
 
-* :math:`k` is the Boltzman constant
-* :math:`\eta_{A}` is the dish efficiency
-* :math:`A_{g}` is the geometric dish area
-* :math:`T_{sys}` is the system temperature
+* :math:`k` is the Boltzmann constant
+* :math:`\eta_\mathrm{A}` is the dish efficiency
+* :math:`A_\mathrm{g}` is the geometric dish area
+* :math:`T_\mathrm{sys}` is the system temperature
 
 The system temperature is calculated differently depending on which instrument is selected for the calculation. For the parameter space in which there is no pre-defined instrument that can be used to calculate the telescope sensitivity, we default to the more generic representation of a coherent receiver with a specified receiver temperature. This setup is valid for all ranges of observing frequency and bandwidth, and from it, the system temperature is calculated as:
 
 .. math::
-    T_{sys} = \frac{1}{\eta_{eff} \mathfrak{t}} \times [T_{rx} + (\eta_{eff} T_{sky}) + (1-\eta_{eff}) T_{amb}]
+    T_\mathrm{sys} = \frac{1}{\eta_\mathrm{eff} \mathfrak{t}} \times [T_\mathrm{rx} + (\eta_\mathrm{eff} T_\mathrm{sky}) + (1-\eta_\mathrm{eff}) O(\nu, T_\mathrm{amb})]
 
 where
 
@@ -47,17 +47,24 @@ where
 * :math:`T_{sky}` is the sky temperature
 * :math:`T_{amb}` is the ambient temperature
 
+Here, :math:`O(\nu, T)` converts a physical temperature to a Rayleigh-Jeans brightness temperature
+
+.. math::
+    O(\nu, T) = T\frac{h\nu/kT}{\exp(h\nu/kT)-1}
+
+where :math:`h` is the Planck constant.
+
 The receiver temperature is the only instrument dependent component of the above equation, and we assume a reasonably efficient instrument near the quantum limit. Specifically:
 
 .. math::
     T_{rx} = \frac{5h\nu}{k}
 
-where :math:`h` and :math:`k` are the Planck and Boltzmann constants (respectively), :math:`\nu` is the frequency of the observation, and the factor 5 is a conservative estimate of how close to the quantum limit receivers can get. The fundamental limit achievable when including mixer and Local oscillator terms is 3, but most receivers do not achieve that efficiency.
+where :math:`\nu` is the frequency of the observation, and the factor 5 is a conservative estimate of how close to the quantum limit receivers can get. The fundamental limit achievable when including mixer and Local oscillator terms is 3, but most receivers do not achieve that efficiency.
 
 The sky temperature is calculated as:
 
 .. math::
-    T_{sky} = (1-\mathfrak{t})\times T_{atm} + T_{cmb}
+    T_{sky} = (1-\mathfrak{t})\times T_{atm} + O(\nu, T_\mathrm{cmb})
 
 where
 
@@ -65,7 +72,7 @@ where
 * :math:`T_{cmb}` is the temperature of the cosmic microwave background.
 
 
-The sensitivity calculator includes instruments being built for other telescopes to demonstrate how real instruments will work with the telescope and the sensitivities achievable by them. The calculator automatically selects the instrument based on the requested observing frequency and channel bandwidth as described in :doc:`Instrument overview <instrument_overview>`. The system temperature equations for these instruments are described in the following pages:
+The sensitivity calculator includes instruments being built for other telescopes to demonstrate how real instruments will work with the telescope and the sensitivities achievable by them. The calculator automatically selects the instrument based on the requested observing frequency and channel bandwidth as described in :doc:`instrument overview <instrument_overview>`. The system temperature equations for these instruments are described in the following pages:
 
 * :doc:`CHAI <chai_tsys>`
 * :doc:`FINER <finer_tsys>`

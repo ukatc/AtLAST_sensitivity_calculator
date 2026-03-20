@@ -8,15 +8,20 @@ Here in the AtLAST sensitivity calculator, we use it as an exemplar of a heterod
 In this module, we calculate the system temperature used in the overall ::doc::`sensitivity equation <sensitivity>`. For a FINER like system, the system temperature is calculated as:
 
 .. math::
-    T_{sys} = \frac{1}{\eta_{eff} \mathfrak{t}} \times [T_{rx} + (\eta_{eff} T_{sky}) + (1-\eta_{eff}) T_{amb}]
+    T_{sys} = \frac{1}{\eta_\mathrm{eff} \mathfrak{t}} \times [T_\mathrm{rx} + (\eta_\mathrm{eff} T_\mathrm{sky}) + (1-\eta_\mathrm{eff}) O(\nu, T_\mathrm{amb})]
 
 where
 
-* :math:`\eta_{eff}` is the forward efficiency of the telescope
+* :math:`\eta_\mathrm{eff}` is the forward efficiency of the telescope
 * :math:`\mathfrak{t}` is the atmospheric transmittance, defined as :math:`\mathfrak{t} = \textrm{exp}^{(-\tau_{atm})}`
-* :math:`T_{rx}` is the receiver temperature
-* :math:`T_{sky}` is the sky temperature
-* :math:`T_{amb}` is the ambient temperature
+* :math:`T_\mathrm{rx}` is the receiver temperature
+* :math:`T_\mathrm{sky}` is the sky temperature (in terms of a Rayleigh-Jeans brightness temperature) calculated from the model grid described in :doc:`Weather Calculations <weather>`
+* :math:`T_\mathrm{amb}` is the ambient temperature
+
+Here, :math:`O(\nu, T)` converts a physical temperature to a Rayleigh-Jeans brightness temperature
+
+.. math::
+    O(\nu, T) = T\frac{h\nu/kT}{\exp(h\nu/kT)-1}.
 
 Through consultation with the developers of the FINER instrument, we assume a constant receiver temperature across each sub-band the receivers are sensitive to:
 
@@ -27,14 +32,3 @@ Through consultation with the developers of the FINER instrument, we assume a co
             \end{array}\right.
 
 These values are used in the :math:`T_{sys}` equation above, which is in turn used to calculate the System Equivalent Flux Density used in the overall sensitivity (or integration time) calculation.
-
-
-The sky temperature is calculated as:
-
-.. math::
-    T_{sky} = (1-\mathfrak{t})\times T_{atm} + T_{cmb}
-
-where
-
-* :math:`T_{atm}` is the atmospheric temperature calculated from the model grid described in :doc:`Weather Calculations <weather>`
-* :math:`T_{cmb}` is the temperature of the cosmic microwave background.

@@ -32,20 +32,18 @@ The power received by the KID (:math:`P_\mathrm{KID}`) is dependent on the power
 .. math::
     P_\mathrm{KID}(\nu_\mathrm{0}) = \int^{\nu_\mathrm{max}}_{\nu_\mathrm{min}} PSD_\mathrm{KID}(\nu)\: d\nu \sim PSD_\mathrm{KID}(\nu_\mathrm{0}) \Delta \nu
     
-    PSD_\mathrm{KID}(\nu) = &+ \eta_\mathrm{chip,co}(1-\eta_\mathrm{eff})\cdot h\nu\cdot O(\nu, T_\mathrm{amb})\\
-                            &+ \eta_\mathrm{chip,co}\,\eta_\mathrm{eff}(1-t_\mathrm{r})\cdot h\nu\cdot O(\nu, T_\mathrm{atm})\\
-                            &+ \eta_\mathrm{chip,co}\,\eta_\mathrm{eff}\,t_\mathrm{r}\cdot h\nu\cdot O(\nu, T_\mathrm{cmb})
+    PSD_\mathrm{KID}(\nu) = &+ k(\eta_\mathrm{chip,co}(1-\eta_\mathrm{eff})\cdot O(\nu, T_\mathrm{amb})\\
+                            &+ \eta_\mathrm{chip,co}\,\eta_\mathrm{eff}(1-t_\mathrm{r})\cdot T_\mathrm{sky})
 
 where 
 
-* :math:`T_\mathrm{atm}` is the atmospheric temperature calculated from the model grid described in :doc:`Weather Calculations <weather>`
-* :math:`T_\mathrm{cmb}` is the temperature of the cosmic microwave background
+* :math:`T_\mathrm{sky}` is the sky temperature (in terms of a Rayleigh-Jeans brightness temperature) calculated from the model grid described in :doc:`Weather Calculations <weather>`
 * :math:`T_\mathrm{amb}` is the ambient temperature.
 
-Here, :math:`O(\nu, T)` is the Bose-Einstein photon-occupation number
+Here, :math:`O(\nu, T)` converts a physical temperature to a Rayleigh-Jeans brightness temperature:
 
 .. math::
-    O(\nu, T) = \frac{1}{\exp(h\nu/kT)-1}.
+    O(\nu, T) = T\frac{h\nu/kT}{\exp(h\nu/kT)-1}.
 
 For MUSCAT, the constants are expected to have the following values (based on information provided by the MUSCAT team):
 
