@@ -1,7 +1,7 @@
 MUSCAT system temperature
 =========================
 
-Mexico-UK Submillimetre Camera for Astronomy (MUSCAT) is being built for the LMT Observatory. MUSCAT is a KID (Kinetic Inductance Detector) instrument. It covers the frequency range between 250 and 300 GHz. It is designed as a broadband instrument with a 50 GHz bandwidth. (See `Tapia et al. 2020 <https://arxiv.org/pdf/2012.05126>`__ for more details.)
+Mexico-UK Submillimetre Camera for Astronomy (`MUSCAT <https://muscat-docs.astro.cf.ac.uk/>`__) is being built for the LMT Observatory. MUSCAT is a KID (Kinetic Inductance Detector) instrument. It covers the frequency range between 250 and 300 GHz. It is designed as a broadband instrument with a 50 GHz bandwidth. (See `Tapia et al. 2020 <https://arxiv.org/pdf/2012.05126>`__ for more details.)
 To allow for some flexibility, it is set-up in the sensitivity calculator to cover bandwidths from 10 to 80 GHz.  
 MUSCAT is being used to demonstrate the capabilities of a KID based continuum camera that can observe at these frequencies on AtLAST.
 
