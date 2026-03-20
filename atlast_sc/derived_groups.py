@@ -4,13 +4,25 @@ import numpy as np
 import astropy.units as u
 from astropy import constants
 
+# I'm not sure if this is the best place for this function.
+# It's needed both here and also in the instrument modules. 
+# Some validation is probably needed here. E.g. ensuring temperature and frequency have astropy units.
+def noise_temperature(temperature, frequency):
+    """
+    Function to convert a thermodynamic temperature to a Rayleigh-Jeans brightness temperature.
+    See e.g. equation 7.5 from Interferometry and Synthesis in Radio Astronomy.
+    Temperature and frequency will need to have astropy units. 
+    """
+    ratio = (constants.h*frequency)/(constants.k_B*temperature)
+    noise_temp = temperature*(ratio/np.expm1(ratio))
+    return noise_temp
 
 class AtmosphereParams:
     """
     Class used to retrieve atmospheric parameters from a model.
 
     The AM model was used to produce a grid of T_atm and tau_atm.
-    (Use of AM model described in am_code/REAME.md.)
+    (Use of AM model described in am_code/README.md.)
     The code interpolates over the grids to get the correct values for tau_atm
     and T_atm.
     """
@@ -18,13 +30,13 @@ class AtmosphereParams:
     _STATIC_DATA_PATH = Path(__file__).resolve().parents[0] / "static"
 
     _WEATHER = [5, 25, 50, 75, 95]
-    _T_ATM_PATH = _STATIC_DATA_PATH / "lookups" / "am_ACT_T_ext_annual.txt"
-    _TAU_ATM_PATH = _STATIC_DATA_PATH / "lookups" / "am_ACT_tau_ext_annual.txt"
+    _T_ATM_PATH = _STATIC_DATA_PATH / "lookups" / "am_ACT_T_annual.txt"
+    _TAU_ATM_PATH = _STATIC_DATA_PATH / "lookups" / "am_ACT_tau_annual.txt"
 
     def __init__(self):
 
-        self.T_atm_table = np.genfromtxt(AtmosphereParams._T_ATM_PATH)
-        self.tau_atm_table = np.genfromtxt(AtmosphereParams._TAU_ATM_PATH)
+        self.T_atm_table = np.genfromtxt(AtmosphereParams._T_ATM_PATH) # Rayleigh-Jeans sky brightness temperature at zenith
+        self.tau_atm_table = np.genfromtxt(AtmosphereParams._TAU_ATM_PATH) # Sky opacity at zenith
         # the temperature values obtained by interpolating over the ATM tables are rescaled by the opacity at zenith to obtain T_atm (see the discussion around Eq. 7-9 in the ALMA Memo 602 (https://library.nrao.edu/public/memos/alma/main/memo602.pdf))
         self.T_atm_table[:,1:] = self.T_atm_table[:,1:] / (1.00 - np.exp(-self.tau_atm_table[:,1:]))
 
@@ -39,7 +51,7 @@ class AtmosphereParams:
     def calculate_atmospheric_temperature(self, obs_freq, weather):
         """
         Calculate the atmospheric temperature T_atm
-
+    
         :param obs_freq: the central observing frequency
         :type obs_freq: astropy.units.Quantity
         :param weather: the precipitable water vapour
@@ -51,7 +63,7 @@ class AtmosphereParams:
     
     def calculate_transmittance(self, obs_freq, weather, elevation):
         """
-        Calculate the atmospheric optical depth, tau_atm
+        Calculate the atmospheric transmittance
 
         :param obs_freq: the central observing frequency
         :type obs_freq: astropy.units.Quantity
@@ -150,9 +162,11 @@ class Temperatures:
     """
 
     def __init__(self, inst_module, obs_freq, bandwidth, T_cmb, T_amb, eta_eff, T_atm, transmittance, n_pol):
-        self._T_sky = T_atm * (1 - transmittance) + T_cmb
-        self._T_sys = inst_module.calculate_system_temperature(obs_freq, bandwidth, T_cmb, eta_eff, 
-                                                               T_atm, T_amb, self.T_sky,
+        # T_atm is already a Rayleigh-Jeans brightness temperature. T_cmb needs to be converted.
+        self._T_sky = T_atm * (1 - transmittance) + transmittance * noise_temperature(T_cmb, obs_freq)
+        # T_sys is calculated in the selected instrument module.
+        self._T_sys = inst_module.calculate_system_temperature(obs_freq, bandwidth, eta_eff, 
+                                                               T_amb, self.T_sky,
                                                                transmittance, n_pol)
 
     @property

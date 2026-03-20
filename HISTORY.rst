@@ -1,4 +1,4 @@
-2.0.0-alpha.1 (2026-03-05)
+2.0.0-alpha.1 (2026-03-20)
 ++++++++++++++++++++++++++
 - Refactored code to improve flexibility
 - Changed the names and workings of calculation input parameter classes to make more sense with the addition of instrument modules
@@ -11,6 +11,9 @@
 - Made instrument name specification case insensitive
 - Modified unit tests according to the new structure
 - More explanatory exception messages
+- Changed am model output to produce Rayleigh-Jeans brightness temperature and to avoid including CMB (to avoid counting it twice)
+- Changed system temperature and sky temperature equations to ensure all temperatures are noise temperatures
+- Added notebook walkthroughs for each of the instruments
 - Documentation updates to take account of these changes
 
 1.1.1 (2025-01-22)
