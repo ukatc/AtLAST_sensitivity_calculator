@@ -65,7 +65,7 @@ where
 * :math:`T_{cmb}` is the temperature of the cosmic microwave background.
 
 
-The sensitivity calculator includes instruments being built for other telescopes to demonstrate how real instruments will work with the telescope and the sensitivities achievable by them. The calculator automatically selects the instrument based on the requested observing frequency and channel bandwidth as described in `Instrument overview <instrument_overview>`. The system temperature equations for these instruments are described in the following pages:
+The sensitivity calculator includes instruments being built for other telescopes to demonstrate how real instruments will work with the telescope and the sensitivities achievable by them. The calculator automatically selects the instrument based on the requested observing frequency and channel bandwidth as described in :doc:`Instrument overview <instrument_overview>`. The system temperature equations for these instruments are described in the following pages:
 
 * :doc:`CHAI <chai_tsys>`
 * :doc:`FINER <finer_tsys>`
@@ -83,7 +83,7 @@ No system is 100% efficient, and efficiency terms are used in the sensitivity ca
 :math:`\eta_{A}`, the dish efficiency, is given by:
 
 .. math::
-    \eta_{A} = \eta_{ill} \times \eta_{spill} \times \eta_{pol} \times \eta_{block} \times exp^{(-(\frac{4\pi \times RMS}{\lambda})^2)}
+    \eta_{A} = \eta_{ill} \times \eta_{spill} \times \eta_{pol} \times \eta_{block} \times e^{(-(\frac{4\pi \times RMS}{\lambda})^2)}
 
 
 where the exponential term accounts for Ruze losses due to the RMS of the dish surface accuracy, and
