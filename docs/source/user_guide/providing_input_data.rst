@@ -28,15 +28,10 @@ Next, create a new Calculator object, passing the ``input_data`` dictionary.
 
     calculator = Calculator(input_data)
 
-.. note:: All values must be numeric (integer or float). Units must be valid string
-    representations of
-    `astropy units <https://docs.astropy.org/en/stable/units/index.html>`__.
-
-.. note:: The Calculator will throw an error if any of the input parameter names are
-    incorrect.
-
-.. note:: If any of the above parameters are missing from input data dictionary,
-    the calculator will use the appropriate default values and units.
+All values must be numeric (integer or float), and units (when required) must be presented as `astropy units <https://docs.astropy.org/en/stable/units/index.html>`__.
+The Calculator will throw an error if any of the input parameter names are incorrect. If any of the
+parameters have not been manually set via the input data dictionary, the calculator will use the
+appropriate default values and units.
 
 
 Reading data from an input file
