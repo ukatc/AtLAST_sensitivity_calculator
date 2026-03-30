@@ -1,84 +1,96 @@
 Using the Calculator
 --------------------
+
+After the package has been successfully installed and verified, the following workflow describes how to setup and perform
+sensitivity or integration time calculations given weather, telescope and instrumentation settings and either a required sensitivity (to calculate
+on source integration time) or an integration time (to calculate sensitivity).
+
 Basic usage
 ^^^^^^^^^^^
-First, import the :class:`Calculator <atlast_sc.calculator.Calculator>` class from
-the :mod:`atlast_sc.calculator` module:
+After installing the package and creating the conda environment, follow these commands to import the calculator and required
+packages and run simple time and sensitivity calculations for a given set of weather, telescope and instrument
+parameters.
+
+First, import the :class:`CalculatorFactory <atlast_sc.factory.CalculatorFactory>` class from
+the :mod:`atlast_sc.factory` module:
 
 .. code-block:: python
 
     from atlast_sc.factory import CalculatorFactory
 
-You may also find it useful to import astropy units as these are required for defining the user inputs:
+Since the sensitivity calculator depends on parameters being specified with units, you will also find
+it useful to import ``astropy.units`` as this package is required for defining the user inputs:
 
 .. code-block:: python
 
     import astropy.units as u
 
-Next, initialize the calculator as follows.
+Next, initialize the calculator by importing an instance of the calculator Factory. A factory is a python construct
+that allows you to directly interact with the sensitivity calculator classes as a single object. Initialising
+a calculator Factory at the beginning of your python session ensures that your changes to setup parameters are
+used consistently throughout your python session.
 
 .. code-block:: python
 
     calculator = CalculatorFactory().calculator
 
-.. note::
 
-    The Sensitivity Calculator is pre-configured with default values for all
-    user input parameters. See :doc:`here <../calculator_info/user_input>` for
-    information on the calculation input parameters and their default values.
+The Sensitivity Calculator is pre-configured with default values for all
+user input parameters. See :doc:`here <../calculator_info/user_input>` for
+information on the calculation input parameters and their default values.
 
-    You may also initialize the calculator with your own
-    input values. This is described in the section :ref:`input data`.
+You may also initialize the calculator with your own
+input values. This is described in the section :ref:`input data`. To see what values have already
+been set, you can use:
+
+.. code-block:: python
+
+    calculator.user_input.show()
 
 
-All input parameters can be updated manually. For example, to
-set the bandwidth after initializing the calculator:
+
+All input parameters can be updated manually, using the parameter names listed from ``calculator.user_input.show()``.
+For example, to set the bandwidth after initializing the calculator:
 
 .. code-block:: python
 
     calculator.user_input.bandwidth = 150*u.MHz
 
-.. note::
 
-    All input parameters are validated by the calculator. You will see
-    an error if the values you provide are invalid (e.g., are out of a specified
-    range or have invalid units).
+All input parameters are validated by the calculator. You will see
+an error if the values you provide are invalid (e.g., are out of a specified
+range or have invalid units), and the calculator will warn you if (or when) the input
+parameters force it into a configuration that mandates a different instrument.
 
-Call the :meth:`calculate_sensitivity <atlast_sc.calculator.Calculator.calculate_sensitivity>`
+With all of the input parameters set to meet your required calculation, including integration time, call the
+:meth:`calculate_sensitivity <atlast_sc.calculator.Calculator.calculate_sensitivity>`
 method to obtain the sensitivity (in mJy):
 
 .. code-block:: python
 
     calculated_sensitivity = calculator.calculate_sensitivity()
 
-You can also specify an integration time to perform the sensitivity calculation:
-
-.. code-block:: python
-
-    t_int = 150*u.s
-    calculated_sensitivity = calculator.calculate_sensitivity(t_int)
 
 
-Conversely, to obtain the integration time required (in seconds), call
+Alternatively, to obtain the integration time required having specified a sensitivity, call
 :meth:`calculate_t_integration <atlast_sc.calculator.Calculator.calculate_t_integration>`:
 
 .. code-block:: python
 
     calculated_t_int = calculator.calculate_t_integration()
 
-You can also specify a sensitivity to perform the integration time calculation:
 
-.. code-block:: python
+If the calculated integration time or sensitivity is outside the permitted range
+of values, the calculator will report a warning and the calculated value
+will not be stored in the Calculator object.
 
-    sens = 10*u.mJy
-    calculated_t_int = calculator.calculate_t_integration(sens)
 
 .. note::
 
     When the sensitivity or integration time calculations are performed, by default,
     the calculated values are stored in the Calculator object. Similarly, an
     integration time passed to ``calculate_sensitivity`` or sensitivity passed
-    to ``calculate_t_integration`` are stored by the Calculator object.
+    to ``calculate_t_integration`` is stored by the Calculator object.
     To prevent this behaviour, set the ``update_calculator`` parameter to ``False``,
     as shown below:
 
@@ -94,24 +106,17 @@ You can also specify a sensitivity to perform the integration time calculation:
         calculator.t_int = calculated_t_int
         calculator.sensitivity = new_sens
 
-.. note::
-
-    If the calculated integration time or sensitivity is outside the permitted range
-    of values, the calculator will report a warning and the calculated value
-    will not be stored in the Calculator object.
 
 
-.. warning::
 
-    If any of the parameters stored in the Calculator object are updated, the
-    sensitivity or integration time will *not* be recalculated automatically.
+
 
 .. _section_instrument_selection:
 
 Instrument selection
 ^^^^^^^^^^^^^^^^^^^^
 
-The calculator supports a range of instruments as described in the 
+The AtLAST sensitivity calculator supports a range of instruments as described in the
 :doc:`instrument overview <../calculator_info/instrument_overview>`. The calculator will 
 automatically pick an appropriate instrument based on the observing frequency and bandwidth. 
 The user will be notified whenever the instrument changes. For example:
@@ -127,20 +132,19 @@ The currently selected instrument can be checked using:
 
     >>> calculator.chosen_instrument
 
-The instrument can also be changed using this as follows (note that this is case 
-insensitive):
+The instrument can also be changed using the following (case insensitive) command:
 
 .. code-block:: python
 
     >>> calculator.chosen_instrument = 'finer'
 
-.. warning::
-    
-    Choosing an instrument that is not appropriate for the current observing frequency and 
-    bandwidth will result in an error. 
 
-The observing frequency and bandwidth ranges for the 
-instruments can be checked with:
+
+Choosing an instrument that is not appropriate for the current observing frequency and
+bandwidth will result in an error, and a request for the user to either chose a different instrument
+or update the observing frequency and/or bandwidth.
+
+The observing frequency and bandwidth ranges for the instruments can be checked with:
 
 .. code-block:: python
 
@@ -173,8 +177,8 @@ using the :meth:`reset <atlast_sc.calculator.Calculator.reset>` method:
 Checking the parameters stored by the calculator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The calculator stores the user input parameters, instrument setup parameters, and
-derived parameters that are calculated from other inputs. You can output these
+The calculator stores the user input parameters, instrument, telescope and environment setup parameters, and
+any further derived parameters calculated from other inputs. You can output these
 parameters to the console as follows:
 
 .. code-block:: bash
