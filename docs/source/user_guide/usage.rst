@@ -1,7 +1,8 @@
-Using the AtLAST Sensitivity Calculator
-====================
+Running the Calculator Within Python
+====================================
 
-The AtLAST sensitivity calculator may be used at the command line or from within Python. See the
+The Sensitivity Calculator may be used as a standalone package in your
+Python code. See the
 :doc:`Installation Guide <python_package_installation>` for information on installing the sensitivity
 calculator and creating a conda environment with the required python packages.
 
