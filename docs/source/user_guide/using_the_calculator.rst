@@ -7,7 +7,7 @@ on source integration time) or an integration time (to calculate sensitivity).
 
 Basic usage
 ^^^^^^^^^^^
-After installing the package and creating the conda, follow these commands to import the calculator and required
+After installing the package and creating the conda environment, follow these commands to import the calculator and required
 packages and run simple time and sensitivity calculations for a given set of weather, telescope and instrument
 parameters.
 
