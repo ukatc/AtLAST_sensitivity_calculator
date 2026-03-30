@@ -11,8 +11,8 @@ After installing the package and creating the conda, follow these commands to im
 packages and run simple time and sensitivity calculations for a given set of weather, telescope and instrument
 parameters.
 
-First, import the :class:`Calculator <atlast_sc.calculator.Calculator>` class from
-the :mod:`atlast_sc.calculator` module:
+First, import the :class:`CalculatorFactory <atlast_sc.factory.CalculatorFactory>` class from
+the :mod:`atlast_sc.factory` module:
 
 .. code-block:: python
 
