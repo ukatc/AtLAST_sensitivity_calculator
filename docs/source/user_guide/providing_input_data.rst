@@ -14,7 +14,7 @@ First, create a dictionary with the input data you wish to use:
 
     input_data = {
         't_int': {'value': 120, 'unit': 's'},
-        'sensitivity': {'value': 0, 'unit': 'mJy'},
+        'sensitivity': {'value': 0.01, 'unit': 'mJy'},
         'bandwidth': {'value': 7.5, 'unit': 'GHz'},
         'obs_freq': {'value': 200, 'unit': 'GHz'},
         'n_pol': {'value': 2},
@@ -26,7 +26,7 @@ Next, create a new Calculator object, passing the ``input_data`` dictionary.
 
 .. code-block:: python
 
-    calculator = Calculator(input_data)
+    calculator = CalculatorFactory(input_data).calculator
 
 All values must be numeric (integer or float), and units (when required) must be presented as `astropy units <https://docs.astropy.org/en/stable/units/index.html>`__.
 The Calculator will throw an error if any of the input parameter names are incorrect. If any of the
