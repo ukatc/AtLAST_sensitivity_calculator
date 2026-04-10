@@ -1,7 +1,7 @@
 Instrument Overview
 ===================
 
-At the current stage of development, we are a long way from knowing any precise details of the instrument suite available on AtLAST. Nevertheless, we expect to see a variety of spectrometers and continuum cameras. As our default instrument, we use a generic heterodyne with a receiver temperature of :math:`5h\nu/k`. 
+At the current stage of development, we are a long way from knowing any precise details of the instrument suite available on AtLAST. Nevertheless, we expect to see a variety of spectrometers, IFUs and continuum cameras. As our default instrument, we use a generic receiver with a noise equivalent temperature of :math:`5h\nu/k`.
 
 To go beyond this, in order to approximate the future instrumentation available on AtLAST, we have worked with instrument teams that are designing the latest instruments for single-dish sub-mm and mm telescopes. This is in no way to suggest that these particular instruments will be available on AtLAST, but by representing these in our calculator, we aim to provide examples of what could achieved by using the most cutting-edge instruments on a telescope with a 50m primary mirror.
 
@@ -18,6 +18,13 @@ Observing frequency and channel bandwidth ranges
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Each instrument has a specified range of frequencies and bandwidths (note by bandwidth here we mean either the continuum bandwidth or the desired spectral resolution) as shown in the table and plot below. The calculator will select the appropriate instrument based on the user input frequency and bandwidth, with the default heterodyne being selected for any regions of parameter space not covered by the following instruments. For cases where two or more instruments overlap in parameter space, an arbitrary instrument will be selected. This can then be changed by the user as described in the :ref:`user guide <section_instrument_selection>`.
+
+.. TODO::
+
+    **MARK TO FOLLOW-UP**
+
+    These table headings don't work well in either PDF or the html versions of the guide
+
 
 .. csv-table::
     :header: "Name", "Minimum frequency (GHz)", "Maximum frequency (GHz)", "Minimum continuum bandwidth / spectral resolution (Hz)", "Maximum continuum bandwidth / spectral resolution (Hz)"
@@ -44,6 +51,6 @@ More information on the instruments and a detailed explanation of the equations 
     
     chai_tsys
     finer_tsys
-    muscat_tsys
     sepia_tsys
+    muscat_tsys
     tifuun_tsys

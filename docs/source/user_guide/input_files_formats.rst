@@ -4,12 +4,19 @@ Input files and formats
 The :meth:`read_from_file <atlast_sc.utils.FileHelper.read_from_file>` method of
 the :class:`FileHelper <atlast_sc.utils.FileHelper>` class can read input parameters
 from a file. See :doc:`User input <../calculator_info/user_input>` for
-more information on the expected input parameters. Any parameters not provided in the
+the list of expected input parameters. Any parameters not provided in the
 input file will be assigned their default value.
 
 The file reader supports plain-text, `YAML <https://en.wikipedia.org/wiki/YAML>`__,
 or `JSON <https://en.wikipedia.org/wiki/JSON>`__ formatted file.
 The expected structure for each file type is described in more detail below.
+
+.. TODO::
+
+    **MARK TO FOLLOW-UP**
+
+    When was this list last validated? are all of these versions of input/export files still valid for use?
+
 
 Plain-text files
 ^^^^^^^^^^^^^^^^
@@ -28,11 +35,7 @@ An example file might contain the following lines:
     bandwidth = 7.5 GHz
     n_pol = 2
 
-.. note::
-
-    - There must a space between ``<value>`` and ``<unit>``.
-    - ``<value>`` must be numeric (integer or float).
-    - Spaces around "=" are optional.
+For the above to work, there must be a space between ``<value>`` and ``<unit>`` and ``<value>`` must be numeric (integer or float). Spaces around "=" are optional.
 
 YAML files
 ^^^^^^^^^^
@@ -49,7 +52,7 @@ An example YAML file might contain the following:
     bandwidth: {value: 7.5, unit: GHz}
     n_pol: {value: 2}
 
-
+This formatting is very similar to the formatting of a python dictionary, but for the ``yaml`` format, quotation marks are not required on the units, and individual entries are specified by line, not with commas.
 JSON files
 ^^^^^^^^^^
 JSON files should have the extension ``json`` or ``JSON``.
@@ -71,3 +74,6 @@ An example JSON file might contain the following:
         "value": 2
       }
     }
+
+
+User parameters can be read in via all three input file types, and the input values interpreted for use within the calculation. This is useful for reproducibility of outcomes. These same file formats are used by the sensitivity calculator to output parameter sets.

@@ -7,6 +7,7 @@ more information on the calculation input parameters.
 Initializing the Calculator with a dictionary
 *********************************************
 
+
 The :class:`Calculator <atlast_sc.calculator.Calculator>` object accepts a dictionary as input.
 First, create a dictionary with the input data you wish to use:
 
@@ -36,6 +37,7 @@ appropriate default values and units.
 
 Reading data from an input file
 *******************************
+
 
 The :class:`FileHelper <atlast_sc.utils.FileHelper>` class can be used to
 read data from a file and generate an input data dictionary.

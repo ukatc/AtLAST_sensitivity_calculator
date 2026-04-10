@@ -85,6 +85,12 @@ of values, the calculator will report a warning and the calculated value
 will not be stored in the Calculator object.
 
 
+.. TODO::
+
+    **MARK TO FOLLOW-UP**
+
+    What's the point of the functionality described in the note below?
+
 .. note::
 
     When the sensitivity or integration time calculations are performed, by default,
@@ -110,68 +116,6 @@ will not be stored in the Calculator object.
 
 
 
-
-.. _section_instrument_selection:
-
-Instrument selection
-^^^^^^^^^^^^^^^^^^^^
-
-The AtLAST sensitivity calculator supports a range of instruments as described in the
-:doc:`instrument overview <../calculator_info/instrument_overview>`. The calculator will 
-automatically pick an appropriate instrument based on the observing frequency and bandwidth. 
-The user will be notified whenever the instrument changes. For example:
-
-.. code-block:: python
-
-    >>> calculator.user_input.obs_freq = 270*u.GHz
-    Instrument has been changed from Sepia to Finer.
-
-The currently selected instrument can be checked using:
-
-.. code-block:: python
-
-    >>> calculator.chosen_instrument
-
-The instrument can also be changed using the following (case insensitive) command:
-
-.. code-block:: python
-
-    >>> calculator.chosen_instrument = 'finer'
-
-
-
-Choosing an instrument that is not appropriate for the current observing frequency and
-bandwidth will result in an error, and a request for the user to either chose a different instrument
-or update the observing frequency and/or bandwidth.
-
-The observing frequency and bandwidth ranges for the instruments can be checked with:
-
-.. code-block:: python
-
-    >>> calculator.list_instruments()
-
-
-Resetting the calculator
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-You can reset the parameters stored in the calculator to their initial values
-using the :meth:`reset <atlast_sc.calculator.Calculator.reset>` method:
-
-.. code-block:: python
-
-        # initialize the calculator with its default values
-        calculator = CalculatorFactory().calculator
-
-        # change the value of one of the parameters
-        calculator.user_input.bandwidth = 150*u.MHz
-
-        # reset the calculator
-        calculator.reset()
-
-        # check the bandwidth value stored in the calculator
-        print('bandwidth', calculator.user_input.bandwidth)
-        # expected output
-        # bandwidth 100.0 MHz
 
 
 Checking the parameters stored by the calculator
@@ -215,12 +159,92 @@ parameters to the console as follows:
     sefd: 7.585764213938477e-25 J / m2
     transmittance: 0.9727575584355762
 
+Resetting the calculator
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. TODO::
+
+    **MARK TO FOLLOW-UP**
+
+    I think we should be more explicit here about the fact that this only resets variables, it doesn't re-initialise (or reset) the instrument suite.
+
+
+You can reset the parameters stored in the calculator to their initial values using the :meth:`reset <atlast_sc.calculator.Calculator.reset>` method:
+
+.. code-block:: python
+
+        # initialize the calculator with its default values
+        calculator = CalculatorFactory().calculator
+
+        # change the value of one of the parameters
+        calculator.user_input.bandwidth = 150*u.MHz
+
+        # reset the calculator
+        calculator.reset()
+
+        # check the bandwidth value stored in the calculator
+        print('bandwidth', calculator.user_input.bandwidth)
+        # expected output
+        # bandwidth 100.0 MHz
+
+
+.. _section_instrument_selection:
+
+Instrument selection
+^^^^^^^^^^^^^^^^^^^^
+
+The AtLAST sensitivity calculator supports a range of instruments as described in the
+:doc:`instrument overview <../calculator_info/instrument_overview>`. The calculator will
+automatically pick an appropriate instrument based on the observing frequency and bandwidth.
+The user will be notified whenever the instrument changes. For example:
+
+.. code-block:: python
+
+    >>> calculator.user_input.obs_freq = 270*u.GHz
+    Instrument has been changed from Sepia to Finer.
+
+The currently selected instrument can be checked using:
+
+.. code-block:: python
+
+    >>> calculator.chosen_instrument
+
+The instrument can also be changed using the following (case insensitive) command:
+
+.. code-block:: python
+
+    >>> calculator.chosen_instrument = 'finer'
+
+
+
+Choosing an instrument that is not appropriate for the current observing frequency and
+bandwidth will result in an error, and a request for the user to either chose a different instrument
+or update the observing frequency and/or bandwidth.
+
+The observing frequency and bandwidth ranges for the instruments can be checked with:
+
+.. code-block:: python
+
+    >>> calculator.list_instruments()
+
+
+
+
+.. TODO::
+
+    **MARK TO FOLLOW-UP**
+
+    Why are the following two sections here, and not in the Input and Output fies section?  I can see why the 'creating a dictionary' section is here (although I think it should come before instrument selection), but the rest belongs in the input/output section
 
 
 Providing input data to the calculator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. include:: providing_input_data.rst
+
+
+
+
 
 Writing parameters to file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
