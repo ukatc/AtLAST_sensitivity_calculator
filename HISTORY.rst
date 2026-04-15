@@ -1,4 +1,4 @@
-1.1.2 (2025-04-15)
+1.1.2 (2026-04-15)
 ++++++++++++++++++
 - Set a maximum Python version as the calculator is not currently compatible with Python >=3.13.
 - Change the installation instructions to specify a specific Python version.
