@@ -26,7 +26,7 @@ environment with:
    conda create -n atlast python=3.12 pip
 
 
-Note that the calculator is tested to work with Python versions 3.10 to 3.12. We cannot ensure compatibility with future versions and so it is necessary to specify the version here.
+Note that the calculator is tested to work with Python versions 3.10 to 3.12. We cannot ensure compatibility with other versions and so it is necessary to specify the version here.
 
 After the environment is created, activate it with:
 
