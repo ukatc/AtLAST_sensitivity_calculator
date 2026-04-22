@@ -16,6 +16,11 @@
 - Added notebook walkthroughs for each of the instruments
 - Documentation updates to take account of these changes
 
+1.1.2 (2026-04-15)
+++++++++++++++++++
+- Set a maximum Python version as the calculator is not currently compatible with Python >=3.13.
+- Change the installation instructions to specify a specific Python version.
+
 1.1.1 (2025-01-22)
 ++++++++++++++++++
 - Updates to readthedocs files to enable readthedocs to display API and UML pages and to automatically create a pdf.

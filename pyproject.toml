@@ -17,7 +17,7 @@ authors = [
 ]
 description = "AtLAST sensitivity calculator"
 #license = "MIT"
-requires-python = ">=3.10"
+requires-python = ">=3.10, <3.13"
 dependencies = [
     "astropy == 5.3.*",
     "numpy == 1.26.*",
