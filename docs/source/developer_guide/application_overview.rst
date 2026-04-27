@@ -166,7 +166,7 @@ ParameterSetup class acts as the container for the current state of each paramet
 
 Instrument Selection
 --------------------
-Instrument selection in both the python and web interafacesis executed in the background
+Instrument selection in both the python and web interfaces is executed in the background
 when the user inputs observing frequency and bandwidth values in the boxes specified and
 clicks the "Calculate" button, and validates the instrument choice against its operational ranges.
 In the case where the user input parameters correspond to more than one instrument, the 
