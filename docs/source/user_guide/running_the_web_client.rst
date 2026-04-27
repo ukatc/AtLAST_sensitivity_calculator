@@ -1,12 +1,6 @@
 Running the Web Client
 ======================
 
-.. TODO::
-
-    **MARK TO FOLLOW-UP**
-
-    This needs updating to make sure the local installation matches the workflow in alpha_testing.ppt. PK has removed the docker container information, and to remove the section about docker
-
 The web client can be accessed from https://senscalc.atlast.uio.no/.
 
 The web client can also be run on your computer in one of two ways - cloning
