@@ -85,39 +85,6 @@ of values, the calculator will report a warning and the calculated value
 will not be stored in the Calculator object.
 
 
-.. TODO::
-
-    **MARK TO FOLLOW-UP**
-
-    What's the point of the functionality described in the note below?
-
-.. note::
-
-    When the sensitivity or integration time calculations are performed, by default,
-    the calculated values are stored in the Calculator object. Similarly, an
-    integration time passed to ``calculate_sensitivity`` or sensitivity passed
-    to ``calculate_t_integration`` is stored by the Calculator object.
-    To prevent this behaviour, set the ``update_calculator`` parameter to ``False``,
-    as shown below:
-
-    .. code-block:: python
-
-        new_sens = 15*u.mJy
-        calculated_t_int = calculator.calculate_t_integration(new_sens, update_calculator=False)
-
-    You may then manually update the calculator with the new values:
-
-    .. code-block:: python
-
-        calculator.t_int = calculated_t_int
-        calculator.sensitivity = new_sens
-
-
-
-
-
-
-
 Checking the parameters stored by the calculator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -162,14 +129,7 @@ parameters to the console as follows:
 Resetting the calculator
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. TODO::
-
-    **MARK TO FOLLOW-UP**
-
-    I think we should be more explicit here about the fact that this only resets variables, it doesn't re-initialise (or reset) the instrument suite.
-
-
-You can reset the parameters stored in the calculator to their initial values using the :meth:`reset <atlast_sc.calculator.Calculator.reset>` method:
+You can reset the user input parameters stored in the calculator to their initial values using the :meth:`reset <atlast_sc.calculator.Calculator.reset>` method:
 
 .. code-block:: python
 
