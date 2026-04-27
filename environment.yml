@@ -11,7 +11,9 @@ dependencies:
   - PyYAML=6.0
   - scipy=1.11
   - setuptools=65.5
-  - sphinx_rtd_theme=1.1
+  - sphinx-rtd-theme=3.1
+  - myst-parser==2.0.0
+  - plantuml=1.2026
   - nbsphinx==0.9
   - python-dotenv=0.21
   - pydantic=2.12
