@@ -6,17 +6,6 @@ AtLast Sensitivity Calculator GitHub repository <https://github.com/ukatc/AtLAST
 
 Instructions are provided below.
 
-.. TODO::
-
-    **MARK TO FOLLOW-UP**
-
-    update this installation guide to be consistent with what's in ``alpha_testing.ppt``.
-    Also make sure that the environment.yml works with the packages required for sphinx. I had
-    to download some extra packages, and update some others to get sphinx working properly. Normal
-    users should be able to compile the documentation without having to modify their environment.
-
-
-
 .. _installing from git:
 
 Installing the Python package from Git
