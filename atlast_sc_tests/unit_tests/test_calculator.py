@@ -1,7 +1,6 @@
 import copy
 import pytest
 import astropy.units as u
-from atlast_sc.factory import CalculatorFactory
 from atlast_sc.calculator import Calculator
 from atlast_sc.parameter_setup import ParameterSetup
 from atlast_sc.parameters.user_input_parameters import UserInputParameters
@@ -52,8 +51,7 @@ class TestCalculator:
                        '_calculate_derived_parameters')
 
         # Initialize the calculator
-        test_calculator_factory = CalculatorFactory(user_input=input_data)
-        test_calculator = test_calculator_factory.calculator
+        test_calculator = Calculator(user_input=input_data)
 
         # Make sure the param names in user input data were validated
         check_input_param_names_spy.assert_called_with(input_data)
@@ -115,7 +113,7 @@ class TestCalculator:
     )
     def test_initialize_calculator_invalid(self, user_input, expected_raises):
         with expected_raises:
-            CalculatorFactory(user_input=user_input)
+            Calculator(user_input=user_input)
     # TO DO: Add unit tests for the case where finetune=True
     @pytest.mark.parametrize(
         'param,new_value,derived_params_recalculated,expected_raises,finetuned',

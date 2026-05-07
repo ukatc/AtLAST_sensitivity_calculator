@@ -6,6 +6,7 @@ from atlast_sc.exceptions import CalculatedValueInvalidWarning
 from atlast_sc.exceptions import ValueOutOfRangeException
 from atlast_sc.exceptions import InstrumentNotApplicableException
 
+from atlast_sc.parameter_setup import ParameterSetup
 from atlast_sc.parameters.user_input_parameters import UserInputParameters
 from atlast_sc.parameters.telescope_and_environment_parameters import TelescopeAndEnvironmentParameters
 from atlast_sc.parameters.derived_parameters import DerivedParameters
@@ -22,17 +23,28 @@ class Calculator:
      **NB: usage not tested, and may not be supported in future.**
     :type instrument_setup: dict
     """
-    def __init__(self, param_setup):
+    def __init__(self, user_input={}):
         
+        if user_input:
+            self._param_setup = ParameterSetup(user_input=user_input)
+            # self.calculator = self._create_calculator(self.param_setup)
+        else: # use the default values
+            self._param_setup = ParameterSetup()
+            # self.calculator = self._create_calculator(self.param_setup)
+
         # Parameter setup class that contains models with default values
-        self._param_setup = param_setup
+        # self._param_setup = self.param_setup
         # Special classes for customisation of models
-        self._user_input = UserInputParameters(param_setup)
-        self._telescope_and_environment = TelescopeAndEnvironmentParameters(param_setup)
-        self._derived_parameters = DerivedParameters(param_setup)
+        self._user_input = UserInputParameters(self._param_setup)
+        self._telescope_and_environment = TelescopeAndEnvironmentParameters(self._param_setup)
+        self._derived_parameters = DerivedParameters(self._param_setup)
         # Calculated value variables of calculation result model
         self._calculated_sensitivity = self._param_setup.calculation_results.calculated_sensitivity
         self._calculated_t_int = self._param_setup.calculation_results.calculated_t_int
+
+    # @staticmethod
+    # def _create_calculator(param_setup):
+    #     return Calculator(param_setup)
 
     @property
     def user_input(self):

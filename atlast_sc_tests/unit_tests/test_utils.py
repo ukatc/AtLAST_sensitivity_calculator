@@ -4,7 +4,7 @@ import astropy.units as u
 from atlast_sc.utils import Decorators
 from atlast_sc.utils import FileHelper
 from atlast_sc.utils import DataHelper
-from atlast_sc.factory import CalculatorFactory
+from atlast_sc.calculator import Calculator
 
 from atlast_sc_tests.utils import does_not_raise
 
@@ -88,7 +88,7 @@ class TestInstrumentClasses:
 
             test_obs_freq = 273.0 * u.GHz
             test_bandwidth = 10001 * u.MHz
-            mock_calc = CalculatorFactory._create_calculator(param_setup=ParameterSetup())
+            mock_calc = Calculator()
 
             mock_calc.user_input.obs_freq = test_obs_freq
             mock_calc.user_input.bandwidth = test_bandwidth
