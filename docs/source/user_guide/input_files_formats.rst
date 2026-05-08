@@ -11,13 +11,6 @@ The file reader supports plain-text, `YAML <https://en.wikipedia.org/wiki/YAML>`
 or `JSON <https://en.wikipedia.org/wiki/JSON>`__ formatted file.
 The expected structure for each file type is described in more detail below.
 
-.. TODO::
-
-    **MARK TO FOLLOW-UP**
-
-    When was this list last validated? are all of these versions of input/export files still valid for use?
-
-
 Plain-text files
 ^^^^^^^^^^^^^^^^
 Plain-text files should have the extension ``.txt`` or ``.TXT``. Each line of
@@ -53,6 +46,7 @@ An example YAML file might contain the following:
     n_pol: {value: 2}
 
 This formatting is very similar to the formatting of a python dictionary, but for the ``yaml`` format, quotation marks are not required on the units, and individual entries are specified by line, not with commas.
+
 JSON files
 ^^^^^^^^^^
 JSON files should have the extension ``json`` or ``JSON``.
