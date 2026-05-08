@@ -153,6 +153,110 @@ Running the web client directly
         Building and deploying the application should be automated using GitHub actions.
 
 
+Adding a New Instrument
+----------------------------------------
+When an instrument needs to be added to the calculator, a couple of steps should be executed
+within the *atlast_sc/instruments* directory. To be able to integrate the new instrument to the
+existing calculator process, a YAML file with the name of the instrument, a Python module with 
+the name of the instrument, and modifications to the configuration file should be made. Details 
+of each of these steps are provided in the following sub-sections. Once the required files are 
+created and modified, the new instrument should be visible on the CLI as well as the web UI and
+will be used in calculations when the user input parameters correspond to the instrument's 
+operational ranges. It should be noted that once the required files are in place, the developer 
+should make sure to update the documentation to include the new instrument and its details, and
+to provide an example of how to use it in calculations.
+
+.. TODO::
+
+    **ILGIN TO FOLLOW-UP**
+
+    - what process does the user need to follow to have their instrument visible on the Oslo hosted site?
+
+    I have re-opened ASC-114 to track this work
+
+
+Creating the instrument YAML file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Firstly, a YAML file with the name of the instrument should be created in the 
+sub-directory called *data*. It should include details of the instrument in the 
+following format: 
+
+.. code-block:: yaml
+
+    name: "Example"
+    allowed_ranges:
+        observing_frequency:
+            ranges: [(500.0-600.0),(700.0-800.0)]
+            unit: GHz
+        bandwidth: 
+            ranges: [(10.9e4-1.8e8)]
+            unit: Hz
+    receiver_temperature: 
+        values: [30.0,40.0]
+        unit: K
+
+Any other instrument specific parameter should be added following the same format. The
+Default instrument YAML file could be taken as a template and the other instrument 
+YAML files could be taken as example on how these files could be customised. 
+
+Creating the instrument Python module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Secondly, a Python module should be created in the *classes* sub-directory with the
+new instrument name. Following the example above, the name of the module file should 
+be "Example.py" and it should include the following class format: 
+
+.. code-block:: python 
+
+    """
+    Example instrument parameters
+    """        
+    class Example(Instrument):
+        def __init__(self, data):
+            super().__init__(data)
+
+        ##################################
+        # Instrument specific parameters #
+        ##################################
+
+        @property
+        def custom_parameter(self):
+            return self._custom_parameter
+
+        @custom_parameter.setter
+        def custom_parameter(self, value):
+            self._custom_parameter = value
+
+        ################################################
+        # Additional instrument specific methods below #
+        ################################################
+
+        def custom_calculation_method(self):
+            """
+            Performs a custom calculation for the Example instrument. 
+            This is just an example method and an example comment.
+            """
+            pass
+        
+
+For more detail on how to construct the module, the Default instrument Python module
+could be taken as the base example. Below are different types of instrument categories
+where the individual Python modules could be taken as an example on how a new instrument 
+module in the same category could be customised:
+
+    - Heterodynes (FINER, SEPIA, CHAI)
+    - Continuum/LEKID (MUSCAT)
+    - IFU/MKID (TIFUUN)
+
+Modifying the configuration file to add the new instrument
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Thirdly, a couple of lines should be modified in ``config.py`` where they are 
+indicated within the configuration file with comments. In the initilisation 
+method, a dictionary containing pointers to the new instrument's Python module 
+and YAML file name should be added in similar format to the existing instruments. 
+After creating the dictionary variable for the new instrument, it should be added 
+to the ``available_instruments`` list.
+
+
 Running the tests
 -----------------
 The ``atlast_sc`` package and FastAPI application tests are run using ``pytest``.

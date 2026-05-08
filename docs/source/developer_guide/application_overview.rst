@@ -4,11 +4,12 @@ The sensitivity calculator consists of the calculator itself (a Python package) 
 An overview of each component is provided below.
 
 The overall calculation process begins with the creation of a Calculator object using
-CalculatorFactory, where the calculator is initialised with default values. If the calculator
-is used via the Python command line interface (CLI), any of the user input parameters can be changed before calculating
-the sensitivity/integration time. If the parameters are not changed, the calculations will be done with default
-values. In the web user interface (UI), the first calculation is done with the default values and any specified user
-input parameters will be considered within the calculations once the user clicks the "Calculate" button.
+user specified input parameters, where if not specified, the calculator is initialised with default
+user input values. If the calculator is used via the Python command line interface (CLI), any of the user input
+parameters can be changed before calculating the sensitivity/integration time. If the parameters are not changed, 
+the calculations will be done with default values. In the web user interface (UI), the first calculation is done 
+with the default values and any specified user input parameters will be considered within the calculations once 
+the user clicks the "Calculate" button.
 
 Given the input parameters, the application will choose instrument specific equations for calculating
 sensitivity/integration. The user can override instrument choice manually as described in the user guide
@@ -50,24 +51,12 @@ Below is an overview description of each of the modules included in the
 :doc:`Public API <../code_docs/public_api>` and :doc:`UML diagrams <../code_docs/uml>`
 sections.
 
-calculator_factory
-++++++++++++++++++
-This module creates a calculator instance according to user input that has been specified.
-
-.. TODO::
-
-    **ILGIN TO FOLLOW-UP**
-
-    Please give a description here of what a python factory is, they're not often used in astronomy packages
-    (in a way that astronomers see). This could form part of the work for ASC-137
-
-
 calculator
 ++++++++++
 This module contains the main ``Calculator`` class that provides the interface
 for performing sensitivity and integration time calculations. A ``Calculator``
-object may be instantiated with default parameter setup object, or by passing
-user input parameters as arguments to the parameter setup object constructor.
+object may be instantiated with user input parameters constructor, or with the default
+user input parameter constructor.
 
 This module provides methods exclusively for calculating sensitivity and integration time.
 It retrieves parameter sets, including user inputs, telescope and environmental
@@ -75,30 +64,21 @@ conditions, and derived parameters, through the parameter setup object. This des
 simplifies the process for users by providing a unified interface to access information 
 from each parameter class.
 
-.. TODO::
-
-    **ILGIN TO FOLLOW-UP**
-
-    Please describe why users (yes, I know this is the developer guide) need to use the factory,
-    and not just ``calculator`` directly
-
 
 parameter_setup
 +++++++++++++++
-This class serves as a centralised container for all parameter classes. When a parameter is 
-updated in its respective class, the new value can be retrieved through this class. It 
-provides access to all models used in calculations and methods for operations related to 
-identifying applicable instruments. The class also stores a copy of the
-parameters used to initialize the calculator, allowing the user to revert to
-the initial state.
+This class serves as a centralised container for storing and accessing the values of each 
+parameter in the following parameter classes:
+- user input parameters
+- telescope and environment parameters
+- derived parameters
 
-.. TODO::
+When a parameter is updated in its respective class, the new value of the parameter 
+can be retrieved through this class. It provides access to all models used in 
+calculations and methods for operations related to identifying applicable instruments. 
+This class also stores a copy of the parameter values used to initialize the calculator, 
+allowing the user to revert to the initial state.
 
-    **ILGIN TO FOLLOW-UP**
-
-    I found the first 2 sentences above hard to follow, and I'm still not sure I understand. what's 'this class' at the
-    end of the 2nd sentence? I think the word (used 4 times in 2 sentences) somewhat lost its meaning. is ``parameter_setup``
-    a class of classes?
 
 data
 ++++
@@ -136,13 +116,10 @@ about why their setup cannot generate a valid output.
 
 utils
 +++++
-This is a utility module that contains classes and methods used throughout the application.
+This is a utility module that contains classes and methods used throughout the application. 
+The contents include helper methods for validating and updating parameters, performing 
+unit conversions, and file input/output methods for reading and writing data to file.
 
-.. TODO::
-
-    **ILGIN TO FOLLOW-UP**
-
-    Such as.... (validation checkers, file IO, and unit conversions (via astropy))
 
 Class Structure
 ^^^^^^^^^^^^^^^
@@ -185,94 +162,10 @@ other information about the instruments can be accessed by listing the instrumen
 
 Adding a New Instrument
 ----------------------------------------
-.. TODO::
-
-    **ILGIN TO FOLLOW-UP**
-
-    I've bumped up the level of the 'adding a new instrument' heading.
-    There needs to be a paragraph here explaining the workflow before getting into the specifics of the
-    kinds of files to be created and where to put them:
-
-    - What equation are they slotting into
-    - What kinds of files are needed
-    - What other modifications do the developers need to make, and where (yes, ``config.py``, but also the documentation)
-    - does the user have to do anything to the web-UI to make their instrument locally visible? what process do they need to follow to have their instrument visible on the Oslo hosted site?
-
-    I have re-opened ASC-114 to track this work
-
-    I would also suggest to re-order these sub-sections to show the python module first, since it's arguably
-    more important / the bulk of the work to be done.
-
-    Related to that last point, is there a reason the 'adding a module' instructions are in the ``application_overview``
-    section/document rather than the ``developing_the_application`` section/document? I think it might fit better there
-
-
-Creating the instrument YAML file
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-If an instrument needs to be added, this should be done by executing a couple of steps
-within the *atlast_sc/instruments* directory.
-
-Firstly, a YAML file with the name of the instrument should be creating in the 
-sub-directory called *data*. It should include details of the instrument in the 
-following format: 
-
-.. code-block:: yaml
-
-    name: "Example"
-    allowed_ranges:
-        observing_frequency:
-            ranges: [(500.0-600.0),(700.0-800.0)]
-            unit: GHz
-        bandwidth: 
-            ranges: [(10.9e4-1.8e8)]
-            unit: Hz
-    receiver_temperature: 
-        values: [30.0,40.0]
-        unit: K
-
-Any other instrument specific parameter should be added following the same format. The
-Default instrument YAML file could be taken as a template and the other instrument 
-YAML files could be taken as example on how these files could be customised. 
-
-Creating the instrument Python module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Secondly, a Python module should be created in the *classes* sub-directory with the
-new instrument name. Following the example above, the name of the module file should 
-be "Example.py" and it should include the following class format: 
-
-.. code-block:: python 
-
-    """
-    Example instrument parameters
-    """        
-    class Example(Instrument):
-        def __init__(self, data):
-            super().__init__(data)
-
-For more detail on how to construct the module, the Default instrument Python module
-could be taken as an example and other instrument Python modules could be taken as
-example on how these modules could be customised.
-
-.. TODO::
-
-    **ILGIN TO FOLLOW-UP**
-
-    We talked about putting a more functional example in here, and I still think that would be
-    useful.  Maybe including a stripped down version of the 'default' module, and pointing
-    to the included instrument classes for further examples?
-
-    - Heterodynes (FINER, SEPIA, CHAI)
-    - Continuum/LEKID (MUSCAT)
-    - IFU/MKID (TIFUUN)
-
-Modifying the configuration file to add the new instrument
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Thirdly, a couple of lines should be modified in ``config.py`` where they are 
-indicated within the configuration file with comments. In the initilisation 
-method, a dictionary containing pointers to the new instrument's Python module 
-and YAML file name should be added in similar format to the existing instruments. 
-After creating the dictionary variable for the new instrument, it should be added 
-to the ``available_instruments`` list.
+The application is constructued in a specific way that allows new instruments to be added to the
+calculation process. When an instrument needs to be added to the calculator, a couple of steps 
+need to be executed within the *atlast_sc/instruments* directory. The process is detailed in the
+:doc:`Developing the Application <./developing_the_application>` section of the developer guide. 
 
 The web application
 -------------------
