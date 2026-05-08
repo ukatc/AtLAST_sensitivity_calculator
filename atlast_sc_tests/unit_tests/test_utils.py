@@ -67,7 +67,7 @@ class TestInstrumentClasses:
             supplied by the user input. 
             """
             
-            finer_data = FileHelper.read_instrument_yaml_file("finer")
+            finer_data = FileHelper.read_instrument_yaml_file("Finer")
             test_obs_freq_1 = 130.0 * u.GHz
             finer = Finer(data=finer_data)
             
@@ -275,11 +275,11 @@ class TestFileHelper:
     @pytest.mark.parametrize(
         'instrument_name',
         [
-            ("chai"),
-            ("finer"),
-            ("muscat"),
-            ("sepia"),
-            ("tifuun")
+            ("Chai"),
+            ("Finer"),
+            ("Muscat"),
+            ("Sepia"),
+            ("Tifuun")
         ]
     )
     def test_read_instrument_yaml_file(self, instrument_name):

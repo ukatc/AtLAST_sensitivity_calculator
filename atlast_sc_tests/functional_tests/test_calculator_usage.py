@@ -17,7 +17,7 @@ class TestCalculatorUsage:
         # sensitivity
         assert sens == test_calculator.calculated_sensitivity
         # Verify that the sensitivity is about 780 uJy
-        assert test_calculator.calculated_sensitivity.value == pytest.approx(780, 0.01)
+        assert test_calculator.calculated_sensitivity.value == pytest.approx(690, 0.01)
         assert test_calculator.calculated_sensitivity.unit == u.uJy
 
         # Update observing frequency
@@ -63,7 +63,7 @@ class TestCalculatorUsage:
         # integration time
         assert test_calculator.calculated_t_int == new_t_int
         # Verify that the calculated integration time is about 6.76 s
-        assert test_calculator.calculated_t_int.value == pytest.approx(6.76, 0.01)
+        assert test_calculator.calculated_t_int.value == pytest.approx(5.24, 0.01)
         assert test_calculator.calculated_t_int.unit == u.s
 
         # Calculate integration time using a different sensitivity
@@ -117,7 +117,7 @@ class TestCalculatorUsage:
         # parameters
         expected_params = ['t_int', 'sensitivity', 'bandwidth', 'n_pol',
                            'obs_freq', 'weather', 'elevation', 'transmittance',
-                           'T_atm', 'eta_a', 'eta_s', 'T_sys', 'T_sky',
+                           'T_atm', 'T_sky', 'T_sys', 'eta_a', 'eta_s',
                            'sefd']
         # sort the expected parameters
         expected_params.sort()

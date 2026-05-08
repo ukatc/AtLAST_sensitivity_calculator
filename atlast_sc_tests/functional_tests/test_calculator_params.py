@@ -3,6 +3,7 @@ import numpy as np
 import pytest
 from pydantic import ValidationError
 from astropy import units as u
+from atlast_sc.parameter_setup import ParameterSetup
 from atlast_sc.calculator import Calculator
 from atlast_sc.derived_groups import AtmosphereParams, Temperatures, \
     Efficiencies
@@ -22,106 +23,114 @@ from atlast_sc_tests.utils import does_not_raise
 class TestCalculationInput:
     
     # Variables needed for tests
-    unit_exception = 'unitexception'
-    value_out_of_range_exception = 'valueoutofrangeexception'
-    value_too_high_exception = 'valuetoohighexception'
-    value_too_low_exception = 'valuetoolowexception'
-    value_not_allowed_exception = 'valuenotallowedexception'
+    unit_exception = 'must have one of the following units'
+    value_out_of_range_exception = 'must be in the range'
+    value_too_high_exception = 'must be less than'
+    value_too_low_exception = 'must be greater than'
+    value_not_allowed_exception = 'must have one of the following values'
 
-    # TODO: Tests need to change
-    # @pytest.mark.parametrize(
-    #     'input_data,expect_raises,exception_name',
-    #     [
-    #         ({'t_int': {'value': 1, 'unit': 's'}}, does_not_raise(), None),
-    #         ({'t_int': {'value': 1, 'unit': 'min'}}, does_not_raise(), None),
-    #         ({'t_int': {'value': 0.5, 'unit': 'min'}}, does_not_raise(), None),
-    #         ({'t_int': {'value': 1, 'unit': 'h'}}, does_not_raise(), None),
-    #         ({'t_int': {'value': 0, 'unit': 's'}},
-    #          pytest.raises(ValidationError), value_out_of_range_exception),
-    #         ({'t_int': {'value': float('inf'), 'unit': 's'}},
-    #          pytest.raises(ValidationError), value_too_high_exception),
-    #         ({'t_int': {'value': 1, 'unit': 'GHz'}},
-    #          pytest.raises(ValidationError), unit_exception),
-    #         ({'sensitivity': {'value': 1, 'unit': 'uJy'}}, does_not_raise(),
-    #          None),
-    #         ({'sensitivity': {'value': 1, 'unit': 'mJy'}}, does_not_raise(),
-    #          None),
-    #         ({'sensitivity': {'value': 1, 'unit': 'Jy'}}, does_not_raise(),
-    #          None),
-    #         ({'sensitivity': {'value': 0, 'unit': 'uJy'}},
-    #          pytest.raises(ValidationError), value_too_low_exception),
-    #         ({'sensitivity': {'value': float('inf'), 'unit': 'uJy'}},
-    #          pytest.raises(ValidationError), value_too_high_exception),
-    #         ({'sensitivity': {'value': 1, 'unit': 's'}},
-    #          pytest.raises(ValidationError), unit_exception),
-    #         ({'bandwidth': {'value': 200, 'unit': 'Hz'}}, does_not_raise(),
-    #          None),
-    #         ({'bandwidth': {'value': 200, 'unit': 'kHz'}}, does_not_raise(),
-    #          None),
-    #         ({'bandwidth': {'value': 200, 'unit': 'MHz'}}, does_not_raise(),
-    #          None),
-    #         ({'bandwidth': {'value': 200, 'unit': 'GHz'}}, does_not_raise(),
-    #          None),
-    #         ({'bandwidth': {'value': 200, 'unit': 'h'}},
-    #          pytest.raises(ValidationError), unit_exception),
-    #         ({'bandwidth': {'value': 0, 'unit': 'Hz'}},
-    #          pytest.raises(ValidationError), value_too_low_exception),
-    #         ({'bandwidth': {'value': float('inf'), 'unit': 'Hz'}},
-    #          pytest.raises(ValidationError), value_too_high_exception),
-    #         ({'obs_freq': {'value': 200, 'unit': 'GHz'}}, does_not_raise(),
-    #          None),
-    #         ({'obs_freq': {'value': 35, 'unit': 'GHz'}}, does_not_raise(),
-    #          None),
-    #         ({'obs_freq': {'value': 950, 'unit': 'GHz'}}, does_not_raise(),
-    #          None),
-    #         ({'obs_freq': {'value': 200, 'unit': 'Hz'}},
-    #          pytest.raises(ValidationError), unit_exception),
-    #         ({'obs_freq': {'value': 30, 'unit': 'GHz'}},
-    #          pytest.raises(ValidationError), value_out_of_range_exception),
-    #         ({'obs_freq': {'value': 960, 'unit': 'GHz'}},
-    #          pytest.raises(ValidationError), value_out_of_range_exception),
-    #         ({'n_pol': {'value': 1}}, does_not_raise(), None),
-    #         ({'n_pol': {'value': 2}}, does_not_raise(), None),
-    #         ({'n_pol': {'value': 0.5}}, pytest.raises(ValidationError),
-    #          value_not_allowed_exception),
-    #         ({'n_pol': {'value': 3}}, pytest.raises(ValidationError),
-    #          value_not_allowed_exception),
-    #         ({'weather': {'value': 50}}, does_not_raise(), None),
-    #         ({'weather': {'value': 5}}, does_not_raise(), None),
-    #         ({'weather': {'value': 25}}, does_not_raise(), None),
-    #         ({'weather': {'value': 2}},
-    #          pytest.raises(ValidationError), value_out_of_range_exception),
-    #         ({'weather': {'value': 100}},
-    #          pytest.raises(ValidationError), value_out_of_range_exception),
-    #         ({'elevation': {'value': 40, 'unit': 'deg'}}, does_not_raise(),
-    #          None),
-    #         ({'elevation': {'value': 25, 'unit': 'deg'}}, does_not_raise(),
-    #          None),
-    #         ({'elevation': {'value': 85, 'unit': 'deg'}}, does_not_raise(),
-    #          None),
-    #         ({'elevation': {'value': 40, 'unit': 'Hz'}},
-    #          pytest.raises(ValidationError), unit_exception),
-    #         ({'elevation': {'value': 15, 'unit': 'deg'}},
-    #          pytest.raises(ValidationError), value_out_of_range_exception),
-    #         ({'elevation': {'value': 90, 'unit': 'deg'}},
-    #          pytest.raises(ValidationError), value_out_of_range_exception),
-    #     ]
-    # )
-    # def test_data_validation_on_init(self, input_data, expect_raises,
-    #                                  exception_name):
-    #     # Ensure that parameters can only be initialised with data within the
-    #     # permitted range (inclusive or exclusive), or with one of the
-    #     # permitted values, and with incorrect units, where applicable
+    @pytest.mark.parametrize(
+        'input_data,expect_raises,exception_match_string',
+        [
+            ({'t_int': {'value': 1, 'unit': 's'}}, does_not_raise(), None),
+            ({'t_int': {'value': 1, 'unit': 'min'}}, does_not_raise(), None),
+            ({'t_int': {'value': 0.5, 'unit': 'min'}}, does_not_raise(), None),
+            ({'t_int': {'value': 1, 'unit': 'h'}}, does_not_raise(), None),
+            ({'t_int': {'value': 0, 'unit': 's'}},
+             pytest.raises(ValidationError), value_out_of_range_exception),
+            ({'t_int': {'value': float('inf'), 'unit': 's'}},
+             pytest.raises(ValidationError), value_too_high_exception),
+            ({'t_int': {'value': 1, 'unit': 'GHz'}},
+             pytest.raises(ValidationError), unit_exception),
+            ({'sensitivity': {'value': 1, 'unit': 'uJy'}}, does_not_raise(),
+             None),
+            ({'sensitivity': {'value': 1, 'unit': 'mJy'}}, does_not_raise(),
+             None),
+            ({'sensitivity': {'value': 1, 'unit': 'Jy'}}, does_not_raise(),
+             None),
+            ({'sensitivity': {'value': 0, 'unit': 'uJy'}},
+             pytest.raises(ValidationError), value_too_low_exception),
+            ({'sensitivity': {'value': float('inf'), 'unit': 'uJy'}},
+             pytest.raises(ValidationError), value_too_high_exception),
+            ({'sensitivity': {'value': 1, 'unit': 's'}},
+             pytest.raises(ValidationError), unit_exception),
+            ({'bandwidth': {'value': 200, 'unit': 'Hz'}}, does_not_raise(),
+             None),
+            ({'bandwidth': {'value': 200, 'unit': 'kHz'}}, does_not_raise(),
+             None),
+            ({'bandwidth': {'value': 200, 'unit': 'MHz'}}, does_not_raise(),
+             None),
+            ({'bandwidth': {'value': 200, 'unit': 'GHz'}}, does_not_raise(),
+             None),
+            ({'bandwidth': {'value': 200, 'unit': 'h'}},
+             pytest.raises(ValidationError), unit_exception),
+            ({'bandwidth': {'value': 0, 'unit': 'Hz'}},
+             pytest.raises(ValidationError), value_too_low_exception),
+            ({'bandwidth': {'value': float('inf'), 'unit': 'Hz'}},
+             pytest.raises(ValidationError), value_too_high_exception),
+            ({'obs_freq': {'value': 200, 'unit': 'GHz'}}, does_not_raise(),
+             None),
+            ({'obs_freq': {'value': 35, 'unit': 'GHz'}}, does_not_raise(),
+             None),
+            ({'obs_freq': {'value': 950, 'unit': 'GHz'}}, does_not_raise(),
+             None),
+            ({'obs_freq': {'value': 200, 'unit': 'Hz'}},
+             pytest.raises(ValidationError), unit_exception),
+            ({'obs_freq': {'value': 30, 'unit': 'GHz'}},
+             pytest.raises(ValidationError), value_out_of_range_exception),
+            ({'obs_freq': {'value': 960, 'unit': 'GHz'}},
+             pytest.raises(ValidationError), value_out_of_range_exception),
+            ({'n_pol': {'value': 1}}, does_not_raise(), None),
+            ({'n_pol': {'value': 2}}, does_not_raise(), None),
+            ({'n_pol': {'value': 0.5}}, pytest.raises(ValidationError),
+             value_not_allowed_exception),
+            ({'n_pol': {'value': 3}}, pytest.raises(ValidationError),
+             value_not_allowed_exception),
+            ({'weather': {'value': 50}}, does_not_raise(), None),
+            ({'weather': {'value': 5}}, does_not_raise(), None),
+            ({'weather': {'value': 25}}, does_not_raise(), None),
+            ({'weather': {'value': 2}},
+             pytest.raises(ValidationError), value_out_of_range_exception),
+            ({'weather': {'value': 100}},
+             pytest.raises(ValidationError), value_out_of_range_exception),
+            ({'elevation': {'value': 40, 'unit': 'deg'}}, does_not_raise(),
+             None),
+            ({'elevation': {'value': 25, 'unit': 'deg'}}, does_not_raise(),
+             None),
+            ({'elevation': {'value': 85, 'unit': 'deg'}}, does_not_raise(),
+             None),
+            ({'elevation': {'value': 40, 'unit': 'Hz'}},
+             pytest.raises(ValidationError), unit_exception),
+            ({'elevation': {'value': 15, 'unit': 'deg'}},
+             pytest.raises(ValidationError), value_out_of_range_exception),
+            ({'elevation': {'value': 90, 'unit': 'deg'}},
+             pytest.raises(ValidationError), value_out_of_range_exception),
+        ]
+    )
+    def test_data_validation_on_init(self, input_data, expect_raises,
+                                     exception_match_string):
+        # Ensure that parameters can only be initialised with data within the
+        # permitted range (inclusive or exclusive), or with one of the
+        # permitted values, and with incorrect units, where applicable
 
-    #     with expect_raises as e:
-    #         Calculator(input_data)
+        with expect_raises as exception_info:
+            test_param_setup = ParameterSetup(input_data)
+            Calculator(test_param_setup)
+        
+        if exception_match_string:
+            # Note: errors returns a list of dictionaries, we are interested in the first
+            # one. This still feels a bit shonky as if pydantic change how 
+            # they structure things again this may change.
 
-    #     if exception_name:
-    #         # The details of the custom exception are buried somewhere
-    #         # in the guts of the pydantic ValidationError, so this check (and
-    #         # others like it) are a bit of a clunky hack. Would be nice to
-    #         # find a more elegant solution
-    #         assert exception_name in str(e.value)
+            # all of these errors show up as value errors
+            validation_error = exception_info.value  
+            validation_error_type = validation_error.errors()[0]["type"]
+            assert validation_error_type == "value_error"
+
+            # for a wee bit more garnualrity can check for part of the 
+            # exception generated
+            error_string = str(validation_error).lower()
+            assert exception_match_string in error_string
 
 
 class TestDerivedGroups:
