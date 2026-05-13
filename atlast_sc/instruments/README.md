@@ -5,26 +5,34 @@ This document provides instructions for uploading new instrument files so that t
 ## Supported File Format
 - Instrument files must have two parts to them: one Python file, one YAML file. The Python file should be under the `atlast_sc/instruments/classes` directory and the YAML file should be under the `atlast_sc/instruments/data` directory.
 
-- The Python file for the instrument can be created by copying the `Default.py` file and modifying any of the "Additional instrument specific methods". 
-- The YAML file should contain the following columns:
+- The Python file for the instrument can be created by copying the `.py` file for one of the current instruments and modifying any of the "Additional instrument specific methods". If you are working with a heterodyne instrument, we recommend looking at the files for Default, FINER, CHAI or SEPIA. If you are working with a KID instrument, then we recommend looking at the files for TIFUUN or MUSCAT.
+- The YAML file requires the following keys:
   - `name`: Name of the instrument.
   - `allowed_ranges`: Observing frequency and bandwidth value ranges of the instrument.
-  - `receiver_temperature`: Allowed receiver temperature values or value ranges. 
+  The `allowed_ranges` key should also contain two sub-keys:
+  - `observing_frequency` with two sub-keys `ranges` and `unit`.
+  - `bandwidth` with two sub-keys `ranges` and `unit`.
 
-  The `allowed_ranges` column should also contain two sub-columns:
-  - `observing_frequency` with two sub-columns `ranges` and `unit`.
-  - `bandwidth` with two sub-columns `ranges` and `unit`.
+- Following these, any parameters used by the instrument class in the `.py` file should be defined, e.g.:
+  - `receiver_temperature`: Allowed receiver temperature values or value ranges. 
 
 ## Upload Instructions
 1. Prepare your instrument YAML file in the required format.
-2. Ensure all mandatory columns are present and correctly filled.
+2. Ensure all mandatory keys are present and correctly filled.
 3. Save the file with the name of the instrument, e.g., `Test.yaml`.
 4. Upload the file to the designated `atlast_sc/instruments/data` directory.
 5. Prepare your instrument Python file in the required format.
 6. Ensure the file is formatted correctly. 
 7. Save the file with the name of the instrument, e.g., `Test.py`.
 8. Upload the file to the designated `atlast_sc/instruments/classes` directory.
-9. Restart the calculator application to load the new instrument data.
+9. Edit the `config.py` in the `atlast_sc/instruments/` directory, adding the new instrument where indicated in `def __init__`.
+10. Restart the calculator application to load the new instrument data.
+
+## Documentation
+A page describing the new instrument and its system temperature calculation can be added the documentation in the directory `docs/source/calculator_info`. See the other instrument pages for the required format. This should be linked to in the `instrument_overview.rst` and `sensitivity.rst` pages in the same directory.
+
+## Instrument Walkthrough Notebook
+If you would like to add a Jupyter notebook to demonstrate the usage of the new instrument, please do so in the `Jupyter_Notebooks/Instrument_Walkthroughs` directory.
 
 ## Validation
 - Currently there is no validation being performed.

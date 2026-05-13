@@ -6,9 +6,6 @@ allowed_ranges:
   bandwidth: 
     ranges: [(10-80)]
     unit: GHz
-receiver_temperature: 
-  values: [44.7]
-  unit: K
 chip_and_cold_optics_efficiency:  # MUSCAT doesn't separate chip and cold optics efficiencies
   value: 0.5
 cold_optics_temperature: # Temperature of the cold optics - not currently used
