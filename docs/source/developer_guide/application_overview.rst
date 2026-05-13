@@ -79,14 +79,13 @@ calculations and methods for operations related to identifying applicable instru
 This class also stores a copy of the parameter values used to initialize the calculator, 
 allowing the user to revert to the initial state.
 
-
+.. _atlast-sc-data-module:
 data
 ++++
 The ``Data`` class stores all of the configuration information for each of the user input, 
 telescope and environment parameters and subsequently derived parameters used in and by the calculator.
 
 The ``Validator`` class provides methods for validating data provided to the calculator.
-
 
 
 models
@@ -108,6 +107,29 @@ independent parameters are updated.
 The derived group classes are ``AtmosphereParams``, ``Efficiencies``, and
 ``Temperatures``. Although these classes are accessible via the public API, they
 are primarily intended to be used internally.
+
+.. _atlast-sc-instruments-module:
+instruments
++++++++++++
+This module contains the instrument data and classes used in the calculator, as well as the
+configuration class. The configuration class is the interface in which the developer can add 
+a new instrument to the calculator and contains methods for reading in the instrument data 
+from the YAML files, validating the data, and populating the instrument classes with the data.
+Each instrument has a defined Python class under the *classes* directory, populated with 
+information from its respective YAML file under the *data* directory. Each instrument class 
+inherits from the base ``Instrument`` class, which contains methods and parameters common to 
+all instruments. An instrument class can contain any instrument specific parameters and 
+methods that are required for the calculations.
+
+parameters
+++++++++++
+This module contains classes that logically group parameters for use in the calculations. 
+The parameter classes are ``UserInputParams``, ``TelescopeEnvironmentParams``, and ``DerivedParameters``. 
+These classes are accessed within the calculator through the ``ParameterSetup`` class, and are 
+used to store and access the values of each parameter within the parameter classes. The parameter 
+classes also contain methods for validating and updating parameter values, and performing unit 
+conversions when necessary.
+
 
 exceptions
 ++++++++++
