@@ -1,6 +1,6 @@
-# Instrument File Upload Instructions
+# Instructions for Including a New Instrument
 
-This document provides instructions for uploading new instrument files so that the calculator can recognise and process them correctly.
+This document provides instructions for adding the files that allow a new instrument to be included in the calculator in a way that ensures the calculator can recognise and process them correctly.
 
 ## Supported File Format
 - Instrument files must have two parts to them: one Python file, one YAML file. The Python file should be under the `atlast_sc/instruments/classes` directory and the YAML file should be under the `atlast_sc/instruments/data` directory.
@@ -16,15 +16,15 @@ This document provides instructions for uploading new instrument files so that t
 - Following these, any parameters used by the instrument class in the `.py` file should be defined, e.g.:
   - `receiver_temperature`: Allowed receiver temperature values or value ranges. 
 
-## Upload Instructions
+## Steps for adding an instrument
 1. Prepare your instrument YAML file in the required format.
 2. Ensure all mandatory keys are present and correctly filled.
 3. Save the file with the name of the instrument, e.g., `Test.yaml`.
-4. Upload the file to the designated `atlast_sc/instruments/data` directory.
+4. Add the file to the designated `atlast_sc/instruments/data` directory.
 5. Prepare your instrument Python file in the required format.
 6. Ensure the file is formatted correctly. 
 7. Save the file with the name of the instrument, e.g., `Test.py`.
-8. Upload the file to the designated `atlast_sc/instruments/classes` directory.
+8. Add the file to the designated `atlast_sc/instruments/classes` directory.
 9. Edit the `config.py` in the `atlast_sc/instruments/` directory, adding the new instrument where indicated in `def __init__`.
 10. Restart the calculator application to load the new instrument data.
 
