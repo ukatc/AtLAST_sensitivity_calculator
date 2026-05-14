@@ -17,18 +17,25 @@ To go beyond this, in order to approximate the future instrumentation available 
 Observing frequency and channel bandwidth ranges
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Each instrument has a specified range of frequencies, ν, and bandwidths, Δν, (note by bandwidth here we mean either the continuum bandwidth or the desired spectral resolution) as shown in the table and plot below. The calculator will select the appropriate instrument based on the user input frequency and bandwidth, with the default heterodyne being selected for any regions of parameter space not covered by the following instruments. For cases where two or more instruments overlap in parameter space, an arbitrary instrument will be selected. This can then be changed by the user as described in the :ref:`user guide <section_instrument_selection>`.
+Each instrument has a specified range of frequencies, :math:`\nu`, and bandwidths, :math:`\Delta\nu`, (note by bandwidth here we mean either the continuum bandwidth or the desired spectral resolution) as shown in the table and plot below. The calculator will select the appropriate instrument based on the user input frequency and bandwidth, with the default heterodyne being selected for any regions of parameter space not covered by the following instruments. For cases where two or more instruments overlap in parameter space, an arbitrary instrument will be selected. This can then be changed by the user as described in the :ref:`user guide <section_instrument_selection>`.
 
-.. csv-table::
-    :header: "Name", "Min ν (GHz)", "Max ν (GHz)", "Min Δν (Hz)", "Max Δν (Hz)"
-
-    "FINER", 120, 210, 8.80E+04, 1.80E+08
-    "FINER", 210, 360, 8.80E+04, 1.80E+08
-    "SEPIA", 272, 376, 6.25E+04, 1.80E+08
-    "CHAI", 460, 500, 6.10E+04, 4.00E+09
-    "CHAI", 780, 820, 6.10E+04, 4.00E+09
-    "TIFUUN", 90, 360, 1.80E+08, 1.00E+10
-    "MUSCAT", 250, 300, 1.00E+10, 8.00E+10
++--------+-----------------------+-----------------------+----------------------------+----------------------------+
+| Name   | Min :math:`\nu` (GHz) | Max :math:`\nu` (GHz) | Min :math:`\Delta\nu` (Hz) | Max :math:`\Delta\nu` (Hz) |
++========+=======================+=======================+============================+============================+
+| FINER  |                   120 |                   210 |                   8.80E+04 |                   1.80E+08 | 
++--------+-----------------------+-----------------------+----------------------------+----------------------------+
+| FINER  |                   210 |                   360 |                   8.80E+04 |                   1.80E+08 | 
++--------+-----------------------+-----------------------+----------------------------+----------------------------+
+| SEPIA  |                   272 |                   376 |                   6.25E+04 |                   1.80E+08 | 
++--------+-----------------------+-----------------------+----------------------------+----------------------------+
+| CHAI   |                   460 |                   500 |                   6.10E+04 |                   4.00E+09 | 
++--------+-----------------------+-----------------------+----------------------------+----------------------------+
+| CHAI   |                   780 |                   820 |                   6.10E+04 |                   4.00E+09 | 
++--------+-----------------------+-----------------------+----------------------------+----------------------------+
+| TIFUUN |                    90 |                   360 |                   1.80E+08 |                   1.00E+10 | 
++--------+-----------------------+-----------------------+----------------------------+----------------------------+
+| MUSCAT |                   250 |                   300 |                   1.00E+10 |                   8.00E+10 | 
++--------+-----------------------+-----------------------+----------------------------+----------------------------+
 
 .. image:: imgs/bandvsfreq_extended.png
     :alt: Bandwidth vs. frequency parameter space of the supported instruments
