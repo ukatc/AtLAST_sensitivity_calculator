@@ -126,6 +126,8 @@ parameters to the console as follows:
     sefd: 7.585764213938477e-25 J / m2
     transmittance: 0.9727575584355762
 
+The user input and derived parameters can be output to a file as described in the :ref:`writing parameters to a file<section_writing_data>` section.
+
 Resetting the calculator
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -148,8 +150,38 @@ You can reset the user input parameters stored in the calculator to their initia
         # bandwidth 100.0 MHz
 
 
-.. _section_instrument_selection:
+Initializing the Calculator with a dictionary
+*********************************************
 
+The :class:`Calculator <atlast_sc.calculator.Calculator>` object accepts a dictionary as input.
+First, create a dictionary with the input data you wish to use:
+
+.. code-block:: python
+
+    input_data = {
+        't_int': {'value': 120, 'unit': 's'},
+        'sensitivity': {'value': 0.01, 'unit': 'mJy'},
+        'bandwidth': {'value': 7.5, 'unit': 'GHz'},
+        'obs_freq': {'value': 200, 'unit': 'GHz'},
+        'n_pol': {'value': 2},
+        'weather': {'value': 25},
+        'elevation': {'value': 25, 'unit': 'deg'}
+    }
+
+Next, create a new Calculator object, passing the ``input_data`` dictionary.
+
+.. code-block:: python
+
+    calculator = CalculatorFactory(input_data).calculator
+
+All values must be numeric (integer or float), and units (when required) must be presented as `astropy units <https://docs.astropy.org/en/stable/units/index.html>`__.
+The Calculator will throw an error if any of the input parameter names are incorrect. If any of the
+parameters have not been manually set via the input data dictionary, the calculator will use the
+appropriate default values and units.
+
+The dictionary can be generated from an input file as described in :ref:`Reading data from an input file<section_reading_data>`.
+
+.. _section_instrument_selection:
 Instrument selection
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -188,25 +220,3 @@ The observing frequency and bandwidth ranges for the instruments can be checked 
     >>> calculator.list_instruments()
 
 
-
-
-.. TODO::
-
-    **MARK TO FOLLOW-UP**
-
-    Why are the following two sections here, and not in the Input and Output fies section?  I can see why the 'creating a dictionary' section is here (although I think it should come before instrument selection), but the rest belongs in the input/output section
-
-
-Providing input data to the calculator
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. include:: providing_input_data.rst
-
-
-
-
-
-Writing parameters to file
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. include:: writing_parameters_to_file.rst
