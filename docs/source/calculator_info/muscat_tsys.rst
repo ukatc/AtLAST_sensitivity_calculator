@@ -30,7 +30,7 @@ where
 The power received by the KID (:math:`P_\mathrm{KID}`) is dependent on the power spectral density (:math:`PSD_\mathrm{KID}`), which is the sum of the contributions of the noise sources and calculated as:
 
 .. math::
-    P_\mathrm{KID}(\nu_\mathrm{0}) = \int^{\nu_\mathrm{max}}_{\nu_\mathrm{min}} PSD_\mathrm{KID}(\nu)\: d\nu \sim PSD_\mathrm{KID}(\nu_\mathrm{0}) \Delta \nu
+    P_\mathrm{KID}(\nu_\mathrm{0}) = \int^{\nu_\mathrm{max}}_{\nu_\mathrm{min}} PSD_\mathrm{KID}(\nu)\:n_\mathrm{pol}\: d\nu \sim PSD_\mathrm{KID}(\nu_\mathrm{0})\:n_\mathrm{pol}\: \Delta \nu
     
     PSD_\mathrm{KID}(\nu) = &+ k(\eta_\mathrm{chip,co}(1-\eta_\mathrm{eff})\cdot O(\nu, T_\mathrm{amb})\\
                             &+ \eta_\mathrm{chip,co}\,\eta_\mathrm{eff}(1-t_\mathrm{r})\cdot T_\mathrm{sky})
