@@ -26,7 +26,7 @@ Next, create a new Calculator object, passing the ``input_data`` dictionary.
 
 .. code-block:: python
 
-    calculator = CalculatorFactory(input_data).calculator
+    calculator = Calculator(input_data)
 
 All values must be numeric (integer or float), and units (when required) must be presented as `astropy units <https://docs.astropy.org/en/stable/units/index.html>`__.
 The Calculator will throw an error if any of the input parameter names are incorrect. If any of the
