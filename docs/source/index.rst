@@ -67,15 +67,6 @@ Sections 2.4 and 2.5 talk about how to install and run the python version of the
    :caption: User Guide
 
    user_guide/usage
-
-.. toctree::
-   :hidden:
-
-   user_guide/using_the_calculator
-
-.. toctree::
-   :maxdepth: 3
-
    user_guide/input_and_output_files
    user_guide/running_the_web_client
 
@@ -90,6 +81,7 @@ Sections 2.8 through to 2.13 describe in more detail how the package was constru
    developer_guide/application_overview
    developer_guide/repository_overview
    developer_guide/developing_the_application
+   developer_guide/adding_new_instrument
 
 Code Documentation
 ------------------
