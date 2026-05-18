@@ -88,11 +88,6 @@ Class Structure
 ^^^^^^^^^^^^^^^
 General class structure can be visualised with the UML diagrams below.
 
-.. image:: imgs/calculator_class.png
-    :alt: Diagram of relation between Calculator and CalculatorFactory class
-    :align: center
-
-The above diagram shows how the CalculatorFactory class has the Calculator class as a dependency. 
 The below diagram shows how each of the parameter classes depend on each other and how the 
 ParameterSetup class acts as the container for the current state of each parameter class.
 
@@ -102,8 +97,8 @@ ParameterSetup class acts as the container for the current state of each paramet
 
 Integration Overview
 --------------------
-The overall calculation process is kickstarted with a creation of a Calculator object using 
-CalculatorFactory.Initially, the calculator is created with default values. If the calculator 
+The overall calculation process is kickstarted with a creation of a Calculator object using the
+Calculator class. Initially, the calculator is created with default values. If the calculator 
 is used via the Python CLI, any of the user input parameters can be changed before calculating 
 the sensitivity/integration time. If they don't, the calculations will be done with default 
 values. In the UI, the first calculation is done with the default values and any specified user

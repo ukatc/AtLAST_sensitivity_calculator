@@ -11,12 +11,12 @@ After installing the package and creating the conda environment, follow these co
 packages and run simple time and sensitivity calculations for a given set of weather, telescope and instrument
 parameters.
 
-First, import the :class:`CalculatorFactory <atlast_sc.factory.CalculatorFactory>` class from
-the :mod:`atlast_sc.factory` module:
+First, import the calculator package to interact with the calculator classes and methods:
 
 .. code-block:: python
 
-    from atlast_sc.factory import CalculatorFactory
+    from atlast_sc.calculator import Calculator
+
 
 Since the sensitivity calculator depends on parameters being specified with units, you will also find
 it useful to import ``astropy.units`` as this package is required for defining the user inputs:
@@ -25,14 +25,15 @@ it useful to import ``astropy.units`` as this package is required for defining t
 
     import astropy.units as u
 
-Next, initialize the calculator by importing an instance of the calculator Factory. A factory is a python construct
-that allows you to directly interact with the sensitivity calculator classes as a single object. Initialising
-a calculator Factory at the beginning of your python session ensures that your changes to setup parameters are
-used consistently throughout your python session.
+
+Next, initialise the calculator object. The Calculator class is the main interface to the sensitivity calculator, 
+and provides a single point of access to all of the calculator's functionality. Initializing
+a calculator object at the beginning of your python session ensures that your changes to setup parameters are
+used consistently throughout.
 
 .. code-block:: python
 
-    calculator = CalculatorFactory().calculator
+    calculator = Calculator()
 
 
 The Sensitivity Calculator is pre-configured with default values for all
@@ -160,7 +161,7 @@ using the :meth:`reset <atlast_sc.calculator.Calculator.reset>` method:
 .. code-block:: python
 
         # initialize the calculator with its default values
-        calculator = CalculatorFactory().calculator
+        calculator = Calculator()
 
         # change the value of one of the parameters
         calculator.user_input.bandwidth = 150*u.MHz

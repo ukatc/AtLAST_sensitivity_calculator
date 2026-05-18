@@ -1,6 +1,6 @@
 import pytest
 from astropy import units as u
-from atlast_sc.factory import CalculatorFactory
+from atlast_sc.calculator import Calculator
 from atlast_sc.utils import FileHelper
 from atlast_sc.exceptions import CalculatedValueInvalidWarning
 
@@ -9,7 +9,7 @@ class TestCalculatorUsage:
     def test_use_calculator_with_defaults(self, calculator):
 
         # Create a new calculator object using the default parameters
-        test_calculator = CalculatorFactory().calculator
+        test_calculator = Calculator()
 
         # Calculate the sensitivity using default parameters
         sens = test_calculator.calculate_sensitivity()
@@ -90,8 +90,7 @@ class TestCalculatorUsage:
         user_input = FileHelper.read_from_file(test_files_path,
                                                'user_input.yaml')
         
-        calculator_factory = CalculatorFactory(user_input=user_input)
-        test_calculator = calculator_factory.calculator
+        test_calculator = Calculator(user_input=user_input)
 
         # Verify that the calculator has been initialized with the correct
         # user input
