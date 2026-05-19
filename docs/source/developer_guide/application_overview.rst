@@ -204,10 +204,10 @@ other information about the instruments can be accessed by listing the instrumen
 
 Adding a New Instrument
 ----------------------------------------
-The application is constructued in a specific way that allows new instruments to be added to the
+The application is constructed in a specific way that allows new instruments to be added to the
 calculation process. When an instrument needs to be added to the calculator, a couple of steps 
 need to be executed within the *atlast_sc/instruments* directory. The process is detailed in the
-:doc:`Developing the Application <./developing_the_application>` section of the developer guide. 
+:doc:`Adding a New Instrument <adding_new_instrument>` section of the developer guide. 
 
 The web application
 -------------------
