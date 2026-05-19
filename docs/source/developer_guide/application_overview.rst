@@ -79,6 +79,12 @@ calculations and methods for operations related to identifying applicable instru
 This class also stores a copy of the parameter values used to initialize the calculator, 
 allowing the user to revert to the initial state.
 
+This class also contains methods for choosing applicable instruments based on the user input 
+parameters, and for validating the user input parameters against the allowed ranges for each 
+instrument. The calculator will use the first applicable instrument for calculations, and if 
+there are no applicable instruments, it will proceed with the Default instrument. The calculator
+will be accessing the instrument classes and their methods through this class.
+
 .. _atlast-sc-data-module:
 data
 ++++
