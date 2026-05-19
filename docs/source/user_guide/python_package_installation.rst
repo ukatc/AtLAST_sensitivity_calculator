@@ -23,30 +23,24 @@ environment with:
 .. code-block:: bash
 
 
-   conda create -n atlast python pip
+   conda create -n atlast python=3.12 pip
 
 
-Then activate the environment:
+Note that the calculator is tested to work with Python versions 3.10 to 3.12. We cannot ensure compatibility with other versions and so it is necessary to specify the version here.
+
+After the environment is created, activate it with:
 
 .. code-block:: bash
 
    conda activate atlast
 
 
-If you want to install into an environment that you're already using, note that the Sensitivity Calculator 
-package requires Python >= 3.10. You can check your version of Python by
+If you want to install into an environment that you are already using, you can check your version of Python by
 typing:
 
 .. code-block:: bash
 
     python -V
-
-If this returns ``2.x.x``, then try:
-
-.. code-block:: bash
-
-    python3 -V
-
 
 Installing the sensitivity calculator Python package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

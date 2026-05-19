@@ -66,7 +66,7 @@ where the factor 5 is a conservative estimate of how close to the quantum limit 
 The sky temperature is calculated as:
 
 .. math::
-    T_{sky} = (1-\mathfrak{t})\times T_{atm} + O(\nu, T_\mathrm{cmb})
+    T_{sky} = (1-\mathfrak{t})\times T_{atm} + \mathfrak{t} O(\nu, T_\mathrm{cmb})
 
 where
 
