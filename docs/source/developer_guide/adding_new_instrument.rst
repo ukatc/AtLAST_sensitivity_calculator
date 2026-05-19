@@ -163,17 +163,17 @@ instrument, the method can simply include the default calculation as shown below
 Note that there is a line to assign the variable ``T_sys`` to the calculated system temperature. 
 This is important as the calculator will use this variable for the sensitivity calculation. 
 As mentioned earlier, if the new instrument requires a different calculation for system temperature, 
-the developer can modify the method accordingly, but the calculated value should still be assigned the to T_sys.
-The ``T_sys`` variable should be an astropy quantity with units of Kelvin (or its equivalent in other units).
+the developer can modify the method accordingly, but the calculated value should still be assigned the to ``T_sys``.
+The ``T_sys`` variable should be an *astropy* quantity with units of Kelvin (or its equivalent in other units).
 
 For more detail on how to construct the module, the Default instrument Python module
 could be taken as the base example. Below are different types of instrument categories
 where the individual Python modules could be taken as an example on how a new instrument 
 module in the same category could be customised:
 
-    - Heterodynes (FINER, SEPIA, CHAI)
-    - Continuum/LEKID (MUSCAT)
-    - IFU/MKID (TIFUUN)
+    - Heterodynes *(FINER, SEPIA, CHAI)*
+    - Continuum/LEKID *(MUSCAT)*
+    - IFU/MKID *(TIFUUN)*
 
 Modifying the configuration file to add the new instrument
 -----------------------------------------------------------
