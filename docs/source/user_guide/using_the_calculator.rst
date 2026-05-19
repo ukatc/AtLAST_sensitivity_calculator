@@ -137,7 +137,7 @@ You can reset the user input parameters stored in the calculator to their initia
 .. code-block:: python
 
         # initialize the calculator with its default values
-        calculator = CalculatorFactory().calculator
+        calculator = Calculator.calculator
 
         # change the value of one of the parameters
         calculator.user_input.bandwidth = 150*u.MHz
@@ -173,7 +173,7 @@ Next, create a new Calculator object, passing the ``input_data`` dictionary.
 
 .. code-block:: python
 
-    calculator = CalculatorFactory(input_data).calculator
+    calculator = Calculator(input_data).calculator
 
 All values must be numeric (integer or float), and units (when required) must be presented as `astropy units <https://docs.astropy.org/en/stable/units/index.html>`__.
 The Calculator will throw an error if any of the input parameter names are incorrect. If any of the
