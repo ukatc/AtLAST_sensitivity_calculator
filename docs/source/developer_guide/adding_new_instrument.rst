@@ -93,6 +93,14 @@ Following code block is a simple example on what the module could look like.
         # Additional instrument specific methods below #
         ################################################
 
+        def calculate_system_temperature(self, parameters):
+            # Custom calculation for system temperature, 
+            # otherwise default calculation can be used.
+            system_temp = 1 * u.K # Example value
+            
+            self.T_sys = system_temp
+            return system_temp
+
         def custom_calculation_method(self):
             """
             Performs a custom calculation for the Example instrument. 
@@ -115,7 +123,7 @@ The parameters in the YAML file can be used in any way within the instrument mod
 can be used in methods to perform calculations, or they can be updated and used in calculations, 
 etc.
 
-Each instrument module must include a method with the name ``calculate_system_temperature`` 
+Each instrument Python module must include a method with the name ``calculate_system_temperature`` 
 that performs the calculation of system temperature for the instrument. This method will be 
 required by the calculator to perform the sensitivity calculation when the instrument is selected.
 If there is no specific calculation required for the new instrument, the method can simply
@@ -138,6 +146,12 @@ include the default calculation as shown below and in the *Default* instrument m
             )
         self.T_sys = system_temp
         return system_temp
+
+Note that there is a line to assign the variable ``T_sys`` to the calculated system temperature. 
+This is important as the calculator will use this variable for the sensitivity calculation. 
+As mentioned earlier, if the new instrument requires a different calculation for system temperature, 
+the developer can modify the method accordingly, but the calculated value should still be assigned the to T_sys.
+The ``T_sys`` variable should be an astropy quantity with units of Kelvin (or its equivalent in other units).
 
 For more detail on how to construct the module, the Default instrument Python module
 could be taken as the base example. Below are different types of instrument categories
