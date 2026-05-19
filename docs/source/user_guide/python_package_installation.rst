@@ -56,13 +56,10 @@ Once you have created and activated your environment, install the Sensitivity Ca
 Extra packages for running the notebooks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The above installs all of the packages required for the calculator to run. 
-The example notebooks require some extra packages that aren't installed by default. 
-If you are running conda these can simply be installed with:
+The above installs the minimal set of packages required for the calculator to perform its calculations. However, extended functionality (i.e. plotting and using the included Jupyter Notebooks) requires additional packages to be installed. Having setup the proper conda environment for running the calculator (as described above), we recommend installing the following additional packages:
 
 .. code-block:: bash
 
     conda install ipython matplotlib jupyter reproject astroquery
 
-
-.. _Pamela Klaassen: pamela.klaassen@stfc.ac.uk
+The equivalent ``pip install`` command would work equally well in the conda environment.

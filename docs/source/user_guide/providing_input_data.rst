@@ -26,7 +26,7 @@ Next, create a new Calculator object, passing the ``input_data`` dictionary.
 
 .. code-block:: python
 
-    calculator = CalculatorFactory(input_data).calculator
+    calculator = Calculator(input_data)
 
 All values must be numeric (integer or float), and units (when required) must be presented as `astropy units <https://docs.astropy.org/en/stable/units/index.html>`__.
 The Calculator will throw an error if any of the input parameter names are incorrect. If any of the
@@ -39,8 +39,6 @@ Reading data from an input file
 
 The :class:`FileHelper <atlast_sc.utils.FileHelper>` class can be used to
 read data from a file and generate an input data dictionary.
-(See :doc:`Input files and formats <input_files_formats>`
-for more information on supported file formats and the required structure.)
 
 First, import the file helper class from the :mod:`utils <atlast_sc.utils>` module:
 

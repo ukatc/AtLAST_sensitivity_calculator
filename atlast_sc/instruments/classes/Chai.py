@@ -10,6 +10,7 @@ class Chai(Instrument):
     def __init__(self, data):
         super().__init__(data)
         self._T_rx = None
+        self.g = data.sideband_ratio['value']
         
     ##################################
     # Instrument specific parameters #
@@ -44,7 +45,7 @@ class Chai(Instrument):
         :rtype: astropy.units.Quantity
         """
         self.T_rx = self.calculate_receiver_temp(obs_freq)
-        system_temp = 1 / (eta_eff * transmittance) * \
+        system_temp = (1 + self.g) / (eta_eff * transmittance) * \
             (self.T_rx
             + (eta_eff * T_sky)
             + ((1 - eta_eff) * noise_temperature(T_amb, obs_freq))
