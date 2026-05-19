@@ -6,6 +6,7 @@ from atlast_sc.exceptions import CalculatedValueInvalidWarning
 from atlast_sc.exceptions import ValueOutOfRangeException
 from atlast_sc.exceptions import InstrumentNotApplicableException
 
+from atlast_sc.parameter_setup import ParameterSetup
 from atlast_sc.parameters.user_input_parameters import UserInputParameters
 from atlast_sc.parameters.telescope_and_environment_parameters import TelescopeAndEnvironmentParameters
 from atlast_sc.parameters.derived_parameters import DerivedParameters
@@ -22,17 +23,28 @@ class Calculator:
      **NB: usage not tested, and may not be supported in future.**
     :type instrument_setup: dict
     """
-    def __init__(self, param_setup):
+    def __init__(self, user_input={}):
         
+        if user_input:
+            self._param_setup = ParameterSetup(user_input=user_input)
+            # self.calculator = self._create_calculator(self.param_setup)
+        else: # use the default values
+            self._param_setup = ParameterSetup()
+            # self.calculator = self._create_calculator(self.param_setup)
+
         # Parameter setup class that contains models with default values
-        self._param_setup = param_setup
+        # self._param_setup = self.param_setup
         # Special classes for customisation of models
-        self._user_input = UserInputParameters(param_setup)
-        self._telescope_and_environment = TelescopeAndEnvironmentParameters(param_setup)
-        self._derived_parameters = DerivedParameters(param_setup)
+        self._user_input = UserInputParameters(self._param_setup)
+        self._telescope_and_environment = TelescopeAndEnvironmentParameters(self._param_setup)
+        self._derived_parameters = DerivedParameters(self._param_setup)
         # Calculated value variables of calculation result model
         self._calculated_sensitivity = self._param_setup.calculation_results.calculated_sensitivity
         self._calculated_t_int = self._param_setup.calculation_results.calculated_t_int
+
+    # @staticmethod
+    # def _create_calculator(param_setup):
+    #     return Calculator(param_setup)
 
     @property
     def user_input(self):
@@ -358,3 +370,76 @@ class Calculator:
                   f"Please adjust the input parameters and recalculate."
 
         return message
+    
+    
+    ###################################################
+    # Methods to throw an error for old functionality #
+    ###################################################
+
+    def __getattr__(self, name):
+        """
+        Handle deprecated way of accessing parameters.
+        """
+        deprecated_params = {
+            # user input parameters
+            'obs_freq': 'user_input.obs_freq',
+            'bandwidth': 'user_input.bandwidth',
+            'sensitivity': 'user_input.sensitivity',
+            't_int': 'user_input.t_int',
+            'n_pol': 'user_input.n_pol',
+            'weather': 'user_input.weather',
+            'elevation': 'user_input.elevation',
+            # telescope and environment parameters
+            'surface_rms': 'telescope_and_environment.surface_rms',
+            'dish_radius': 'telescope_and_environment.dish_radius',
+            'eta_eff': 'telescope_and_environment.eta_eff',
+            'eta_ill': 'telescope_and_environment.eta_ill',
+            'eta_spill': 'telescope_and_environment.eta_spill',
+            'eta_block': 'telescope_and_environment.eta_block',
+            'eta_pol': 'telescope_and_environment.eta_pol',
+            'T_cmb': 'telescope_and_environment.T_cmb',
+            'T_amb': 'telescope_and_environment.T_amb',
+            'T_amb': 'telescope_and_environment.T_amb'
+        }
+        
+        if name in deprecated_params:
+            raise RuntimeError(
+                f"calculator.{name} is not a valid input. "
+                f"Use calculator.{deprecated_params[name]} instead."
+            )
+        
+        raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
+
+    def __setattr__(self, name, value):
+        """
+        Handle deprecated way of setting parameters.
+        """
+        deprecated_params = {
+            # user input parameters
+            'obs_freq': 'user_input.obs_freq',
+            'bandwidth': 'user_input.bandwidth',
+            'sensitivity': 'user_input.sensitivity',
+            't_int': 'user_input.t_int',
+            'n_pol': 'user_input.n_pol',
+            'weather': 'user_input.weather',
+            'elevation': 'user_input.elevation',
+            # telescope and environment parameters
+            'surface_rms': 'telescope_and_environment.surface_rms',
+            'dish_radius': 'telescope_and_environment.dish_radius',
+            'eta_eff': 'telescope_and_environment.eta_eff',
+            'eta_ill': 'telescope_and_environment.eta_ill',
+            'eta_spill': 'telescope_and_environment.eta_spill',
+            'eta_block': 'telescope_and_environment.eta_block',
+            'eta_pol': 'telescope_and_environment.eta_pol',
+            'T_cmb': 'telescope_and_environment.T_cmb',
+            'T_amb': 'telescope_and_environment.T_amb',
+            'T_amb': 'telescope_and_environment.T_amb'
+        }
+        
+        if name in deprecated_params:
+            raise RuntimeError(
+                f"calculator.{name} is not a valid input. "
+                f"Use calculator.{deprecated_params[name]} instead."
+            )
+        
+        super().__setattr__(name, value)

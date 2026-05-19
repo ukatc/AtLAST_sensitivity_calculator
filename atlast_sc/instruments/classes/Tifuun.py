@@ -64,7 +64,7 @@ class Tifuun(Instrument):
                 )
 
         # calculate power absorbed by instrument
-        pkid = (psdkid * bandwidth) # assuming small bandwidth
+        pkid = (psdkid * n_pol * bandwidth) # assuming small bandwidth
 
         # calculate noise equivalent power
         nep = (sqrt(2 * pkid * constants.h * obs_freq +

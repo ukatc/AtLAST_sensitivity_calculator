@@ -1,3 +1,9 @@
+2.0.0-alpha.3 (2026-05-15)
+++++++++++++++++++++++++++
+- Re-added sideband ratio for CHAI and set it to 1.
+- Ensured n_pol=1 in the walkthrough.
+- Updated documentation and walkthrough to reflect these changes.
+
 2.0.0-alpha.2 (2026-04-27)
 ++++++++++++++++++++++++++
 - Added / updated dependencies to ensure documentation could be generated locally.

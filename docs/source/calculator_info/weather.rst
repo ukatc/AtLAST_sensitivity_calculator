@@ -1,19 +1,31 @@
 Weather Calculations
 ====================
 
+.. TODO::
+
+    **MARK TO FOLLOW-UP**
+
+    It would be great to show an Atacama weather plot here with the usual ~3 weather conditions showing how the transmission varries. But, because we're not using PWV as our metric in the calculator, list both pwv and our equivalent percentage in the legend.
+
+
 Atmospheric Model Grids
 -----------------------
 
 A grid of atmospheric temperature and opacity were calculated using `*am* models <https://zenodo.org/records/13748403>`__ for the Atacama Plateau. These grids contain the Rayleigh-Jeans brightness temperature of the sky, :math:`T_\mathrm{sky}(z=0)` and the sky opacity, :math:`\tau_0`, where these are both calculated at zenith. These are then interpolated to the observing frequency and percentile water column requested in the sensitivity calculator. In order to adjust these to the chosen elevation, the code calculates the atmospheric temperature, :math:`T_\mathrm{atm}`, and transmittance :math:`\mathfrak{t}` as a function of the zenith angle (90°-elevation)
+
 .. math::
-    T_\mathrm{atm} = \frac{T_\mathrm{sky}(z=0)}{1-e^{-\tau_0}} 
+    T_\mathrm{atm} = \frac{T_\mathrm{sky}(z=0)}{1-e^{-\tau_0}}
+
 and the transmittance as a function of the zenith angle (90°-elevation)
+
 .. math::
     \mathfrak{t} = e^{-\tau_0\sec{z}} 
 
 The sky temperature at the chosen elevation is then calculated from these terms. At this stage, the contribution from the temperature of the Cosmic Microwave Background, :math:`T_\mathrm{cmb}`, is also added, noting that this needs to be converted to a Rayleigh-Jeans brightness temperature for consistency.
+
 .. math::
     T_{sky} = (1-\mathfrak{t})\times T_{atm} + O(\nu, T_\mathrm{cmb})
+
 Here, :math:`O(\nu, T)` converts a physical temperature to a Rayleigh-Jeans brightness temperature
 
 .. math::
