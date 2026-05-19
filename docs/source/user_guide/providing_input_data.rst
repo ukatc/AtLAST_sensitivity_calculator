@@ -39,8 +39,6 @@ Reading data from an input file
 
 The :class:`FileHelper <atlast_sc.utils.FileHelper>` class can be used to
 read data from a file and generate an input data dictionary.
-(See :doc:`Input files and formats <input_files_formats>`
-for more information on supported file formats and the required structure.)
 
 First, import the file helper class from the :mod:`utils <atlast_sc.utils>` module:
 

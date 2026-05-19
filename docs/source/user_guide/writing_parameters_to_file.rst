@@ -2,7 +2,8 @@ The :class:`FileHelper <atlast_sc.utils.FileHelper>` method
 :meth:`write_to_file <atlast_sc.utils.FileHelper.write_to_file>` writes
 all user inputs and derived parameters to a
 plain-text, `YAML <https://en.wikipedia.org/wiki/YAML>`__,
-or `JSON <https://en.wikipedia.org/wiki/JSON>`__ formatted file.
+or `JSON <https://en.wikipedia.org/wiki/JSON>`__ formatted file. The structure of the output file for a given format is the same as the
+input file of the same format, as described in the previous section.
 
 For example, to write data to a ``YAML`` file called ``output_parameters.yml``
 in the directory ``logs``:
