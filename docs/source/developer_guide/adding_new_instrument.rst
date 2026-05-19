@@ -36,14 +36,14 @@ following format:
         bandwidth: 
             ranges: [(10.9e4-1.8e8)]
             unit: Hz
-    receiver_temperature: 
-        values: [30.0,40.0]
-        unit: K
     custom_parameter_with_unit:
         values: 1.0
         unit: unit of custom parameter
     custom_parameter_without_unit:
         values: 4.7
+    custom_parameter_with_two_values: 
+        values: [30.0,40.0]
+        unit: unit of custom parameter
 
 There are a couple of key points to note about the format of the YAML file:
 
@@ -76,6 +76,7 @@ Following code block is a simple example on what the module could look like.
         def __init__(self, data):
             super().__init__(data)
             self._custom_parameter = data.custom_parameter
+            self.another_custom_parameter = data.custom_parameter_with_unit
 
         ##################################
         # Instrument specific parameters #
@@ -93,11 +94,12 @@ Following code block is a simple example on what the module could look like.
         # Additional instrument specific methods below #
         ################################################
 
-        def calculate_system_temperature(self, parameters):
+        def calculate_system_temperature(self, obs_freq, bandwidth, eta_eff, 
+                                     T_amb, T_sky, transmittance, n_pol):
             # Custom calculation for system temperature, 
             # otherwise default calculation can be used.
             system_temp = 1 * u.K # Example value
-            
+
             self.T_sys = system_temp
             return system_temp
 
@@ -109,6 +111,13 @@ Following code block is a simple example on what the module could look like.
             calculation_result = self.custom_parameter * 2
             return calculation_result
         
+The ``__init__`` method of the instrument class has a constructor parameter called ``data`` 
+which contains the parameters set in the instrument YAML file. The user should not change 
+the name of this parameter as it is required for the initilisation of the instrument class. 
+The user can set any of the parameters from the YAML file as properties or variables in the
+instrument class as shown in the example above for the parameter called ``custom_parameter``
+and ``another_custom_parameter``.
+
 Setting the ``custom_parameter`` as a property with a setter method allows easy 
 access and update of this parameter. If there are any specific validation 
 requirements for the parameter, the developer can also include validation within the
@@ -124,10 +133,14 @@ can be used in methods to perform calculations, or they can be updated and used 
 etc.
 
 Each instrument Python module must include a method with the name ``calculate_system_temperature`` 
-that performs the calculation of system temperature for the instrument. This method will be 
-required by the calculator to perform the sensitivity calculation when the instrument is selected.
-If there is no specific calculation required for the new instrument, the method can simply
-include the default calculation as shown below and in the *Default* instrument module. 
+that performs the calculation of system temperature for the instrument. The input parameters for 
+this method should be the same as those shown in the example above, as these are the parameters 
+that the calculator will be providing to the method when it is called within the calculation process. 
+The developer can modify the calculation within the method as required for the new instrument, 
+but the method should still be called ``calculate_system_temperature`` and it should still take 
+the same input parameters as shown above. If there is no specific calculation required for the
+instrument, the method can simply include the default calculation as shown below and in the 
+*Default* instrument module. 
 
 .. code-block:: python
 
@@ -187,3 +200,15 @@ to the ``available_instruments`` list.
 
 When the new instrument is added to the necessary sections mentioned above in the configuration file, 
 it will be available for selection in the calculator.
+
+Add the new instrument to the documentation
+-------------------------------------------
+Once the new instrument is added to the calculator, the documentation should be updated to include
+the new instrument and its details. This includes adding a section for the new instrument in the
+instrument overview documentation, and providing a detailed explanation of the equations used to 
+calculate the system temperature for the new instrument. The documentation should also be updated to 
+contain its operational ranges, any specific parameters it has for calculations. This will help 
+users understand the capabilities of the new instrument and how it can be used in their calculations.
+
+Add a Jupyter notebook example for the new instrument
+------------------------------------------------------
