@@ -10,8 +10,9 @@ MUSCAT instrument parameters
 class Muscat(Instrument):
     def __init__(self, data):
         super().__init__(data)
-        self.eta_chip_co = self.data.chip_and_cold_optics_efficiency['value']
-        # self.T_co = self.create_Quantity(self.data.cold_optics_temperature) # not currently used
+        self.eta_chip = self.data.chip_efficiency['value']
+        self.eta_co = self.data.cold_optics_efficiency['value']
+        self.T_co = self.create_Quantity(self.data.cold_optics_temperature)
         self.delta_g = self.create_Quantity(self.data.band_gap)
         self.eta_pb = self.data.pair_breaking_efficiency['value']
     
@@ -56,10 +57,11 @@ class Muscat(Instrument):
         :rtype: astropy.units.Quantity
         """
         # calculate power spectral density
-        psdkid = constants.k_B * (self.eta_chip_co * (1 - eta_eff) * noise_temperature(T_amb, obs_freq) +
-                self.eta_chip_co * eta_eff * T_sky
+        psdkid = constants.k_B * (self.eta_chip * (1 - self.eta_co) * noise_temperature(self.T_co, obs_freq) +
+                self.eta_chip * self.eta_co * (1 - eta_eff) * noise_temperature(T_amb, obs_freq) +
+                self.eta_chip * self.eta_co * eta_eff * T_sky
                 )
-        
+
         # calculate power absorbed by instrument
         pkid = (psdkid * n_pol * bandwidth) # assuming small bandwidth
 
@@ -69,7 +71,7 @@ class Muscat(Instrument):
                     4 * self.delta_g * pkid / self.eta_pb))
 
         system_temp = (nep / (constants.k_B * eta_eff * transmittance *
-               self.eta_chip_co *
+               self.eta_chip * self.eta_co *
                sqrt(2 * n_pol * bandwidth))).to(u.K)
         
         self.T_sys = system_temp
