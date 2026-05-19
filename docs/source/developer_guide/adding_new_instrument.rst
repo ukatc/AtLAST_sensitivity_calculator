@@ -144,7 +144,8 @@ instrument, the method can simply include the default calculation as shown below
 
 .. code-block:: python
 
-    def calculate_system_temperature(self, parameters):
+    def calculate_system_temperature(self, obs_freq, bandwidth, eta_eff, 
+                                     T_amb, T_sky, transmittance, n_pol):
         """
         Returns system temperature, following calculation in [doc]
 
@@ -204,11 +205,25 @@ it will be available for selection in the calculator.
 Add the new instrument to the documentation
 -------------------------------------------
 Once the new instrument is added to the calculator, the documentation should be updated to include
-the new instrument and its details. This includes adding a section for the new instrument in the
-instrument overview documentation, and providing a detailed explanation of the equations used to 
-calculate the system temperature for the new instrument. The documentation should also be updated to 
-contain its operational ranges, any specific parameters it has for calculations. This will help 
-users understand the capabilities of the new instrument and how it can be used in their calculations.
+a page for the new instrument in the ``/docs/source/calculator_info`` directory. This should include a description 
+of the instrument, references to literature on the instrument and provide a detailed explanation of 
+the equations used to calculate the system temperature for the new instrument. The documentation should 
+contain its operational ranges, any specific parameters it has for calculations. References to the new 
+page should be added to the :doc:`instrument overview <../calculator_info/instrument_overview>` and 
+:doc:`sensitivity calculation <../calculator_info/sensitivity>` pages. This will help users understand the capabilities 
+of the new instrument and how it can be used in their calculations.
 
 Add a Jupyter notebook example for the new instrument
 ------------------------------------------------------
+To additionally help users understand the capabilities of the new instrument and how it can be used 
+in their calculations, there is a possibility of including a Jupyter notebook in the 
+``Jupyter_Notebooks/Instrument_Walkthroughs`` directory. Our recommendation is to include information
+on 
+
+* how to set-up the calculator for this instrument
+
+* quick demonstration of its typical usage
+
+* in-depth exploration of the sensitivity calculation for this instrument including the noise contributions from the instrument, the telescope and the environment.
+
+Please see the other walkthroughs in that directory for examples.
