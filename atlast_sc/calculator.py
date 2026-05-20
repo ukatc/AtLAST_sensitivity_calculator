@@ -336,17 +336,30 @@ class Calculator:
 
     def list_instruments(self):
         """
-        Show loaded instruments and their observing frequency and
-        bandwidth ranges in a pretty format. 
+        Show loaded instruments and their observing frequency and bandwidth ranges
+        in a pretty format.
         """
-        # Pretty print the instrument dictionary
-        pretty_dict = yaml.dump(self.loaded_instruments, default_flow_style=False)
-        output = pretty_dict
-        instructions = '\nTo select an instrument, specify the instrument as:\n'+\
-                        'calculator.chosen_instrument = \"Finer\"'
-        # Print the instrument specification instructions afterwards
-        output += "\n" + instructions + "\n"
-
+        output = "\n" + "="*70 + "\n"
+        output += "AVAILABLE INSTRUMENTS\n"
+        output += "="*70 + "\n\n"
+        
+        for inst_name, inst_info in self.loaded_instruments.items():
+            output += f"* {inst_name}\n"
+            obs_freq_ranges = inst_info['obs_freq']['ranges']
+            obs_freq_unit = inst_info['obs_freq']['unit']
+            output += f"   Observing Frequency: {obs_freq_ranges} {obs_freq_unit}\n"
+            
+            bandwidth_ranges = inst_info['bandwidth']['ranges']
+            if inst_name == 'Default':
+                bandwidth_ranges = "[Any positive value]"
+            bandwidth_unit = inst_info['bandwidth']['unit']
+            output += f"   Bandwidth: {bandwidth_ranges} {bandwidth_unit}\n\n"
+        
+        output += "-"*70 + "\n"
+        output += "To select an instrument:\n"
+        output += '   calculator.chosen_instrument = "Finer"\n'
+        output += "-"*70 + "\n"
+        
         print(output)
 
     @staticmethod
