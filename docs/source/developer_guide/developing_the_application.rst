@@ -15,7 +15,7 @@ Setting up your development environment
 
 .. code-block:: bash
 
-   conda env create -f environment.yml
+   conda env create -f AtLAST_sensitivity_calculator/environment.yml
 
 
 3. Activate the conda environment
