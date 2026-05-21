@@ -1,10 +1,9 @@
 from math import log10, floor
 from numpy import floating
 from typing import Union
-from pydantic import BaseModel, root_validator
+from pydantic import BaseModel, ConfigDict, model_validator
 from astropy.units import Unit, Quantity
 from atlast_sc.data import Data, Validator
-
 
 class ModelUtils:
 
@@ -52,39 +51,32 @@ class ModelUtils:
 class ValueWithUnits(BaseModel):
     value: Union[float, Quantity]
     unit: Union[str, None]
+    
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    @root_validator
-    @classmethod
-    def validate_fields(cls, field_values):
+    @model_validator(mode='after')
+    def validate_fields(self): 
         """
         Validate the unit and convert the value to an astropy Quantity object
         """
-        if isinstance(field_values['value'], float) or \
-                isinstance(field_values['value'], int):
+        if isinstance(self.value, (float, int)):
             try:
-                unit = Unit(field_values['unit'])
-                field_values['value'] = \
-                    field_values['value'] * unit
+                unit = Unit(self.unit)
+                self.value = self.value * unit
             except (ValueError, TypeError):
-                raise ValueError(f'\'{field_values["unit"]}\' is not a '
-                                 f'valid unit')
+                raise ValueError(f'\'{self.unit}\' is not a valid unit')
         else:
             # If 'unit' is provided, check if it matches the unit of the
             # Quantity assigned to 'value'
-            if field_values['unit'] and \
-                    not field_values['unit'] == field_values['value'].unit:
+            if self.unit and not self.unit == str(self.value.unit):
                 raise ValueError(f'Ambiguous definition: unit '
-                                 f'\'{field_values["unit"]}\' '
-                                 f'does not match '
-                                 f'\'{field_values["value"].unit}\' '
-                                 f'from parameter \'value\'')
+                               f'\'{self.unit}\' does not match '
+                               f'\'{str(self.value.unit)}\' '
+                               f'from parameter \'value\'')
             else:
-                field_values['unit'] = str(field_values['value'].unit)
+                self.unit = str(self.value.unit)
 
-        return field_values
-
-    class Config:
-        arbitrary_types_allowed = True
+        return self
 
 
 class ValueWithoutUnits(BaseModel):
@@ -118,15 +110,14 @@ class UserInput(BaseModel):
         ValueWithUnits(value=Data.elevation.default_value,
                        unit=Data.elevation.default_unit)
 
-    @root_validator
-    @classmethod
-    def validate_t_int_or_sens_initialised(cls, field_values):
+    @model_validator(mode='after')
+    def validate_t_int_or_sens_initialised(field_values):
         """
         Validate that at least one of 't_int' and 'sensitivity'
         has been initialised
         """
-        if field_values["t_int"].value == 0 and \
-                field_values["sensitivity"].value == 0:
+        if field_values.t_int.value == 0 and \
+                field_values.sensitivity.value == 0:
             raise ValueError("Please add either a sensitivity or an "
                              "integration time to your input")
         return field_values
@@ -134,9 +125,7 @@ class UserInput(BaseModel):
     def __str__(self):
         return ModelUtils.model_str_rep(self)
 
-
-class InstrumentSetup(BaseModel):
-    g: ValueWithoutUnits = ValueWithoutUnits(value=Data.g.default_value)
+class TelescopeAndEnvironment(BaseModel):
     surface_rms: ValueWithUnits = \
         ValueWithUnits(value=Data.surface_rms.default_value,
                        unit=Data.surface_rms.default_unit)
@@ -146,6 +135,9 @@ class InstrumentSetup(BaseModel):
     T_amb: ValueWithUnits = \
         ValueWithUnits(value=Data.t_amb.default_value,
                        unit=Data.t_amb.default_unit)
+    T_cmb: ValueWithUnits = \
+        ValueWithUnits(value=Data.t_cmb.default_value,
+                       unit=Data.t_cmb.default_unit)
     eta_eff: ValueWithoutUnits = \
         ValueWithoutUnits(value=Data.eta_eff.default_value)
     eta_ill: ValueWithoutUnits = \
@@ -156,10 +148,9 @@ class InstrumentSetup(BaseModel):
         ValueWithoutUnits(value=Data.eta_block.default_value)
     eta_pol: ValueWithoutUnits = \
         ValueWithoutUnits(value=Data.eta_pol.default_value)
-
+    
     def __str__(self):
         return ModelUtils.model_str_rep(self)
-
 
 class CalculationInput(BaseModel):
     """
@@ -167,26 +158,21 @@ class CalculationInput(BaseModel):
     """
 
     user_input: UserInput = UserInput()
-    instrument_setup: InstrumentSetup = InstrumentSetup()
-    T_cmb: ValueWithUnits = \
-        ValueWithUnits(value=Data.t_cmb.default_value,
-                       unit=Data.t_cmb.default_unit)
+    telescope_and_environment: TelescopeAndEnvironment = TelescopeAndEnvironment()
 
-    @root_validator
-    @classmethod
-    def validate_fields(cls, field_values):
+    @model_validator(mode='after')
+    def validate_fields(field_values):
         """
         Flatten the field values for convenience
         """
-        user_input = field_values['user_input']
-        instrument_setup = field_values['instrument_setup']
+        user_input = field_values.user_input
+        telescope_and_environment = field_values.telescope_and_environment
 
         flattened_field_values = {}
         for elem in user_input:
             flattened_field_values[elem[0]] = elem[1].value
-        for elem in instrument_setup:
+        for elem in telescope_and_environment:
             flattened_field_values[elem[0]] = elem[1].value
-        flattened_field_values['T_cmb'] = field_values['T_cmb'].value
 
         # Validate units and values on each field
         for key, val in flattened_field_values.items():
@@ -216,13 +202,10 @@ class DerivedParams(BaseModel):
     Derived parameters, calculated from user input and instrument setup
     parameters.
     """
-
     # Atmospheric opacity
-    tau_atm: float
+    transmittance: float
     # Atmospheric temperature
     T_atm: Quantity
-    # Receiver temperature
-    T_rx: Quantity
     # Dish efficiency
     eta_a: float
     # System efficiency
@@ -234,8 +217,25 @@ class DerivedParams(BaseModel):
     # Source equivalent flux density
     sefd: Quantity
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
+    def __str__(self):
+        return ModelUtils.model_str_rep(self)
+    
+
+class CalculationResult(BaseModel):
+    """
+    Variables used to store calculated sensitivity or integration
+    time results. 
+    """
+
+    calculated_sensitivity: ValueWithUnits = \
+        ValueWithUnits(value=Data.calculated_sensitivity.default_value,
+                    unit=Data.calculated_sensitivity.default_unit)
+
+    calculated_t_int: ValueWithUnits = \
+        ValueWithUnits(value=Data.calculated_t_int.default_value,
+                    unit=Data.calculated_t_int.default_unit)
+    
     def __str__(self):
         return ModelUtils.model_str_rep(self)

@@ -29,7 +29,7 @@ def test_calculate_sensitivity():
 
     sensitivity = response.json()
     assert sensitivity['unit'] == 'uJy'
-    assert pytest.approx(sensitivity['value'], 0.01) == 780.
+    assert pytest.approx(sensitivity['value'], 0.01) == 690.
 
 
 def test_calculate_t_int():
@@ -42,7 +42,7 @@ def test_calculate_t_int():
 
     integration_time = response.json()
     assert integration_time['unit'] == 's'
-    assert pytest.approx(integration_time['value'], 0.1) == 6.80
+    assert pytest.approx(integration_time['value'], 0.1) == 5.20
 
 
 def test_param_values_units():

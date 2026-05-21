@@ -9,13 +9,10 @@ Derived parameters
       - Label
       - Unit
     * - Atmospheric transmittance
-      - tau_atm
+      - transmittance
       -
     * - Atmospheric temperature
       - T_atm
-      - K
-    * - Receiver temperature
-      - T_rx
       - K
     * - Dish efficiency
       - eta_a

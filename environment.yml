@@ -11,15 +11,18 @@ dependencies:
   - PyYAML=6.0
   - scipy=1.11
   - setuptools=65.5
-  - sphinx_rtd_theme=1.1
-  - nbsphinx==0.8
+  - sphinx-rtd-theme=3.1
+  - myst-parser==2.0.0
+  - plantuml=1.2026
+  - latexmk=4
+  - nbsphinx==0.9
   - python-dotenv=0.21
-  - pydantic=1.10
+  - pydantic=2.12
   - pandoc
   - build
   - flake8
   - sphinx-copybutton
-  - fastapi=0.94
+  - fastapi=0.128
   - uvicorn=0.21
   - jinja2=3.1
   - aiofiles=22.1

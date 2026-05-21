@@ -1,9 +1,11 @@
 import os
 import functools
 import json
-from yaml import load, Loader
+from pathlib import Path
+from pathlib import Path
+from yaml import load, Loader, safe_load
 from astropy.units import Unit
-
+from types import SimpleNamespace
 
 class Decorators:
     """
@@ -19,6 +21,7 @@ class Decorators:
         """
         @functools.wraps(func)
         def do_validation(calculator, value, **kwargs):
+
             """
             Validates the type, value and units of the value for the target
             parameter.
@@ -54,7 +57,7 @@ class Decorators:
         """
 
         @functools.wraps(func)
-        def do_update(calculator, value, **kwargs):
+        def do_update(param_class, value, **kwargs):
             """
             Validates the type, value and units of the value for the target
             parameter. If the new value is different from the old, derived
@@ -65,28 +68,32 @@ class Decorators:
             :param value: The new value
             :type value: int, float or Quantity
             """
-
             # Ensure integer values are converted to floats (all parameter values
             # are expected to be floats)
             if isinstance(value, int):
                 value = float(value)
 
             # Validate the new value
-            DataHelper.validate(calculator, func.__name__, value)
+            DataHelper.validate(param_class, func.__name__, value)
 
             # Determine if the old and new values differ
-            attribute = getattr(calculator, func.__name__)
+            attribute = getattr(param_class, func.__name__)
             dirty = (attribute != value)
 
             # Update the parameter
-            func(calculator, value, **kwargs)
-
-            # Recalculate derived parameters, if necessary
+            func(param_class, value, **kwargs)
+            # Recalculate derived parameters and change instrument, if necessary
             if dirty:
-                calculator._calculate_derived_parameters()
+                old_inst_name = param_class._param_setup.chosen_instrument.name
+                param_class._param_setup.chosen_instrument = \
+                    param_class._param_setup.get_chosen_instrument_class()
+                new_inst_name = param_class._param_setup.chosen_instrument.name
+                if old_inst_name != new_inst_name: 
+                    print("Instrument has been changed from " + old_inst_name + " to " + \
+                      new_inst_name + ".")
+                param_class._param_setup._calculate_derived_parameters()
 
         return do_update
-
 
 class FileHelper:
     """
@@ -99,6 +106,29 @@ class FileHelper:
     _UNSUPPORTED_FILE_TYPE_ERROR_MSG = \
         'Unsupported file type "{file_type}". ' \
         'Must be one of: {supported_extensions}'
+
+    @staticmethod
+    def read_instrument_yaml_file(file_name):
+        """
+        Reads the file with name `file_name` located in directory `path`
+        and returns a namespace. The file type is expected as `yaml`.
+
+        :param file_name: The name of the file, excluding the file extension.
+        :type file_name: str
+        :return: namespace object of yaml blocks.
+        :rtype: types
+        """
+        _STATIC_DATA_PATH = str(Path(__file__).resolve().parents[0])
+        _INSTRUMENTS_DATA_PATH = _STATIC_DATA_PATH + '/instruments/data/'
+        instrument_file = _INSTRUMENTS_DATA_PATH + file_name + ".yaml"
+
+        with open(instrument_file, "r") as file:
+            data = safe_load(file)
+
+        # Create a namespace object with the attributes
+        data = SimpleNamespace(**data)
+
+        return data
 
     @staticmethod
     def read_from_file(path, file_name):
@@ -116,12 +146,10 @@ class FileHelper:
         :rtype: dict[str, float]
         """
         file_reader = FileHelper._get_reader(file_name)
-
         file_path = os.path.join(path, file_name)
 
         with open(file_path, "r") as file:
             inputs = file_reader(file)
-
         # Try to convert values to floats
         for key, param in inputs.items():
             try:
@@ -131,7 +159,6 @@ class FileHelper:
                 raise TypeError(f'Value "{param["value"]}" is invalid '
                                 f'for parameter "{key}". '
                                 f'Parameter values must be numeric.')
-
         return inputs
 
     @staticmethod
@@ -159,8 +186,8 @@ class FileHelper:
         # Create and concatenate dictionaries from the user input model and
         # the derived parameters model
         params = {param: val['value']
-                  for param, val in calculator.user_input.dict().items()} | \
-            calculator.derived_parameters.dict()
+                  for param, val in calculator._param_setup.user_input.model_dump().items()} | \
+            calculator._param_setup.derived_parameters_model.model_dump()
 
         with open(file_path, "w") as f:
             file_writer(f, params)
@@ -364,8 +391,8 @@ class FileHelper:
 class DataHelper:
 
     @staticmethod
-    def validate(calculator, param_name, value):
-        attribute = getattr(calculator, param_name)
+    def validate(param_class, param_name, value):
+        attribute = getattr(param_class, param_name)
 
         # Ensure integer values are converted to floats (all parameter values
         # are expected to be floats)
@@ -381,7 +408,7 @@ class DataHelper:
 
         # Validate the new value
         try:
-            calculator.calculation_inputs. \
+            param_class._param_setup.calculation_inputs. \
                 validate_value(param_name, value)
         except ValueError as e:
             raise e
