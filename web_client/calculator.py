@@ -1,8 +1,8 @@
 import json
 import math
 from dataclasses import asdict
+from atlast_sc.calculator import Calculator
 from pydantic import ValidationError
-from atlast_sc.factory import CalculatorFactory
 from atlast_sc.data import Data
 
 def do_calculation(user_input, calculation):
@@ -10,7 +10,7 @@ def do_calculation(user_input, calculation):
     Perform the specified calculation (sensitivity or integration time)
     """
     try:
-        calculator = _create_calculater(user_input)
+        calculator = _create_calculator(user_input)
     except UserInputError as e:
         raise e
 
@@ -52,13 +52,12 @@ def get_param_values_units():
     return param_values_units
 
 
-def _create_calculater(user_input):
+def _create_calculator(user_input):
     """
     Create a calculator object with the specified user input
     """
     try:
-        calculator_factory = CalculatorFactory(user_input)
-        calculator = calculator_factory.calculator
+        calculator = Calculator(user_input)
     except ValidationError as e:
         message = json.loads(e.json())[0]["msg"]
         raise UserInputError(message)

@@ -9,3 +9,5 @@ allowed_ranges:
 receiver_temperature: 
   values: [100.0, 200.0]
   unit: K
+sideband_ratio:
+  value: 1

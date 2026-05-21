@@ -114,8 +114,7 @@ class TestCalculationInput:
         # permitted values, and with incorrect units, where applicable
 
         with expect_raises as exception_info:
-            test_param_setup = ParameterSetup(input_data)
-            Calculator(test_param_setup)
+            Calculator(input_data)
         
         if exception_match_string:
             # Note: errors returns a list of dictionaries, we are interested in the first
