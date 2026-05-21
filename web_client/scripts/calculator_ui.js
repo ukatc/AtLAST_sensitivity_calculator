@@ -1,3 +1,5 @@
+import { setInstrument } from './rest_calls.js';
+
 const setUIInitialState = (paramData) => {
     // Set all inputs to a valid state
     const allUserInput = document.querySelectorAll(".param-input");
@@ -27,7 +29,21 @@ const hideInvalidMessages = (hidden) => {
 }
 
 const handleInstrumentSelection = (e) => {
-    console.log("Selected value:", e.target.value);
+    const selectedInstrument = e.target.value;
+        
+    // Send the selected instrument to the backend to set it as the chosen_instrument
+    setChosenInstrument(selectedInstrument);
+}
+
+const setChosenInstrument = async (instrumentName) => {
+    try {
+        const data = await setInstrument(instrumentName);
+        console.log(data);
+    } catch (error) {
+        console.error("Error setting instrument:", error);
+        // Optionally display error message to user
+        alert(`Failed to set instrument: ${error.message}`);
+    }
 }
 
 const showDifferentInstrumentOptions = (dropdown_choice) => {

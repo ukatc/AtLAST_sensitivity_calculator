@@ -50,3 +50,10 @@ class APIUserInput(BaseModel):
                 },
             }
         }
+
+
+class InstrumentSelection(BaseModel):
+    """
+    Schema for selecting an instrument by name
+    """
+    instrument_name: str
