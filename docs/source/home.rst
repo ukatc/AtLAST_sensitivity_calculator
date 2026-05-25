@@ -27,3 +27,11 @@ on how to integrate the calculator into your Python code.
 For information on running the web client, see
 :doc:`Running the Web Client <user_guide/running_the_web_client>`.
 
+Funding Acknowledgement
+-----------------------
+
+This project has received funding from the European Union's Horizon Europe research and innovation programme under grant agreement Nos. 951815 (AtLAST) and 101188037 (AtLAST2). Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or European Research Executive Agency. Neither the European Union nor the European Research Executive Agency can be held responsible for them.
+
+.. image:: eu-flag.jpg
+    :width: 200px
+    :align: center
