@@ -41,7 +41,7 @@ User input parameters
       - N/A
       - 1, 2
       - N/A
-    * - Percentile water column in the atmosphere
+    * - Percentile water profile
       - weather
       - 25
       - N/A
