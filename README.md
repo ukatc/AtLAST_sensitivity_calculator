@@ -40,4 +40,7 @@ Information about the structure of the repository can be found [``here``](docs/s
 Funding Acknowledgement
 ===============================
 
-This project has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 951815
+This project has received funding from the European Union's Horizon Europe research and innovation programme under grant agreement Nos. 951815 (AtLAST) and 101188037 (AtLAST2). Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or European Research Executive Agency. Neither the European Union nor the European Research Executive Agency can be held responsible for them.
+
+<img src="https://europa.eu/assets/comm/infogram/EU-flag/en/data/aea86fce95146ce706844aeec4f57daa.jpg" alt="drawing" style="width:200px;"/>
+
