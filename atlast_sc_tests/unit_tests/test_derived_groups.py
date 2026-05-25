@@ -52,7 +52,7 @@ class TestTemperatures:
 
         # Check that the receiver temperature has been calculated and the
         # value correctly mapped for Default instrument
-        expected_receiver_temperature = 23.99621537 * u.K
+        expected_receiver_temperature = 97.42463438933429 * u.K
         assert pytest.approx(expected_receiver_temperature.value) == chosen_inst.T_rx.value
         assert expected_receiver_temperature.unit == chosen_inst.T_rx.unit
 

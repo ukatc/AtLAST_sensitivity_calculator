@@ -31,7 +31,7 @@ User input parameters
       - Hz, kHz, MHz, GHz
     * - Observing frequency
       - obs_freq
-      - 100
+      - 406
       - GHz
       - 35 - 950
       - GHz
