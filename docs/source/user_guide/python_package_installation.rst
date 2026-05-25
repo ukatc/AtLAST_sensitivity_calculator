@@ -4,8 +4,6 @@ Sensitivity Calculator Installation
 The Sensitivity Calculator Python package can be installed from the `UKATC
 AtLast Sensitivity Calculator GitHub repository <https://github.com/ukatc/AtLAST_sensitivity_calculator>`__.
 
-Instructions are provided below.
-
 .. _installing from git:
 
 Installing the Python package from Git
