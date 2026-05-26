@@ -122,17 +122,26 @@ Unit tests for the FastAPI application are located in the ``fastapi_tests`` dire
 
 Changes from calculator v1.0
 ----------------------------
-- Introduced instrument modules -includes instrument selection option in the CLI
-  (see section `Instrument Selection` in :doc:`Application Overview <application_overview>` 
-  for more details).
-- Updated calculation input parameter classes, renamed and refactored to align with
-  the new instrument module structure (see :doc:`UML Diagrams <../code_docs/data_model_uml>` 
-  for high level view of the new structure).
+- Refactored the codebase to have a more modular structure for the calculation process. In the
+  previous version, the code was structured in a singular streamlined process that made it difficult
+  to modify the calculation process. The new structure allows for better organisation of the
+  code and makes it easier to add new instruments or to modify the calculation process in the
+  future. These changes include separating the calculation input parameters into different classes 
+  based on their category, and introducing instrument modules where instrument data and methods are 
+  stored (see :ref:`Class Structure <class structure>` for high level view of the new structure).
 
-.. TODO::
+- Introduced instrument modules where instrument data and methods are stored. The users can 
+  select the instrument they want to use and the relevant data and methods for that instrument 
+  will be used in the calculations (see section  in :ref:`Instrument Selection <instrument selection>`
+  for more details.). This is a significant change from the previous version where
+  all of the data and methods for a generic heterodyne instrument were stored in a single module. 
+  This new structure makes it easier to add new instruments in the future (see section in 
+  :ref:`Add a New Instrument <add new instrument>`).
 
-    **ILGIN TO FOLLOW-UP**
+.. .. TODO::
 
-    This section needs to be significantly longer. You've refactored the entire code,
-    added the ability to use units, included instrument modules and (will eventually) update
-    the web ui as well.  All of that needs to be captured.   ASC-118 
+..     **ILGIN TO FOLLOW-UP**
+
+..     This section needs to be significantly longer. You've refactored the entire code,
+..     added the ability to use units, included instrument modules and (will eventually) update
+..     the web ui as well.  All of that needs to be captured.   ASC-118 

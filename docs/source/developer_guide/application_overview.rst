@@ -16,20 +16,15 @@ sensitivity/integration. The user can override instrument choice manually as des
 (see :ref:`Instrument Selection <instrument selection>` section). Currently, only the CLI users are
 able to choose a specific instrument to use in their calculations.
 
+.. .. TODO::
 
+..     **ILGIN TO FOLLOW-UP**
 
-.. TODO::
+..     Based on the comments about removing the free-floating Python files (ASC-127), I assume this section will need
+..     a lot of revision?
 
-    **ILGIN TO FOLLOW-UP**
-
-    Based on the comments about removing the free-floating Python files (ASC-127), I assume this section will need
-    a lot of revision?
-
-    Could this also be moved to become part of the :doc:`Repository Overview <repository_overview>`, since the first
-    section of the repository overview is the ``atlast_sc`` section?
-
-    What happened to the repository/directory structure I saw as part of ASC-88? (see our comment discussion
-    on 17 Feb in that ticket)
+..     Could this also be moved to become part of the :doc:`Repository Overview <repository_overview>`, since the first
+..     section of the repository overview is the ``atlast_sc`` section?
 
 The calculator
 --------------
@@ -148,7 +143,7 @@ This is a utility module that contains classes and methods used throughout the a
 The contents include helper methods for validating and updating parameters, performing 
 unit conversions, and file input/output methods for reading and writing data to file.
 
-
+.. _class structure:
 Class Structure
 ^^^^^^^^^^^^^^^
 General class structure can be visualised with the UML diagrams below.
@@ -201,6 +196,8 @@ values, the calculator will return a validation error.
 The applicable observing frequency and bandwidth ranges for each instrument along with some
 other information about the instruments can be accessed by listing the instruments on the CLI via
 ``calculator.list_instruments``.
+
+.. _add new instrument:
 
 Adding a New Instrument
 ----------------------------------------
