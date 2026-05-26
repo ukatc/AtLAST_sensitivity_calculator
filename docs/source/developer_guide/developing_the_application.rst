@@ -43,8 +43,6 @@ and execute the following:
 This will create a source distribution (``tar.gz`` file) and a built distribution
 (``.whl`` file) in the ``dist`` directory.
 
-TODO: complete
-
 The ``buildpythonpackage`` target in the ``makefile`` performs this step.
 
 .. note::

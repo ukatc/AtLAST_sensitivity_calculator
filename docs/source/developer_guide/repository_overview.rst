@@ -65,7 +65,8 @@ Classes for each of the calculation parameter category.
 
 static/lookups
 ##############
-Tabular information files for parameters X,X,X [TODO]
+Tabular information files for parameters sky temperature (`T_atm`) and transmittance
+(`tau_atm`).
 
 atlast_sc tests
 ---------------
