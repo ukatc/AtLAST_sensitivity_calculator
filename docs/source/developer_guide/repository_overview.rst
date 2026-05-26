@@ -96,7 +96,6 @@ Documentation
 
 | ├── **source**
 | │  ├── calculator_info
-| │  ├── calculator_info
 | │  ├── code_docs
 | │  ├── developer_guide
 | │  ├── user_guide
