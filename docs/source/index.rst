@@ -13,7 +13,8 @@ This chapter provides information on the inner workings of the calculator. :doc:
 
 .. toctree::
    :maxdepth: 3
-   
+   :caption: About the Sensitivity Calculator
+
    calculator_info/sensitivity
    calculator_info/calculation_inputs
    calculator_info/weather
@@ -27,7 +28,8 @@ This chapter provides information on :doc:`installing the calculator <user_guide
 
 .. toctree::
    :maxdepth: 3
-   
+   :caption: Installation
+
    user_guide/python_package_installation
 
 
@@ -38,7 +40,8 @@ This chapter describes how to use the calculator as a Python package in :doc:`us
 
 .. toctree::
    :maxdepth: 3
-   
+   :caption: User Guide
+
    user_guide/usage
    user_guide/input_and_output_files
    user_guide/running_the_web_client
@@ -49,7 +52,8 @@ This chapter is for the benefit of future developers of the software. It starts 
 
 .. toctree::
    :maxdepth: 3
-   
+   :caption: Developer Guide
+
    developer_guide/application_overview
    developer_guide/repository_overview
    developer_guide/developing_the_application
@@ -61,6 +65,7 @@ This chapter details the :doc:`application programming interface (API) <code_doc
 
 .. toctree::
    :maxdepth: 1
+   :caption: Code Documentation
    
    code_docs/public_api
    code_docs/uml
