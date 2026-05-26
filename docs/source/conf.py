@@ -20,11 +20,11 @@ sys.path.insert(0, '../')
 # -- Project information -----------------------------------------------------
 
 project = 'AtLAST Sensitivity Calculator'
-copyright = '2023, UK ATC'
-author = 'Jo Ramasawmy, Pamela Klaassen, Fiona Kirton'
+copyright = '2026, UK ATC'
+author = "AtLAST Sensitivity Calculator Team"
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.0'
+release = '2.0.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -42,6 +42,7 @@ extensions = [
    'nbsphinx',
    'sphinx_copybutton',
    'sphinxcontrib.plantuml',
+   'sphinx.ext.todo',
 ]
 
 # added as enablers for extended markdown and platuml extension 
@@ -53,6 +54,11 @@ myst_enable_extensions = [
   'attrs_block',
 ]
 
+todo_include_todos = True
+
+#latex_docclass = {    "manual": "article",}
+#latex_toplevel_sectioning = "section"
+#latex_tocdepth = 4
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

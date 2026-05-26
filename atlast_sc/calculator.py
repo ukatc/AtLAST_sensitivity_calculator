@@ -370,3 +370,76 @@ class Calculator:
                   f"Please adjust the input parameters and recalculate."
 
         return message
+    
+    
+    ###################################################
+    # Methods to throw an error for old functionality #
+    ###################################################
+
+    def __getattr__(self, name):
+        """
+        Handle deprecated way of accessing parameters.
+        """
+        deprecated_params = {
+            # user input parameters
+            'obs_freq': 'user_input.obs_freq',
+            'bandwidth': 'user_input.bandwidth',
+            'sensitivity': 'user_input.sensitivity',
+            't_int': 'user_input.t_int',
+            'n_pol': 'user_input.n_pol',
+            'weather': 'user_input.weather',
+            'elevation': 'user_input.elevation',
+            # telescope and environment parameters
+            'surface_rms': 'telescope_and_environment.surface_rms',
+            'dish_radius': 'telescope_and_environment.dish_radius',
+            'eta_eff': 'telescope_and_environment.eta_eff',
+            'eta_ill': 'telescope_and_environment.eta_ill',
+            'eta_spill': 'telescope_and_environment.eta_spill',
+            'eta_block': 'telescope_and_environment.eta_block',
+            'eta_pol': 'telescope_and_environment.eta_pol',
+            'T_cmb': 'telescope_and_environment.T_cmb',
+            'T_amb': 'telescope_and_environment.T_amb',
+            'T_amb': 'telescope_and_environment.T_amb'
+        }
+        
+        if name in deprecated_params:
+            raise RuntimeError(
+                f"calculator.{name} is not a valid input. "
+                f"Use calculator.{deprecated_params[name]} instead."
+            )
+        
+        raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
+
+    def __setattr__(self, name, value):
+        """
+        Handle deprecated way of setting parameters.
+        """
+        deprecated_params = {
+            # user input parameters
+            'obs_freq': 'user_input.obs_freq',
+            'bandwidth': 'user_input.bandwidth',
+            'sensitivity': 'user_input.sensitivity',
+            't_int': 'user_input.t_int',
+            'n_pol': 'user_input.n_pol',
+            'weather': 'user_input.weather',
+            'elevation': 'user_input.elevation',
+            # telescope and environment parameters
+            'surface_rms': 'telescope_and_environment.surface_rms',
+            'dish_radius': 'telescope_and_environment.dish_radius',
+            'eta_eff': 'telescope_and_environment.eta_eff',
+            'eta_ill': 'telescope_and_environment.eta_ill',
+            'eta_spill': 'telescope_and_environment.eta_spill',
+            'eta_block': 'telescope_and_environment.eta_block',
+            'eta_pol': 'telescope_and_environment.eta_pol',
+            'T_cmb': 'telescope_and_environment.T_cmb',
+            'T_amb': 'telescope_and_environment.T_amb',
+            'T_amb': 'telescope_and_environment.T_amb'
+        }
+        
+        if name in deprecated_params:
+            raise RuntimeError(
+                f"calculator.{name} is not a valid input. "
+                f"Use calculator.{deprecated_params[name]} instead."
+            )
+        
+        super().__setattr__(name, value)

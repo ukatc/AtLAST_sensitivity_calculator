@@ -1,60 +1,98 @@
 Application overview
 ====================
-The sensitivity calculator consists of a Python package and a web application.
+The sensitivity calculator consists of the calculator itself (a Python package) and a web application view of the calculator.
 An overview of each component is provided below.
+
+The overall calculation process begins with the creation of a Calculator object using
+user specified input parameters, where if not specified, the calculator is initialised with default
+user input values. If the calculator is used via the Python command line interface (CLI), any of the user input
+parameters can be changed before calculating the sensitivity/integration time. If the parameters are not changed, 
+the calculations will be done with default values. In the web user interface (UI), the first calculation is done 
+with the default values and any specified user input parameters will be considered within the calculations once 
+the user clicks the "Calculate" button.
+
+Given the input parameters, the application will choose instrument specific equations for calculating
+sensitivity/integration. The user can override instrument choice manually as described in the user guide
+(see :ref:`Instrument Selection <instrument selection>` section). Currently, only the CLI users are
+able to choose a specific instrument to use in their calculations.
+
+
+
+.. TODO::
+
+    **ILGIN TO FOLLOW-UP**
+
+    Based on the comments about removing the free-floating Python files (ASC-127), I assume this section will need
+    a lot of revision?
+
+    Could this also be moved to become part of the :doc:`Repository Overview <repository_overview>`, since the first
+    section of the repository overview is the ``atlast_sc`` section?
+
+    What happened to the repository/directory structure I saw as part of ASC-88? (see our comment discussion
+    on 17 Feb in that ticket)
 
 The calculator
 --------------
 
 The ``atlast_sc`` Python package contains the code that performs the sensitivity and
-integration time calculations, configures
+integration time calculations. It additionally configures
 default and allowed values and units for the parameters used by the calculator,
 and performs validation on data provided to the calculator. It
 also provides utility tools for reading input data from a file and writing output
 to file.
 
-Information on using the Python package is provided :doc:`here <../user_guide/using_the_calculator>`.
+The following documentation describes the contents of the python package,
+information on using the Python package is provided :doc:`through this link to the user guide <../user_guide/using_the_calculator>`.
 
 Modules
 ^^^^^^^
 Below is an overview description of each of the modules included in the
-``atlast_sc`` package. More detailed information is provided in the
+``atlast_sc`` package. More detailed information on parameters and relationships is provided in the
 :doc:`Public API <../code_docs/public_api>` and :doc:`UML diagrams <../code_docs/uml>`
 sections.
-
-calculator_factory
-++++++++++++++++++
-This module creates a calculator instance according to user input that has been specified. 
 
 calculator
 ++++++++++
 This module contains the main ``Calculator`` class that provides the interface
 for performing sensitivity and integration time calculations. A ``Calculator``
-object may be instantiated with default parameter setup object, or by passing
-user input parameters as arguments to the parameter setup object constructor.
+object may be instantiated with user input parameters constructor, or with the default
+user input parameter constructor.
 
 This module provides methods exclusively for calculating sensitivity and integration time.
-It retrieves parameter sets —including user inputs, telescope and environmental 
-conditions, and derived parameters— through the parameter setup object. This design 
+It retrieves parameter sets, including user inputs, telescope and environmental
+conditions, and derived parameters, through the parameter setup object. This design
 simplifies the process for users by providing a unified interface to access information 
 from each parameter class.
 
+
 parameter_setup
 +++++++++++++++
-This class serves as a centralised container for all parameter classes. When a parameter is 
-updated in its respective class, the new value can be retrieved through this class. It 
-provides access to all models used in calculations and methods for operations related to 
-identifying applicable instruments. The class also stores a copy of the
-parameters used to initialize the calculator, allowing the user to revert to
-the initial state.
+This class serves as a centralised container for storing and accessing the values of each 
+parameter in the following parameter classes:
+- user input parameters
+- telescope and environment parameters
+- derived parameters
 
+When a parameter is updated in its respective class, the new value of the parameter 
+can be retrieved through this class. It provides access to all models used in 
+calculations and methods for operations related to identifying applicable instruments. 
+This class also stores a copy of the parameter values used to initialize the calculator, 
+allowing the user to revert to the initial state.
+
+This class also contains methods for choosing applicable instruments based on the user input 
+parameters, and for validating the user input parameters against the allowed ranges for each 
+instrument. The calculator will use the first applicable instrument for calculations, and if 
+there are no applicable instruments, it will proceed with the Default instrument. The calculator
+will be accessing the instrument classes and their methods through this class.
+
+.. _atlast-sc-data-module:
 data
 ++++
 The ``Data`` class stores all of the configuration information for each of the user input, 
-telescope and environment parameters used by the calculator (default values, default units, etc.), 
-and calculated parameters.
+telescope and environment parameters and subsequently derived parameters used in and by the calculator.
 
 The ``Validator`` class provides methods for validating data provided to the calculator.
+
 
 models
 ++++++
@@ -66,33 +104,55 @@ constraints defined in the ``data.Data`` class.
 
 derived_groups
 ++++++++++++++
-This module contains classes that logically group derived parameters used by
-the calculator. Derived parameters are those that are dependent on the data
-provided to the calculator (user input and telescope and environment). They are 
+This module contains classes that logically group parameters derived by the calculator
+for use in the calculations. Derived parameters are those that are dependent on the data
+provided to the calculator (user input and telescope and environmental properties). They are
 calculated at runtime when the calculator is instantiated, and when any of the 
 independent parameters are updated.
 
 The derived group classes are ``AtmosphereParams``, ``Efficiencies``, and
 ``Temperatures``. Although these classes are accessible via the public API, they
-are primarily intended to be used internal to the calculator.
+are primarily intended to be used internally.
+
+.. _atlast-sc-instruments-module:
+instruments
++++++++++++
+This module contains the instrument data and classes used in the calculator, as well as the
+configuration class. The configuration class is the interface in which the developer can add 
+a new instrument to the calculator and contains methods for reading in the instrument data 
+from the YAML files, validating the data, and populating the instrument classes with the data.
+Each instrument has a defined Python class under the *classes* directory, populated with 
+information from its respective YAML file under the *data* directory. Each instrument class 
+inherits from the base ``Instrument`` class, which contains methods and parameters common to 
+all instruments. An instrument class can contain any instrument specific parameters and 
+methods that are required for the calculations.
+
+parameters
+++++++++++
+This module contains classes that logically group parameters for use in the calculations. 
+The parameter classes are ``UserInputParams``, ``TelescopeEnvironmentParams``, and ``DerivedParameters``. 
+These classes are accessed within the calculator through the ``ParameterSetup`` class, and are 
+used to store and access the values of each parameter within the parameter classes. The parameter 
+classes also contain methods for validating and updating parameter values, and performing unit 
+conversions when necessary.
+
 
 exceptions
 ++++++++++
-This module contains the data validation exception and warning classes.
+This module contains the data validation exception and warning classes so that the user is informed
+about why their setup cannot generate a valid output.
 
 utils
 +++++
-This is a utility module that contains classes and methods used throughout the application.
+This is a utility module that contains classes and methods used throughout the application. 
+The contents include helper methods for validating and updating parameters, performing 
+unit conversions, and file input/output methods for reading and writing data to file.
+
 
 Class Structure
 ^^^^^^^^^^^^^^^
 General class structure can be visualised with the UML diagrams below.
 
-.. image:: imgs/calculator_class.png
-    :alt: Diagram of relation between Calculator and CalculatorFactory class
-    :align: center
-
-The above diagram shows how the CalculatorFactory class has the Calculator class as a dependency. 
 The below diagram shows how each of the parameter classes depend on each other and how the 
 ParameterSetup class acts as the container for the current state of each parameter class.
 
@@ -102,8 +162,8 @@ ParameterSetup class acts as the container for the current state of each paramet
 
 Integration Overview
 --------------------
-The overall calculation process is kickstarted with a creation of a Calculator object using 
-CalculatorFactory. Initially, the calculator is created with default values. If the calculator 
+The overall calculation process is kickstarted with a creation of a Calculator object using the
+Calculator class. Initially, the calculator is created with default values. If the calculator 
 is used via the Python CLI, any of the user input parameters can be changed before calculating 
 the sensitivity/integration time. If they don't, the calculations will be done with default 
 values. In the UI, the first calculation is done with the default values and any specified user
@@ -125,100 +185,29 @@ relative instrument YAML files and classes.
 
 Instrument Selection
 --------------------
-Instrument selection on the UI is executed in the background when the user inputs observing 
-frequency and bandwidth values in the boxes specified and clicks the "Calculate" button. The
-calculator retrieves the observing frequency and bandwidth entered by the user and verifies 
-them against the supported ranges for each instrument and chooses the applicable instrument.
+Instrument selection in both the python and web interfaces is executed in the background
+when the user inputs observing frequency and bandwidth values in the boxes specified and
+clicks the "Calculate" button, and validates the instrument choice against its operational ranges.
 In the case where the user input parameters correspond to more than one instrument, the 
 calculator will choose the first applicable instrument. If there are no applicable instruments,
 the calculator will proceed with the Default instrument. 
 
-However, on the CLI, the user can make an instrument selection. This selection should be 
-executed in a specific order in relation to other parameter assignments. Any user input 
-parameter should be specified before selecting an instrument. For example, if the user 
-wants to set a specific observing frequency to do calculations and also select an instrument, 
-they have to make sure that the observing frequency they are specifying falls into the
-observing frequency ranges of the instrument they want to select. They should also take
-care to do the same with the bandwidth values. In the case where the user attempts to 
-select an instrument before specifying the appropriate observing frequency and bandwidthv
-values, the calculator will throw an error. 
+On the CLI, the user can override an instrument selection. Because of the internal validation, user input
+observing frequency and bandwidth should be specified before selecting an instrument or overriding default selections.
+In the case where the user attempts to
+select an instrument before specifying the appropriate observing frequency and bandwidth
+values, the calculator will return a validation error.
 
 The applicable observing frequency and bandwidth ranges for each instrument along with some
-other information can be accessed by listing the instruments on the CLI. 
+other information about the instruments can be accessed by listing the instruments on the CLI via
+``calculator.list_instruments``.
 
-Adding a new instrument
-^^^^^^^^^^^^^^^^^^^^^^^
-
-Creating the instrument YAML file
-+++++++++++++++++++++++++++++++++
-If an instrument needs to be added, this should be done by executing a couple of steps
-within the *atlast_sc/instruments* directory.
-
-Firstly, a YAML file with the name of the instrument should be created in the 
-sub-directory called *data*. It should include details of the instrument in the 
-following format: 
-
-.. code-block:: yaml
-
-    name: "Example"
-    allowed_ranges:
-        observing_frequency:
-            ranges: [(500.0-600.0),(700.0-800.0)]
-            unit: GHz
-        bandwidth: 
-            ranges: [(10.9e4-1.8e8)]
-            unit: Hz
-    receiver_temperature: 
-        values: [30.0,40.0]
-        unit: K
-
-Any other instrument specific parameter should be added following the same format. The
-Default instrument YAML file could be taken as a template and the other instrument 
-YAML files could be taken as example on how these files could be customised. 
-
-Creating the instrument Python module
-+++++++++++++++++++++++++++++++++++++
-Secondly, a Python module should be created in the *classes* sub-directory with the 
-new instrument name. Following the example above, the name of the module file should 
-be "Example.py" and it should include the following class format: 
-
-.. code-block:: python 
-
-    """
-    Example instrument parameters
-    """        
-    class Example(Instrument):
-        def __init__(self, data):
-            super().__init__(data)
-
-For more detail on how to construct the module, the Default instrument Python module
-could be taken as an example and other instrument Python modules could be taken as
-example on how these modules could be customised. 
-
-Modifying the configuration file to add the new instrument
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Thirdly, a couple of lines should be modified in ``config.py`` where they are 
-indicated within the configuration file with comments. 
-
-In the initilisation method, a dictionary containing pointers to the new instrument's 
-Python module and YAML file name should be added in similar format to the existing 
-instruments. After adding the new instrument information in, the following section 
-within the config file should look as below. 
-
-.. image:: imgs/instrument_dict.png
-    :alt: Screenshot of new instrument dictionary 
-    :align: center
-
-After creating the dictionary variable for the new instrument, it should be added 
-to the ``available_instruments`` list. The list should look like below once the 
-new instrument is added. 
-
-.. image:: imgs/available_instruments.png
-    :alt: Screenshot of updated available instruments list
-    :align: center
-
-Once these additions are made to the appropriate places mentioned above, the 
-calculator will recognise the added instrument in the new calculations. 
+Adding a New Instrument
+----------------------------------------
+The application is constructed in a specific way that allows new instruments to be added to the
+calculation process. When an instrument needs to be added to the calculator, a couple of steps 
+need to be executed within the *atlast_sc/instruments* directory. The process is detailed in the
+:doc:`Adding a New Instrument <adding_new_instrument>` section of the developer guide. 
 
 The web application
 -------------------

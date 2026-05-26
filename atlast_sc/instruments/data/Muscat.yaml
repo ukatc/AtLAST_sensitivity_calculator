@@ -1,17 +1,16 @@
 name: "Muscat"
 allowed_ranges:
   observing_frequency: 
-    ranges: [(250.0-300.0)]
+    ranges: [(255.0-300.0)]
     unit: GHz
   bandwidth: 
     ranges: [(10-80)]
     unit: GHz
-receiver_temperature: 
-  values: [44.7]
-  unit: K
-chip_and_cold_optics_efficiency:  # MUSCAT doesn't separate chip and cold optics efficiencies
-  value: 0.5
-cold_optics_temperature: # Temperature of the cold optics - not currently used
+chip_efficiency: # pixel efficiency
+  value: 0.7 
+cold_optics_efficiency: # due to the Lyot stop illumination for a F lambda sized horn
+  value: 0.35 
+cold_optics_temperature: # Temperature of the cold optics 
   value: 0.3
   unit: K
 band_gap: # gap energy

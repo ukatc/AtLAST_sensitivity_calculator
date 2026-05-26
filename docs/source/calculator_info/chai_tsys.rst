@@ -1,17 +1,18 @@
 CHAI system temperature
 =======================
 
-The CCAT Heterodyne Array Instrument (`CHAI <https://www.ccatobservatory.org/chai/>`__) is being built for the CCAT Observatory. It covers the frequency ranges between 460 and 500 GHz and 780 and 820 GHz. It is set-up to cover channel spacings from 61 kHz to 4 GHz. It has a receiver temperature of 100 K for the lower frequency range and 200 K for the higher frequency range. (See `Barrueto et al. 2023 <https://articles.adsabs.harvard.edu/pdf/2023pcsf.conf..346B>`__ for more details.)
+The CCAT Heterodyne Array Instrument (`CHAI <https://www.ccatobservatory.org/chai/>`__) is being built for the CCAT Observatory. It covers the frequency ranges between 460 and 500 GHz and 780 and 820 GHz. It is set-up to cover channel spacings from 61 kHz to 4 GHz. It has a receiver temperature of 100 K for the lower frequency range and 200 K for the higher frequency range. (See `Barrueto et al. 2023 <https://articles.adsabs.harvard.edu/pdf/2023pcsf.conf..346B>`__ for more details.) CHAI is a single polarisation instrument and so :math:`n_\mathrm{pol}` should be set to 1 when using it.
 
 Here in the AtLAST sensitivity calculator, we use it as an exemplar of a heterodyne instrument capable of working at these frequencies.
 
 In this module, we calculate the system temperature used in the overall :doc:`sensitivity equation <sensitivity>`. For a CHAI like system, the system temperature is calculated as:
 
 .. math::
-    T_{sys} = \frac{1}{\eta_{eff} \mathfrak{t}} \times [T_\mathrm{rx} + (\eta_\mathrm{eff} T_\mathrm{sky}) + (1-\eta_\mathrm{eff}) O(\nu, T_\mathrm{amb})]
+    T_{sys} = \frac{1+g}{\eta_\mathrm{eff} \mathfrak{t}} \times [T_\mathrm{rx} + (\eta_\mathrm{eff} T_\mathrm{sky}) + (1-\eta_\mathrm{eff}) O(\nu, T_\mathrm{amb})]
 
 where
 
+* :math:`g` is the sideband ratio, which is 1 for CHAI as it is a dual sideband instrument
 * :math:`\eta_\mathrm{eff}` is the forward efficiency of the telescope
 * :math:`\mathfrak{t}` is the atmospheric transmittance, defined as :math:`\mathfrak{t} = \textrm{exp}^{(-\tau_{atm})}`
 * :math:`T_\mathrm{rx}` is the receiver temperature

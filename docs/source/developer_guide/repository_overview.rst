@@ -129,3 +129,11 @@ Changes from calculator v1.0
 - Updated calculation input parameter classes, renamed and refactored to align with
   the new instrument module structure (see :doc:`UML Diagrams <../code_docs/data_model_uml>` 
   for high level view of the new structure).
+
+.. TODO::
+
+    **ILGIN TO FOLLOW-UP**
+
+    This section needs to be significantly longer. You've refactored the entire code,
+    added the ability to use units, included instrument modules and (will eventually) update
+    the web ui as well.  All of that needs to be captured.   ASC-118 
