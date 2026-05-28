@@ -6,6 +6,16 @@ The Atacama Large Aperture Submillimeter Telescope (AtLAST) is a project to buil
 
 The AtLAST Sensitivity Calculator can be used to calculate the required on source exposure time per pointing to achieve a given sensitivity or, conversely, the sensitivity obtained for a given exposure time. The sensitivity calculator is designed on our current best estimates for the telescope and instrument parameters, but these are likely to be refined as the project develops.
 
+Quickstart Guide
+----------------
+
+This guide shows how to quickly install and use the sensitivity calculator to calculate a sensitivity for a given integration time and an integration time for a given sensitivity.
+
+.. toctree::
+   :caption: Quickstart Guide
+
+   quickstart
+
 About the Sensitivity Calculator
 --------------------------------
 

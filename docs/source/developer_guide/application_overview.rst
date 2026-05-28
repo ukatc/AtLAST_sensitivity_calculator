@@ -81,6 +81,7 @@ there are no applicable instruments, it will proceed with the Default instrument
 will be accessing the instrument classes and their methods through this class.
 
 .. _atlast-sc-data-module:
+
 data
 ++++
 The ``Data`` class stores all of the configuration information for each of the user input, 
@@ -110,6 +111,7 @@ The derived group classes are ``AtmosphereParams``, ``Efficiencies``, and
 are primarily intended to be used internally.
 
 .. _atlast-sc-instruments-module:
+
 instruments
 +++++++++++
 This module contains the instrument data and classes used in the calculator, as well as the
@@ -144,6 +146,7 @@ The contents include helper methods for validating and updating parameters, perf
 unit conversions, and file input/output methods for reading and writing data to file.
 
 .. _class structure:
+
 Class Structure
 ^^^^^^^^^^^^^^^
 General class structure can be visualised with the UML diagrams below.
