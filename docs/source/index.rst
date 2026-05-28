@@ -71,3 +71,11 @@ This chapter details the :doc:`application programming interface (API) <code_doc
    code_docs/uml
    code_docs/openapi
 
+Funding Acknowledgement
+-----------------------
+
+This project has received funding from the European Union's Horizon Europe research and innovation programme under grant agreement Nos. 951815 (AtLAST) and 101188037 (AtLAST2). Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or European Research Executive Agency. Neither the European Union nor the European Research Executive Agency can be held responsible for them.
+
+.. image:: eu-flag.png
+    :width: 200px
+    :align: center
