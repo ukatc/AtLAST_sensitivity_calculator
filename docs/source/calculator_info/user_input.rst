@@ -31,7 +31,7 @@ User input parameters
       - Hz, kHz, MHz, GHz
     * - Observing frequency
       - obs_freq
-      - 100
+      - 406
       - GHz
       - 35 - 950
       - GHz
@@ -41,7 +41,7 @@ User input parameters
       - N/A
       - 1, 2
       - N/A
-    * - Percentile water column in the atmosphere
+    * - Percentile water profile
       - weather
       - 25
       - N/A

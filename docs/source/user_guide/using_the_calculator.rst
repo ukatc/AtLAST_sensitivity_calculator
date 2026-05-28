@@ -100,7 +100,7 @@ parameters to the console as follows:
     bandwidth: 100.0 MHz
     elevation: 45.0 deg
     n_pol: 2.0
-    obs_freq: 100.0 GHz
+    obs_freq: 406.0 GHz
     sensitivity: 3.0 mJy
     t_int: 100.0 s
     weather: 25.0
@@ -119,13 +119,13 @@ parameters to the console as follows:
 
     # Check the derived parameters
     >>> calculator.derived_parameters.show()
-    T_atm: 401.094323096683 K
-    T_sky: 13.652788658783503 K
-    T_sys: 54.61020434562856 K
-    eta_a: 0.7030648055535439
+    T_atm: 243.8202986577273 K
+    T_sky: 48.57281962348794 K
+    T_sys: 205.82149141522652 K
+    eta_a: 0.5931321480347472
     eta_s: 0.99
-    sefd: 7.585764213938477e-25 J / m2
-    transmittance: 0.9727575584355762
+    sefd: 4.88003172682879e-24 J / m2
+    transmittance: 0.8008347287626261
 
 The user input and derived parameters can be output to a file as described in the :ref:`writing parameters to a file<section_writing_data>` section.
 
@@ -152,7 +152,7 @@ You can reset the user input parameters stored in the calculator to their initia
 
 
 Initializing the Calculator with a dictionary
-*********************************************
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The :class:`Calculator <atlast_sc.calculator.Calculator>` object accepts a dictionary as input.
 First, create a dictionary with the input data you wish to use:
@@ -183,6 +183,7 @@ appropriate default values and units.
 The dictionary can be generated from an input file as described in :ref:`Reading data from an input file<section_reading_data>`.
 
 .. _section_instrument_selection:
+
 Instrument selection
 ^^^^^^^^^^^^^^^^^^^^
 

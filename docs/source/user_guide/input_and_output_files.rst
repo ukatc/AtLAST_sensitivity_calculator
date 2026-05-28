@@ -7,6 +7,7 @@ values to a file. The sections that follow describe the process for using input
 data files, their format and creating output data files.
 
 .. _section_reading_data:
+
 Reading data from an input file
 -------------------------------
 
@@ -15,6 +16,7 @@ Reading data from an input file
 .. include:: input_files_formats.rst
 
 .. _section_writing_data:
+
 Writing parameters to a file
 ----------------------------
 

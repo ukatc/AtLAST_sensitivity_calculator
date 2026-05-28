@@ -4,8 +4,6 @@ Sensitivity Calculator Installation
 The Sensitivity Calculator Python package can be installed from the `UKATC
 AtLast Sensitivity Calculator GitHub repository <https://github.com/ukatc/AtLAST_sensitivity_calculator>`__.
 
-Instructions are provided below.
-
 .. _installing from git:
 
 Installing the Python package from Git
@@ -60,6 +58,6 @@ The above installs the minimal set of packages required for the calculator to pe
 
 .. code-block:: bash
 
-    conda install ipython matplotlib jupyter reproject astroquery
+    conda install ipython matplotlib=3.9 jupyter reproject astroquery
 
 The equivalent ``pip install`` command would work equally well in the conda environment.
