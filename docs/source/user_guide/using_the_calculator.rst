@@ -152,7 +152,7 @@ You can reset the user input parameters stored in the calculator to their initia
 
 
 Initializing the Calculator with a dictionary
-*********************************************
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The :class:`Calculator <atlast_sc.calculator.Calculator>` object accepts a dictionary as input.
 First, create a dictionary with the input data you wish to use:
@@ -183,6 +183,7 @@ appropriate default values and units.
 The dictionary can be generated from an input file as described in :ref:`Reading data from an input file<section_reading_data>`.
 
 .. _section_instrument_selection:
+
 Instrument selection
 ^^^^^^^^^^^^^^^^^^^^
 

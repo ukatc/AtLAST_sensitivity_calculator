@@ -33,3 +33,11 @@ dl.py.property {
         transform: scale(1.5);
     }
 }
+
+/*
+Hide captions to avoid repetition of section titles on index page
+*/
+
+.toctree-wrapper .caption {
+    display: none;
+}
