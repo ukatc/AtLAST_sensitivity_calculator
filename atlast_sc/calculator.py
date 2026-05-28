@@ -336,18 +336,99 @@ class Calculator:
 
     def list_instruments(self):
         """
-        Show loaded instruments and their observing frequency and
-        bandwidth ranges in a pretty format. 
+        Show loaded instruments and their observing frequency and bandwidth ranges
+        in a pretty format.
         """
-        # Pretty print the instrument dictionary
-        pretty_dict = yaml.dump(self.loaded_instruments, default_flow_style=False)
-        output = pretty_dict
-        instructions = '\nTo select an instrument, specify the instrument as:\n'+\
-                        'calculator.chosen_instrument = \"Finer\"'
-        # Print the instrument specification instructions afterwards
-        output += "\n" + instructions + "\n"
-
+        output = "\n" + "="*70 + "\n"
+        output += "AVAILABLE INSTRUMENTS\n"
+        output += "="*70 + "\n\n"
+        
+        for inst_name, inst_info in self.loaded_instruments.items():
+            output += f"* {inst_name}\n"
+            obs_freq_ranges = inst_info['obs_freq']['ranges']
+            obs_freq_unit = inst_info['obs_freq']['unit']
+            output += f"   Observing Frequency: {obs_freq_ranges} {obs_freq_unit}\n"
+            
+            bandwidth_ranges = inst_info['bandwidth']['ranges']
+            bandwidth_unit = inst_info['bandwidth']['unit']
+            
+            if inst_name == 'Default':
+                bandwidth_ranges = "[Any positive value]"
+            else:
+                # Convert bandwidth ranges to easily readible units if needed
+                bandwidth_ranges, bandwidth_unit = \
+                    self._format_bandwidth_ranges(bandwidth_ranges, bandwidth_unit)
+            
+            output += f"   Bandwidth: {bandwidth_ranges} {bandwidth_unit}\n\n"
+        
+        output += "-"*70 + "\n"
+        output += "To select an instrument:\n"
+        output += '   calculator.chosen_instrument = "Finer"\n'
+        output += "-"*70 + "\n"
+        
         print(output)
+
+    def _format_bandwidth_ranges(self, bandwidth_ranges, bandwidth_unit):
+        """
+        Format bandwidth ranges, converting to MHz or kHz if the values are too
+        large to be easily read in Hz.
+
+        :param bandwidth_ranges: list or string of bandwidth range(s)
+        :type bandwidth_ranges: list or str
+        :param bandwidth_unit: the unit of the bandwidth ranges
+        :type bandwidth_unit: str
+        :return: formatted ranges and appropriate unit
+        :rtype: tuple(str, str)
+        """
+        if bandwidth_unit.lower() != 'hz':
+            # If not in Hz, return as-is
+            return bandwidth_ranges, bandwidth_unit
+        
+        # Determine the appropriate unit based on max values
+        max_val = 0
+        if isinstance(bandwidth_ranges, list):
+            for range_str in bandwidth_ranges:
+                matches = re.findall(r"[\d.]+", range_str)
+                if len(matches) >= 2:
+                    val = float(matches[1])
+                    max_val = max(max_val, val)
+        else:
+            matches = re.findall(r"[\d.]+", str(bandwidth_ranges))
+            if len(matches) >= 2:
+                max_val = float(matches[1])
+        
+        # Determine display unit
+        if max_val >= 1e6:
+            display_unit = "MHz"
+            divisor = 1e6
+        elif max_val >= 1e3:
+            display_unit = "kHz"
+            divisor = 1e3
+        else:
+            display_unit = "Hz"
+            divisor = 1
+        
+        # Convert ranges if needed
+        if divisor != 1:
+            formatted_ranges = []
+            if isinstance(bandwidth_ranges, list):
+                for range_str in bandwidth_ranges:
+                    matches = re.findall(r"[\d.]+", range_str)
+                    if len(matches) >= 2:
+                        min_val = float(matches[0]) / divisor
+                        max_val = float(matches[1]) / divisor
+                        formatted_ranges.append(f"({min_val}-{max_val})")
+                    else:
+                        formatted_ranges.append(range_str)
+                return formatted_ranges, display_unit
+            else:
+                matches = re.findall(r"[\d.]+", str(bandwidth_ranges))
+                if len(matches) >= 2:
+                    min_val = float(matches[0]) / divisor
+                    max_val = float(matches[1]) / divisor
+                    return f"({min_val}-{max_val})", display_unit
+        
+        return bandwidth_ranges, bandwidth_unit
 
     @staticmethod
     def _calculated_value_error_msg(calculated_value, validation_error):
