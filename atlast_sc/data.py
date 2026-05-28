@@ -124,7 +124,7 @@ class Data:
 
     # Sky frequency of the observations
     obs_frequency = DataType(
-        default_value=100,
+        default_value=406,
         default_unit=str(u.GHz),
         lower_value=35,
         upper_value=950,
