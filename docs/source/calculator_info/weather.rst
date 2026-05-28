@@ -62,17 +62,15 @@ These percentiles map to the precipitable water vapour (PWV) based on the pressu
     * - 95.00
       - 5.21
 
+Atmospheric windows
+-------------------
+As can be seen from the transmission plot above, there are regions of high transmission that provide the atmospheric windows. `Di Mascolo et al. 2025 <https://ui.adsabs.harvard.edu/abs/2025ORE.....4..113D/abstract>`__ investigated the maximum bandwidth for each window, making use of the ``finetune`` parameter for :ref:`broadband sensitivity <section_broadband>`, which we show in the table below as a guide for the maximum bandwidth that should be used when setting up continuum observations. Note that this only takes into account the impact due to the atmosphere. In reality, continuum cameras will often have a lower bandwidth than this due to aspects of the instruments themselves, such as the design of the filters. For instance, :doc:`MUSCAT <muscat_tsys>` has a bandwidth of 45 GHz with a central frequency of 277.5 GHz. See the :doc:`instrument overview <instrument_overview>` and individual instrument pages for further details on the ranges of bandwidths they can cover.
 
-Suggested Continuum Set-up
---------------------------
-
-Continuum cameras are typically designed to maximise sensitivity by using a bandwidth roughly as wide as the atmospheric window. `Di Mascolo et al. 2025 <https://ui.adsabs.harvard.edu/abs/2025ORE.....4..113D/abstract>`__ investigated the optimum frequency and bandwidth combinations for AtLAST based on the atmospheric model and found the values shown in the table below, which we suggest using for setting up continuum observations with the calculator. Note that this does not consider any instrumental effects due to the filters, detector and so on, which are not known at this stage.
-
-.. list-table:: Suggested Continuum Parameters
+.. list-table:: Central frequency and maximum bandwidth for the atmospheric windows
     :widths: 10 10
     :header-rows: 1
 
-    * - Observing frequency
+    * - Central frequency
         - (GHz)
       - Bandwidth
         - (GHz)

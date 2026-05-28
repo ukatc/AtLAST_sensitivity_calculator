@@ -96,7 +96,9 @@ where the exponential term accounts for Ruze losses due to the RMS surface accur
 
 The values of these efficiencies used in the calculator can be found via the telescope parameters in the tables in :doc:`calculation_inputs`, by issuing the ``calculator.telescope_and_environment.show()`` command after creating a calculator instance in python, or by inspecting the values in ``data.py`` in the source code.
 
-Broad-band Sensitivity
+.. _section_broadband:
+
+Broadband Sensitivity
 ----------------------
 
 For continuum observations, the bandwidth used can be very broad. In these cases, :math:`\mathfrak{t}` and :math:`T_{atm}` can vary greatly across the bandwidth and it is no longer appropriate to simply use the value at the central frequency. For this reason, we have implemented an option to integrate across the band that can be activated by initialising the calculator with ``Calculator(finetune=True)``. Instead of rescaling the :math:`SEFD` term by the square root of the bandwidth, it generates an effective :math:`SEFD` by discretizing the :math:`SEFD` estimation over the frequency values from the input atmospheric tables to gain the :math:`SEFD_i` for each discrete frequency :math:`\nu_i` with bandwidth :math:`d\nu_i=0.5[\nu_{i+1}-\nu_{i-1}]`. The output effective :math:`SEFD` to be used in the sensitivity estimation is thus:
