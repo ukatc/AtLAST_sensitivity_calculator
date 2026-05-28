@@ -25,7 +25,7 @@ Setting up your development environment
    conda activate sens-calc
 
 
-The Python package
+The Python Package
 ------------------
 Building and deploying the Python package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -43,8 +43,6 @@ and execute the following:
 This will create a source distribution (``tar.gz`` file) and a built distribution
 (``.whl`` file) in the ``dist`` directory.
 
-TODO: complete
-
 The ``buildpythonpackage`` target in the ``makefile`` performs this step.
 
 .. note::
@@ -52,12 +50,12 @@ The ``buildpythonpackage`` target in the ``makefile`` performs this step.
     FUTURE WORK: The ``atlast_sc`` package will be hosted on a publicly available server.
     Building and deploying the package should be automated using GitHub actions.
 
-The web client
+The Web Client
 --------------
 The web client can be run directly in your development environment from the command line. Alternatively, it can be
 run in a docker container. Instructions for each method are provided below.
 
-Running the web client directly
+Running the web client locally
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1. Ensure you have created and activated the conda environment as per the instructions above.
@@ -139,7 +137,7 @@ Running the web client directly
        GIT_CR_REPO=ghcr.io/ukatc/atlast_sensitivity_calculator/atlast_sc_client
 
 
-    The are two targets in the ``makefile`` for building and pushing the container image:
+The are two targets in the ``makefile``, one for building and the other for pushing the container image:
 
     * ``buildwebclientimage``: This builds the image and tags it with the name of your current git branch (e.g., ``main``). The
       current branch name is also passed as an argument to the build process. This is then used to install the Python package
@@ -222,7 +220,9 @@ UML diagrams for the ``atlast_sc`` package can be generated using ``pyreverse``.
 utilities for reverse engineering Python code that is integrated into ``pylint``.
 
 This project uses `PlantUML <https://en.wikipedia.org/wiki/PlantUML>`__ to specify and
-visualize UML diagrams.
+visualize UML diagrams. UML diagrams can be rendered in the sphinx documentation using the
+``sphinxcontrib-plantuml`` extension. The ``code_docs`` directory contains a
+number of examples of how to use the sphinx PlantUML extension.
 
 To generate package and class ``puml`` files using ``pyreverse``, navigate to the ``atlast_sc`` directory
 and execute the following:
