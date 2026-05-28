@@ -10,11 +10,11 @@ and modified to be able to integrate the new instrument to the existing calculat
 These changes will be made in the respective sub-directories and files within the 
 *atlast_sc/instruments* directory. Details of these steps are provided in the 
 following sub-sections. Once the required files are created and modified, the new instrument
-should be visible on the CLI as well as the web UI and will be used in calculations when the
-user input parameters correspond to the instrument's operational ranges. It should be noted 
-that once the required files are in place, the developer should make sure to update the 
-documentation to include the new instrument and its details, and to provide an example of 
-how to use it in calculations.
+should be visible on the CLI as well as the local version of the web UI and will be used in 
+calculations when the user input parameters correspond to the instrument's operational ranges.
+It should be noted that once the required files are in place, the developer should make sure to 
+update the documentation to include the new instrument and its details, and to provide an example
+of how to use it in calculations.
 
 For the following sections, we will take "Example" as the name of the new instrument to be added, 
 and we will use this name in the examples provided.
