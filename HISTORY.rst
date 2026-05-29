@@ -3,7 +3,7 @@
 - Set a maximum Python version as the calculator is not currently compatible with Python >=3.13.
 - Change the installation instructions to specify a specific Python version.
 
-1.1.1 (2025-01-22)
+1.1.1 (2026-01-22)
 ++++++++++++++++++
 - Updates to readthedocs files to enable readthedocs to display API and UML pages and to automatically create a pdf.
 - Update to pydantic and fastapi as these were causing conflicts with anaconda.
