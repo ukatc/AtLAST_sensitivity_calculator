@@ -17,6 +17,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 user_input = FileHelper.read_from_file('input_data', 'user_inputs.yaml')
 # Initialise the Calculator with user inputs dictionary
 calculator = Calculator(user_input)
+
 # calculator = Calculator()
 
 # Calculate sensitivity or t_int depending on input
@@ -46,7 +47,7 @@ print("-----------")
 # calculator.bandwidth = 10*u.GHz
 sens = 10*u.mJy
 calculated_t_int = \
-    calculator.calculate_t_integration(sens, False)
+    calculator.calculate_t_integration(calculator._uip, sens, False)
 print("Integration time: {:0.2f} to obtain a sensitivity of {:0.2f}"
       .format(calculated_t_int, sens))
 

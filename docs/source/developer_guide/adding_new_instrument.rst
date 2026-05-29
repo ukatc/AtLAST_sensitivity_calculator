@@ -1,0 +1,229 @@
+Adding a New Instrument
+=======================
+When an instrument needs to be added to the calculator, a couple of files need to be created 
+and modified to be able to integrate the new instrument to the existing calculator process. 
+
+- creation of a YAML file with the name of the instrument
+- creation of a Python module with the name of the instrument
+- modifications to the configuration file
+
+These changes will be made in the respective sub-directories and files within the 
+*atlast_sc/instruments* directory. Details of these steps are provided in the 
+following sub-sections. Once the required files are created and modified, the new instrument
+should be visible on the CLI as well as the local version of the web UI and will be used in 
+calculations when the user input parameters correspond to the instrument's operational ranges.
+It should be noted that once the required files are in place, the developer should make sure to 
+update the documentation to include the new instrument and its details, and to provide an example
+of how to use it in calculations.
+
+For the following sections, we will take "Example" as the name of the new instrument to be added, 
+and we will use this name in the examples provided.
+
+
+Creating the instrument YAML file
+---------------------------------
+Firstly, a YAML file with the name of the instrument should be created in the 
+sub-directory called :ref:`data <atlast-sc-data-module>`. It should include details of the instrument in the 
+following format: 
+
+.. code-block:: yaml
+
+    name: "Example"
+    allowed_ranges:
+        observing_frequency:
+            ranges: [(500.0-600.0),(700.0-800.0)]
+            unit: GHz
+        bandwidth: 
+            ranges: [(10.9e4-1.8e8)]
+            unit: Hz
+    custom_parameter_with_unit:
+        values: 1.0
+        unit: unit of custom parameter
+    custom_parameter_without_unit:
+        values: 4.7
+    custom_parameter_with_two_values: 
+        values: [30.0,40.0]
+        unit: unit of custom parameter
+
+There are a couple of key points to note about the format of the YAML file:
+
+- All ranges for a given parameter must be expressed in the same unit. (i.e. unit cannot be GHz 
+  for the first observing frequency range, Hz for the second, etc.)
+- Any recognised *astropy* units can be used for the unit entry. 
+- If a parameter does not have a unit, the unit entry can be omitted.
+
+It should be noted that the order of entries in the YAML file is not important, however the format 
+of the entries should be followed as shown above to maintain consistency. For more details on the 
+format and content of the YAML file, the Default instrument YAML file could be taken as a template 
+and the other instrument YAML files could be taken as examples of how these files could be customised.
+
+Creating the instrument Python module
+-------------------------------------
+Secondly, a Python module should be created in the *classes* sub-directory with the
+new instrument name. Following the example above, the name of the module file should 
+be "Example.py" to be consistent with that of the YAML file and the name of instrument 
+class within it. The module should include a class with the name of the instrument 
+that inherits from the base ``Instrument`` class. The module should also include any 
+instrument specific parameters and methods that are required for the new instrument.
+Following code block is a simple example on what the module could look like.
+
+.. code-block:: python 
+
+    """
+    Example instrument parameters
+    """        
+    class Example(Instrument):
+        def __init__(self, data):
+            super().__init__(data)
+            self._custom_parameter = data.custom_parameter
+            self.another_custom_parameter = data.custom_parameter_with_unit
+
+        ##################################
+        # Instrument specific parameters #
+        ##################################
+
+        @property
+        def custom_parameter(self):
+            return self._custom_parameter
+
+        @custom_parameter.setter
+        def custom_parameter(self, value):
+            self._custom_parameter = value
+
+        ################################################
+        # Additional instrument specific methods below #
+        ################################################
+
+        def calculate_system_temperature(self, obs_freq, bandwidth, eta_eff, 
+                                     T_amb, T_sky, transmittance, n_pol):
+            # Custom calculation for system temperature, 
+            # otherwise default calculation can be used.
+            system_temp = 1 * u.K # Example value
+
+            self.T_sys = system_temp
+            return system_temp
+
+        def custom_calculation_method(self):
+            """
+            Performs a custom calculation for the Example instrument. 
+            This is just an example method and an example comment.
+            """
+            calculation_result = self.custom_parameter * 2
+            return calculation_result
+        
+The ``__init__`` method of the instrument class has a constructor parameter called ``data`` 
+which contains the parameters set in the instrument YAML file. The user should not change 
+the name of this parameter as it is required for the initilisation of the instrument class. 
+The user can set any of the parameters from the YAML file as properties or variables in the
+instrument class as shown in the example above for the parameter called ``custom_parameter``
+and ``another_custom_parameter``.
+
+Setting the ``custom_parameter`` as a property with a setter method allows easy 
+access and update of this parameter. If there are any specific validation 
+requirements for the parameter, the developer can also include validation within the
+setter method. Using properties with setter methods are also useful if a method within
+the instrument module needs to update the parameter value for any reason.
+
+The parameters set in the instrument YAML file can be accessed in the instrument module 
+via the ``data`` argument in the initilisation method. There is no reason that the developer
+needs to set each instrument parameter as a Python property. However, as mentioned in the 
+previous paragraph, doing so allows more complexity to be added to the parameter if required.
+The parameters in the YAML file can be used in any way within the instrument module. They 
+can be used in methods to perform calculations, or they can be updated and used in calculations, 
+etc.
+
+Each instrument Python module must include a method with the name ``calculate_system_temperature`` 
+that performs the calculation of system temperature for the instrument. The input parameters for 
+this method should be the same as those shown in the example above, as these are the parameters 
+that the calculator will be providing to the method when it is called within the calculation process. 
+The developer can modify the calculation within the method as required for the new instrument, 
+but the method should still be called ``calculate_system_temperature`` and it should still take 
+the same input parameters as shown above. If there is no specific calculation required for the
+instrument, the method can simply include the default calculation as shown below and in the 
+*Default* instrument module. 
+
+.. code-block:: python
+
+    def calculate_system_temperature(self, obs_freq, bandwidth, eta_eff, 
+                                     T_amb, T_sky, transmittance, n_pol):
+        """
+        Returns system temperature, following calculation in [doc]
+
+        :return: system temperature in Kelvin
+        :rtype: astropy.units.Quantity
+        """
+        self.T_rx = self.calculate_receiver_temp(obs_freq)
+        system_temp = 1 / (eta_eff * transmittance) * \
+            (self.T_rx
+            + (eta_eff * T_sky)
+            + ((1 - eta_eff) * noise_temperature(T_amb, obs_freq))
+            )
+        self.T_sys = system_temp
+        return system_temp
+
+Note that there is a line to assign the variable ``T_sys`` to the calculated system temperature. 
+This is important as the calculator will use this variable for the sensitivity calculation. 
+As mentioned earlier, if the new instrument requires a different calculation for system temperature, 
+the developer can modify the method accordingly, but the calculated value should still be assigned the to ``T_sys``.
+The ``T_sys`` variable should be an *astropy* quantity with units of Kelvin (or its equivalent in other units).
+
+For more detail on how to construct the module, the Default instrument Python module
+could be taken as the base example. Below are different types of instrument categories
+where the individual Python modules could be taken as an example on how a new instrument 
+module in the same category could be customised:
+
+    - Heterodynes *(FINER, SEPIA, CHAI)*
+    - Continuum/LEKID *(MUSCAT)*
+    - IFU/MKID *(TIFUUN)*
+
+Modifying the configuration file to add the new instrument
+-----------------------------------------------------------
+Thirdly, a couple of lines should be modified in :ref:`config.py <atlast-sc-instruments-module>` where they are 
+indicated within the configuration file with comments.
+
+In the initilisation method, a dictionary containing pointers to the new instrument's Python module 
+and YAML file name should be added in similar format to the existing instruments. 
+
+.. code:: python
+
+    default_instrument = {'class': 'Default.py', 'data': 'Default.yaml'}
+    # TODO: Add your custom instrument here.
+
+After creating the dictionary variable for the new instrument, it should be added 
+to the ``available_instruments`` list.
+
+.. code:: python
+    
+    available_instruments = [
+        default_instrument,
+        # TODO: Add your custom instrument here.
+    ]
+
+When the new instrument is added to the necessary sections mentioned above in the configuration file, 
+it will be available for selection in the calculator.
+
+Add the new instrument to the documentation
+-------------------------------------------
+Once the new instrument is added to the calculator, the documentation should be updated to include
+a page for the new instrument in the ``/docs/source/calculator_info`` directory. This should include a description 
+of the instrument, references to literature on the instrument and provide a detailed explanation of 
+the equations used to calculate the system temperature for the new instrument. The documentation should 
+contain its operational ranges, any specific parameters it has for calculations. References to the new 
+page should be added to the :doc:`instrument overview <../calculator_info/instrument_overview>` and 
+:doc:`sensitivity calculation <../calculator_info/sensitivity>` pages. This will help users understand the capabilities 
+of the new instrument and how it can be used in their calculations.
+
+Add a Jupyter notebook example for the new instrument
+------------------------------------------------------
+To additionally help users understand the capabilities of the new instrument and how it can be used 
+in their calculations, there is a possibility of including a Jupyter notebook in the 
+``Jupyter_Notebooks/Instrument_Walkthroughs`` directory. Our recommendation is to include information
+on 
+
+* how to set-up the calculator for this instrument
+
+* quick demonstration of its typical usage
+
+* in-depth exploration of the sensitivity calculation for this instrument including the noise contributions from the instrument, the telescope and the environment.
+
+Please see the other walkthroughs in that directory for examples.

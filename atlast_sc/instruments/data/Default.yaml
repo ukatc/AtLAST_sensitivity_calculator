@@ -1,0 +1,13 @@
+name: "Default"
+allowed_ranges:
+  observing_frequency:
+    ranges: [(35.0-950.0)]
+    unit: GHz
+  bandwidth: 
+    ranges: []
+    unit: MHz
+receiver_temperature: 
+  values: []
+  unit: K
+prefactor:
+  value: 5

@@ -6,7 +6,7 @@ Background
 
 The Atacama Large Aperture Submillimeter Telescope (AtLAST) is a project to build a new 50m single-dish telescope to observe at sub-mm wavelengths that is currently in the design study phase. For further details on the project, see https://www.atlast.uio.no/.
 
-The AtLast Sensitivity Calculator can be used to calculate the required
+The AtLAST Sensitivity Calculator can be used to calculate the required
 on source exposure time per pointing to achieve a given sensitivity or, conversely, the sensitivity
 obtained for a given exposure time. The sensitivity calculator is designed on our current best estimates for the telescope and instrument parameters, but these are likely to be refined as the project develops.
 
@@ -40,4 +40,7 @@ Information about the structure of the repository can be found [``here``](docs/s
 Funding Acknowledgement
 ===============================
 
-This project has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 951815
+This project has received funding from the European Union's Horizon Europe research and innovation programme under grant agreement Nos. 951815 (AtLAST) and 101188037 (AtLAST2). Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or European Research Executive Agency. Neither the European Union nor the European Research Executive Agency can be held responsible for them.
+
+<img src="docs/source/eu-flag.png" alt="drawing" style="width:200px;"/>
+

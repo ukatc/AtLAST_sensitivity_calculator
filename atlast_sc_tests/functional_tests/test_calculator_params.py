@@ -3,14 +3,26 @@ import numpy as np
 import pytest
 from pydantic import ValidationError
 from astropy import units as u
-from astropy import constants
+from atlast_sc.parameter_setup import ParameterSetup
 from atlast_sc.calculator import Calculator
 from atlast_sc.derived_groups import AtmosphereParams, Temperatures, \
     Efficiencies
+
+from atlast_sc.instruments.classes.Default import Default
+from atlast_sc.instruments.classes.Chai import Chai
+from atlast_sc.instruments.classes.Finer import Finer
+from atlast_sc.instruments.classes.Muscat import Muscat
+from atlast_sc.instruments.classes.Sepia import Sepia
+from atlast_sc.instruments.classes.Tifuun import Tifuun
+
+from atlast_sc.utils import FileHelper
+
 from atlast_sc_tests.utils import does_not_raise
 
 
 class TestCalculationInput:
+    
+    # Variables needed for tests
     unit_exception = 'must have one of the following units'
     value_out_of_range_exception = 'must be in the range'
     value_too_high_exception = 'must be less than'
@@ -103,7 +115,6 @@ class TestCalculationInput:
 
         with expect_raises as exception_info:
             Calculator(input_data)
-
         
         if exception_match_string:
             # Note: errors returns a list of dictionaries, we are interested in the first
@@ -123,6 +134,9 @@ class TestCalculationInput:
 
 class TestDerivedGroups:
 
+    # Variables needed for tests
+    default_inst_data = FileHelper.read_instrument_yaml_file("Default")
+    default_inst_module = Default(default_inst_data)
     obs_frequency_bands = [
         (35, "band 1"),
         (60, "opaque"),
@@ -138,31 +152,65 @@ class TestDerivedGroups:
         (750, "opaque"),
         (850, "band 10"),
     ]
+    instrument_modules = [
+        (Tifuun(FileHelper.read_instrument_yaml_file("Tifuun")), 
+         "Tifuun", 91.0 * u.GHz, 9 * u.GHz),
+        (Muscat(FileHelper.read_instrument_yaml_file("Muscat")), 
+         "Muscat", 251.0 * u.GHz, 2 * u.MHz),
+        (Finer(FileHelper.read_instrument_yaml_file("Finer")), 
+         "Finer", 210.0 * u.GHz, 8.8e4 * u.Hz),
+        (Chai(FileHelper.read_instrument_yaml_file("Chai")), 
+         "Chai", 461.0 * u.GHz, 6.1e4 * u.Hz),
+        (Sepia(FileHelper.read_instrument_yaml_file("Sepia")), 
+         "Sepia", 273.0 * u.GHz, 6.25e4 * u.Hz)
+    ]
+
+    # TODO: Review if this test is needed.
+    # Not sure if it is needed. Probably can ignore this as this is
+    # checked when test_instrument_specific_receiver_temperature()
+    # is executed anyway.
+    @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq,bandwidth', instrument_modules)
+    def test_instrument_modules(self, inst_spec_module, inst_name, obs_freq, bandwidth):
+        # Ensure that the instrument modules correspond to correct
+        # instrument names
+        assert inst_spec_module.name == inst_name
+
+    @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq,bandwidth', instrument_modules)
+    def test_instrument_specific_receiver_temperature(self, inst_spec_module, 
+                                                        obs_freq, inst_name, bandwidth):
+        if hasattr(inst_spec_module, 'calculate_receiver_temp'):
+            receiver_temperature = inst_spec_module.calculate_receiver_temp(obs_freq* u.GHz)
+
+            # Make sure the temperature is returned in Kelvin
+            assert receiver_temperature.unit == "K"
+            assert receiver_temperature == inst_spec_module.T_rx
+        else:
+            assert True
 
     @pytest.mark.parametrize('obs_freq,band', obs_frequency_bands)
-    def test_tau_atm(self, obs_freq, band, weather, atmosphere_params):
+    def test_transmittance(self, obs_freq, band, weather, atmosphere_params):
 
         elevations = [5, 45]
 
-        tau_factors = []
+        transmittance_factors = []
         obs_freq = obs_freq * u.GHz
         for elevation in elevations:
             elevation = elevation * u.deg
-            tau_factors.append(
-                atmosphere_params.calculate_tau_atm(obs_freq, weather,
+            transmittance_factors.append(
+                atmosphere_params.calculate_transmittance(obs_freq, weather,
                                                     elevation)
             )
 
-        # Check that the tau factor for the lower elevation is greater than the
-        #   tau factor for the higher elevation
-        assert tau_factors[0] > tau_factors[1]
+        # Check that the transmittance factor for the lower elevation is less than the
+        #   transmittance factor for the higher elevation
+        assert transmittance_factors[0] < transmittance_factors[1]
 
-        # Check that the tau factor is "high" for frequencies between bands
-        for tau_factor in tau_factors:
+        # Check that the tau factor is "low" for frequencies between bands
+        for transmittance_factor in transmittance_factors:
             if band == "opaque":
-                assert tau_factor > 10
+                assert transmittance_factor < 1e-4
             else:
-                assert tau_factor < 10
+                assert transmittance_factor > 1e-4
 
     @pytest.mark.parametrize('obs_freq,band', obs_frequency_bands)
     def test_atmospheric_temperature(self, obs_freq, band, weather, elevation,
@@ -172,9 +220,9 @@ class TestDerivedGroups:
 
         temp = atmosphere_params.calculate_atmospheric_temperature(obs_freq,
                                                                    weather)
-        tau = atmosphere_params.calculate_tau_atm(obs_freq, weather, 90*u.deg)
+        transmittance = atmosphere_params.calculate_transmittance(obs_freq, weather, 90*u.deg)
         # convert atmospheric temperature to sky temperature at zenith = 0
-        temp = temp * (1.00-np.exp(-tau))
+        temp = temp * (1.00-transmittance)
 
         # Check that the atmospheric temperature is "cold" for transparent
         # frequencies and "hot" for opaque frequencies
@@ -183,63 +231,60 @@ class TestDerivedGroups:
         else:
             assert temp < 150 * u.K
 
-    def test_receiver_temperature(self, obs_freq, weather, elevation,
-                                  t_cmb, t_amb, g, eta_eff):
+    @pytest.mark.parametrize('inst_spec_module,inst_name,obs_freq,bandwidth', instrument_modules)
+    def test_system_temperature(self,  inst_spec_module, inst_name, obs_freq, bandwidth,
+                                n_pol, t_cmb, t_amb, eta_eff, weather, elevation):
 
-        receiver_temperature = \
-            Temperatures._calculate_receiver_temperature(obs_freq)
+        atmosphere_params = AtmosphereParams()
+        transmittance = \
+            atmosphere_params.calculate_transmittance(obs_freq, weather,
+                                                elevation)
+        T_atm = \
+            atmosphere_params.calculate_atmospheric_temperature(obs_freq,
+                                                                weather)
+        temperatures = Temperatures(inst_spec_module, obs_freq, bandwidth, t_cmb, t_amb, eta_eff,
+                                        T_atm, transmittance, n_pol)
 
-        # Make sure the temperature is returned in Kelvin
-        assert receiver_temperature.unit == "K"
+        system_temperature = temperatures.T_sys
+        assert inst_spec_module.T_sys == system_temperature
 
-        # Check that the calculated temperature is 5 times the theoretical
-        # minimum receiver temperature
-        theoretical_min_temp = (constants.h * obs_freq / constants.k_B).to(u.K)
-        expected_temp = 5 * theoretical_min_temp
-        # Handle rounding errors
-        assert round(receiver_temperature.value, 6) == \
-               round(expected_temp.value, 6)
+        # TODO: The following test will be reviewed once each instrument's 
+        # system temperature retrieval is implemented. 
 
-    def test_system_temperature(self, t_cmb, t_amb, g, eta_eff, weather,
-                                elevation):
+        # band_temps = []
 
-        band_temps = []
+        # for obs_freq_band in self.obs_frequency_bands:
 
-        for obs_freq_band in self.obs_frequency_bands:
+        #     obs_freq = obs_freq_band[0] * u.GHz
+        #     band = obs_freq_band[1]
 
-            obs_freq = obs_freq_band[0] * u.GHz
-            band = obs_freq_band[1]
+        #     atmosphere_params = AtmosphereParams()
+        #     transmittance = \
+        #         atmosphere_params.calculate_transmittance(obs_freq, weather,
+        #                                             elevation)
+        #     T_atm = \
+        #         atmosphere_params.calculate_atmospheric_temperature(obs_freq,
+        #                                                             weather)
+        #     temperatures = Temperatures(inst_spec_module, obs_freq, t_cmb, t_amb, eta_eff,
+        #                                  T_atm, transmittance)
 
-            atmosphere_params = AtmosphereParams()
-            tau_atm = \
-                atmosphere_params.calculate_tau_atm(obs_freq, weather,
-                                                    elevation)
-            T_atm = \
-                atmosphere_params.calculate_atmospheric_temperature(obs_freq,
-                                                                    weather)
-            temperatures = Temperatures(obs_freq, t_cmb, t_amb, g,
-                                        eta_eff, T_atm, tau_atm)
+        #     system_temperature = temperatures.T_sys
 
-            system_temperature = \
-                temperatures._calculate_system_temperature(g, t_cmb, eta_eff,
-                                                           t_amb, T_atm,
-                                                           tau_atm)
+        #     # Confirm that the system temperature is *very* hot for
+        #     # opaque frequencies
+        #     if band == "opaque":
+        #         assert system_temperature > 1e9 * u.K
+        #     else:
+        #         band_temps.append(system_temperature.value)
+        #         assert system_temperature < 1800 * u.K
 
-            # Confirm that the system temperature is *very* hot for
-            # opaque frequencies
-            if band == "opaque":
-                assert system_temperature > 1e9 * u.K
-            else:
-                band_temps.append(system_temperature.value)
-                assert system_temperature < 1800 * u.K
-
-        # Confirm that the system temperature follows an increasing trend
-        # with the band
-        x = np.arange(1, len(band_temps)+1)
-        y = np.array(band_temps)
-        res = linregress(x, y)
-        # print(f'Equation: {res[0]:.3f} * x + {res[1]:.3f}')
-        assert res[0] > 1
+        # # Confirm that the system temperature follows an increasing trend
+        # # with the band
+        # x = np.arange(1, len(band_temps)+1)
+        # y = np.array(band_temps)
+        # res = linregress(x, y)
+        # # print(f'Equation: {res[0]:.3f} * x + {res[1]:.3f}')
+        # assert res[0] > 1
 
     def test_eta_a(self, surface_rms, eta_ill, eta_spill, eta_block, eta_pol):
         test_obs_freqs = \

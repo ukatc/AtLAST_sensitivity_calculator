@@ -1,3 +1,31 @@
+2.0.0-alpha.3 (2026-05-15)
+++++++++++++++++++++++++++
+- Re-added sideband ratio for CHAI and set it to 1.
+- Ensured n_pol=1 in the walkthrough.
+- Updated documentation and walkthrough to reflect these changes.
+
+2.0.0-alpha.2 (2026-04-27)
+++++++++++++++++++++++++++
+- Added / updated dependencies to ensure documentation could be generated locally.
+
+2.0.0-alpha.1 (2026-03-20)
+++++++++++++++++++++++++++
+- Refactored code to improve flexibility.
+- Changed the names and workings of calculation input parameter classes to make more sense with the addition of instrument modules.
+- Added functionality for instrument modules to be introduced for calculating the system temperature.
+- Added specific instrument modules to represent CHAI, FINER, MUSCAT, SEPIA, TIFUUN.
+- Added automatic instrument selection based on observing frequency and bandwidth input by user.
+- Added instrument selection option on the CLI.
+- Added functionality to see if requested instrument can be chosen.
+- Added functionality to show a list of instruments with their observing frequency and bandwidth ranges.
+- Made instrument name specification case insensitive.
+- Modified unit tests according to the new structure.
+- More explanatory exception messages.
+- Changed am model output to produce Rayleigh-Jeans brightness temperature and to avoid including CMB (to avoid counting it twice).
+- Changed system temperature and sky temperature equations to ensure all temperatures are noise temperatures.
+- Added notebook walkthroughs for each of the instruments.
+- Documentation updates to take account of these changes.
+
 1.1.3 (2026-04-15)
 ++++++++++++++++++
 - Set a maximum Python version as the calculator is not currently compatible with Python >=3.13.
@@ -19,5 +47,4 @@
 
 1.0.1 (2023-10-31)
 ++++++++++++++++++
-
 - Update numpy and astropy requirements so that the calculator is compatible with Python 3.12.

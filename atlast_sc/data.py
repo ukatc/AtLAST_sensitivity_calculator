@@ -82,9 +82,28 @@ class Data:
         units=[str(u.s), str(u.min), str(u.h)],
     )
 
+    calculated_t_int = DataType(
+        default_value=6.7636,
+        default_unit=str(u.s),
+        lower_value=0,
+        upper_value=float('inf'),
+        upper_value_is_ceil=True,
+        units=[str(u.s), str(u.min), str(u.h)],
+    )
+
     sensitivity = DataType(
         default_value=3.0,
         default_unit=str(u.mJy),
+        lower_value=0,
+        lower_value_is_floor=True,
+        upper_value=float('inf'),
+        upper_value_is_ceil=True,
+        units=[str(u.uJy), str(u.mJy), str(u.Jy)],
+    )
+
+    calculated_sensitivity = DataType(
+        default_value=780.2102,
+        default_unit=str(u.uJy),
         lower_value=0,
         lower_value_is_floor=True,
         upper_value=float('inf'),
@@ -105,7 +124,7 @@ class Data:
 
     # Sky frequency of the observations
     obs_frequency = DataType(
-        default_value=100,
+        default_value=406,
         default_unit=str(u.GHz),
         lower_value=35,
         upper_value=950,
@@ -194,6 +213,8 @@ class Data:
     )
 
     param_data_type_dicts = {
+        'calculated_t_int': calculated_t_int,
+        'calculated_sensitivity': calculated_sensitivity,
         't_int': integration_time,
         'sensitivity': sensitivity,
         'bandwidth': bandwidth,
@@ -201,16 +222,15 @@ class Data:
         'n_pol': n_pol,
         'weather': weather,
         'elevation': elevation,
-        'g': g,
         'surface_rms': surface_rms,
         'dish_radius': dish_radius,
         'T_amb': t_amb,
+        'T_cmb': t_cmb,
         'eta_eff': eta_eff,
         'eta_ill': eta_ill,
         'eta_spill': eta_spill,
         'eta_block': eta_block,
-        'eta_pol': eta_pol,
-        'T_cmb': t_cmb,
+        'eta_pol': eta_pol
     }
 
 

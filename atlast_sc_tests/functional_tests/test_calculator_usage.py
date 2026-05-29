@@ -2,7 +2,7 @@ import pytest
 from astropy import units as u
 from atlast_sc.calculator import Calculator
 from atlast_sc.utils import FileHelper
-
+from atlast_sc.exceptions import CalculatedValueInvalidWarning
 
 class TestCalculatorUsage:
 
@@ -13,16 +13,15 @@ class TestCalculatorUsage:
 
         # Calculate the sensitivity using default parameters
         sens = test_calculator.calculate_sensitivity()
-
         # Verify that the calculator now stores the newly calculated
         # sensitivity
-        assert sens == test_calculator.sensitivity
-        # Verify that the sensitivity is about 780 mJy
-        assert test_calculator.sensitivity.value == pytest.approx(780, 0.01)
-        assert test_calculator.sensitivity.unit == u.uJy
+        assert sens == test_calculator.calculated_sensitivity
+        # Verify that the sensitivity is about 3.48 mJy
+        assert test_calculator.calculated_sensitivity.value == pytest.approx(3.48, 0.01)
+        assert test_calculator.calculated_sensitivity.unit == u.mJy
 
         # Update observing frequency
-        test_calculator.obs_freq = 850 * u.GHz
+        test_calculator.user_input.obs_freq = 850 * u.GHz
         # Verify that other parameters that depend on the observing frequency
         # have been updated
         assert test_calculator.derived_parameters \
@@ -35,52 +34,54 @@ class TestCalculatorUsage:
 
         # Calculate sensitivity using a different integration time
         test_t_int = 3 * u.h
-        test_calculator.calculate_sensitivity(test_t_int)
+        test_calculator.calculate_sensitivity(t_int=test_t_int)
         # Verify that the integration time has been updated
-        assert test_calculator.t_int == test_t_int
+        assert test_calculator.user_input.t_int == test_t_int
+
 
         # Calculate sensitivity using a different integration time, but don't
         # update the calculator
         test_t_int = 3 * u.min
-        sens = test_calculator.calculate_sensitivity(test_t_int,
+        sens = test_calculator.calculate_sensitivity(t_int=test_t_int,
                                                      update_calculator=False)
         # Verify that integration time has not been updated
-        assert test_calculator.t_int != test_t_int
+        assert test_calculator.user_input.t_int != test_t_int
         # Verify that the sensitivity has not been updated
-        assert test_calculator.sensitivity != sens
+        assert test_calculator.calculated_sensitivity != sens
 
         # Reset the calculator
         test_calculator.reset()
         # Verify that the calculator has now been reset to its initial state
-        assert test_calculator.calculation_inputs == \
-               calculator.calculation_inputs
-        assert test_calculator.derived_parameters == \
-               calculator.derived_parameters
+        assert test_calculator._param_setup.calculation_inputs == \
+               calculator._param_setup.calculation_inputs
+        assert test_calculator.derived_parameters \
+               == calculator.derived_parameters
 
         # Calculate the integration time with default values
         new_t_int = test_calculator.calculate_t_integration()
         # Verify that the calculator has been updated with calculated
         # integration time
-        assert test_calculator.t_int == new_t_int
-        # Verify that the calculated integration time is about 6.76 s
-        assert test_calculator.t_int.value == pytest.approx(6.76, 0.01)
-        assert test_calculator.t_int.unit == u.s
+        assert test_calculator.calculated_t_int == new_t_int
+        # Verify that the calculated integration time is about 2.24 min
+        assert test_calculator.calculated_t_int.value == pytest.approx(2.24, 0.01)
+        assert test_calculator.calculated_t_int.unit == u.min
 
         # Calculate integration time using a different sensitivity
         test_sens = 300 * u.mJy
-        test_calculator.calculate_t_integration(test_sens)
+
+        test_calculator.calculate_t_integration(sensitivity=test_sens)
         # Verify that the sensitivity has been updated
-        assert test_calculator.sensitivity == test_sens
+        assert test_calculator.user_input.sensitivity == test_sens
         # Calculate integration time using a different sensitivity, but don't
         # update the calculator
         test_sens = 30 * u.mJy
         t_int = \
-            test_calculator.calculate_t_integration(test_sens,
+            test_calculator.calculate_t_integration(sensitivity=test_sens,
                                                     update_calculator=False)
         # Verify that the sensitivity has not been updated
-        assert test_calculator.sensitivity != test_sens
+        assert test_calculator.calculated_sensitivity != test_sens
         # Verify that the integration time has not been updated
-        assert test_calculator.t_int != t_int
+        assert test_calculator.calculated_t_int != t_int
 
     def test_calculator_from_to_files(self, test_files_path, tmp_output_dir):
 
@@ -88,20 +89,21 @@ class TestCalculatorUsage:
         # result
         user_input = FileHelper.read_from_file(test_files_path,
                                                'user_input.yaml')
-        test_calculator = Calculator(user_input)
+        
+        test_calculator = Calculator(user_input=user_input)
 
         # Verify that the calculator has been initialized with the correct
         # user input
-        assert test_calculator.t_int == 150 * u.s
-        assert test_calculator.sensitivity == 30 * u.mJy
-        assert test_calculator.bandwidth == 150 * u.MHz
-        assert test_calculator.obs_freq == 200 * u.GHz
-        assert test_calculator.n_pol == 1
-        assert test_calculator.weather == 30
-        assert test_calculator.elevation == 65 * u.deg
+        assert test_calculator.user_input.t_int == 150 * u.s
+        assert test_calculator.user_input.sensitivity == 30 * u.mJy
+        assert test_calculator.user_input.bandwidth == 150 * u.MHz
+        assert test_calculator.user_input.obs_freq == 200 * u.GHz
+        assert test_calculator.user_input.n_pol == 1
+        assert test_calculator.user_input.weather == 30
+        assert test_calculator.user_input.elevation == 65 * u.deg
 
         # Update the observing frequency
-        test_calculator.obs_freq = 850 * u.GHz
+        test_calculator.user_input.obs_freq = 850 * u.GHz
 
         # Calculate the sensitivity
         test_calculator.calculate_sensitivity()
@@ -113,8 +115,8 @@ class TestCalculatorUsage:
         # Verify that the output file contains the expected list of
         # parameters
         expected_params = ['t_int', 'sensitivity', 'bandwidth', 'n_pol',
-                           'obs_freq', 'weather', 'elevation', 'tau_atm',
-                           'T_atm', 'T_rx', 'eta_a', 'eta_s', 'T_sys', 'T_sky',
+                           'obs_freq', 'weather', 'elevation', 'transmittance',
+                           'T_atm', 'T_sky', 'T_sys', 'eta_a', 'eta_s',
                            'sefd']
         # sort the expected parameters
         expected_params.sort()

@@ -39,5 +39,5 @@ sphinx:
 # Optionally build your docs in additional formats such as PDF and ePub
 formats:
    - pdf
-   - epub
+#   - epub # A lot of the formatting does not work well in this format, especially equations
 

@@ -5,7 +5,6 @@ from pydantic import BaseModel, ConfigDict, model_validator
 from astropy.units import Unit, Quantity
 from atlast_sc.data import Data, Validator
 
-
 class ModelUtils:
 
     @staticmethod
@@ -126,9 +125,7 @@ class UserInput(BaseModel):
     def __str__(self):
         return ModelUtils.model_str_rep(self)
 
-
-class InstrumentSetup(BaseModel):
-    g: ValueWithoutUnits = ValueWithoutUnits(value=Data.g.default_value)
+class TelescopeAndEnvironment(BaseModel):
     surface_rms: ValueWithUnits = \
         ValueWithUnits(value=Data.surface_rms.default_value,
                        unit=Data.surface_rms.default_unit)
@@ -138,6 +135,9 @@ class InstrumentSetup(BaseModel):
     T_amb: ValueWithUnits = \
         ValueWithUnits(value=Data.t_amb.default_value,
                        unit=Data.t_amb.default_unit)
+    T_cmb: ValueWithUnits = \
+        ValueWithUnits(value=Data.t_cmb.default_value,
+                       unit=Data.t_cmb.default_unit)
     eta_eff: ValueWithoutUnits = \
         ValueWithoutUnits(value=Data.eta_eff.default_value)
     eta_ill: ValueWithoutUnits = \
@@ -148,10 +148,9 @@ class InstrumentSetup(BaseModel):
         ValueWithoutUnits(value=Data.eta_block.default_value)
     eta_pol: ValueWithoutUnits = \
         ValueWithoutUnits(value=Data.eta_pol.default_value)
-
+    
     def __str__(self):
         return ModelUtils.model_str_rep(self)
-
 
 class CalculationInput(BaseModel):
     """
@@ -159,10 +158,7 @@ class CalculationInput(BaseModel):
     """
 
     user_input: UserInput = UserInput()
-    instrument_setup: InstrumentSetup = InstrumentSetup()
-    T_cmb: ValueWithUnits = \
-        ValueWithUnits(value=Data.t_cmb.default_value,
-                       unit=Data.t_cmb.default_unit)
+    telescope_and_environment: TelescopeAndEnvironment = TelescopeAndEnvironment()
 
     @model_validator(mode='after')
     def validate_fields(field_values):
@@ -170,14 +166,13 @@ class CalculationInput(BaseModel):
         Flatten the field values for convenience
         """
         user_input = field_values.user_input
-        instrument_setup = field_values.instrument_setup
+        telescope_and_environment = field_values.telescope_and_environment
 
         flattened_field_values = {}
         for elem in user_input:
             flattened_field_values[elem[0]] = elem[1].value
-        for elem in instrument_setup:
+        for elem in telescope_and_environment:
             flattened_field_values[elem[0]] = elem[1].value
-        flattened_field_values['T_cmb'] = field_values.T_cmb.value
 
         # Validate units and values on each field
         for key, val in flattened_field_values.items():
@@ -207,13 +202,10 @@ class DerivedParams(BaseModel):
     Derived parameters, calculated from user input and instrument setup
     parameters.
     """
-
     # Atmospheric opacity
-    tau_atm: float
+    transmittance: float
     # Atmospheric temperature
     T_atm: Quantity
-    # Receiver temperature
-    T_rx: Quantity
     # Dish efficiency
     eta_a: float
     # System efficiency
@@ -227,5 +219,23 @@ class DerivedParams(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
+    def __str__(self):
+        return ModelUtils.model_str_rep(self)
+    
+
+class CalculationResult(BaseModel):
+    """
+    Variables used to store calculated sensitivity or integration
+    time results. 
+    """
+
+    calculated_sensitivity: ValueWithUnits = \
+        ValueWithUnits(value=Data.calculated_sensitivity.default_value,
+                    unit=Data.calculated_sensitivity.default_unit)
+
+    calculated_t_int: ValueWithUnits = \
+        ValueWithUnits(value=Data.calculated_t_int.default_value,
+                    unit=Data.calculated_t_int.default_unit)
+    
     def __str__(self):
         return ModelUtils.model_str_rep(self)
