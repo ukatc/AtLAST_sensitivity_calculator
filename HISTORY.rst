@@ -26,15 +26,20 @@
 - Added notebook walkthroughs for each of the instruments.
 - Documentation updates to take account of these changes.
 
-1.1.2 (2026-04-15)
+1.1.3 (2026-04-15)
 ++++++++++++++++++
 - Set a maximum Python version as the calculator is not currently compatible with Python >=3.13.
 - Change the installation instructions to specify a specific Python version.
 
-1.1.1 (2025-01-22)
+1.1.2 (2026-01-22)
 ++++++++++++++++++
 - Updates to readthedocs files to enable readthedocs to display API and UML pages and to automatically create a pdf.
 - Update to pydantic and fastapi as these were causing conflicts with anaconda.
+
+1.1.1 (2025-08-18)
+++++++++++++++++++
+- Updates to reflect corrections to ensure tau_atm is described correctly as 'atmospheric optical depth'.
+- Updates to various documentation files.
 
 1.1.0 (2023-12-12)
 ++++++++++++++++++
