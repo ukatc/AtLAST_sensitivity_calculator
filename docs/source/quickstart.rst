@@ -17,7 +17,7 @@ We recommend creating a fresh environment before installing using pip. Here we a
 Calculating a sensitivity / integration time
 --------------------------------------------
 
-Now start python and run the following to calculate your sensitivity / integration time.
+Now start ``python`` and run the following to calculate your sensitivity / integration time.
 
 .. code-block:: python
 
