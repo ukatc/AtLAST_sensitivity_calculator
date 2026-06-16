@@ -1,3 +1,5 @@
+import { setInstrument } from './rest_calls.js';
+
 const setUIInitialState = (paramData) => {
     // Set all inputs to a valid state
     const allUserInput = document.querySelectorAll(".param-input");
@@ -26,6 +28,29 @@ const hideInvalidMessages = (hidden) => {
     });
 }
 
+const handleInstrumentSelection = (e) => {
+    const selectedInstrument = e.target.value;
+        
+    // Send the selected instrument to the backend to set it as the chosen_instrument
+    setChosenInstrument(selectedInstrument);
+}
+
+const setChosenInstrument = async (instrumentName) => {
+    try {
+        const data = await setInstrument(instrumentName);
+        console.log(data);
+    } catch (error) {
+        console.error("Error setting instrument:", error);
+        // Optionally display error message to user
+        alert(`Failed to set instrument: ${error.message}`);
+    }
+}
+
+const showDifferentInstrumentOptions = (dropdown_choice) => {
+    const instrument_name = document.getElementById(dropdown_choice);
+    instrument_name.addEventListener("change", handleInstrumentSelection);
+}
+    
 const disableCalculateBtn = (disable) => {
     const calculateBtn = document.getElementById("calculate");
     calculateBtn.disabled = disable;
@@ -101,6 +126,6 @@ const toggleSpinner = (action, completed) => {
     }
 }
 
-export {setUIInitialState, hideInvalidMessages, showCalculatedValue,
-        disableCalculateBtn, initializeInputs, initializeUnits,
-        resetOutputBox, toggleSpinner}
+export {setUIInitialState, hideInvalidMessages, showDifferentInstrumentOptions,
+        showCalculatedValue, disableCalculateBtn, initializeInputs, 
+        initializeUnits, resetOutputBox, toggleSpinner}

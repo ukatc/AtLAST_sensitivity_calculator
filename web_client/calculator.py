@@ -5,6 +5,7 @@ from atlast_sc.calculator import Calculator
 from pydantic import ValidationError
 from atlast_sc.data import Data
 
+
 def do_calculation(user_input, calculation):
     """
     Perform the specified calculation (sensitivity or integration time)
@@ -52,15 +53,40 @@ def get_param_values_units():
     return param_values_units
 
 
+def get_available_instruments():
+    """
+    Return a list of available instruments with Default always first
+    """
+    from atlast_sc.instruments.config import InstrumentConfig
+    inst_config = InstrumentConfig()
+    instrument_names = list(inst_config.instrument_classes.keys())
+    # Sort the instruments, but put "Default" first
+    sorted_instruments = sorted(instrument_names)
+    if "Default" in sorted_instruments:
+        sorted_instruments.remove("Default")
+        sorted_instruments.insert(0, "Default")
+    return sorted_instruments
+
+
 def _create_calculator(user_input):
     """
-    Create a calculator object with the specified user input
+    Create a calculator object with the specified user input and apply
+    the currently selected instrument if one has been set.
     """
     try:
         calculator = Calculator(user_input)
     except ValidationError as e:
         message = json.loads(e.json())[0]["msg"]
         raise UserInputError(message)
+    
+    # Apply the selected instrument if one has been set
+    try:
+        from web_client import main
+        if main.selected_instrument:
+            calculator.chosen_instrument = main.selected_instrument
+    except Exception as e:
+        # If there's any error applying the instrument, log it but continue
+        print(f"Warning: Could not apply selected instrument: {e}")
 
     return calculator
 

@@ -58,6 +58,24 @@
         </div>
       </div>
 
+      <div class="d-flex flex-row" id="instrument-type">
+        <div class="col-4 col-md-3 col-lg-2"><label for="inst-input">Instrument Type</label></div>
+        <div class="col-5 col-md-4 col-lg-3 col-xl-2">
+          <div class="input-group param-input-group mb-3">
+            <select class="form-select" id="instrument-type" name="instrument">
+              {% for instrument in instruments %}
+                <option value="{{ instrument }}" {% if instrument == 'Default' %}selected="selected"{% endif %}>
+                  {{ instrument }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+        </div>
+      </div>
+      <div class="row">
+      </div>
+
       <div class="row" id="row-elevation">
         <div class="d-flex">
           <div class="col-4 col-md-3 col-lg-2"><label for="elev-input">Elevation</label></div>

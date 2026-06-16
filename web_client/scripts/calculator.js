@@ -1,4 +1,4 @@
-import {geParamValuesUnits, calculate} from './rest_calls.js';
+import {getParamValuesUnits, calculate} from './rest_calls.js';
 import {validateInput} from './validators.js'
 import * as CalculatorUI from './calculator_ui.js'
 
@@ -9,7 +9,7 @@ $(document).ready(() => {
     // Get the parameter default values, default units, permitted range, etc.
     // then set up event listeners and do the initial calculation with default
     // input values.
-    geParamValuesUnits()
+    getParamValuesUnits()
         .then((data) => {
 
             let formValidated = false;
@@ -56,6 +56,8 @@ $(document).ready(() => {
                     }
                 });
             })
+
+            CalculatorUI.showDifferentInstrumentOptions("instrument-type");
 
             const calcOptions =
                 document.querySelectorAll('input[name="calc-options"');

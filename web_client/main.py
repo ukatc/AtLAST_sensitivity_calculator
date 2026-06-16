@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from web_client.schemas import APIUserInput
+from web_client.schemas import APIUserInput, InstrumentSelection
 from web_client import utils, calculator
 import web_client.context_processors as cp
 
@@ -20,8 +20,12 @@ version = f'v{utils.version_num_for_url()}'
 paths = {
     'sensitivity': f'/{version}/sensitivity',
     'integration_time': f'/{version}/integration-time',
-    'param_values_units': f'/{version}/param-values-units'
+    'param_values_units': f'/{version}/param-values-units',
+    'set_instrument': f'/{version}/set-instrument'
 }
+
+# Global state to store the currently selected instrument
+selected_instrument = None
 
 templates = Jinja2Templates(directory="templates",
                             context_processors=[cp.invalid_message_processor,
@@ -37,8 +41,10 @@ app.mount("/scripts", StaticFiles(directory="scripts"), name="scripts")
 
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def sensitivity_calculator(request: Request):
+    from web_client.calculator import get_available_instruments
+    instruments = get_available_instruments()
     return templates.TemplateResponse("sensitivity_calculator.html",
-                                      {"request": request})
+                                      {"request": request, "instruments": instruments})
 
 
 @app.post(paths['sensitivity'])
@@ -66,6 +72,21 @@ async def t_int(api_user_input: APIUserInput):
 @app.get(paths['param_values_units'])
 async def param_values_units():
     return JSONResponse(content=calculator.get_param_values_units())
+
+
+@app.post(paths['set_instrument'])
+async def set_instrument(instrument_selection: InstrumentSelection):
+    global selected_instrument
+    try:
+        selected_instrument = instrument_selection.instrument_name
+        return JSONResponse(
+            content={
+                "status": "success",
+                "instrument": selected_instrument
+            }
+        )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 def _unpack_api_user_input(api_user_input):
