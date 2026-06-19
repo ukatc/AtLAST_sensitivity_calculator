@@ -19,9 +19,10 @@ class Calculator:
 
     :param user_input: Dictionary containing user-defined input parameters
     :type user_input: dict
-    :param instrument_setup: Dictionary containing instrument setup parameters.
-     **NB: usage not tested, and may not be supported in future.**
-    :type instrument_setup: dict
+    :param telescope_and_environment: Dictionary containing telescope and environment parameters
+    :type telescope_and_environment: dict
+    :param finetune: 
+    :type finetune: boolean
     """
     def __init__(self, user_input={}, telescope_and_environment={}, finetune=False):
 
