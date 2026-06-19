@@ -23,17 +23,18 @@ class Calculator:
      **NB: usage not tested, and may not be supported in future.**
     :type instrument_setup: dict
     """
-    def __init__(self, user_input={}):
-        
-        if user_input:
-            self._param_setup = ParameterSetup(user_input=user_input)
-            # self.calculator = self._create_calculator(self.param_setup)
-        else: # use the default values
-            self._param_setup = ParameterSetup()
-            # self.calculator = self._create_calculator(self.param_setup)
+    def __init__(self, user_input={}, telescope_and_environment={}, finetune=False):
 
-        # Parameter setup class that contains models with default values
-        # self._param_setup = self.param_setup
+        kwargs = {}
+        if user_input:
+            kwargs["user_input"] = user_input
+        if telescope_and_environment:
+            kwargs["telescope_and_environment"] = telescope_and_environment
+        if finetune:
+            kwargs["finetune"] = finetune
+        
+        # Parameter setup class that contains models with default values if not specified
+        self._param_setup = ParameterSetup(**kwargs)
         # Special classes for customisation of models
         self._user_input = UserInputParameters(self._param_setup)
         self._telescope_and_environment = TelescopeAndEnvironmentParameters(self._param_setup)
@@ -41,10 +42,6 @@ class Calculator:
         # Calculated value variables of calculation result model
         self._calculated_sensitivity = self._param_setup.calculation_results.calculated_sensitivity
         self._calculated_t_int = self._param_setup.calculation_results.calculated_t_int
-
-    # @staticmethod
-    # def _create_calculator(param_setup):
-    #     return Calculator(param_setup)
 
     @property
     def user_input(self):
