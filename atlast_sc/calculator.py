@@ -21,7 +21,7 @@ class Calculator:
     :type user_input: dict
     :param telescope_and_environment: Dictionary containing telescope and environment parameters
     :type telescope_and_environment: dict
-    :param finetune: 
+    :param finetune: Narrow band approximation (if False) or full calculation across the bandwidth (if True)
     :type finetune: boolean
     """
     def __init__(self, user_input={}, telescope_and_environment={}, finetune=False):
