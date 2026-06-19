@@ -199,8 +199,8 @@ class CalculationInput(BaseModel):
 
 class DerivedParams(BaseModel):
     """
-    Derived parameters, calculated from user input and instrument setup
-    parameters.
+    Derived parameters, calculated from user input and telescope 
+    and environment parameters.
     """
     # Atmospheric opacity
     transmittance: float

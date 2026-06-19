@@ -126,8 +126,8 @@ class TestModels:
         CalculationInput()
 
         expected_validation_calls = []
-        # Check that the user input and instrument setup parameters were
-        # validated
+        # Check that the user input and telescope and environment parameters 
+        # were validated
         for key, val in user_input_dict.items():
             expected_validation_calls.append(mocker.call(key, val))
         for key, val in telescope_and_environment_dict.items():

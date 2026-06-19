@@ -17,7 +17,7 @@ import numpy as np
 
 class ParameterSetup:
     """
-    Class that holds the user input and instrument setup parameters
+    Class that holds the user input and telescope and environment parameters
     used to perform the sensitivity calculations.
     """
     def __init__(self, user_input={}, telescope_and_environment={}, finetune=False):
@@ -80,7 +80,7 @@ class ParameterSetup:
     @property
     def calculation_inputs(self):
         """
-        The inputs to the calculation (user input and instrument setup)
+        The inputs to the calculation (user input and telescope and environment)
         """
         return self._calculation_inputs
     
@@ -136,7 +136,7 @@ class ParameterSetup:
     def reset(self):
         """
         Resets the calculator configuration parameters (user input and
-        instrument setup to their original values.
+        telescope and environment parameters to their original values.
         """
         self._calculation_inputs = \
             self._original_inputs
