@@ -177,6 +177,11 @@ img#logoimg {
   line-height: 1.1;
 }
 
+label { 
+  text-align: center;
+}
+
+
 @media print {
   #header {
     color: #3b3b3b;
@@ -240,4 +245,10 @@ img#logoimg {
     #tagline {
         display: none;
     }
+}
+
+.allowed-range-info {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.4;
 }
