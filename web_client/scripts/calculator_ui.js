@@ -1,4 +1,4 @@
-import { setInstrument } from './rest_calls.js';
+import { setInstrument, getRecommendedInstrument, getInstrumentRanges } from './rest_calls.js';
 
 const setUIInitialState = (paramData) => {
     // Set all inputs to a valid state
@@ -12,6 +12,12 @@ const setUIInitialState = (paramData) => {
 
     // Enable the Calculate button
     disableCalculateBtn(false);
+
+    // Set the initial instrument ranges display
+    const instrumentDropdown = document.getElementById("instrument-type");
+    if (instrumentDropdown) {
+        updateInstrumentRangesDisplay(instrumentDropdown.value);
+    }
 
     // Show the Sensitivity input and hide the Integration time input
     const sensitivityInput = document.getElementById("row-sensitivity");
@@ -28,9 +34,26 @@ const hideInvalidMessages = (hidden) => {
     });
 }
 
+const updateInstrumentRangesDisplay = async (instrumentName) => {
+    try {
+        const ranges = await getInstrumentRanges(instrumentName);
+        const freqRangeDiv = document.getElementById("freq-range");
+        const bwRangeDiv = document.getElementById("bw-range");
+        
+        if (freqRangeDiv && ranges.freq_range) {
+            freqRangeDiv.textContent = `Freq: ${ranges.freq_range}`;
+        }
+        if (bwRangeDiv && ranges.bw_range) {
+            bwRangeDiv.textContent = `BW: ${ranges.bw_range}`;
+        }
+    } catch (error) {
+        console.error("Error fetching instrument ranges:", error);
+    }
+}
+
 const handleInstrumentSelection = (e) => {
     const selectedInstrument = e.target.value;
-        
+    updateInstrumentRangesDisplay(selectedInstrument);
     // Send the selected instrument to the backend to set it as the chosen_instrument
     setChosenInstrument(selectedInstrument);
 }
@@ -43,6 +66,22 @@ const setChosenInstrument = async (instrumentName) => {
         console.error("Error setting instrument:", error);
         // Optionally display error message to user
         alert(`Failed to set instrument: ${error.message}`);
+    }
+}
+
+const updateInstrumentSelection = async (obs_freq, bandwidth, bandwidthUnit) => {
+    try {
+        const data = await getRecommendedInstrument(obs_freq, bandwidth, bandwidthUnit);
+        const instrumentDropdown = document.getElementById("instrument-type");
+        if (instrumentDropdown && data.instrument) {
+            instrumentDropdown.value = data.instrument;
+            // Update the ranges display for the new instrument
+            updateInstrumentRangesDisplay(data.instrument);
+            // Also send to backend to set it as the chosen_instrument
+            setChosenInstrument(data.instrument);
+        }
+    } catch (error) {
+        console.error("Error updating instrument selection:", error);
     }
 }
 
@@ -128,4 +167,4 @@ const toggleSpinner = (action, completed) => {
 
 export {setUIInitialState, hideInvalidMessages, showDifferentInstrumentOptions,
         showCalculatedValue, disableCalculateBtn, initializeInputs, 
-        initializeUnits, resetOutputBox, toggleSpinner}
+        initializeUnits, resetOutputBox, toggleSpinner, updateInstrumentSelection}

@@ -32,7 +32,12 @@ $(document).ready(() => {
                         formValidated =
                             validateAndSetUIState(input, units,
                                                   data[input.name]);
-
+                        
+                        // Update instrument selection based on frequency/bandwidth
+                        const obs_freq = document.getElementById("obs-freq-input").value;
+                        const bandwidth = document.getElementById("bandwidth-input").value;
+                        const bandwidthUnit = document.getElementById("bandwidth-units").value;
+                        CalculatorUI.updateInstrumentSelection(obs_freq, bandwidth, bandwidthUnit);
                     }
                 });
             });
@@ -53,6 +58,12 @@ $(document).ready(() => {
                         formValidated =
                             validateAndSetUIState(input, unitsInput,
                                                   data[input.name]);
+                        
+                        // Update instrument selection based on frequency/bandwidth
+                        const obs_freq = document.getElementById("obs-freq-input").value;
+                        const bandwidth = document.getElementById("bandwidth-input").value;
+                        const bandwidthUnit = document.getElementById("bandwidth-units").value;
+                        CalculatorUI.updateInstrumentSelection(obs_freq, bandwidth, bandwidthUnit);
                     }
                 });
             })
