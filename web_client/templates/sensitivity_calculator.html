@@ -190,8 +190,7 @@
             <div class="row justify-content-center">
               <div class="titles col-12 mb-5">Instrument</div>
               <div class="row justify-content-center">
-                <div class="col-5">
-                  <div class="input-group mb-5">
+                  <div class="input-group mb-5" id="instrument-choice">
                     <select class="form-select" id="instrument-type" name="instrument">
                       {% for instrument in instruments %}
                         <option value="{{ instrument }}" {% if instrument == 'Default' %}selected="selected"{% endif %}>
@@ -200,7 +199,6 @@
                       {% endfor %}
                     </select>
                   </div>
-                </div>
                 <div class="allowed-range-info">
                   <div id="instrument-ranges-display">
                     <div class="row justify-content-center mb-5" id="freq-range">Observing frequency: --</div>

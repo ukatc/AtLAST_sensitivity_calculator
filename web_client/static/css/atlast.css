@@ -62,7 +62,7 @@ input:invalid {
 }
 
 .param-input-group {
-    width: 80%;
+    width: 60%;
 }
 
 .submit-btn-col {
@@ -134,6 +134,10 @@ hr {
   padding-bottom: 10px;
 }
 
+label { 
+  text-align: center;
+}
+
 button {
   font-family: sans-serif;
   color: #ffffff;
@@ -177,10 +181,9 @@ img#logoimg {
   line-height: 1.1;
 }
 
-label { 
-  text-align: center;
+#instrument-choice {
+  width:70%;
 }
-
 
 @media print {
   #header {
