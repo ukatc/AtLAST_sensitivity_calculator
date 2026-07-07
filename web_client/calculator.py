@@ -107,7 +107,8 @@ def get_instrument_ranges(instrument_name):
             bw_range = re.findall(r"[\d.e]+", freq_ranges[0])
             bw_range_str = f"{bw_range[0]} - {bw_range[1]}"
         else:
-            bw_range_str = "N/A"
+            bw_range_str = "> 0"
+            bw_unit = ""
         
         return {
             "freq_range": f"{freq_range_str} {freq_unit}",
