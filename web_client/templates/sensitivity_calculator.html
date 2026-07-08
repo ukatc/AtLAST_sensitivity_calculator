@@ -52,35 +52,25 @@
 
   <div class="container-fluid mt-3">
     <form method="POST" id="calculator-form" novalidate>
-
-      <!-- <div class="flex-row titles">
-        <div class="d-flex ml-2 mb-2 mt-2 mt-sm-4 align-items-stretch">
-          <div class="col">Parameter</div>
-          <div class="col-2">Value</div>
-          <div class="col">Overall allowed range</div>
-          <div class="col">Instrument specific allowed range</div>
-        </div>
-      </div> -->
-
       <div class="container-fluid text-center mt-3">
         <div class="row">
           
           <!-- LEFT AREA -->
           <div class="col-md-9">
             <div class="row justify-content-center" align="center">
-              <div class="titles col-3 mb-3">Parameter</div>
-              <div class="titles col-5 mb-3">Value</div>
-              <div class="titles col-4 mb-3">Overall Allowed Range</div>
+              <div class="titles col-2 mb-3">Parameter</div>
+              <div class="titles col-4 mb-3">Value</div>
+              <div class="titles col-3 mb-3">Overall Allowed Range</div>
               <!-- ELEVATION - start -->
-              <div class="row" id="row-elevation">  
-                <div class="col-3"><label for="elev-input">Elevation</label></div>
-                <div class="col-5">
+              <div class="row justify-content-center" id="row-elevation">  
+                <div class="col-2" align="left"><label for="elev-input">Elevation</label></div>
+                <div class="col-4">
                   <div class="input-group param-input-group mb-3">
                   <input type="text" class="form-control param-input" id="elev-input" name="elevation" value="{{ default_value('elevation') }}">
                     <span class="input-group-text">{{ default_unit('elevation') }}</span>
                   </div>
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                   <div class="allowed-range-info">{{ allowed_range('elevation') }}</div>
                 </div>
                 <div class="row">
@@ -89,16 +79,16 @@
               </div>
               <!-- ELEVATION - end -->
               <!-- OBSERVING FREQUENCY - start -->
-              <div class="row" id="obs-freq">
-                <div class="col-3"><label for="obs-freq-input">Observing frequency</label></div>
-                <div class="col-5">
+              <div class="row justify-content-center" id="obs-freq">
+                <div class="col-2" align="left"><label for="obs-freq-input">Observing frequency</label></div>
+                <div class="col-4">
                   <div class="input-group param-input-group mb-3">
                     <input type="text" class="form-control param-input" id="obs-freq-input" name="obs_freq" value="{{ default_value('elevation') }}">
                     <span class="input-group-text">{{ default_unit('obs_freq') }}</span>
                   </div>
                 </div>
-                <div class="col-4">
-                  <div class="col-4 allowed-range-info">{{ allowed_range('obs_freq') }}</div>
+                <div class="col-3">
+                  <div class="allowed-range-info">{{ allowed_range('obs_freq') }}</div>
                 </div>
                 <div class="row">
                   <div class="invalid-message" id="obs-freq-input-invalid">{{ invalid_message('obs_freq') }}</div>
@@ -106,15 +96,15 @@
               </div>
               <!-- OBSERVING FREQUENCY - end -->
               <!-- BANDWIDTH - start -->
-              <div class="row" id="row-bandwidth">
-                  <div class="col-3"><label for="bandwidth-input">Bandwidth</label></div>
-                  <div class="col-5">
+              <div class="row justify-content-center" id="row-bandwidth">
+                  <div class="col-2" align="left"><label for="bandwidth-input">Bandwidth</label></div>
+                  <div class="col-4">
                     <div class="input-group param-input-group mb-3">
                       <input type="text" class="form-control param-input" id="bandwidth-input" name="bandwidth" value="{{ default_value('bandwidth') }}">
                       <select class="form-select units-input" id="bandwidth-units" name="bandwidth-units"></select>
                     </div>
                   </div>
-                  <div class="col-4">
+                  <div class="col-3">
                     <div class="allowed-range-info">{{ allowed_range('bandwidth') }}</div>
                   </div>
                 <div class="row">
@@ -123,14 +113,14 @@
               </div>
               <!-- BANDWIDTH - end -->
               <!-- WEATHER - start -->
-              <div class="row" id="row-weather">
-                <div class="col-3"><label for="pwv-input">H<sub>2</sub>O profile percentile</label></div>
-                <div class="col-5">
+              <div class="row justify-content-center" id="row-weather">
+                <div class="col-2" align="left"><label for="pwv-input">H<sub>2</sub>O profile percentile</label></div>
+                <div class="col-4">
                   <div class="input-group param-input-group mb-3">
                     <input type="text" class="form-control param-input" id="pwv-input" name="weather" value="{{ default_value('weather') }}">
                   </div>
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                   <div class="allowed-range-info">{{ allowed_range('weather') }}</div>
                 </div>
                 <div class="row">
@@ -139,9 +129,9 @@
               </div>
               <!-- WEATHER - end -->
               <!-- POLARISATION - start -->
-              <div class="row" id="row-npol">
-                <div class="col-3"><label for="npol-input">Number of polarizations</label></div>
-                <div class="col-5">
+              <div class="row justify-content-center" id="row-npol">
+                <div class="col-2" align="left"><label for="npol-input">Number of polarizations</label></div>
+                <div class="col-4">
                   <div class="input-group param-input-group mb-3">
                     <select class="form-select" id="npol-input" name="n_pol">
                       <option value=1>1</option>
@@ -149,33 +139,36 @@
                     </select>
                   </div>
                 </div>
+                  <div class="col-3">
+                    <div class="allowed-range-info"></div>
+                  </div>
               </div>
               <!-- POLARISATION - end -->
               <!-- INTEGRATION TIME - start -->
-              <div class="row" id="row-t-int">
-                  <div class="col-3"><label for="integration-time-input">Integration time</label></div>
-                  <div class="col-5">
+              <div class="row justify-content-center d-none" id="row-t-int">
+                  <div class="col-2" align="left"><label for="integration-time-input">Integration time</label></div>
+                  <div class="col-4">
                     <div class="input-group param-input-group mb-3">
                       <input type="text" class="form-control param-input" id="integration-time-input" name="t_int" value="{{ default_value('t_int') }}">
                       <select class="form-select units-input" id="t_int-units" name="t_int_units"></select>
                     </div>
                   </div>
-                  <div class="col-4">{{ allowed_range('t_int') }}</div>
+                  <div class="col-3">{{ allowed_range('t_int') }}</div>
                 </div>
                 <div class="row">
                   <div class="invalid-message" id="integration-time-input-invalid">{{ invalid_message('t_int') }}</div>
                 </div>
               <!-- INTEGRATION TIME - end -->
               <!-- SENSITIVITY - start -->
-              <div class="row" id="row-sensitivity">
-                  <div class="col-3"><label for="sensitivity-input">Sensitivity</label></div>
-                  <div class="col-5">
+              <div class="row justify-content-center" id="row-sensitivity">
+                  <div class="col-2" align="left"><label for="sensitivity-input">Sensitivity</label></div>
+                  <div class="col-4">
                     <div class="input-group param-input-group mb-3">
                       <input type="text" class="form-control param-input" id="sensitivity-input" name="sensitivity" value="{{ default_value('sensitivity') }}">
                       <select class="form-select units-input" id="sensitivity-units" name="sensitivity_units"></select>
                     </div>
                   </div>
-                  <div class="col-4">{{ allowed_range('sensitivity') }}</div>
+                  <div class="col-3">{{ allowed_range('sensitivity') }}</div>
                 </div>
                 <div class="row">
                   <div class="invalid-message" id="sensitivity-input-invalid">{{ invalid_message('sensitivity') }}</div>
@@ -212,7 +205,7 @@
         </div>
       </div>
 
-      <div class="row mb-3">
+      <div class="row mb-3" align="center">
         <label for="calculation-options"><strong>Calculate integration time or sensitivity?</strong></label>
         <div class="d-flex flex-row justify-content-center">
         <div class="col-8 col-sm-6 col-md-5 col-lg-3">
