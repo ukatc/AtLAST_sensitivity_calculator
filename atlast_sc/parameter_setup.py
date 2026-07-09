@@ -368,9 +368,9 @@ class ParameterSetup:
 
             # compute SEFD for each narrow spectral element
             for freq in obs_freq_list:
-                _transmittance = atm.calculate_transmittance(freq,weather,elevation)
+                transmittance = atm.calculate_transmittance(freq,weather,elevation)
 
-                _T_atm = atm.calculate_atmospheric_temperature(freq,weather)
+                T_atm = atm.calculate_atmospheric_temperature(freq,weather)
                 _temps = Temperatures(self.chosen_instrument, obs_freq, bandwidth, T_cmb, T_amb, eta_eff,
                             T_atm, transmittance, n_pol)
 
