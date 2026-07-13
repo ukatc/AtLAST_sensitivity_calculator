@@ -5,7 +5,7 @@ from pydantic import ValidationError
 from astropy import units as u
 from atlast_sc.core.parameter_setup import ParameterSetup
 from atlast_sc.calculator import Calculator
-from atlast_sc.derived_groups import AtmosphereParams, Temperatures, \
+from atlast_sc.parameters.derived_groups import AtmosphereParams, Temperatures, \
     Efficiencies
 
 from atlast_sc.instruments.classes.Default import Default

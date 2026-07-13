@@ -182,7 +182,6 @@ class FileHelper:
         file_writer = FileHelper._get_writer(file_type)
 
         file_path = f'{os.path.join(path, file_name)}.{file_type}'
-
         # Create and concatenate dictionaries from the user input model and
         # the derived parameters model
         params = {param: val['value']

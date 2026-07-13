@@ -6,9 +6,9 @@ from atlast_sc.core.models import TelescopeAndEnvironment
 
 from atlast_sc.instruments.config import InstrumentConfig
 
-from atlast_sc.derived_groups import AtmosphereParams
-from atlast_sc.derived_groups import Temperatures
-from atlast_sc.derived_groups import Efficiencies
+from atlast_sc.parameters.derived_groups import AtmosphereParams
+from atlast_sc.parameters.derived_groups import Temperatures
+from atlast_sc.parameters.derived_groups import Efficiencies
 from atlast_sc.core.models import DerivedParams
 
 import astropy.units as u
