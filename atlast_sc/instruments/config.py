@@ -1,5 +1,5 @@
 import importlib, inspect, os
-from atlast_sc.utils import FileHelper
+from atlast_sc.core.utils import FileHelper
 from atlast_sc.instrument import Instrument
 
 class InstrumentConfig:

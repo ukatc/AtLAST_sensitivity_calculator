@@ -1,9 +1,9 @@
 import pytest
 import os
 import astropy.units as u
-from atlast_sc.utils import Decorators
-from atlast_sc.utils import FileHelper
-from atlast_sc.utils import DataHelper
+from atlast_sc.core.utils import Decorators
+from atlast_sc.core.utils import FileHelper
+from atlast_sc.core.utils import DataHelper
 from atlast_sc.calculator import Calculator
 
 from atlast_sc_tests.utils import does_not_raise

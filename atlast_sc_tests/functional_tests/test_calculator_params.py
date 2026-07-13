@@ -15,7 +15,7 @@ from atlast_sc.instruments.classes.Muscat import Muscat
 from atlast_sc.instruments.classes.Sepia import Sepia
 from atlast_sc.instruments.classes.Tifuun import Tifuun
 
-from atlast_sc.utils import FileHelper
+from atlast_sc.core.utils import FileHelper
 
 from atlast_sc_tests.utils import does_not_raise
 

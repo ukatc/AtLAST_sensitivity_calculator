@@ -6,9 +6,9 @@ from pydantic import BaseModel
 from atlast_sc.derived_groups import Temperatures
 from atlast_sc.derived_groups import AtmosphereParams
 from atlast_sc.derived_groups import Efficiencies
-from atlast_sc.data import Data, DataHelper
+from atlast_sc.core.data import Data, DataHelper
 from atlast_sc.calculator import Calculator
-from atlast_sc.models import ValueWithoutUnits, ValueWithUnits
+from atlast_sc.core.models import ValueWithoutUnits, ValueWithUnits
 
 
 @pytest.fixture(scope='session')
