@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 from pydantic import ValidationError
 from astropy import units as u
-from atlast_sc.parameter_setup import ParameterSetup
+from atlast_sc.core.parameter_setup import ParameterSetup
 from atlast_sc.calculator import Calculator
 from atlast_sc.derived_groups import AtmosphereParams, Temperatures, \
     Efficiencies

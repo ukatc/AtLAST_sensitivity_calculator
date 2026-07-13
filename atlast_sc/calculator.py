@@ -6,7 +6,7 @@ from atlast_sc.core.exceptions import CalculatedValueInvalidWarning
 from atlast_sc.core.exceptions import ValueOutOfRangeException
 from atlast_sc.core.exceptions import InstrumentNotApplicableException
 
-from atlast_sc.parameter_setup import ParameterSetup
+from atlast_sc.core.parameter_setup import ParameterSetup
 from atlast_sc.parameters.user_input_parameters import UserInputParameters
 from atlast_sc.parameters.telescope_and_environment_parameters import TelescopeAndEnvironmentParameters
 from atlast_sc.parameters.derived_parameters import DerivedParameters

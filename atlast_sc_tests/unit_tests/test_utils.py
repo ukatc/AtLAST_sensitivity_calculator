@@ -8,7 +8,7 @@ from atlast_sc.calculator import Calculator
 
 from atlast_sc_tests.utils import does_not_raise
 
-from atlast_sc.parameter_setup import ParameterSetup
+from atlast_sc.core.parameter_setup import ParameterSetup
 from atlast_sc.instruments.classes.Sepia import Sepia
 from atlast_sc.instruments.classes.Finer import Finer
 

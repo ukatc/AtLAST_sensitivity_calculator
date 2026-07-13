@@ -2,7 +2,7 @@ import copy
 import pytest
 import astropy.units as u
 from atlast_sc.calculator import Calculator
-from atlast_sc.parameter_setup import ParameterSetup
+from atlast_sc.core.parameter_setup import ParameterSetup
 from atlast_sc.parameters.user_input_parameters import UserInputParameters
 from atlast_sc.core.models import DerivedParams, CalculationInput
 from atlast_sc.core.utils import DataHelper
