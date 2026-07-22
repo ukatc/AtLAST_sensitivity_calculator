@@ -81,6 +81,11 @@ input:invalid {
     color:#e74c3c;
 }
 
+.param-description {
+    font-size:.8em;
+    color:#e74c3c;
+}
+
 html,
 body {
   font-family: sans-serif, Arial, sans-serif;
