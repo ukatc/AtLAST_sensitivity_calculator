@@ -17,6 +17,7 @@ class InstrumentConfig:
         muscat_instrument = {'class': 'Muscat.py', 'data': 'Muscat.yaml'}
         sepia_instrument = {'class': 'Sepia.py', 'data': 'Sepia.yaml'}
         tifuun_instrument = {'class': 'Tifuun.py', 'data': 'Tifuun.yaml'}
+        alma_instrument = {'class': 'Alma.py', 'data': 'Alma.yaml'}
         # TODO: Add your custom instrument here.
         
         available_instruments = [
@@ -25,7 +26,8 @@ class InstrumentConfig:
             finer_instrument,
             muscat_instrument,
             sepia_instrument,
-            tifuun_instrument
+            tifuun_instrument,
+            alma_instrument
             # TODO: Add your custom instrument here.
         ]
 
