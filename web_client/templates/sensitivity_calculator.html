@@ -132,13 +132,14 @@
                 <div class="col-4" align="center">
                   <div class="input-group param-input-group">
                     <input type="text" class="form-control param-input" id="pwv-input" name="weather" value="{{ default_value('weather') }}">
+                    <span class="input-group-text">%</span>
                   </div>
                 </div>
                 <div class="row justify-content-center">
                   <div class="col-3 param-description"><label for="weather-details">Fractional amount of time weather is drier (relates to opacity, see user guide for mapping)</label></div>
                   <div class="col-4" align="left">
                     <div class="input-group param-input-group justify-content-center mb-4">
-                      <div class="allowed-range-info">{{ allowed_range('weather') }}</div>
+                      <div class="allowed-range-info">{{ allowed_range('weather') }}%</div>
                     </div>
                   </div>
                 </div>
