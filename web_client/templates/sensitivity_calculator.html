@@ -219,10 +219,11 @@
 
           <!-- RIGHT AREA -->
           <div class="col-md-3 d-flex align-items-center">
-            <div class="row justify-content-center bg-info">
-              <div class="titles col-12 mt-4 mb-4">Instrument</div>
-              <div class="row justify-content-center">
-                  <div class="input-group mb-5" id="instrument-choice">
+            <div class="row justify-content-center">
+              <div class="bg-info p-4 rounded">
+                <div class="titles col-12 mt-2 mb-4">Instrument Selection</div>
+                <div class="row justify-content-center">
+                  <div class="input-group" id="instrument-choice">
                     <select class="form-select" id="instrument-type" name="instrument">
                       {% for instrument in instruments %}
                         <option value="{{ instrument }}" {% if instrument == 'Default' %}selected="selected"{% endif %}>
@@ -231,7 +232,11 @@
                       {% endfor %}
                     </select>
                   </div>
-                <div class="allowed-range-info">
+                  <div class="row param-description mb-3"><label for="instrument-details">Available instruments given spectral setup</label></div>
+                </div>
+              </div>
+              <div class="row justify-content-center mb-4 bg-success p-3 rounded">
+                <div class="allowed-range-info mt-4">
                   <div id="instrument-ranges-display">
                     <div class="row justify-content-center mb-5" id="freq-range">Observing frequency: 35.0 - 950.0 GHz</div>
                     <div class="row justify-content-center mb-5" id="bw-range">Bandwidth: > 0</div>
@@ -241,8 +246,11 @@
             </div>
           </div>
 
+          
+
         </div>
       </div>
+    </div>
 
       <div class="row mb-3" align="center">
         <label for="calculation-options"><strong>Calculate integration time or sensitivity?</strong></label>
