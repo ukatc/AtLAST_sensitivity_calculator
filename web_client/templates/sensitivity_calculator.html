@@ -61,7 +61,7 @@
               <div class="titles col-3 mb-3">Parameter</div>
               <div class="titles col-4 mb-3" align="center">Value</div>
               <!-- ELEVATION - start -->
-              <div class="row justify-content-center" id="row-elevation">  
+              <div class="row justify-content-center align-items-end" id="row-elevation">  
                 <div class="col-3" align="left"><label for="elev-input">Elevation</label></div>
                 <div class="col-4" align="center">
                   <div class="input-group param-input-group">
@@ -70,7 +70,7 @@
                   </div>
                 </div>
                 <div class="row justify-content-center" id="row-elevation">
-                  <div class="col-3 param-description"><label for="elev-details">details about elevation</label></div>
+                  <div class="col-3 param-description"><label for="elev-details">Height above Horizon</label></div>
                   <div class="col-4" align="left">
                     <div class="input-group param-input-group justify-content-center mb-4">
                     <div class="allowed-range-info">{{ allowed_range('elevation') }}</div>
@@ -83,7 +83,7 @@
               </div>
               <!-- ELEVATION - end -->
               <!-- OBSERVING FREQUENCY - start -->
-              <div class="row justify-content-center" id="obs-freq">
+              <div class="row justify-content-center align-items-end" id="obs-freq">
                 <div class="col-3" align="left"><label for="obs-freq-input">Observing frequency</label></div>
                 <div class="col-4" align="center">
                   <div class="input-group param-input-group">
@@ -92,7 +92,7 @@
                   </div>
                 </div>
                 <div class="row justify-content-center">
-                  <div class="col-3 param-description"><label for="obs-freq-details">details about observing frequency</label></div>
+                  <div class="col-3 param-description"><label for="obs-freq-details">Central frequency of tuning</label></div>
                   <div class="col-4" align="left">
                     <div class="input-group param-input-group justify-content-center mb-4">
                       <div class="allowed-range-info">{{ allowed_range('obs_freq') }}</div>
@@ -105,7 +105,7 @@
               </div>
               <!-- OBSERVING FREQUENCY - end -->
               <!-- BANDWIDTH - start -->
-              <div class="row justify-content-center" id="row-bandwidth">
+              <div class="row justify-content-center align-items-end" id="row-bandwidth">
                 <div class="col-3" align="left"><label for="bandwidth-input">Bandwidth</label></div>
                 <div class="col-4" align="center">
                   <div class="input-group param-input-group">
@@ -114,7 +114,7 @@
                   </div>
                 </div>
                 <div class="row justify-content-center">
-                  <div class="col-3 param-description"><label for="bandwidth-details">details about bandwidth</label></div>
+                  <div class="col-3 param-description"><label for="bandwidth-details">Frequency range (or channel width) to be averaged across</label></div>
                   <div class="col-4" align="left">
                     <div class="input-group param-input-group justify-content-center mb-4">
                       <div class="allowed-range-info">{{ allowed_range('bandwidth') }}</div>
@@ -127,7 +127,7 @@
               </div>
               <!-- BANDWIDTH - end -->
               <!-- WEATHER - start -->
-              <div class="row justify-content-center" id="row-weather">
+              <div class="row justify-content-center align-items-end" id="row-weather">
                 <div class="col-3" align="left"><label for="pwv-input">H<sub>2</sub>O profile percentile</label></div>
                 <div class="col-4" align="center">
                   <div class="input-group param-input-group">
@@ -135,7 +135,7 @@
                   </div>
                 </div>
                 <div class="row justify-content-center">
-                  <div class="col-3 param-description"><label for="weather-details">details about weather</label></div>
+                  <div class="col-3 param-description"><label for="weather-details">Fractional amount of time weather is drier (relates to opacity, see user guide for mapping)</label></div>
                   <div class="col-4" align="left">
                     <div class="input-group param-input-group justify-content-center mb-4">
                       <div class="allowed-range-info">{{ allowed_range('weather') }}</div>
@@ -148,7 +148,7 @@
               </div>
               <!-- WEATHER - end -->
               <!-- POLARISATION - start -->
-              <div class="row justify-content-center mb-2" id="row-npol">
+              <div class="row justify-content-center align-items-end mb-2" id="row-npol">
                 <div class="col-3" align="left"><label for="npol-input">Number of polarizations</label></div>
                 <div class="col-4" align="center">
                   <div class="input-group param-input-group">
@@ -159,7 +159,7 @@
                   </div>
                 </div>
                 <div class="row justify-content-center">
-                  <div class="col-3 param-description"><label for="npol-details">details about number of polarizations</label></div>
+                  <div class="col-3 param-description"><label for="npol-details">How many polarisations to average over</label></div>
                   <div class="col-4" align="left">
                     <div class="input-group param-input-group justify-content-center mb-4">
                       <div class="allowed-range-info"></div>
@@ -169,7 +169,7 @@
               </div>
               <!-- POLARISATION - end -->
               <!-- INTEGRATION TIME - start -->
-              <div class="row justify-content-center d-none" id="row-t-int">
+              <div class="row justify-content-center align-items-end d-none" id="row-t-int">
                 <div class="col-3" align="left"><label for="integration-time-input">Integration time</label></div>
                 <div class="col-4" align="center">
                   <div class="input-group param-input-group">
@@ -191,7 +191,7 @@
               </div>
               <!-- INTEGRATION TIME - end -->
               <!-- SENSITIVITY - start -->
-              <div class="row justify-content-center" id="row-sensitivity">
+              <div class="row justify-content-center align-items-end" id="row-sensitivity">
                 <div class="col-3" align="left"><label for="sensitivity-input">Sensitivity</label></div>
                 <div class="col-4" align="center">
                   <div class="input-group param-input-group">
