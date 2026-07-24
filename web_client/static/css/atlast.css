@@ -87,9 +87,7 @@ input:invalid {
 }
 
 .inst-range-label {
-  font-weight: 600;
-  color: #747474;
-  font-size: 150%;
+  color: black;
 }
 
 html,
@@ -190,6 +188,20 @@ img#logoimg {
 
 #instrument-choice {
   width:70%;
+}
+
+#inst-selection-box {
+  background-color: #7EAADC;
+}
+
+#allowed-setup-box {
+  background-color: #C8B1A2;
+  color: black;
+}
+
+#allowed-setups-title {
+  font-weight: 600;
+  color: #747474;
 }
 
 @media print {

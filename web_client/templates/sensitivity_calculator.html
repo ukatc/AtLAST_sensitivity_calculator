@@ -220,8 +220,8 @@
           <!-- RIGHT AREA -->
           <div class="col-md-3 d-flex align-items-center">
             <div class="row justify-content-center">
-              <div class="bg-info p-4 rounded">
-                <div class="titles col-12 mt-2 mb-4">Instrument Selection</div>
+              <div class="p-2 rounded" id="inst-selection-box">
+                <div class="titles col-12 mb-3">Instrument Selection</div>
                 <div class="row justify-content-center">
                   <div class="input-group" id="instrument-choice">
                     <select class="form-select" id="instrument-type" name="instrument">
@@ -232,13 +232,13 @@
                       {% endfor %}
                     </select>
                   </div>
-                  <div class="row param-description mb-3"><label for="instrument-details">Available instruments given spectral setup</label></div>
+                  <div class="row param-description"><label for="instrument-details">Available instruments given spectral setup</label></div>
                 </div>
               </div>
-              <div class="row justify-content-center mb-4 bg-success bg-opacity-50 p-3 rounded">
-                <div class="allowed-range-info mt-4">
+              <div class="row justify-content-center p-3 rounded" id="allowed-setup-box">
+                <div class="allowed-range-info">
                   <div id="instrument-ranges-display">
-                    <div class="row justify-content-center inst-range-label mb-3" id="allowed-setups-title">Default Allowed Setups</div>
+                    <div class="row justify-content-center inst-range-label mb-4" id="allowed-setups-title">Default Allowed Setups</div>
                     <div class="row justify-content-center inst-range-label mb-1">Observing frequency</div>
                     <div class="row justify-content-center mb-3" id="freq-range">35.0 - 950.0 GHz</label></div>
                     <div class="row justify-content-center inst-range-label mb-1">Bandwidth</div>
