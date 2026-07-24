@@ -41,10 +41,10 @@ const updateInstrumentRangesDisplay = async (instrumentName) => {
         const bwRangeDiv = document.getElementById("bw-range");
         
         if (freqRangeDiv && ranges.freq_range) {
-            freqRangeDiv.textContent = `Observing frequency: ${ranges.freq_range}`;
+            freqRangeDiv.textContent = `${ranges.freq_range}`;
         }
         if (bwRangeDiv && ranges.bw_range) {
-            bwRangeDiv.textContent = `Bandwidth: ${ranges.bw_range}`;
+            bwRangeDiv.textContent = `${ranges.bw_range}`;
         }
     } catch (error) {
         console.error("Error fetching instrument ranges:", error);

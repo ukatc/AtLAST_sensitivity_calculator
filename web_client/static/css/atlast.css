@@ -86,6 +86,12 @@ input:invalid {
     color:#757575;
 }
 
+.inst-range-label {
+  font-weight: 600;
+  color: #747474;
+  font-size: 150%;
+}
+
 html,
 body {
   font-family: sans-serif, Arial, sans-serif;
