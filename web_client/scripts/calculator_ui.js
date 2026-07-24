@@ -39,6 +39,11 @@ const updateInstrumentRangesDisplay = async (instrumentName) => {
         const ranges = await getInstrumentRanges(instrumentName);
         const freqRangeDiv = document.getElementById("freq-range");
         const bwRangeDiv = document.getElementById("bw-range");
+        const allowedSetupsTitle = document.getElementById("allowed-setups-title");
+
+        if (allowedSetupsTitle) {
+            allowedSetupsTitle.textContent = `${instrumentName} Allowed Setups`;
+        }
         
         if (freqRangeDiv && ranges.freq_range) {
             freqRangeDiv.textContent = `${ranges.freq_range}`;
