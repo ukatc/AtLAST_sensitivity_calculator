@@ -3,7 +3,7 @@ import math
 import astropy.units as u
 from dataclasses import asdict
 from atlast_sc.calculator import Calculator
-from atlast_sc.parameter_setup import ParameterSetup
+from atlast_sc.core.parameter_setup import ParameterSetup
 from pydantic import ValidationError
 from atlast_sc.core.data import Data
 
