@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from atlast_sc.data import Data
+from atlast_sc.core.data import Data
 
 
 class APIUserInput(BaseModel):

@@ -1,8 +1,8 @@
 import pytest
 from astropy import units as u
 from atlast_sc.calculator import Calculator
-from atlast_sc.utils import FileHelper
-from atlast_sc.exceptions import CalculatedValueInvalidWarning
+from atlast_sc.core.utils import FileHelper
+from atlast_sc.core.exceptions import CalculatedValueInvalidWarning
 
 class TestCalculatorUsage:
 

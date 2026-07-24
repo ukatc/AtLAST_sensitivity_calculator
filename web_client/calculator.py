@@ -5,7 +5,7 @@ from dataclasses import asdict
 from atlast_sc.calculator import Calculator
 from atlast_sc.parameter_setup import ParameterSetup
 from pydantic import ValidationError
-from atlast_sc.data import Data
+from atlast_sc.core.data import Data
 
 
 def do_calculation(user_input, calculation):

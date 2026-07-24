@@ -2,11 +2,11 @@ import copy
 import pytest
 import astropy.units as u
 from atlast_sc.calculator import Calculator
-from atlast_sc.parameter_setup import ParameterSetup
+from atlast_sc.core.parameter_setup import ParameterSetup
 from atlast_sc.parameters.user_input_parameters import UserInputParameters
-from atlast_sc.models import DerivedParams, CalculationInput
-from atlast_sc.utils import DataHelper
-from atlast_sc.exceptions import CalculatedValueInvalidWarning
+from atlast_sc.core.models import DerivedParams, CalculationInput
+from atlast_sc.core.utils import DataHelper
+from atlast_sc.core.exceptions import CalculatedValueInvalidWarning
 from atlast_sc_tests.utils import does_not_raise
 from pydantic import ValidationError
 
