@@ -9,7 +9,7 @@ import math
 import os
 import astropy.units as u
 from atlast_sc.calculator import Calculator
-from atlast_sc.utils import FileHelper
+from atlast_sc.core.utils import FileHelper
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 

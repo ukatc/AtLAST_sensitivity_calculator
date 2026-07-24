@@ -2,8 +2,8 @@ import math
 from dataclasses import dataclass
 import astropy.units as u
 from astropy.units import Unit, Quantity
-from atlast_sc.utils import DataHelper
-from atlast_sc.exceptions import UnitException, ValueOutOfRangeException,\
+from atlast_sc.core.utils import DataHelper
+from atlast_sc.core.exceptions import UnitException, ValueOutOfRangeException,\
     ValueNotAllowedException, ValueTooHighException, ValueTooLowException
 
 

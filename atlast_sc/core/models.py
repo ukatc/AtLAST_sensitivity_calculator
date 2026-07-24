@@ -3,7 +3,7 @@ from numpy import floating
 from typing import Union
 from pydantic import BaseModel, ConfigDict, model_validator
 from astropy.units import Unit, Quantity
-from atlast_sc.data import Data, Validator
+from atlast_sc.core.data import Data, Validator
 
 class ModelUtils:
 

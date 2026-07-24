@@ -26,8 +26,7 @@ class AtmosphereParams:
     The code interpolates over the grids to get the correct values for tau_atm
     and T_atm.
     """
-
-    _STATIC_DATA_PATH = Path(__file__).resolve().parents[0] / "static"
+    _STATIC_DATA_PATH = Path(__file__).resolve().parents[1] / "static"
 
     _WEATHER = [5, 25, 50, 75, 95]
     _T_ATM_PATH = _STATIC_DATA_PATH / "lookups" / "am_ACT_T_annual.txt"

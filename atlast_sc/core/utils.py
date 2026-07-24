@@ -119,7 +119,7 @@ class FileHelper:
         :rtype: types
         """
         _STATIC_DATA_PATH = str(Path(__file__).resolve().parents[0])
-        _INSTRUMENTS_DATA_PATH = _STATIC_DATA_PATH + '/instruments/data/'
+        _INSTRUMENTS_DATA_PATH = _STATIC_DATA_PATH + '/../instruments/data/'
         instrument_file = _INSTRUMENTS_DATA_PATH + file_name + ".yaml"
 
         with open(instrument_file, "r") as file:
@@ -182,7 +182,6 @@ class FileHelper:
         file_writer = FileHelper._get_writer(file_type)
 
         file_path = f'{os.path.join(path, file_name)}.{file_type}'
-
         # Create and concatenate dictionaries from the user input model and
         # the derived parameters model
         params = {param: val['value']
