@@ -26,7 +26,7 @@ Here, :math:`O(\nu, T)` converts a physical temperature to a Rayleigh-Jeans brig
 .. math::
     O(\nu, T) = T\frac{h\nu/kT}{\exp(h\nu/kT)-1}.
 
-The receiver temperatures for each band for both ALMA and ALMA WSU are shown in the following table. We assume a constant receiver temperature across each sub-band the receivers are sensitive to. For ALMA these are measured receiver temperatures, whereas for ALMA WSU these are the required maximum receiver temperatures (the final receiver temperatures may be significantly lower than these).
+The receiver temperatures for each band for both ALMA and ALMA WSU are shown in the following table. We assume a constant receiver temperature across each sub-band the receivers are sensitive to. For ALMA these are measured receiver temperatures, whereas for ALMA WSU these are the required maximum receiver temperatures (the final receiver temperatures may be significantly lower than these). Note that for cases where the bands overlap, the lowest receiver temperature is used.
 
 +------+-------------------------+---------------------------+-------------------------+---------------------------+
 |      | ALMA                                                | ALMA WSU                                            |
