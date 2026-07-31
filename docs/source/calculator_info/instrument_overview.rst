@@ -9,11 +9,11 @@ To go beyond this, in order to approximate the future instrumentation available 
     :header: "Name", "Telescope", "Project page"
     :widths: 6,6,30
 
-    :doc:`CHAI <chai_tsys>`, CCAT, https://www.ccatobservatory.org/chai/
-    :doc:`FINER <finer_tsys>`, LMT, https://finerreceiver.github.io/
-    :doc:`MUSCAT <muscat_tsys>`, LMT, https://muscat-docs.astro.cf.ac.uk/
-    :doc:`SEPIA <sepia_tsys>`, APEX, https://www.apex-telescope.org/ns/observing/the-telescope/instruments/sepia/sepia345/
-    :doc:`TIFUUN <tifuun_tsys>`, ASTE,
+    :doc:`CHAI <instruments/chai_tsys>`, CCAT, https://www.ccatobservatory.org/chai/
+    :doc:`FINER <instruments/finer_tsys>`, LMT, https://finerreceiver.github.io/
+    :doc:`MUSCAT <instruments/muscat_tsys>`, LMT, https://muscat-docs.astro.cf.ac.uk/
+    :doc:`SEPIA <instruments/sepia_tsys>`, APEX, https://www.apex-telescope.org/ns/observing/the-telescope/instruments/sepia/sepia345/
+    :doc:`TIFUUN <instruments/tifuun_tsys>`, ASTE,
 
 Observing frequency and channel bandwidth ranges
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -65,10 +65,7 @@ where
 The system temperature is calculated based on the user input parameters as well as parameters for the telescope, environment and the instrument itself. More information on the instruments and a detailed explanation of the equations used to calculate their system temperatures can be found in the following pages.
 
 .. toctree::
-    :maxdepth: 2
+    :glob:
+
+    instruments/*
     
-    chai_tsys
-    finer_tsys
-    sepia_tsys
-    muscat_tsys
-    tifuun_tsys

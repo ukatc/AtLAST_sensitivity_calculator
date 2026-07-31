@@ -205,7 +205,7 @@ it will be available for selection in the calculator.
 Add the new instrument to the documentation
 -------------------------------------------
 Once the new instrument is added to the calculator, the documentation should be updated to include
-a page for the new instrument in the ``/docs/source/calculator_info`` directory. This should include a description 
+a page for the new instrument in the ``/docs/source/calculator_info/instruments`` directory. This should include a description 
 of the instrument, references to literature on the instrument and provide a detailed explanation of 
 the equations used to calculate the system temperature for the new instrument. The documentation should 
 contain its operational ranges, any specific parameters it has for calculations. References to the new 

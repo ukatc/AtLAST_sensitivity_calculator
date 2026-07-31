@@ -5,7 +5,7 @@ The CCAT Heterodyne Array Instrument (`CHAI <https://www.ccatobservatory.org/cha
 
 Here in the AtLAST sensitivity calculator, we use it as an exemplar of a heterodyne instrument capable of working at these frequencies.
 
-In this module, we calculate the system temperature used in the overall :doc:`sensitivity equation <sensitivity>`. For a CHAI like system, the system temperature is calculated as:
+In this module, we calculate the system temperature used in the overall :doc:`sensitivity equation <../sensitivity>`. For a CHAI like system, the system temperature is calculated as:
 
 .. math::
     T_{sys} = \frac{1+g}{\eta_\mathrm{eff} \mathfrak{t}} \times [T_\mathrm{rx} + (\eta_\mathrm{eff} T_\mathrm{sky}) + (1-\eta_\mathrm{eff}) O(\nu, T_\mathrm{amb})]
@@ -16,7 +16,7 @@ where
 * :math:`\eta_\mathrm{eff}` is the forward efficiency of the telescope
 * :math:`\mathfrak{t}` is the atmospheric transmittance, defined as :math:`\mathfrak{t} = \textrm{exp}^{(-\tau_{atm})}`
 * :math:`T_\mathrm{rx}` is the receiver temperature
-* :math:`T_\mathrm{sky}` is the sky temperature (in terms of a Rayleigh-Jeans brightness temperature) calculated from the model grid described in :doc:`Weather Calculations <weather>`
+* :math:`T_\mathrm{sky}` is the sky temperature (in terms of a Rayleigh-Jeans brightness temperature) calculated from the model grid described in :doc:`Weather Calculations <../weather>`
 * :math:`T_\mathrm{amb}` is the ambient temperature
 
 Here, :math:`O(\nu, T)` converts a physical temperature to a Rayleigh-Jeans brightness temperature
