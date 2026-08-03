@@ -42,7 +42,7 @@ const updateInstrumentRangesDisplay = async (instrumentName) => {
         const allowedSetupsTitle = document.getElementById("allowed-setups-title");
 
         if (allowedSetupsTitle) {
-            allowedSetupsTitle.textContent = `${instrumentName} Allowed Setups`;
+            allowedSetupsTitle.textContent = `${instrumentName} Allowed Setup`;
         }
         
         if (freqRangeDiv && ranges.freq_range) {
