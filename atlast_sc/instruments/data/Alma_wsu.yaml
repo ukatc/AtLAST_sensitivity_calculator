@@ -13,4 +13,4 @@ receiver_temperature:
   values: [28, 30, 40, 41, 53, 72, 120, 242, 365]
   unit: K
 sideband_ratio:
-  values: [0,0,0,0,0,0,0,0,0,0]
+  values: [0,0,0,0,0,0,0,0,0]

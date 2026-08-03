@@ -18,7 +18,7 @@ class InstrumentConfig:
         sepia_instrument = {'class': 'Sepia.py', 'data': 'Sepia.yaml'}
         tifuun_instrument = {'class': 'Tifuun.py', 'data': 'Tifuun.yaml'}
         alma_instrument = {'class': 'Alma.py', 'data': 'Alma.yaml'}
-        alma_wsu_instrument = {'class': 'Alma.py', 'data': 'Alma_wsu.yaml'}
+        alma_wsu_instrument = {'class': 'Alma_wsu.py', 'data': 'Alma_wsu.yaml'}
         # TODO: Add your custom instrument here.
         
         available_instruments = [
