@@ -29,7 +29,7 @@ a.nav-link:hover {
 }
 
 .calculator-container {
-    margin-left: 35%;
+    margin: auto;
 }
 
 .titles {
@@ -162,7 +162,7 @@ button:hover {
 #header {
     height: 200px;
     width: 100%;
-    background: url("../resources/atlast-banner-bg.png") top center repeat-x;
+    background: url("../resources/atlast-banner-bg.png") top repeat-x;
     background-size: 10px;
 }
 
@@ -175,7 +175,6 @@ img#logoimg {
 #logotext {
   font-size: 5rem;
   top: 100px;
-  left: 35%;
   position: relative;
   padding: 10px 0;
 }
@@ -265,7 +264,7 @@ img#logoimg {
         left: -90px;
     }
     #tagline {
-        display: none;
+      font-size: 0.8rem;
     }
 }
 
