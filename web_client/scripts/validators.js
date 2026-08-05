@@ -71,12 +71,8 @@ const validateInputAgainstInstrumentRange = (input, rangeText, unit = null) => {
         }
     }
 
-    if (!isNum(input.value)) {
-        setUpValidState(false, "Please enter a valid number");
-        return false;
-    }
-
     const parsedRange = parseInstrumentRange(rangeText);
+
     if (!parsedRange) {
         setUpValidState(true);
         return true;
@@ -114,30 +110,17 @@ const getInputUnit = (input) => {
 }
 
 const parseInstrumentRange = (rangeText) => {
-    if (!rangeText || typeof rangeText !== 'string') {
-        return null;
-    }
 
     const trimmed = rangeText.trim();
-    if (!trimmed) {
-        return null;
-    }
 
     const unitMatch = trimmed.match(/(Hz|kHz|MHz|GHz|THz)$/i);
-    const unit = unitMatch ? unitMatch[1].toLowerCase() : 'GHz';
+    const unit = unitMatch ? unitMatch[1] : 'GHz';
 
     const values = trimmed.match(/[-+]?((\d+(\.\d*)?)|(\.\d+))(e[-+]?\d+)?/g);
 
-    if (!values || values.length === 0) {
-        return null;
-    }
-
-    if (trimmed.includes('>') || trimmed.includes('<')) {
+    if (trimmed.includes('>')) {
         const numericValue = Number(values[0]);
-        if (trimmed.includes('>')) {
-            return { lower: numericValue, upper: null, unit };
-        }
-        return { lower: null, upper: numericValue, unit };
+        return { lower: numericValue, upper: null, unit };
     }
 
     if (values.length >= 2) {
