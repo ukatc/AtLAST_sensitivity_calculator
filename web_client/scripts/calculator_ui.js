@@ -1,4 +1,5 @@
 import { setInstrument, getRecommendedInstrument, getInstrumentRanges } from './rest_calls.js';
+import { validateInputAgainstInstrumentRange } from './validators.js';
 
 const setUIInitialState = (paramData) => {
     // Set all inputs to a valid state
@@ -58,35 +59,50 @@ const updateInstrumentRangesDisplay = async (instrumentName) => {
 
 const handleInstrumentSelection = (e) => {
     const selectedInstrument = e.target.value;
-    updateInstrumentRangesDisplay(selectedInstrument);
-    // Send the selected instrument to the backend to set it as the chosen_instrument
     setChosenInstrument(selectedInstrument);
+}
+
+const validateCurrentInputsAgainstInstrument = (instrumentName) => {
+
+    const instrumentRanges = document.getElementById("instrument-ranges-display");
+    if (!instrumentRanges) {
+        return;
+    }
+
+    const rangeFields = {
+        obs_freq: document.getElementById("freq-range")?.textContent || "",
+        bandwidth: document.getElementById("bw-range")?.textContent || ""
+    };
+
+    const inputsToValidate = [
+        document.getElementById("obs-freq-input"),
+        document.getElementById("bandwidth-input")
+    ];
+
+    inputsToValidate.forEach((input) => {
+        if (!input) {
+            return;
+        }
+
+        const relevantRange = input.id === "obs-freq-input" ? rangeFields.obs_freq : rangeFields.bandwidth;
+        const unitsElem = document.getElementById(`${input.name}-units`);
+        const unit = unitsElem ? unitsElem.value : relevantRange.split(" ").at(-1);
+        validateInputAgainstInstrumentRange(input, relevantRange, unit);
+    });
 }
 
 const setChosenInstrument = async (instrumentName) => {
     try {
         const data = await setInstrument(instrumentName);
         console.log(data);
+        // Update the ranges display for the new instrument
+        await updateInstrumentRangesDisplay(data.instrument);
+        // Validate current inputs against the newly set instrument
+        await validateCurrentInputsAgainstInstrument(instrumentName);
     } catch (error) {
         console.error("Error setting instrument:", error);
         // Optionally display error message to user
         alert(`Failed to set instrument: ${error.message}`);
-    }
-}
-
-const updateInstrumentSelection = async (obs_freq, bandwidth, bandwidthUnit) => {
-    try {
-        const data = await getRecommendedInstrument(obs_freq, bandwidth, bandwidthUnit);
-        const instrumentDropdown = document.getElementById("instrument-type");
-        if (instrumentDropdown && data.instrument) {
-            instrumentDropdown.value = data.instrument;
-            // Update the ranges display for the new instrument
-            updateInstrumentRangesDisplay(data.instrument);
-            // Also send to backend to set it as the chosen_instrument
-            setChosenInstrument(data.instrument);
-        }
-    } catch (error) {
-        console.error("Error updating instrument selection:", error);
     }
 }
 
@@ -172,4 +188,4 @@ const toggleSpinner = (action, completed) => {
 
 export {setUIInitialState, hideInvalidMessages, showDifferentInstrumentOptions,
         showCalculatedValue, disableCalculateBtn, initializeInputs, 
-        initializeUnits, resetOutputBox, toggleSpinner, updateInstrumentSelection}
+        initializeUnits, resetOutputBox, toggleSpinner, validateCurrentInputsAgainstInstrument}

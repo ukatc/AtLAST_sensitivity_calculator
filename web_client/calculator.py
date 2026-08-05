@@ -118,66 +118,6 @@ def get_instrument_ranges(instrument_name):
         print(f"Error getting ranges for instrument {instrument_name}: {e}")
         return None
 
-
-def get_recommended_instrument(obs_freq, bandwidth, bandwidth_unit=None):
-    """
-    Determine the recommended instrument based on observing frequency and bandwidth.
-    Uses the existing ParameterSetup.find_applicable_instruments method for consistency.
-    
-    :param obs_freq: observing frequency (assumed in GHz)
-    :param bandwidth: bandwidth value
-    :param bandwidth_unit: bandwidth unit (e.g., 'MHz', 'GHz', default to 'MHz')
-    :return: recommended instrument name
-    """
-    if not obs_freq or obs_freq == "":
-        return "Default"
-    
-    try:
-        obs_freq_ghz = float(obs_freq)
-    except (ValueError, TypeError):
-        return "Default"
-    
-    # Convert bandwidth to Hz based on the provided unit
-    if bandwidth and bandwidth != "":
-        try:
-            bandwidth_val = float(bandwidth)
-            
-            # Default to MHz if no unit provided
-            if not bandwidth_unit or bandwidth_unit == "":
-                bandwidth_unit = "MHz"
-            
-            # Create a Quantity with the specified unit and convert to Hz
-            bandwidth_quantity_temp = bandwidth_val * u.Unit(bandwidth_unit)
-            bandwidth_hz = bandwidth_quantity_temp.to(u.Hz).value
-        except (ValueError, TypeError):
-            bandwidth_hz = 1e9  # Default 1 GHz
-    else:
-        bandwidth_hz = 1e9  # Default 1 GHz
-    
-    try:
-        
-        # Create a ParameterSetup instance to access find_applicable_instruments
-        param_setup = ParameterSetup()
-        
-        # Create Quantity objects with appropriate units
-        obs_freq_quantity = obs_freq_ghz * u.GHz
-        bandwidth_quantity = bandwidth_hz * u.Hz
-        
-        # Use the existing method to find the applicable instrument
-        recommended = param_setup.find_applicable_instruments(
-            obs_freq_quantity,
-            bandwidth_quantity,
-            param_setup.instrument_obs_freqs,
-            param_setup.instrument_bandw_vals
-        )
-        
-        return recommended
-    except Exception as e:
-        # If there's any error, return Default
-        print(f"Error determining instrument: {e}")
-        return "Default"
-
-
 def _create_calculator(user_input):
     """
     Create a calculator object with the specified user input and apply

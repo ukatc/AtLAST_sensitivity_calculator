@@ -74,32 +74,6 @@ async def param_values_units():
     return JSONResponse(content=calculator.get_param_values_units())
 
 
-@app.get(paths['set_instrument'] + '/recommended')
-async def get_recommended_instrument(obs_freq: float = None, bandwidth: float = None, bandwidth_unit: str = None):
-    """
-    Get the recommended instrument based on observing frequency and bandwidth.
-    
-    :param obs_freq: observing frequency in GHz
-    :param bandwidth: bandwidth value
-    :param bandwidth_unit: bandwidth unit (e.g., 'MHz', 'GHz')
-    :return: recommended instrument name
-    """
-    try:
-        recommended = calculator.get_recommended_instrument(obs_freq, bandwidth, bandwidth_unit)
-        return JSONResponse(
-            content={
-                "instrument": recommended
-            }
-        )
-    except Exception as e:
-        # If there's an error, return Default
-        return JSONResponse(
-            content={
-                "instrument": "Default"
-            }
-        )
-
-
 @app.get(paths['set_instrument'] + '/ranges')
 async def get_instrument_ranges(instrument_name: str):
     """

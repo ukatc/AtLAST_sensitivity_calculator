@@ -57,6 +57,119 @@ const validateInput = (input, units, paramData) => {
     return true;
 }
 
+const validateInputAgainstInstrumentRange = (input, rangeText, unit = null) => {
+    const setUpValidState = (validState, message = "") => {
+        const validStateMessage = validState ? "" : message;
+        input.setCustomValidity(validStateMessage);
+
+        const invalid_msg_elem = document.getElementById(`${input.id}-invalid`);
+        if (invalid_msg_elem) {
+            if (message) {
+                invalid_msg_elem.textContent = message;
+            }
+            invalid_msg_elem.hidden = validState;
+        }
+    }
+
+    if (!isNum(input.value)) {
+        setUpValidState(false, "Please enter a valid number");
+        return false;
+    }
+
+    const parsedRange = parseInstrumentRange(rangeText);
+    if (!parsedRange) {
+        setUpValidState(true);
+        return true;
+    }
+
+    const numericValue = Number(input.value);
+    const inputUnit = unit || getInputUnit(input);
+    const valueToValidate = convertValueToUnit(numericValue, inputUnit, parsedRange.unit);
+
+    if (parsedRange.lower !== null && valueToValidate < parsedRange.lower) {
+        setUpValidState(false, `Value must be at least ${parsedRange.lower} ${parsedRange.unit}`);
+        return false;
+    }
+
+    if (parsedRange.upper !== null && valueToValidate > parsedRange.upper) {
+        setUpValidState(false, `Value must be at most ${parsedRange.upper} ${parsedRange.unit}`);
+        return false;
+    }
+
+    setUpValidState(true);
+    return true;
+}
+
+const getInputUnit = (input) => {
+    const unitsElem = document.getElementById(`${input.name}-units`);
+    if (unitsElem && unitsElem.value) {
+        return unitsElem.value;
+    }
+
+    if (input.name === 'obs_freq' || input.id === 'obs-freq-input') {
+        return 'GHz';
+    }
+
+    return 'GHz';
+}
+
+const parseInstrumentRange = (rangeText) => {
+    if (!rangeText || typeof rangeText !== 'string') {
+        return null;
+    }
+
+    const trimmed = rangeText.trim();
+    if (!trimmed) {
+        return null;
+    }
+
+    const unitMatch = trimmed.match(/(Hz|kHz|MHz|GHz|THz)$/i);
+    const unit = unitMatch ? unitMatch[1].toLowerCase() : 'GHz';
+
+    const values = trimmed.match(/[-+]?((\d+(\.\d*)?)|(\.\d+))(e[-+]?\d+)?/g);
+
+    if (!values || values.length === 0) {
+        return null;
+    }
+
+    if (trimmed.includes('>') || trimmed.includes('<')) {
+        const numericValue = Number(values[0]);
+        if (trimmed.includes('>')) {
+            return { lower: numericValue, upper: null, unit };
+        }
+        return { lower: null, upper: numericValue, unit };
+    }
+
+    if (values.length >= 2) {
+        return {
+            lower: Number(values[0]),
+            upper: Number(values[1]),
+            unit
+        };
+    }
+
+    return null;
+}
+
+const convertValueToUnit = (value, fromUnit, toUnit) => {
+    const unitToHz = {
+        hz: 1,
+        khz: 1e3,
+        mhz: 1e6,
+        ghz: 1e9,
+        thz: 1e12
+    };
+
+    const normalizedFrom = fromUnit.toLowerCase();
+    const normalizedTo = toUnit.toLowerCase();
+
+    if (!unitToHz[normalizedFrom] || !unitToHz[normalizedTo]) {
+        return value;
+    }
+
+    return value * unitToHz[normalizedFrom] / unitToHz[normalizedTo];
+}
+
 const isNum = (val) => {
     return !(isNaN(+val));
 }
@@ -95,4 +208,4 @@ const convertToDefaultUnits = (parameter, value) => {
 
 }
 
-export {validateInput}
+export {validateInput, validateInputAgainstInstrumentRange}
