@@ -1,4 +1,4 @@
-import { setInstrument, getRecommendedInstrument, getInstrumentRanges } from './rest_calls.js';
+import { setInstrument, getInstrumentRanges } from './rest_calls.js';
 import { validateInputAgainstInstrumentRange } from './validators.js';
 
 const setUIInitialState = (paramData) => {
