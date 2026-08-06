@@ -265,6 +265,10 @@ img#logoimg {
     #tagline {
       font-size: 0.8rem;
     }
+    #right-area {
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+    }
 }
 
 .allowed-range-info {
