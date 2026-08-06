@@ -78,17 +78,18 @@ const validateInputAgainstInstrumentRange = (input, rangeText, unit = null) => {
     const valueToValidate = convertValueToUnit(numericValue, inputUnit, parsedRange.unit);
 
     if (parsedRange.lower !== null && valueToValidate < parsedRange.lower) {
-        setUpValidState(false, `Value must be at least ${parsedRange.lower} ${parsedRange.unit}`);
+        setUpValidState(false, `Value must be at least ${parsedRange.lower} ${parsedRange.unit} 
+            for the chosen instrument.`);
         return false;
     }
 
     if (parsedRange.upper !== null && valueToValidate > parsedRange.upper) {
-        setUpValidState(false, `Value must be at most ${parsedRange.upper} ${parsedRange.unit}`);
+        setUpValidState(false, `Value must be at most ${parsedRange.upper} ${parsedRange.unit}
+             for the chosen instrument.`);
         return false;
     }
 
     setUpValidState(true);
-    return true;
 }
 
 const parseInstrumentRange = (rangeText) => {
