@@ -73,13 +73,8 @@ const validateInputAgainstInstrumentRange = (input, rangeText, unit = null) => {
 
     const parsedRange = parseInstrumentRange(rangeText);
 
-    if (!parsedRange) {
-        setUpValidState(true);
-        return true;
-    }
-
     const numericValue = Number(input.value);
-    const inputUnit = unit || getInputUnit(input);
+    const inputUnit = unit;
     const valueToValidate = convertValueToUnit(numericValue, inputUnit, parsedRange.unit);
 
     if (parsedRange.lower !== null && valueToValidate < parsedRange.lower) {
@@ -94,19 +89,6 @@ const validateInputAgainstInstrumentRange = (input, rangeText, unit = null) => {
 
     setUpValidState(true);
     return true;
-}
-
-const getInputUnit = (input) => {
-    const unitsElem = document.getElementById(`${input.name}-units`);
-    if (unitsElem && unitsElem.value) {
-        return unitsElem.value;
-    }
-
-    if (input.name === 'obs_freq' || input.id === 'obs-freq-input') {
-        return 'GHz';
-    }
-
-    return 'GHz';
 }
 
 const parseInstrumentRange = (rangeText) => {
