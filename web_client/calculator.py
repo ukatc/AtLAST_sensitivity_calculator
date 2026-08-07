@@ -98,21 +98,29 @@ def get_instrument_ranges(instrument_name):
         
         # Format the ranges as strings
         if freq_ranges:
-            freq_range = re.findall(r"[\d.e]+", freq_ranges[0])
-            freq_range_str = f"{freq_range[0]} - {freq_range[1]}"
+            freq_ranges_list = []
+            for range in freq_ranges:
+                freq_range = re.findall(r"[\d.]+", range)
+                freq_ranges_list.append(f"{freq_range[0]} - {freq_range[1]}")
         else:
-            freq_range_str = "N/A"
+            freq_ranges_list = ""
             
         if bw_ranges:
-            bw_range = re.findall(r"[\d.e]+", freq_ranges[0])
-            bw_range_str = f"{bw_range[0]} - {bw_range[1]}"
+            bw_ranges_list = []
+            for range in bw_ranges:
+                freq_range = re.findall(r"[\d.e]+", range)
+                bw_ranges_list.append(f"{freq_range[0]} - {freq_range[1]}")
         else:
-            bw_range_str = "> 0"
+            bw_ranges_list = "> 0"
             bw_unit = ""
-        
+
+        # Make pretty printout
+        obs_freq_range_str = '\n'.join(f"{r} {freq_unit}" for r in freq_ranges_list)
+        bw_range_str = '\n'.join(f"{r} {bw_unit}" for r in bw_ranges_list)
+
         return {
-            "freq_range": f"{freq_range_str} {freq_unit}",
-            "bw_range": f"{bw_range_str} {bw_unit}"
+            "freq_range": f"{obs_freq_range_str}",
+            "bw_range": f"{bw_range_str}"
         }
     except Exception as e:
         print(f"Error getting ranges for instrument {instrument_name}: {e}")
@@ -132,8 +140,8 @@ def _create_calculator(user_input):
     # Apply the selected instrument if one has been set
     try:
         from web_client import main
-        if main.selected_instrument:
-            calculator.chosen_instrument = main.selected_instrument
+        main.selected_instrument = calculator.chosen_instrument
+        print("\n++ main.selected_instrument: " + main.selected_instrument)
     except Exception as e:
         # If there's any error applying the instrument, log it but continue
         print(f"Warning: Could not apply selected instrument: {e}")
