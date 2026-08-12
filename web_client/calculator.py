@@ -8,12 +8,13 @@ from pydantic import ValidationError
 from atlast_sc.core.data import Data
 
 
-def do_calculation(user_input, calculation):
+def do_calculation(user_input, calculation, selected_instrument):
     """
     Perform the specified calculation (sensitivity or integration time)
     """
     try:
         calculator = _create_calculator(user_input)
+        calculator.chosen_instrument = selected_instrument
     except UserInputError as e:
         raise e
 
@@ -115,7 +116,7 @@ def get_instrument_ranges(instrument_name):
             bw_unit = ""
 
         # Make pretty printout
-        obs_freq_range_str = '\n'.join(f"{r} {freq_unit}" for r in freq_ranges_list)
+        obs_freq_range_str = '\n\\ '.join(f"{r} {freq_unit}" for r in freq_ranges_list)
         bw_range_str = '\n'.join(f"{r} {bw_unit}" for r in bw_ranges_list)
 
         return {
@@ -137,15 +138,6 @@ def _create_calculator(user_input):
         message = json.loads(e.json())[0]["msg"]
         raise UserInputError(message)
     
-    # Apply the selected instrument if one has been set
-    try:
-        from web_client import main
-        main.selected_instrument = calculator.chosen_instrument
-        print("\n++ main.selected_instrument: " + main.selected_instrument)
-    except Exception as e:
-        # If there's any error applying the instrument, log it but continue
-        print(f"Warning: Could not apply selected instrument: {e}")
-
     return calculator
 
 

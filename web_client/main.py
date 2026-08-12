@@ -25,7 +25,7 @@ paths = {
 }
 
 # Global state to store the currently selected instrument
-selected_instrument = None
+selected_instrument = 'Default'
 
 templates = Jinja2Templates(directory="templates",
                             context_processors=[cp.invalid_message_processor,
@@ -53,7 +53,7 @@ async def sensitivity(api_user_input: APIUserInput):
     user_input = _unpack_api_user_input(api_user_input)
 
     try:
-        return calculator.do_calculation(user_input, "sensitivity")
+        return calculator.do_calculation(user_input, "sensitivity", selected_instrument)
     except calculator.UserInputError as e:
         raise HTTPException(status_code=400, detail=e.message)
 
@@ -64,7 +64,7 @@ async def t_int(api_user_input: APIUserInput):
     user_input = _unpack_api_user_input(api_user_input)
 
     try:
-        return calculator.do_calculation(user_input, "integration_time")
+        return calculator.do_calculation(user_input, "integration_time", selected_instrument)
     except calculator.UserInputError as e:
         raise HTTPException(status_code=400, detail=e.message)
 
