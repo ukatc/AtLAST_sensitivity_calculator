@@ -251,13 +251,17 @@ class ParameterSetup:
 
         # Check what instrument/s the bandwidth value falls in
         for instrument, bandw_vals in instrument_bandw_vals.items():
-            bandw_val_ranges = bandw_vals['ranges']
-            for range in bandw_val_ranges:
-                range = re.findall(r"[\d.]+", range)
-                min_bandw = float(range[0])
-                max_bandw = float(range[1])
-                if bandwidth >= min_bandw and bandwidth <= max_bandw:
-                    applicable_bandw_instruments.append(instrument)
+            if not bandw_vals['ranges']: # Default instrument has no bandwidth range
+                applicable_bandw_instruments.append(instrument)
+                continue
+            else:
+                bandw_val_ranges = bandw_vals['ranges']
+                for range in bandw_val_ranges:                    
+                    range = re.findall(r"[\d.]+", range)
+                    min_bandw = float(range[0])
+                    max_bandw = float(range[1])
+                    if bandwidth >= min_bandw and bandwidth <= max_bandw:
+                        applicable_bandw_instruments.append(instrument)
 
         # Create a set of both applicable instruments lists and take the intersection
         applicable_instruments = list(set(applicable_obs_freq_instruments) & \
