@@ -1,4 +1,4 @@
-import {getParamValuesUnits, calculate} from './rest_calls.js';
+import {getParamValuesUnits, calculate, setInstrument} from './rest_calls.js';
 import {validateInput} from './validators.js'
 import * as CalculatorUI from './calculator_ui.js'
 
@@ -146,6 +146,8 @@ $(document).ready(() => {
                 })
             });
 
+            // Send the default instrument to the backend
+            setInstrument(document.getElementById("instrument-type").value)
             // Calculate the integration time using the default values
             doCalculation(data);
 
