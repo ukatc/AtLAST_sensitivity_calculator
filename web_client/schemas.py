@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from atlast_sc.core.data import Data
+from typing import Optional
 
 
 class APIUserInput(BaseModel):
@@ -57,3 +58,8 @@ class InstrumentSelection(BaseModel):
     Schema for selecting an instrument by name
     """
     instrument_name: str
+
+class ApplicableInstrumentsRequest(BaseModel):
+    obs_freq: Optional[float] = None
+    bandwidth: Optional[float] = None
+    bandwidth_unit: Optional[str] = None

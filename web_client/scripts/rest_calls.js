@@ -77,4 +77,22 @@ const getInstrumentRanges = (instrumentName) => {
     });
 }
 
-export {getParamValuesUnits, calculate, setInstrument, getInstrumentRanges}
+const getApplicableInstruments = (inputData) => {
+    const version = apiVersion();
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: `/${version}/set-instrument/applicable-instruments`,
+            type: 'POST',
+            data: JSON.stringify(inputData),
+            contentType: 'application/json',
+            success: function(data) {
+                resolve(data);
+            },
+            error: function(error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+export {getParamValuesUnits, calculate, setInstrument, getInstrumentRanges, getApplicableInstruments};

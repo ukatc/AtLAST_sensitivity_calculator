@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from web_client.schemas import APIUserInput, InstrumentSelection
+from web_client.schemas import APIUserInput, InstrumentSelection, ApplicableInstrumentsRequest
 from web_client import utils, calculator
 import web_client.context_processors as cp
 
@@ -73,6 +73,34 @@ async def t_int(api_user_input: APIUserInput):
 async def param_values_units():
     return JSONResponse(content=calculator.get_param_values_units())
 
+@app.post(paths['set_instrument'] + '/applicable-instruments')
+async def get_applicable_instruments(req: ApplicableInstrumentsRequest):
+    """
+    Get current observing frequency and bandwidth values to determine
+    a list of applicable instruments.
+
+    :param req: JSON body with obs_freq, bandwidth and bandwidth_unit
+    :return: list of applicable instrument names
+    """
+    obs_freq = req.obs_freq
+    bandwidth = req.bandwidth
+    bandwidth_unit = req.bandwidth_unit
+
+    try:
+        applicable_instruments = calculator.get_applicable_instruments(obs_freq, bandwidth, bandwidth_unit)
+        return JSONResponse(
+            content={
+                "applicable_instruments": applicable_instruments
+            }
+        )
+    except Exception as e:
+        print("in error of. get applicable insts")
+        # If there's an error, return Default
+        return JSONResponse(
+            content={
+                "applicable_instruments": "Default"
+            }
+        )
 
 @app.get(paths['set_instrument'] + '/ranges')
 async def get_instrument_ranges(instrument_name: str):

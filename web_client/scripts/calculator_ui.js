@@ -1,4 +1,4 @@
-import { setInstrument, getInstrumentRanges } from './rest_calls.js';
+import { setInstrument, getInstrumentRanges, getApplicableInstruments } from './rest_calls.js';
 import { validateInputAgainstInstrumentRange } from './validators.js';
 
 const setUIInitialState = (paramData) => {
@@ -19,6 +19,9 @@ const setUIInitialState = (paramData) => {
     if (instrumentDropdown) {
         updateInstrumentRangesDisplay(instrumentDropdown.value);
     }
+
+    // Show the applicable instruments given the current input values
+    showApplicableInstruments();
 
     // Show the Sensitivity input and hide the Integration time input
     const sensitivityInput = document.getElementById("row-sensitivity");
@@ -62,6 +65,18 @@ const handleInstrumentSelection = (e) => {
     setChosenInstrument(selectedInstrument);
 }
 
+const showApplicableInstruments = async () => {
+    const obsFreqInput = document.getElementById("obs-freq-input").value;
+    const bandwInput = document.getElementById("bandwidth-input").value;
+    const bandwUnit = document.getElementById("bandwidth-units").value;
+    const inputData = {
+        obs_freq: obsFreqInput,
+        bandwidth: bandwInput,
+        bandwidth_unit: bandwUnit
+    };
+    const applicableInstruments = await getApplicableInstruments(inputData);
+}
+
 const validateCurrentInputsAgainstInstrument = (instrumentName) => {
 
     const instrumentRanges = document.getElementById("instrument-ranges-display");
@@ -90,6 +105,8 @@ const validateCurrentInputsAgainstInstrument = (instrumentName) => {
         validateInputAgainstInstrumentRange(input, relevantRange, unit);
     });
 }
+
+
 
 const setChosenInstrument = async (instrumentName) => {
     try {
@@ -188,4 +205,5 @@ const toggleSpinner = (action, completed) => {
 
 export {setUIInitialState, hideInvalidMessages, showDifferentInstrumentOptions,
         showCalculatedValue, disableCalculateBtn, initializeInputs, 
-        initializeUnits, resetOutputBox, toggleSpinner, validateCurrentInputsAgainstInstrument}
+        initializeUnits, resetOutputBox, toggleSpinner, validateCurrentInputsAgainstInstrument,
+        showApplicableInstruments}
