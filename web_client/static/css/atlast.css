@@ -34,7 +34,7 @@ a.nav-link:hover {
 
 .titles {
     font-weight: 600;
-    color: #747474;
+    color: #434343;
     font-size: larger;
 }
 
@@ -87,6 +87,11 @@ input:invalid {
 
 .inst-range-label {
   color: black;
+}
+
+.inst-selection{
+  font-size: 0.8rem;
+  color: #434343;
 }
 
 html,
