@@ -89,17 +89,13 @@ async def get_applicable_instruments(req: ApplicableInstrumentsRequest):
     try:
         applicable_instruments = calculator.get_applicable_instruments(obs_freq, bandwidth, bandwidth_unit)
         return JSONResponse(
-            content={
-                "applicable_instruments": applicable_instruments
-            }
+            content=applicable_instruments
         )
     except Exception as e:
         print("in error of. get applicable insts")
         # If there's an error, return Default
         return JSONResponse(
-            content={
-                "applicable_instruments": "Default"
-            }
+            content="Default"
         )
 
 @app.get(paths['set_instrument'] + '/ranges')

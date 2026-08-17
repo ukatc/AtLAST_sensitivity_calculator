@@ -158,6 +158,7 @@ def get_applicable_instruments(obs_freq, bandwidth, bandwidth_unit=None):
             param_setup.instrument_obs_freqs,
             param_setup.instrument_bandw_vals
         )
+        applicable_instruments = ', '.join(f"{inst}" for inst in applicable_instruments)
         return applicable_instruments
     except Exception as e:
         # If there's any error, return Default
