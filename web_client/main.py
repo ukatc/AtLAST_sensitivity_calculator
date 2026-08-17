@@ -92,7 +92,6 @@ async def get_applicable_instruments(req: ApplicableInstrumentsRequest):
             content=applicable_instruments
         )
     except Exception as e:
-        print("in error of. get applicable insts")
         # If there's an error, return Default
         return JSONResponse(
             content="Default"
