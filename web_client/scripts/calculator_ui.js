@@ -74,7 +74,12 @@ const showApplicableInstruments = async () => {
         bandwidth: bandwInput,
         bandwidth_unit: bandwUnit
     };
-    const applicableInstruments = await getApplicableInstruments(inputData);
+    const applicableInstrumentsData = await getApplicableInstruments(inputData);
+    const applicableInstrumentsDiv = document.getElementById("applicable-instruments");
+    console.log("Applicable instruments data:", applicableInstrumentsData);
+    if (applicableInstrumentsDiv) {
+        applicableInstrumentsDiv.textContent = `${applicableInstrumentsData}`;
+    }
 }
 
 const validateCurrentInputsAgainstInstrument = (instrumentName) => {
