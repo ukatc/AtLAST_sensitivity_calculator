@@ -83,6 +83,30 @@ class TestCalculatorUsage:
         # Verify that the integration time has not been updated
         assert test_calculator.calculated_t_int != t_int
 
+    def test_use_calculator_with_finetune(self, calculator):
+
+        # Create a new calculator object using the default parameters
+        test_calculator = Calculator(finetune=True)
+
+        # Calculate the sensitivity using default parameters
+        sens = test_calculator.calculate_sensitivity()
+        # Verify that the calculator now stores the newly calculated
+        # sensitivity
+        assert sens == test_calculator.calculated_sensitivity
+        # Verify that the sensitivity is about 3.48 mJy
+        assert test_calculator.calculated_sensitivity.value == pytest.approx(3.48, 0.01)
+        assert test_calculator.calculated_sensitivity.unit == u.mJy
+
+        # Update bandwidth
+        test_calculator.user_input.bandwidth = 50 * u.GHz
+        # Verify that other parameters that depend on the observing frequency
+        # have been updated
+        assert test_calculator.derived_parameters \
+               != calculator.derived_parameters
+        # Verify that the sensitivity is about 216.7 mJy
+        test_calculator.calculate_sensitivity()
+        assert test_calculator.calculated_sensitivity.value == pytest.approx(216.7, 0.1)
+
     def test_calculator_from_to_files(self, test_files_path, tmp_output_dir):
 
         # Read user input from a file and initialize the calculator with the
