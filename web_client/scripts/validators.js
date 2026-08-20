@@ -83,14 +83,12 @@ const validateInputAgainstInstrumentRange = (input, rangeText, unit = null) => {
         const inputUnit = unit;
         const parsedRangeUnit = parsedRange.unit === null || parsedRange.unit === undefined ? "Hz" : parsedRange.unit;
         const valueToValidate = convertValueToUnit(numericValue, inputUnit, parsedRangeUnit);
-        for (let counter=0; counter < parsedRangeList.length; counter++) {
-            if (parsedRange.lower !== null && parsedRange.upper !== null) {
-                // If the value to validate is within the range 
-                if (parsedRange.lower <= valueToValidate && parsedRange.upper >= valueToValidate) {
-                    valueInRange = true;
-                }
+        if (parsedRange.lower !== null && parsedRange.upper !== null) {
+            // If the value to validate is within the range 
+            if (parsedRange.lower <= valueToValidate && parsedRange.upper >= valueToValidate) {
+                valueInRange = true;
             }
-        }        
+        }
     }
     if (!valueInRange) {
         setUpValidState(false, `Value must be between allowed ranges 
@@ -143,8 +141,7 @@ const convertValueToUnit = (value, fromUnit, toUnit) => {
         hz: 1,
         khz: 1e3,
         mhz: 1e6,
-        ghz: 1e9,
-        thz: 1e12
+        ghz: 1e9
     };
 
     const normalizedFrom = fromUnit.toLowerCase();
