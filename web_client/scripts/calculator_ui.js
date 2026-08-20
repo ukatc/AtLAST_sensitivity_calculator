@@ -1,4 +1,4 @@
-import { setInstrument, getInstrumentRanges, getApplicableInstruments } from './rest_calls.js';
+import { setInstrument, getInstrumentRanges, setApplicableInstruments } from './rest_calls.js';
 import { validateInputAgainstInstrumentRange } from './validators.js';
 
 const setUIInitialState = (paramData) => {
@@ -74,9 +74,8 @@ const showApplicableInstruments = async () => {
         bandwidth: bandwInput,
         bandwidth_unit: bandwUnit
     };
-    const applicableInstrumentsData = await getApplicableInstruments(inputData);
+    const applicableInstrumentsData = await setApplicableInstruments(inputData);
     const applicableInstrumentsDiv = document.getElementById("applicable-instruments");
-    console.log("Applicable instruments data:", applicableInstrumentsData);
     if (applicableInstrumentsDiv) {
         applicableInstrumentsDiv.textContent = `${applicableInstrumentsData}`;
     }
@@ -99,16 +98,25 @@ const validateCurrentInputsAgainstInstrument = (instrumentName) => {
         document.getElementById("bandwidth-input")
     ];
 
-    inputsToValidate.forEach((input) => {
-        if (!input) {
-            return;
-        }
+    let obsFreqValueInRange = false;
+    let bandwValueInRange = false;
+    let allInRange = false;
 
+    inputsToValidate.forEach((input) => {
         const relevantRange = input.id === "obs-freq-input" ? rangeFields.obs_freq : rangeFields.bandwidth;
         const unitsElem = document.getElementById(`${input.name}-units`);
         const unit = unitsElem ? unitsElem.value : relevantRange.split(" ").at(-1);
-        validateInputAgainstInstrumentRange(input, relevantRange, unit);
+        const inputInRange = validateInputAgainstInstrumentRange(input, relevantRange, unit);
+        if (input.id === "obs-freq-input" && inputInRange) {
+            obsFreqValueInRange = true;
+        } else if (input.id === "bandwidth-input" && inputInRange) {
+            bandwValueInRange = true;
+        }
+        if (obsFreqValueInRange && bandwValueInRange) {
+            allInRange = true;
+        }
     });
+    return allInRange;
 }
 
 

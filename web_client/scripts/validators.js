@@ -71,25 +71,46 @@ const validateInputAgainstInstrumentRange = (input, rangeText, unit = null) => {
         }
     }
 
-    const parsedRange = parseInstrumentRange(rangeText);
-
-    const numericValue = Number(input.value);
-    const inputUnit = unit;
-    const valueToValidate = convertValueToUnit(numericValue, inputUnit, parsedRange.unit);
-
-    if (parsedRange.lower !== null && valueToValidate < parsedRange.lower) {
-        setUpValidState(false, `Value must be at least ${parsedRange.lower} ${parsedRange.unit} 
+    const parsedRangeList = parseInstrumentRange(rangeText);
+    let valueInRange = false;
+    for (let parsedRange of Object.entries(parsedRangeList)) {
+        parsedRange = parsedRange[1]; // Only extract the range object from the array of entries
+        if (parsedRange === 0) { // Bandwidth range is "> 0", any value will always be in range
+            valueInRange = true;
+            break;
+        }
+        const numericValue = Number(input.value);
+        const inputUnit = unit;
+        const parsedRangeUnit = parsedRange.unit === null || parsedRange.unit === undefined ? "Hz" : parsedRange.unit;
+        const valueToValidate = convertValueToUnit(numericValue, inputUnit, parsedRangeUnit);
+        for (let counter=0; counter < parsedRangeList.length; counter++) {
+            if (parsedRange.lower !== null && parsedRange.upper !== null) {
+                // If the value to validate is within the range 
+                if (parsedRange.lower <= valueToValidate && parsedRange.upper >= valueToValidate) {
+                    valueInRange = true;
+                }
+            }
+        }        
+    }
+    if (!valueInRange) {
+        setUpValidState(false, `Value must be between allowed ranges 
             for the chosen instrument.`);
-        return false;
     }
 
-    if (parsedRange.upper !== null && valueToValidate > parsedRange.upper) {
-        setUpValidState(false, `Value must be at most ${parsedRange.upper} ${parsedRange.unit}
-             for the chosen instrument.`);
-        return false;
+    // Return true if the input values are within the instrument range, false otherwise
+    let obsFreqValueInRange = false;
+    let bandwValueInRange = false;
+    let allInRange = false;
+    if (input.id === "obs-freq-input" && valueInRange) {
+        obsFreqValueInRange = true;
+    } else if (input.id === "bandwidth-input" && valueInRange) {
+        bandwValueInRange = true;
+    }
+    if (obsFreqValueInRange && bandwValueInRange) {
+        allInRange = true;
     }
 
-    setUpValidState(true);
+    return allInRange;
 }
 
 const parseInstrumentRange = (rangeText) => {
@@ -106,15 +127,15 @@ const parseInstrumentRange = (rangeText) => {
         return { lower: numericValue, upper: null, unit };
     }
 
-    if (values.length >= 2) {
-        return {
-            lower: Number(values[0]),
-            upper: Number(values[1]),
-            unit
-        };
+    if (values.length % 2 == 0) {
+        let ranges = [];
+        for (let range=0; range < values.length; range += 2) {
+            const lower = Number(values[range]);
+            const upper = Number(values[range + 1]);
+            ranges.push({ lower, upper, unit });
+        }
+    return ranges;
     }
-
-    return null;
 }
 
 const convertValueToUnit = (value, fromUnit, toUnit) => {
