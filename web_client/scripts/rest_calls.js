@@ -77,7 +77,7 @@ const getInstrumentRanges = (instrumentName) => {
     });
 }
 
-const getApplicableInstruments = (inputData) => {
+const setApplicableInstruments = (inputData) => {
     const version = apiVersion();
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -95,4 +95,4 @@ const getApplicableInstruments = (inputData) => {
     });
 }
 
-export {getParamValuesUnits, calculate, setInstrument, getInstrumentRanges, getApplicableInstruments};
+export {getParamValuesUnits, calculate, setInstrument, getInstrumentRanges, setApplicableInstruments};
