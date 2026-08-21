@@ -116,10 +116,14 @@ const setChosenInstrument = async (instrumentName) => {
         await updateInstrumentRangesDisplay(data.instrument);
         // Validate current inputs against the newly set instrument
         const inputsInRange = validateCurrentInputsAgainstInstrument(instrumentName);
-        disableCalculateBtn(inputsInRange);
-        if (inputsInRange) {
+
+        if (inputsInRange === true) {
+            disableCalculateBtn(false);
             resetOutputBox();
-        }
+        } else {
+            disableCalculateBtn(true);
+        }   
+        
     } catch (error) {
         console.error("Error setting instrument:", error);
         // Optionally display error message to user

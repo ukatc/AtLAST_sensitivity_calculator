@@ -63,8 +63,11 @@ const validateInputAgainstInstrumentRange = (input, rangeText, userSelectedUnit 
         input.setCustomValidity(validStateMessage);
 
         const calculateButton = document.getElementById("calculate");
-        if (!validState) {
+        if (validState == false) {
+            console.log("IM NOT IN A VALID STATE", input.value)
             calculateButton.disabled = true;
+        } else {
+            calculateButton.disabled = false;
         }
 
         const invalid_msg_elem = document.getElementById(`${input.id}-invalid`);
@@ -95,6 +98,13 @@ const validateInputAgainstInstrumentRange = (input, rangeText, userSelectedUnit 
                 valueInRange = true;
                 setUpValidState(true);
             } else {
+                if (valueInRange == true){
+                    // This is the second or more time we are looping through a range and
+                    // one of the previous ranges were applicable for the user input but 
+                    // not the current range. We break the loop to avoid showing error message
+                    // incorrectly.
+                    break;
+                }
                 setUpValidState(false, `Value must be between allowed ranges 
                     for the chosen instrument.`);
             }
