@@ -116,7 +116,7 @@ const setChosenInstrument = async (instrumentName) => {
         await updateInstrumentRangesDisplay(data.instrument);
         // Validate current inputs against the newly set instrument
         const inputsInRange = validateCurrentInputsAgainstInstrument(instrumentName);
-        disableCalculateBtn(!inputsInRange);
+        disableCalculateBtn(inputsInRange);
         if (inputsInRange) {
             resetOutputBox();
         }

@@ -62,6 +62,11 @@ const validateInputAgainstInstrumentRange = (input, rangeText, userSelectedUnit 
         const validStateMessage = validState ? "" : message;
         input.setCustomValidity(validStateMessage);
 
+        const calculateButton = document.getElementById("calculate");
+        if (!validState) {
+            calculateButton.disabled = true;
+        }
+
         const invalid_msg_elem = document.getElementById(`${input.id}-invalid`);
         if (invalid_msg_elem) {
             if (message) {
