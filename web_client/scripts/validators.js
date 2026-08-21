@@ -57,7 +57,7 @@ const validateInput = (input, units, paramData) => {
     return true;
 }
 
-const validateInputAgainstInstrumentRange = (input, rangeText, unit = null) => {
+const validateInputAgainstInstrumentRange = (input, rangeText, userSelectedUnit = null) => {
     const setUpValidState = (validState, message = "") => {
         const validStateMessage = validState ? "" : message;
         input.setCustomValidity(validStateMessage);
@@ -77,38 +77,25 @@ const validateInputAgainstInstrumentRange = (input, rangeText, unit = null) => {
         parsedRange = parsedRange[1]; // Only extract the range object from the array of entries
         if (parsedRange === 0) { // Bandwidth range is "> 0", any value will always be in range
             valueInRange = true;
+            setUpValidState(true);
             break;
         }
         const numericValue = Number(input.value);
-        const inputUnit = unit;
+        const inputUnit = userSelectedUnit;
         const parsedRangeUnit = parsedRange.unit === null || parsedRange.unit === undefined ? "Hz" : parsedRange.unit;
         const valueToValidate = convertValueToUnit(numericValue, inputUnit, parsedRangeUnit);
         if (parsedRange.lower !== null && parsedRange.upper !== null) {
             // If the value to validate is within the range 
             if (parsedRange.lower <= valueToValidate && parsedRange.upper >= valueToValidate) {
                 valueInRange = true;
+                setUpValidState(true);
+            } else {
+                setUpValidState(false, `Value must be between allowed ranges 
+                    for the chosen instrument.`);
             }
-        }
+        } 
     }
-    if (!valueInRange) {
-        setUpValidState(false, `Value must be between allowed ranges 
-            for the chosen instrument.`);
-    }
-
-    // Return true if the input values are within the instrument range, false otherwise
-    let obsFreqValueInRange = false;
-    let bandwValueInRange = false;
-    let allInRange = false;
-    if (input.id === "obs-freq-input" && valueInRange) {
-        obsFreqValueInRange = true;
-    } else if (input.id === "bandwidth-input" && valueInRange) {
-        bandwValueInRange = true;
-    }
-    if (obsFreqValueInRange && bandwValueInRange) {
-        allInRange = true;
-    }
-
-    return allInRange;
+    return valueInRange;
 }
 
 const parseInstrumentRange = (rangeText) => {

@@ -35,7 +35,7 @@ $(document).ready(() => {
                         
                         // Validate frequency/bandwidth based on instrument selection
                         const instrumentName = document.getElementById("instrument-type").value;
-                        CalculatorUI.validateCurrentInputsAgainstInstrument(instrumentName);
+                        formValidated = CalculatorUI.validateCurrentInputsAgainstInstrument(instrumentName);
                         CalculatorUI.showApplicableInstruments(input);
                     }
                 });
@@ -60,7 +60,8 @@ $(document).ready(() => {
                         
                         // Validate frequency/bandwidth based on instrument selection
                         const instrumentName = document.getElementById("instrument-type").value;
-                        CalculatorUI.validateCurrentInputsAgainstInstrument(instrumentName);
+                        formValidated =
+                            CalculatorUI.validateCurrentInputsAgainstInstrument(instrumentName);
                     }
                 });
             })

@@ -98,25 +98,12 @@ const validateCurrentInputsAgainstInstrument = (instrumentName) => {
         document.getElementById("bandwidth-input")
     ];
 
-    let obsFreqValueInRange = false;
-    let bandwValueInRange = false;
-    let allInRange = false;
-
-    inputsToValidate.forEach((input) => {
+    const inputValuesInRange = inputsToValidate.map((input) => {
         const relevantRange = input.id === "obs-freq-input" ? rangeFields.obs_freq : rangeFields.bandwidth;
-        const unitsElem = document.getElementById(`${input.name}-units`);
-        const unit = unitsElem ? unitsElem.value : relevantRange.split(" ").at(-1);
-        const inputInRange = validateInputAgainstInstrumentRange(input, relevantRange, unit);
-        if (input.id === "obs-freq-input" && inputInRange) {
-            obsFreqValueInRange = true;
-        } else if (input.id === "bandwidth-input" && inputInRange) {
-            bandwValueInRange = true;
-        }
-        if (obsFreqValueInRange && bandwValueInRange) {
-            allInRange = true;
-        }
+        const userSelectedUnit = input.id === "obs-freq-input" ? "GHz" : document.getElementById(`${input.name}-units`).value;
+        return validateInputAgainstInstrumentRange(input, relevantRange, userSelectedUnit);
     });
-    return allInRange;
+    return inputValuesInRange;
 }
 
 
@@ -128,7 +115,11 @@ const setChosenInstrument = async (instrumentName) => {
         // Update the ranges display for the new instrument
         await updateInstrumentRangesDisplay(data.instrument);
         // Validate current inputs against the newly set instrument
-        await validateCurrentInputsAgainstInstrument(instrumentName);
+        const inputsInRange = validateCurrentInputsAgainstInstrument(instrumentName);
+        disableCalculateBtn(!inputsInRange);
+        if (inputsInRange) {
+            resetOutputBox();
+        }
     } catch (error) {
         console.error("Error setting instrument:", error);
         // Optionally display error message to user
