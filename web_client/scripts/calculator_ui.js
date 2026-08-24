@@ -98,11 +98,18 @@ const validateCurrentInputsAgainstInstrument = (instrumentName) => {
         document.getElementById("bandwidth-input")
     ];
 
-    const inputValuesInRange = inputsToValidate.map((input) => {
+    let inputValuesInRange = inputsToValidate.map((input) => {
         const relevantRange = input.id === "obs-freq-input" ? rangeFields.obs_freq : rangeFields.bandwidth;
         const userSelectedUnit = input.id === "obs-freq-input" ? "GHz" : document.getElementById(`${input.name}-units`).value;
         return validateInputAgainstInstrumentRange(input, relevantRange, userSelectedUnit);
     });
+
+    if (inputValuesInRange.every(value => value === true)) {
+        inputValuesInRange = true;
+    } else {
+        inputValuesInRange = false;
+    }
+
     return inputValuesInRange;
 }
 
@@ -119,10 +126,10 @@ const setChosenInstrument = async (instrumentName) => {
 
         if (inputsInRange === true) {
             disableCalculateBtn(false);
-            resetOutputBox();
         } else {
             disableCalculateBtn(true);
         }   
+        resetOutputBox();
         
     } catch (error) {
         console.error("Error setting instrument:", error);
