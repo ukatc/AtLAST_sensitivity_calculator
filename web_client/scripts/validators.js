@@ -64,7 +64,6 @@ const validateInputAgainstInstrumentRange = (input, rangeText, userSelectedUnit 
 
         const calculateButton = document.getElementById("calculate");
         if (validState == false) {
-            console.log("IM NOT IN A VALID STATE", input.value)
             calculateButton.disabled = true;
         } else {
             calculateButton.disabled = false;
