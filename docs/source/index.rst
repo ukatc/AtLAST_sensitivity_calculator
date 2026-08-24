@@ -12,9 +12,11 @@ Quickstart Guide
 This guide shows how to quickly install and use the sensitivity calculator to calculate a sensitivity for a given integration time and an integration time for a given sensitivity.
 
 .. toctree::
+   :maxdepth: 3
    :caption: Quickstart Guide
 
-   quickstart
+   quickstart_guide/quickstart
+   quickstart_guide/whats_new
 
 About the Sensitivity Calculator
 --------------------------------
