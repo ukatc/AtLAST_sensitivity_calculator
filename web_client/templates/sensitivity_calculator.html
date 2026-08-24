@@ -65,7 +65,7 @@
               <div class="titles col-4 mb-3" align="center">Value</div>
               <!-- ELEVATION - start -->
               <div class="row justify-content-center align-items-end" id="row-elevation">  
-                <div class="col-3" align="left"><label for="elev-input">Elevation</label></div>
+                <div class="col-3" align="left"><label for="elev-input">Elevation angle</label></div>
                 <div class="col-4" align="center">
                   <div class="input-group param-input-group">
                   <input type="text" class="form-control param-input" id="elev-input" name="elevation" value="{{ default_value('elevation') }}">
@@ -73,7 +73,7 @@
                   </div>
                 </div>
                 <div class="row justify-content-center" id="row-elevation">
-                  <div class="col-3 param-description"><label for="elev-details">Height above Horizon</label></div>
+                  <div class="col-3 param-description"><label for="elev-details">Angle above horizon</label></div>
                   <div class="col-4" align="left">
                     <div class="input-group param-input-group justify-content-center mb-4">
                     <div class="allowed-range-info">{{ allowed_range('elevation') }}</div>
@@ -113,7 +113,7 @@
                   </div>
                 </div>
                 <div class="row justify-content-center">
-                  <div class="col-3 param-description"><label for="bandwidth-details">Frequency range (or channel width) to be averaged across</label></div>
+                  <div class="col-3 param-description"><label for="bandwidth-details">Continuum bandwidth or spectral channel width</label></div>
                   <div class="col-4" align="left">
                     <div class="input-group param-input-group justify-content-center mb-4">
                       <div class="allowed-range-info">{{ allowed_range('bandwidth') }}</div>
@@ -135,7 +135,7 @@
                   </div>
                 </div>
                 <div class="row justify-content-center">
-                  <div class="col-3 param-description"><label for="weather-details">Fractional amount of time weather is drier (relates to opacity, see user guide for mapping)</label></div>
+                  <div class="col-3 param-description"><label for="weather-details">5% = driest weather; 95% = wettest weather</label></div>
                   <div class="col-4" align="left">
                     <div class="input-group param-input-group justify-content-center mb-4">
                       <div class="allowed-range-info">{{ allowed_range('weather') }}%</div>
