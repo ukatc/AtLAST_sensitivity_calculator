@@ -224,9 +224,10 @@ img#logoimg {
         background-size: 8px;
     }
     #logotext {
-        left: 30%;
+        left: 0;
         top: 70px;
         font-size: 4rem;
+        text-align: center;
     }
     img#logoimg {
         height: 70px;
