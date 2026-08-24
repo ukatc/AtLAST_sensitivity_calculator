@@ -35,7 +35,7 @@ def do_calculation(user_input, calculation):
 def get_param_values_units():
     """
     Return the values, units, data conversion factors, etc. for each of the
-    calculator input parameters (user input and instrument setup)
+    calculator input parameters (user input and telescope and environment)
     """
     param_values_units = {
         param: asdict(data) for param, data in

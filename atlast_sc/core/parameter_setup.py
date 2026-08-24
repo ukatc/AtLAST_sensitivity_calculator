@@ -17,7 +17,7 @@ import numpy as np
 
 class ParameterSetup:
     """
-    Class that holds the user input and instrument setup parameters
+    Class that holds the user input and telescope and environment parameters
     used to perform the sensitivity calculations.
     """
     def __init__(self, user_input={}, telescope_and_environment={}, finetune=False):
@@ -80,7 +80,7 @@ class ParameterSetup:
     @property
     def calculation_inputs(self):
         """
-        The inputs to the calculation (user input and instrument setup)
+        The inputs to the calculation (user input and telescope and environment)
         """
         return self._calculation_inputs
     
@@ -136,7 +136,7 @@ class ParameterSetup:
     def reset(self):
         """
         Resets the calculator configuration parameters (user input and
-        instrument setup to their original values.
+        telescope and environment parameters to their original values.
         """
         self._calculation_inputs = \
             self._original_inputs
@@ -369,10 +369,11 @@ class ParameterSetup:
             # compute SEFD for each narrow spectral element
             for freq in obs_freq_list:
                 _transmittance = atm.calculate_transmittance(freq,weather,elevation)
-
                 _T_atm = atm.calculate_atmospheric_temperature(freq,weather)
-                _temps = Temperatures(self.chosen_instrument, obs_freq, bandwidth, T_cmb, T_amb, eta_eff,
-                            T_atm, transmittance, n_pol)
+                
+                _temps = Temperatures(self.chosen_instrument, freq, bandwidth, T_cmb, T_amb, eta_eff,
+                            _T_atm, _transmittance, n_pol)
+                del _transmittance, _T_atm
 
                 _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a, dish_radius).to('J/m2').value)
             _sefd = np.asarray(_sefd)*(u.J/u.m**2)

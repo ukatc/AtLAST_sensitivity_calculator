@@ -50,12 +50,13 @@ calculator
 ++++++++++
 This module contains the main ``Calculator`` class that provides the interface
 for performing sensitivity and integration time calculations. A ``Calculator``
-object may be instantiated with user input parameters constructor, or with the default
-user input parameter constructor.
+object may be instantiated with user input parameters, telescope and environment
+parameters, and finetune constructor. Alternatively, it can be instantiated with
+the respective default constructors.
 
 This module provides methods exclusively for calculating sensitivity and integration time.
 It retrieves parameter sets, including user inputs, telescope and environmental
-conditions, and derived parameters, through the parameter setup object. This design
+conditions, and derived parameters through the parameter setup object. This design
 simplifies the process for users by providing a unified interface to access information 
 from each parameter class.
 
