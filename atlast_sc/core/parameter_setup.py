@@ -170,9 +170,10 @@ class ParameterSetup:
         user_obs_freq = self.user_input.obs_freq.value
         user_bandwidth = self.user_input.bandwidth.value
         # See which instrument those values correspond to
-        chosen_inst_name = self.find_applicable_instruments(user_obs_freq, user_bandwidth,
+        applicable_instruments = self.find_applicable_instruments(user_obs_freq, user_bandwidth,
                                                             self.instrument_obs_freqs,
                                                             self.instrument_bandw_vals)
+        chosen_inst_name = self.choose_instrument_from_applicable(applicable_instruments)
         # Get the instrument module according to instrument name
         chosen_inst = self.loaded_instruments[chosen_inst_name]
         return chosen_inst
@@ -251,13 +252,17 @@ class ParameterSetup:
 
         # Check what instrument/s the bandwidth value falls in
         for instrument, bandw_vals in instrument_bandw_vals.items():
-            bandw_val_ranges = bandw_vals['ranges']
-            for range in bandw_val_ranges:
-                range = re.findall(r"[\d.]+", range)
-                min_bandw = float(range[0])
-                max_bandw = float(range[1])
-                if bandwidth >= min_bandw and bandwidth <= max_bandw:
-                    applicable_bandw_instruments.append(instrument)
+            if not bandw_vals['ranges']: # Default instrument has no bandwidth range
+                applicable_bandw_instruments.append(instrument)
+                continue
+            else:
+                bandw_val_ranges = bandw_vals['ranges']
+                for range in bandw_val_ranges:                    
+                    range = re.findall(r"[\d.]+", range)
+                    min_bandw = float(range[0])
+                    max_bandw = float(range[1])
+                    if bandwidth >= min_bandw and bandwidth <= max_bandw:
+                        applicable_bandw_instruments.append(instrument)
 
         # Create a set of both applicable instruments lists and take the intersection
         applicable_instruments = list(set(applicable_obs_freq_instruments) & \
@@ -266,6 +271,19 @@ class ParameterSetup:
         # logic on how to choose an instrument if there are multiple applicable
         # instruments
         applicable_instruments = sorted(applicable_instruments)
+        return applicable_instruments
+       
+
+    def choose_instrument_from_applicable(self, applicable_instruments):
+        """
+        Performs logic required to return a singular instrument name as
+        the chosen one. 
+
+        :param: applicable_instruments
+        :type: list of applicable instruments names
+        :return: name of chosen instrument
+        :rtype: string 
+        """
         # If there are more than 1 applicable instrument
         if len(applicable_instruments) > 1:
             # TODO: there might be further logic incorporated to choose which instrument 

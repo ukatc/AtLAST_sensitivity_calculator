@@ -1,4 +1,4 @@
-import {geParamValuesUnits, calculate} from './rest_calls.js';
+import {getParamValuesUnits, calculate, setInstrument} from './rest_calls.js';
 import {validateInput} from './validators.js'
 import * as CalculatorUI from './calculator_ui.js'
 
@@ -9,7 +9,7 @@ $(document).ready(() => {
     // Get the parameter default values, default units, permitted range, etc.
     // then set up event listeners and do the initial calculation with default
     // input values.
-    geParamValuesUnits()
+    getParamValuesUnits()
         .then((data) => {
 
             let formValidated = false;
@@ -32,7 +32,11 @@ $(document).ready(() => {
                         formValidated =
                             validateAndSetUIState(input, units,
                                                   data[input.name]);
-
+                        
+                        // Validate frequency/bandwidth based on instrument selection
+                        const instrumentName = document.getElementById("instrument-type").value;
+                        formValidated = CalculatorUI.validateCurrentInputsAgainstInstrument(instrumentName);
+                        CalculatorUI.showApplicableInstruments(input);
                     }
                 });
             });
@@ -53,9 +57,16 @@ $(document).ready(() => {
                         formValidated =
                             validateAndSetUIState(input, unitsInput,
                                                   data[input.name]);
+                        
+                        // Validate frequency/bandwidth based on instrument selection
+                        const instrumentName = document.getElementById("instrument-type").value;
+                        formValidated =
+                            CalculatorUI.validateCurrentInputsAgainstInstrument(instrumentName);
                     }
                 });
             })
+
+            CalculatorUI.showDifferentInstrumentOptions("instrument-type");
 
             const calcOptions =
                 document.querySelectorAll('input[name="calc-options"');
@@ -137,6 +148,8 @@ $(document).ready(() => {
                 })
             });
 
+            // Send the default instrument to the backend
+            setInstrument(document.getElementById("instrument-type").value)
             // Calculate the integration time using the default values
             doCalculation(data);
 

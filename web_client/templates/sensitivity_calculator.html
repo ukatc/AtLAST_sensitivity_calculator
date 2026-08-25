@@ -26,14 +26,17 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+    <div class="collapse navbar-collapse w-auto" id="collapsibleNavbar">
       <ul class="navbar-nav">
         <li class="nav-item">
           <a class="nav-link" href="https://www.atlast.uio.no/" target="_blank">AtLAST</a>
         </li>
-<!--        <li class="nav-item">-->
-<!--          <a class="nav-link" href="documentation" target="_blank">Documentation </a>-->
-<!--        </li>-->
+        <li class="nav-item">
+          <a class="nav-link" href="https://atlast-sensitivity-calculator.readthedocs.io/" target="_blank">Documentation </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/ukatc/AtLAST_sensitivity_calculator" target="_blank">GitHub</a>
+        </li>
       </ul>
     </div>
   </nav>
@@ -41,134 +44,216 @@
   <div class="container-fluid" id="header" role="banner">
     <img id="logoimg" src="{{ url_for('static', path='resources/atlast-banner-foreground.png') }}" alt="AtLAST logo image">
     <div id="logotext">
-      <span>AtLAST</span>
-      <div id="tagline">Towards an Atacama Large Aperture Submillimeter Telescope</div>
+      <span class="row justify-content-center">AtLAST</span>
+      <div class="row justify-content-center" id="tagline">Towards an Atacama Large Aperture Submillimeter Telescope</div>
     </div>
   </div>
 
   <div class="container calculator-container mt-4">
-    <h1 class="mt-3 mt-sm-5">Sensitivity Calculator</h1>
+    <h1 class="mt-3" align="center">Sensitivity Calculator</h1>
+  </div>
+
+  <div class="container-fluid mt-3">
     <form method="POST" id="calculator-form" novalidate>
+      <div class="container-fluid text-center mt-3">
+        <div class="row">
+          
+          <!-- LEFT AREA -->
+          <div class="col-md-8" id="left-area">
+            <div class="row justify-content-center" align="left">
+              <div class="titles col-3 mb-3">Parameter</div>
+              <div class="titles col-4 mb-3" align="center">Value</div>
+              <!-- ELEVATION - start -->
+              <div class="row justify-content-center align-items-end" id="row-elevation">  
+                <div class="col-3" align="left"><label for="elev-input">Elevation angle</label></div>
+                <div class="col-4" align="center">
+                  <div class="input-group param-input-group">
+                  <input type="text" class="form-control param-input" id="elev-input" name="elevation" value="{{ default_value('elevation') }}">
+                    <span class="input-group-text">{{ default_unit('elevation') }}</span>
+                  </div>
+                </div>
+                <div class="row justify-content-center" id="row-elevation">
+                  <div class="col-3 param-description"><label for="elev-details">Angle above horizon</label></div>
+                  <div class="col-4" align="left">
+                    <div class="input-group param-input-group justify-content-center mb-4">
+                    <div class="allowed-range-info">{{ allowed_range('elevation') }}</div>
+                  </div>
+                  </div>
+                  <div class="col-7 invalid-message" id="elev-input-invalid">{{ invalid_message('elevation') }}</div>
+                </div>
+              </div>
+              <!-- ELEVATION - end -->
+              <!-- OBSERVING FREQUENCY - start -->
+              <div class="row justify-content-center align-items-end" id="obs-freq">
+                <div class="col-3" align="left"><label for="obs-freq-input">Observing frequency</label></div>
+                <div class="col-4" align="center">
+                  <div class="input-group param-input-group">
+                    <input type="text" class="form-control param-input" id="obs-freq-input" name="obs_freq" value="{{ default_value('obs_freq') }}">
+                    <span class="input-group-text">{{ default_unit('obs_freq') }}</span>
+                  </div>
+                </div>
+                <div class="row justify-content-center">
+                  <div class="col-3 param-description"><label for="obs-freq-details">Central frequency of tuning</label></div>
+                  <div class="col-4" align="left">
+                    <div class="input-group param-input-group justify-content-center mb-4">
+                      <div class="allowed-range-info">{{ allowed_range('obs_freq') }}</div>
+                    </div>
+                  </div>
+                  <div class="col-7 invalid-message" id="obs-freq-input-invalid">{{ invalid_message('obs_freq') }}</div>
+                </div>
+              </div>
+              <!-- OBSERVING FREQUENCY - end -->
+              <!-- BANDWIDTH - start -->
+              <div class="row justify-content-center align-items-end" id="row-bandwidth">
+                <div class="col-3" align="left"><label for="bandwidth-input">Bandwidth</label></div>
+                <div class="col-4" align="center">
+                  <div class="input-group param-input-group">
+                    <input type="text" class="form-control param-input" id="bandwidth-input" name="bandwidth" value="{{ default_value('bandwidth') }}">
+                    <select class="form-select units-input" id="bandwidth-units" name="bandwidth-units"></select>
+                  </div>
+                </div>
+                <div class="row justify-content-center">
+                  <div class="col-3 param-description"><label for="bandwidth-details">Continuum bandwidth or spectral channel width</label></div>
+                  <div class="col-4" align="left">
+                    <div class="input-group param-input-group justify-content-center mb-4">
+                      <div class="allowed-range-info">{{ allowed_range('bandwidth') }}</div>
+                    </div>
+                  </div>
+                  <div class="col-7 invalid-message" id="bandwidth-input-invalid">{{ invalid_message('bandwidth') }}</div>
+                </div>
 
-      <div class="flex-row titles">
-        <div class="d-flex mb-2 mt-2 mt-sm-4">
-          <div class="col-4 col-md-3 col-lg-2">Parameter</div>
-          <div class="col-5 col-md-4 col-lg-3 col-xl-2">Value</div>
-          <div class="col">Allowed range</div>
-        </div>
-      </div>
-
-      <div class="row" id="row-elevation">
-        <div class="d-flex">
-          <div class="col-4 col-md-3 col-lg-2"><label for="elev-input">Elevation</label></div>
-          <div class="col-5 col-md-4 col-lg-3 col-xl-2">
-            <div class="input-group param-input-group mb-3">
-              <input type="text" class="form-control param-input" id="elev-input" name="elevation" value="{{ default_value('elevation') }}">
-                <span class="input-group-text">{{ default_unit('elevation') }}</span>
+                  
+              </div>
+              <!-- BANDWIDTH - end -->
+              <!-- WEATHER - start -->
+              <div class="row justify-content-center align-items-end" id="row-weather">
+                <div class="col-3" align="left"><label for="pwv-input">H<sub>2</sub>O profile percentile</label></div>
+                <div class="col-4" align="center">
+                  <div class="input-group param-input-group">
+                    <input type="text" class="form-control param-input" id="pwv-input" name="weather" value="{{ default_value('weather') }}">
+                    <span class="input-group-text">%</span>
+                  </div>
+                </div>
+                <div class="row justify-content-center">
+                  <div class="col-3 param-description"><label for="weather-details">5% = driest weather; 95% = wettest weather</label></div>
+                  <div class="col-4" align="left">
+                    <div class="input-group param-input-group justify-content-center mb-4">
+                      <div class="allowed-range-info">{{ allowed_range('weather') }}%</div>
+                    </div>
+                  </div>
+                  <div class="col-7 invalid-message" id="pwv-input-invalid">{{ invalid_message('weather') }}</div>
+                </div>
+              </div>
+              <!-- WEATHER - end -->
+              <!-- POLARISATION - start -->
+              <div class="row justify-content-center align-items-end mb-2" id="row-npol">
+                <div class="col-3" align="left"><label for="npol-input">Number of polarizations</label></div>
+                <div class="col-4" align="center">
+                  <div class="input-group param-input-group">
+                    <select class="form-select" id="npol-input" name="n_pol">
+                      <option value=1>1</option>
+                      <option value=2 selected="selected">2</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row justify-content-center">
+                  <div class="col-3 param-description"><label for="npol-details">How many polarisations to average over</label></div>
+                  <div class="col-4" align="left">
+                    <div class="input-group param-input-group justify-content-center mb-4">
+                      <div class="allowed-range-info"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- POLARISATION - end -->
+              <!-- INTEGRATION TIME - start -->
+              <div class="row justify-content-center align-items-end d-none" id="row-t-int">
+                <div class="col-3" align="left"><label for="integration-time-input">Integration time</label></div>
+                <div class="col-4" align="center">
+                  <div class="input-group param-input-group">
+                    <input type="text" class="form-control param-input" id="integration-time-input" name="t_int" value="{{ default_value('t_int') }}">
+                    <select class="form-select units-input" id="t_int-units" name="t_int_units"></select>
+                  </div>
+                </div>
+                <div class="row justify-content-center">
+                  <div class="col-3 param-description"><label for="integration-time-details">Required integration time</label></div>
+                  <div class="col-4" align="left">
+                    <div class="input-group param-input-group justify-content-center mb-4">
+                      <div class="allowed-range-info" align="center">{{ allowed_range('t_int') }}</div>
+                    </div>
+                  </div>
+                  <div class="col-7 invalid-message" id="integration-time-input-invalid">{{ invalid_message('t_int') }}</div>
+                </div>
+              </div>
+              <!-- INTEGRATION TIME - end -->
+              <!-- SENSITIVITY - start -->
+              <div class="row justify-content-center align-items-end" id="row-sensitivity">
+                <div class="col-3" align="left"><label for="sensitivity-input">Sensitivity</label></div>
+                <div class="col-4" align="center">
+                  <div class="input-group param-input-group">
+                    <input type="text" class="form-control param-input" id="sensitivity-input" name="sensitivity" value="{{ default_value('sensitivity') }}">
+                    <select class="form-select units-input" id="sensitivity-units" name="sensitivity_units"></select>
+                  </div>
+                </div>
+                <div class="row justify-content-center">
+                  <div class="col-3 param-description"><label for="sensitivity-details">Required sensitivity</label></div>
+                  <div class="col-4" align="left">
+                    <div class="input-group param-input-group justify-content-center mb-4">
+                      <div class="allowed-range-info">{{ allowed_range('sensitivity') }}</div>
+                    </div>
+                  </div>
+                  <div class="col-7 invalid-message" id="sensitivity-input-invalid">{{ invalid_message('sensitivity') }}</div>
+                </div>
+              </div>
+              <!-- SENSITIVITY - end -->
+                
             </div>
           </div>
-          <div class="col allowed-range-info">{{ allowed_range('elevation') }}</div>
-        </div>
-        <div class="row">
-          <div class="invalid-message" id="elev-input-invalid">{{ invalid_message('elevation') }}</div>
-        </div>
-      </div>
 
-      <div class="row" id="obs-freq">
-        <div class="d-flex flex-row">
-          <div class="col-4 col-md-3 col-lg-2"><label for="elev-input">Observing frequency</label></div>
-          <div class="col-5 col-md-4 col-lg-3 col-xl-2">
-            <div class="input-group param-input-group mb-3">
-              <input type="text" class="form-control param-input" id="obs-freq-input" name="obs_freq" value="{{ default_value('obs_freq') }}">
-                <span class="input-group-text">{{ default_unit('obs_freq') }}</span>
+          <!-- RIGHT AREA -->
+          <div class="col-md-3 d-flex align-items-center" id="right-area">
+            <div class="row justify-content-center">
+              <div class="p-2 rounded" id="inst-selection-box">
+                <div class="titles col-12 mb-3">Instrument Selection</div>
+                <div class="row justify-content-center">
+                  <div class="input-group" id="instrument-choice">
+                    <select class="form-select" id="instrument-type" name="instrument">
+                      {% for instrument in instruments %}
+                        <option value="{{ instrument }}" {% if instrument == 'Default' %}selected="selected"{% endif %}>
+                          {{ instrument }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="row inst-selection mt-2"><label for="instrument-details">Applicable instruments given setup: </label></div>
+                  <div class="row justify-content-center inst-selection mb-3" id="applicable-instruments">Default</label></div>
+                </div>
+              </div>
+              <div class="row justify-content-center p-3 rounded" id="allowed-setup-box">
+                <div class="allowed-range-info">
+                  <div id="instrument-ranges-display">
+                    <div class="row justify-content-center inst-range-label mb-4" id="allowed-setups-title">Default Allowed Setup</div>
+                    <div class="row justify-content-center inst-range-label mb-1">Observing frequency</div>
+                    <div class="row justify-content-center mb-3" id="freq-range">35.0 - 950.0 GHz</label></div>
+                    <div class="row justify-content-center inst-range-label mb-1">Bandwidth</div>
+                    <div class="row justify-content-center mb-3" id="bw-range">> 0</label></div>
+                    <div class="row justify-content-center align-items-end inst-selection mt-5">To use a different instrument, specify observing frequencies and bandwidths available to it. 
+                      See the user guide for allowed parameter ranges.</label></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="col col-md-3 col-lg-2 allowed-range-info">{{ allowed_range('obs_freq') }}</div>
-        </div>
-        <div class="row">
-           <div class="invalid-message" id="obs-freq-input-invalid">{{ invalid_message('obs_freq') }}</div>
+
+          
+
         </div>
       </div>
+    </div>
 
-      <div class="row" id="row-bandwidth">
-        <div class="d-flex flex-row">
-          <div class="col-4 col-md-3 col-lg-2"><label for="bandwidth-input">Bandwidth</label></div>
-          <div class="col-5 col-md-4 col-lg-3 col-xl-2">
-            <div class="input-group param-input-group mb-3">
-              <input type="text" class="form-control param-input" id="bandwidth-input" name="bandwidth" value="{{ default_value('bandwidth') }}">
-              <select class="form-select units-input" id="bandwidth-units" name="bandwidth-units"></select>
-            </div>
-          </div>
-          <div class="col col-md-3 col-lg-2 allowed-range-info">{{ allowed_range('bandwidth') }}</div>
-        </div>
-        <div class="row">
-           <div class="invalid-message" id="bandwidth-input-invalid">{{ invalid_message('bandwidth') }}</div>
-        </div>
-      </div>
-
-      <div class="row" id="row-pwv">
-        <div class="d-flex flex-row">
-          <div class="col-4 col-md-3 col-lg-2"><label for="pwv-input">H<sub>2</sub>O profile percentile</label></div>
-          <div class="col-5 col-md-4 col-lg-3 col-xl-2">
-            <div class="input-group param-input-group mb-3">
-              <input type="text" class="form-control param-input" id="pwv-input" name="weather" value="{{ default_value('weather') }}">
-            </div>
-          </div>
-          <div class="col col-md-3 col-lg-2 allowed-range-info">{{ allowed_range('weather') }}</div>
-        </div>
-        <div class="row">
-	        <div class="invalid-message" id="pwv-input-invalid">{{ invalid_message('weather') }}</div>
-        </div>
-      </div>
-
-      <div class="d-flex flex-row" id="row-npol">
-        <div class="col-4 col-md-3 col-lg-2"><label for="npol-input">Number of polarizations</label></div>
-        <div class="col-5 col-md-4 col-lg-3 col-xl-2">
-          <div class="input-group param-input-group mb-3">
-            <select class="form-select" id="npol-input" name="n_pol">
-              <option value=1>1</option>
-              <option value=2 selected="selected">2</option>
-            </select>
-          </div>
-        </div>
-        <div class="col col-md-3 col-lg-2"></div>
-      </div>
-
-      <div class="row d-none" id="row-t-int">
-        <div class="d-flex flex-row">
-          <div class="col-4 col-md-3 col-lg-2"><label for="integration-time-input">Integration time</label></div>
-          <div class="col-5 col-md-4 col-lg-3 col-xl-2">
-            <div class="input-group param-input-group mb-3">
-              <input type="text" class="form-control param-input" id="integration-time-input" name="t_int" value="{{ default_value('t_int') }}">
-              <select class="form-select units-input" id="t_int-units" name="t_int_units"></select>
-            </div>
-          </div>
-          <div class="col col-md-3 col-lg-2 allowed-range-info">{{ allowed_range('t_int') }}</div>
-        </div>
-        <div class="row">
-	        <div class="invalid-message" id="integration-time-input-invalid">{{ invalid_message('t_int') }}</div>
-        </div>
-      </div>
-
-      <div class="row" id="row-sensitivity">
-        <div class="d-flex flex-row">
-          <div class="col-4 col-md-3 col-lg-2"><label for="sensitivity-input">Sensitivity</label></div>
-          <div class="col-5 col-md-4 col-lg-3 col-xl-2">
-            <div class="input-group param-input-group mb-3">
-              <input type="text" class="form-control param-input" id="sensitivity-input" name="sensitivity" value="{{ default_value('sensitivity') }}">
-              <select class="form-select units-input" id="sensitivity-units" name="sensitivity_units"></select>
-            </div>
-          </div>
-          <div class="col col-md-3 col-lg-2 allowed-range-info">{{ allowed_range('sensitivity') }}</div>
-        </div>
-        <div class="row">
-          <div class="invalid-message" id="sensitivity-input-invalid">{{ invalid_message('sensitivity') }}</div>
-        </div>
-      </div>
-
-      <div class="row mb-3">
+      <div class="row mb-3" align="center">
         <label for="calculation-options"><strong>Calculate integration time or sensitivity?</strong></label>
-        <div class="d-flex flex-row">
+        <div class="d-flex flex-row justify-content-center">
         <div class="col-8 col-sm-6 col-md-5 col-lg-3">
             <div class="btn-group" role="group" id="calculation-options">
               <input type="radio" name="calc-options" id="btn-t-int" calculation="integration-time" autocomplete="off" checked>
@@ -184,7 +269,7 @@
         </div>
       </div>
 
-      <div class="d-flex flex-row">
+      <div class="d-flex flex-row justify-content-center">
         <div class="col-5 col-sm-4 col-md-3 col-lg-2 submit-btn-col">
           <button id="calculate" type="submit" class="btn btn-primary form-btn">Calculate</button>
           <button class="btn btn-primary col-sm-12 d-none" id="calculate-spinner" type="button" disabled>
