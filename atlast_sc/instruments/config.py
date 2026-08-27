@@ -29,6 +29,8 @@ class InstrumentConfig:
             # TODO: Add your custom instrument here.
         ]
 
+        self._instrument_order_preference = ['Finer', 'Default','Chai', 'Sepia', 'Tifuun', 'Muscat']
+
         self._inst_classes = {}
 
         for details in available_instruments:
@@ -42,6 +44,14 @@ class InstrumentConfig:
     @property
     def instrument_classes(self):
         return self._inst_classes
+
+    @property
+    def instrument_order_preference(self):
+        return self._instrument_order_preference
+
+    @instrument_order_preference.setter
+    def instrument_order_preference(self, list):
+        self._instrument_order_preference = list
 
     def load_instrument_class(self, path, python_package_dir, details):
         """

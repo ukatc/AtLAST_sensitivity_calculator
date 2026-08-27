@@ -54,6 +54,7 @@ class ParameterSetup:
         # Get loaded instrument classes
         self._loaded_instruments = inst_config.instrument_classes
         self._chosen_inst = None
+        self.inst_order_preference = inst_config.instrument_order_preference
 
         # Create dictionaries of each instrument and their observing frequency
         # and bandwidth ranges.
@@ -173,7 +174,7 @@ class ParameterSetup:
         applicable_instruments = self.find_applicable_instruments(user_obs_freq, user_bandwidth,
                                                             self.instrument_obs_freqs,
                                                             self.instrument_bandw_vals)
-        chosen_inst_name = self.choose_instrument_from_applicable(applicable_instruments)
+        chosen_inst_name = self.choose_instrument_from_applicable(applicable_instruments, self.inst_order_preference)
         # Get the instrument module according to instrument name
         chosen_inst = self.loaded_instruments[chosen_inst_name]
         return chosen_inst
@@ -274,7 +275,7 @@ class ParameterSetup:
         return applicable_instruments
        
 
-    def choose_instrument_from_applicable(self, applicable_instruments):
+    def choose_instrument_from_applicable(self, applicable_instruments, inst_order_preference):
         """
         Performs logic required to return a singular instrument name as
         the chosen one. 
@@ -284,11 +285,18 @@ class ParameterSetup:
         :return: name of chosen instrument
         :rtype: string 
         """
+        # Make every instrument name lowercase for accurate comparison
+        inst_order_preference = [inst.lower() for inst in inst_order_preference]
+        # Choose an instrument within the applicable instrument list with the biggest value
+        # in the preference list by negating the position of each instrument in the preference 
+        # list, and by assigning -inf to the absent instruments to make them lose to existent ones.  
+        def choice(applicable_inst_list):
+            return max(applicable_inst_list, key=lambda name: -inst_order_preference.index(name) \
+                       if name in inst_order_preference else float('-inf'))
         # If there are more than 1 applicable instrument
         if len(applicable_instruments) > 1:
-            # TODO: there might be further logic incorporated to choose which instrument 
-            # will be defaulted currently we are choosing the second applicable instrument
-            return applicable_instruments[1]
+            chosen_inst = choice(inst.lower() for inst in applicable_instruments)
+            return chosen_inst.capitalize()
         if len(applicable_instruments) == 1: # If there is only 1 applicable instrument
             return applicable_instruments[0]
         else: # If there is no applicable instrument
