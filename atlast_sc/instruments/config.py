@@ -1,5 +1,5 @@
 import importlib, inspect, os
-from atlast_sc.core.utils import FileHelper
+from atlast_sc.core.utils import FileHelper, Decorators
 from atlast_sc.core.instrument import Instrument
 
 class InstrumentConfig:
@@ -50,6 +50,7 @@ class InstrumentConfig:
         return self._instrument_order_preference
 
     @instrument_order_preference.setter
+    @Decorators.validate_inst_preference_list
     def instrument_order_preference(self, list):
         self._instrument_order_preference = list
 

@@ -7,6 +7,8 @@ from yaml import load, Loader, safe_load
 from astropy.units import Unit
 from types import SimpleNamespace
 
+from atlast_sc.core.exceptions import InstrumentPreferenceListNotAllowed
+
 class Decorators:
     """
     Decorator functions
@@ -94,6 +96,38 @@ class Decorators:
                 param_class._param_setup._calculate_derived_parameters()
 
         return do_update
+
+    @staticmethod
+    def validate_inst_preference_list(func):
+        """
+        Decorator to support setter method on user inputted instrument order
+        preference list. Validates each of the instrument name with the
+        available instrument names in the calculator. 
+        
+        :param func: function that updates the instrument order preference
+        :type func: property setter function
+        """
+        @functools.wraps(func)
+        def do_validation(calculator, preference_list, **kwargs):
+            """
+            Validates each of the instrument name provided by the user in the 
+            instrument preference list against instrument names loaded within
+            the calculator.
+
+            :param calculator: The Calculator object
+            :type calculator: Calculator
+            :param preference_list: Instrument preference order 
+            :type preference_list: list of str
+            """
+            available_insts = calculator._param_setup.loaded_instruments
+            preference_list = [inst.lower() for inst in preference_list]
+            available_insts = [inst.lower() for inst in available_insts]
+
+            DataHelper.validate_instruments(preference_list, available_insts)
+
+            return func(calculator, preference_list, **kwargs)
+
+        return do_validation           
 
 class FileHelper:
     """
@@ -453,3 +487,23 @@ class DataHelper:
         converted_quantity = source_quantity.to(target_unit)
 
         return converted_quantity.value
+
+    @staticmethod
+    def validate_instruments(preference_list, available_insts):
+        """
+        Validates the user inputted preference list against available
+        instruments that are loaded into the calculator.
+
+        :param preference_list: instrument preference order
+        :type preference_list: list of str
+        :param available_insts: available instrument names
+        :type available_insts: list of str
+        """
+        invalid_instruments = []
+        for inst in preference_list:
+            if inst not in available_insts:
+                invalid_instruments.append(inst)
+
+        if len(invalid_instruments) > 0:
+            raise InstrumentPreferenceListNotAllowed(invalid_instruments,
+                preference_list, available_insts)

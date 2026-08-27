@@ -112,3 +112,18 @@ class InstrumentNotApplicableException(ValueError):
                  f"ranges of the installed instruments type calculator.list_instruments()."
 
         super().__init__(self.message)
+
+class InstrumentPreferenceListNotAllowed(ValueError):
+    """
+    Exception raised when there are unrecognised instruments specified in the instrument
+    preference list by the user. 
+    """
+
+    def __init__(self, incorrect_insts, preference_list, available_instruments, message=None):
+        self.message = self.message \
+            if message \
+            else f"Instrument/s '{incorrect_insts}' provided in the preference order list" \
+                 f" is not applicable. Please revise the preference list.\n" \
+                 f"Preference list: '{preference_list}'\n" \
+                 f"Available instruments: '{available_instruments}'"
+        super().__init__(self.message)
