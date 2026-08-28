@@ -222,3 +222,15 @@ The observing frequency and bandwidth ranges for the instruments can be checked 
     >>> calculator.list_instruments()
 
 
+Instrument priority order
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As a user, you can specify a particular order for the instruments to be considered when making 
+calculations. Should you choose to specify an order, you can do it through the calculator object:
+
+.. code-block:: python
+
+    >>> calculator.instrument_order_preference = ['Finer', 'Chai', 'Default', 'Sepia', 'Tifuun']
+
+If you choose not to specify an order, the calculator will take the default order into consideration
+when making calculations.
