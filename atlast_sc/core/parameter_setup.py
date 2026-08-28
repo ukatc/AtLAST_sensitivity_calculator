@@ -174,7 +174,7 @@ class ParameterSetup:
         applicable_instruments = self.find_applicable_instruments(user_obs_freq, user_bandwidth,
                                                             self.instrument_obs_freqs,
                                                             self.instrument_bandw_vals)
-        chosen_inst_name = self.choose_instrument_from_applicable(applicable_instruments, self.inst_order_preference)
+        chosen_inst_name = self._choose_instrument_from_applicable(applicable_instruments, self.inst_order_preference)
         # Get the instrument module according to instrument name
         chosen_inst = self.loaded_instruments[chosen_inst_name]
         return chosen_inst
@@ -275,7 +275,7 @@ class ParameterSetup:
         return applicable_instruments
        
 
-    def choose_instrument_from_applicable(self, applicable_instruments, inst_order_preference):
+    def _choose_instrument_from_applicable(self, applicable_instruments, inst_order_preference):
         """
         Performs logic required to return a singular instrument name as
         the chosen one. 
