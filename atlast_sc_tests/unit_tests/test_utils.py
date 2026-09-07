@@ -7,6 +7,7 @@ from atlast_sc.core.utils import DataHelper
 from atlast_sc.calculator import Calculator
 
 from atlast_sc_tests.utils import does_not_raise
+from atlast_sc.core.exceptions import InstrumentPreferenceListNotAllowed
 
 from atlast_sc.core.parameter_setup import ParameterSetup
 from atlast_sc.instruments.classes.Sepia import Sepia
@@ -137,6 +138,14 @@ class TestDecorators:
         class MockInstrument:
             def __init__(self):
                 self.name = "Mock"
+
+        class MockInstrumentConfig:
+            def __init__(self):
+                self._inst_order_preference = ["Tifuun", "Sepia", "Finer", "Muscat", "Chai", "Default"]
+
+            @property
+            def inst_order_preference(self):
+                return self._inst_order_preference
             
         class MockParamSetup:
             def __init__(self):
@@ -144,6 +153,8 @@ class TestDecorators:
                     TestDecorators.MockCalculator.MockCalculationInputs()
                 self._chosen_instrument = \
                     TestDecorators.MockCalculator.MockInstrument()
+                self._inst_config = TestDecorators.MockCalculator.MockInstrumentConfig()
+                self.inst_order_preference = self._inst_config.inst_order_preference
 
             @staticmethod
             def _calculate_derived_parameters():
@@ -165,6 +176,10 @@ class TestDecorators:
             def chosen_instrument(self, new_value):
                 self._chosen_instrument = new_value
 
+            @property
+            def loaded_instruments(self):
+                return ["Tifuun", "Sepia", "Finer", "Muscat", "Chai", "Default"]
+
         @property
         def decorated_validate_value(self):
             return self._value
@@ -182,6 +197,15 @@ class TestDecorators:
         @Decorators.validate_and_update_params
         def decorated_validate_and_update_params(self, new_quantity):
             self._quantity = new_quantity
+
+        @property
+        def decorated_validate_inst_preference_list(self):
+            return self._param_setup.inst_order_preference
+
+        @decorated_validate_inst_preference_list.setter
+        @Decorators.validate_inst_preference_list
+        def decorated_validate_inst_preference_list(self, new_preference):
+            self._param_setup.inst_order_preference = new_preference
 
     @staticmethod
     def mock_validate(*args):
@@ -269,6 +293,35 @@ class TestDecorators:
         else:
             calculate_derived_params_spy.assert_not_called()
 
+    @pytest.mark.parametrize(
+        'new_preference,expect_raises,expect_preference_updated',
+        [
+            (['Finer', 'Chai', 'Default','Sepia', 'Tifuun', 'Muscat'], 
+             does_not_raise(), True), 
+            (['Finer', 'Chai', 'DEFAULT','sepia', 'tifuun', 'Muscat'], 
+             does_not_raise(), True),
+            (['Finerr', 'Chai', 'Default','sepiaa', 'Tifuunn', 'Muscat'], 
+             pytest.raises(InstrumentPreferenceListNotAllowed), False), 
+            (['Flower', 'Chai', 'Default','Sepia', 'Tifuun', 'Muscat'],  
+             pytest.raises(InstrumentPreferenceListNotAllowed), False)
+        ]
+    )
+    def test_validate_inst_preference_list(self, new_preference, expect_raises,
+                                           expect_preference_updated):
+
+        mock_calculator = TestDecorators.MockCalculator()
+
+        with expect_raises:
+            mock_calculator.decorated_validate_inst_preference_list = new_preference
+
+        # Check that the preference list was updated only if the validation
+        # function did not raise an error
+        if expect_preference_updated:
+            assert mock_calculator.decorated_validate_inst_preference_list == \
+                    [inst.lower() for inst in new_preference]
+        else:
+            assert mock_calculator.decorated_validate_inst_preference_list == \
+                    ["Tifuun", "Sepia", "Finer", "Muscat", "Chai", "Default"]
 
 class TestFileHelper:
 
