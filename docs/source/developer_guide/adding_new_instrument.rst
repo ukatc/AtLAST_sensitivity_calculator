@@ -202,6 +202,31 @@ to the ``available_instruments`` list.
 When the new instrument is added to the necessary sections mentioned above in the configuration file, 
 it will be available for selection in the calculator.
 
+Additionally, there is a section in the configuration file where the default order of the instruments 
+for the calculations is set. The new instrument should be added to this list in the place that it is
+preferred by the user. Note that this order will be considered as the default order of the instruments 
+for the calculations unless the user changes this order via the CLI.
+
+.. code:: python
+
+    self._instrument_order_preference = ["inst1", "inst2", "inst3", 
+                              "inst4", your custom instrument name]
+
+
+As mentioned above, the user can change the order of the instruments in their code for the calculations 
+using the calculator object. For example, a user might want to do this if they want to compare the 
+instrument preference order for a particular set of parameters they want to use for calculations in 
+their code. 
+
+.. code:: python
+    
+    from atlast_sc.calculator import Calculator
+
+    calculator = Calculator()
+    calculator.instrument_order_preference = ["inst1", "inst2", "inst3",
+                                "inst4", your custom instrument name]
+
+
 Add the new instrument to the documentation
 -------------------------------------------
 Once the new instrument is added to the calculator, the documentation should be updated to include
