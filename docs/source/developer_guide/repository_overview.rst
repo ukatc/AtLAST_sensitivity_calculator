@@ -122,8 +122,6 @@ Web client
 | 
 
 The ``web_client`` directory contains all the web application files and scripts.
-This directory also contains a ``Dockerfile`` that can be used to build a docker
-image for running the web application inside a container.
 
 Web client tests
 ----------------
