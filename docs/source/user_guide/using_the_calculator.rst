@@ -230,7 +230,7 @@ calculations. Should you choose to specify an order, you can do it through the c
 
 .. code-block:: python
 
-    >>> calculator.instrument_order_preference = ['Finer', 'Chai', 'Default', 'Sepia', 'Tifuun']
+    >>> calculator.instrument_order_preference = ['Finer', 'Chai', 'Default', 'Sepia', 'Tifuun', 'Muscat']
 
 If you choose not to specify an order, the calculator will take the default order into consideration
 when making calculations.
