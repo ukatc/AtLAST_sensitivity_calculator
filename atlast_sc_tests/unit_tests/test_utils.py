@@ -141,7 +141,7 @@ class TestDecorators:
 
         class MockInstrumentConfig:
             def __init__(self):
-                self._inst_order_preference = ["Tifuun", "Sepia", "Finer", "Muscat", "Chai", "Default"]
+                self._inst_order_preference = ['Tifuun', 'Muscat', 'Finer', 'Sepia', 'Chai', 'Default']
 
             @property
             def inst_order_preference(self):
@@ -178,7 +178,7 @@ class TestDecorators:
 
             @property
             def loaded_instruments(self):
-                return ["Tifuun", "Sepia", "Finer", "Muscat", "Chai", "Default"]
+                return ['Tifuun', 'Muscat', 'Finer', 'Sepia', 'Chai', 'Default']
 
         @property
         def decorated_validate_value(self):
@@ -321,7 +321,7 @@ class TestDecorators:
                     [inst.lower() for inst in new_preference]
         else:
             assert mock_calculator.decorated_validate_inst_preference_list == \
-                    ["Tifuun", "Sepia", "Finer", "Muscat", "Chai", "Default"]
+                    ['Tifuun', 'Muscat', 'Finer', 'Sepia', 'Chai', 'Default']
 
 class TestFileHelper:
 
