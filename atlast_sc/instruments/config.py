@@ -29,7 +29,7 @@ class InstrumentConfig:
             # TODO: Add your custom instrument here.
         ]
 
-        self._instrument_order_preference = ["Tifuun", "Sepia", "Finer", "Muscat", "Chai", "Default"]
+        self._instrument_order_preference = ["Tifuun", "Muscat", "Finer", "Sepia", "Chai", "Default"]
 
         self._inst_classes = {}
 
