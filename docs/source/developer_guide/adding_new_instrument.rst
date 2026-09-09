@@ -214,9 +214,9 @@ for the calculations unless the user changes this order via the CLI.
 
 
 As mentioned above, the user can change the order of the instruments in their code for the calculations 
-using the calculator object. For example, a user might want to do this if they want to compare the 
-instrument preference order for a particular set of parameters they want to use for calculations in 
-their code. 
+using the calculator object. For example, a user might want to focus on using a particular instrument 
+and to ensure that the instrument in question always gets picked for its valid range of frequencies and
+bandwidths.
 
 .. code:: python
     
