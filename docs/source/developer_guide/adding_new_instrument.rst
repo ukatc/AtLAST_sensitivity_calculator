@@ -208,9 +208,7 @@ Once the new instrument is added to the calculator, the documentation should be 
 a page for the new instrument in the ``/docs/source/calculator_info/instruments`` directory. This should include a description 
 of the instrument, references to literature on the instrument and provide a detailed explanation of 
 the equations used to calculate the system temperature for the new instrument. The documentation should 
-contain its operational ranges, any specific parameters it has for calculations. References to the new 
-page should be added to the :doc:`instrument overview <../calculator_info/instrument_overview>` and 
-:doc:`sensitivity calculation <../calculator_info/sensitivity>` pages. This will help users understand the capabilities 
+contain its operational ranges, any specific parameters it has for calculations. This will help users understand the capabilities 
 of the new instrument and how it can be used in their calculations.
 
 Add a Jupyter notebook example for the new instrument
