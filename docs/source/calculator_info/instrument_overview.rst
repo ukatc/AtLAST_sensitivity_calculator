@@ -1,9 +1,9 @@
 Instrument Overview
 ===================
 
-At the current stage of development, we are a long way from knowing any precise details of the instrument suite available on AtLAST. Nevertheless, we expect to see a variety of spectrometers, IFUs and continuum cameras. As our default instrument, we use a generic receiver with a noise equivalent temperature of :math:`5h\nu/k`.
+At the current stage of development, we are a long way from knowing any precise details of the instrument suite available on AtLAST. Nevertheless, we expect to see a variety of spectrometers, IFUs and continuum cameras. As our default instrument, we use a generic coherent receiver with a noise equivalent temperature of :math:`5h\nu/k`.
 
-To go beyond this, in order to approximate the future instrumentation available on AtLAST, we have worked with instrument teams that are designing the latest instruments for single-dish sub-mm and mm telescopes. This is in no way to suggest that these particular instruments will be available on AtLAST, but by representing these in our calculator, we aim to provide examples of what could achieved by using the most cutting-edge instruments on a telescope with a 50m primary mirror.
+To go beyond this, in order to approximate the future instrumentation available on AtLAST, we have worked with instrument teams that are designing the latest instruments for single-dish sub-mm and mm telescopes. This is in no way to suggest that these particular instruments will be available on AtLAST, but by representing these in our calculator, we aim to provide examples of what could achieved by using the most cutting-edge instruments on a telescope with a 50m primary mirror. The first instruments implemented are shown in the following table, although further instruments will be added and the full list of currently implemented instruments can be seen at the bottom of the page.
 
 .. csv-table::
     :header: "Name", "Telescope", "Project page"
