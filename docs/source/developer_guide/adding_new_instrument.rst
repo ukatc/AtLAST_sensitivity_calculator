@@ -181,7 +181,7 @@ Modifying the configuration file to add the new instrument
 Thirdly, a couple of lines should be modified in :ref:`config.py <atlast-sc-instruments-module>` where they are 
 indicated within the configuration file with comments.
 
-In the initilisation method, a dictionary containing pointers to the new instrument's Python module 
+In the initialisation method, a dictionary containing pointers to the new instrument's Python module 
 and YAML file name should be added in similar format to the existing instruments. 
 
 .. code:: python
