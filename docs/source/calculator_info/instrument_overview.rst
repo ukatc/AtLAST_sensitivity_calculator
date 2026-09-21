@@ -67,5 +67,5 @@ The system temperature is calculated based on the user input parameters as well 
 .. toctree::
     :glob:
 
-    instruments/*
+    instruments/*_tsys
     
