@@ -84,5 +84,6 @@ class Sepia(Instrument):
         elif obs_freq > freq_ranges[1][0] and obs_freq <= freq_ranges[1][1]:
             temp = ( t_rx_low + (t_rx_high - t_rx_low) * (obs_freq - freq_high_min) \
             / (freq_high_max - freq_high_min) ) * u.K
-        self.T_rx = temp
-        return temp
+        if temp is not None:
+            self.T_rx = temp
+        return self.T_rx
