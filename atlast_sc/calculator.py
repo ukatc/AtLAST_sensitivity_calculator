@@ -136,6 +136,14 @@ class Calculator:
                   'Proceeding with an applicable instrument from '\
                   'the list of instruments.')
         
+    @property
+    def instrument_order_preference(self):
+        return self._param_setup.inst_order_preference
+
+    @instrument_order_preference.setter
+    @Decorators.validate_inst_preference_list
+    def instrument_order_preference(self, list):
+        self._param_setup.inst_order_preference = list
 
     @property
     def loaded_instruments(self):
