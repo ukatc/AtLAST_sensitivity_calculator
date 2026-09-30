@@ -265,6 +265,8 @@ class Calculator:
         """
         # Reset the _param_setup calculation inputs to their original values
         self._param_setup.reset()
+        # Reset the chosen instrument to Default
+        self.chosen_instrument = "Default"
         # Recalculate the derived parameters
         self._param_setup._calculate_derived_parameters()
 
