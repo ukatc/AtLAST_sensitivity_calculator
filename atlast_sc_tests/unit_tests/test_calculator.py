@@ -274,6 +274,27 @@ class TestCalculator:
         # Calculator's parameter setup object
         parameter_setup_reset_spy.assert_called()
 
+        # Reset again after changing an input to ensure the saved originals
+        # were not mutated by the first reset.
+        calculator.user_input.obs_freq = 850 * u.GHz
+        calculator.reset()
+        assert calculator.user_input.obs_freq == obs_freq
+        assert calculator.derived_parameters == original_derived_params
+
+    def test_reselects_instrument_before_derived_calculation(
+            self, calculator, mocker):
+        finer = calculator._param_setup.loaded_instruments['Finer']
+        calculator._param_setup.chosen_instrument = finer
+        mocker.patch.object(
+            finer,
+            'calculate_system_temperature',
+            side_effect=AssertionError('FINER used outside its frequency range'),
+        )
+
+        calculator.user_input.obs_freq = 406 * u.GHz
+
+        assert calculator._param_setup.chosen_instrument.name == 'Default'
+
     @pytest.mark.parametrize(
         'new_t_int,update_calculator',
         [
