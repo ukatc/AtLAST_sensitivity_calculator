@@ -1,6 +1,6 @@
 import pytest
 import astropy.units as u
-from atlast_sc.derived_groups import AtmosphereParams, Temperatures, \
+from atlast_sc.parameters.derived_groups import AtmosphereParams, Temperatures, \
     Efficiencies
 from atlast_sc_tests.utils import create_default_inst_class, find_chosen_instrument
 

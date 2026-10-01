@@ -44,15 +44,23 @@ directory could be removed from the repository.
 atlast_sc package
 -----------------
 | ├── **atlast_sc**
+| │   ├── core
 | │   ├── instruments
 | │       ├── classes
 | │       ├── data
 | │   ├── parameters
-| │   └── static/lookups
+| │   ├── static/lookups
+| │   └── calculator.py
 | 
 
 The ``atlast_sc`` directory contains all of the code and files that make up the
 calculator Python package.
+
+core
+###########
+Contains the core classes that are used throughout the calculator package. This includes 
+classes that store configuration information, utility and validation classes
+to aid in calculator functionality.
 
 instruments
 ###########
@@ -114,8 +122,6 @@ Web client
 | 
 
 The ``web_client`` directory contains all the web application files and scripts.
-This directory also contains a ``Dockerfile`` that can be used to build a docker
-image for running the web application inside a container.
 
 Web client tests
 ----------------

@@ -57,6 +57,104 @@ const validateInput = (input, units, paramData) => {
     return true;
 }
 
+const validateInputAgainstInstrumentRange = (input, rangeText, userSelectedUnit = null) => {
+    const setUpValidState = (validState, message = "") => {
+        const validStateMessage = validState ? "" : message;
+        input.setCustomValidity(validStateMessage);
+
+        const calculateButton = document.getElementById("calculate");
+        if (validState == false) {
+            calculateButton.disabled = true;
+        } else {
+            calculateButton.disabled = false;
+        }
+
+        const invalid_msg_elem = document.getElementById(`${input.id}-invalid`);
+        if (invalid_msg_elem) {
+            if (message) {
+                invalid_msg_elem.textContent = message;
+            }
+            invalid_msg_elem.hidden = validState;
+        }
+    }
+
+    const parsedRangeList = parseInstrumentRange(rangeText);
+    let valueInRange = false;
+    for (let parsedRange of Object.entries(parsedRangeList)) {
+        parsedRange = parsedRange[1]; // Only extract the range object from the array of entries
+        if (parsedRange === 0) { // Bandwidth range is "> 0", any value will always be in range
+            valueInRange = true;
+            setUpValidState(true);
+            break;
+        }
+        const numericValue = Number(input.value);
+        const inputUnit = userSelectedUnit;
+        const parsedRangeUnit = parsedRange.unit === null || parsedRange.unit === undefined ? "Hz" : parsedRange.unit;
+        const valueToValidate = convertValueToUnit(numericValue, inputUnit, parsedRangeUnit);
+        if (parsedRange.lower !== null && parsedRange.upper !== null) {
+            // If the value to validate is within the range 
+            if (parsedRange.lower <= valueToValidate && parsedRange.upper >= valueToValidate) {
+                valueInRange = true;
+                setUpValidState(true);
+            } else {
+                if (valueInRange == true){
+                    // This is the second or more time we are looping through a range and
+                    // one of the previous ranges were applicable for the user input but 
+                    // not the current range. We break the loop to avoid showing error message
+                    // incorrectly.
+                    break;
+                }
+                setUpValidState(false, `Value must be between allowed ranges 
+                    for the chosen instrument.`);
+            }
+        } 
+    }
+    return valueInRange;
+}
+
+const parseInstrumentRange = (rangeText) => {
+
+    const trimmed = rangeText.trim();
+
+    const unitMatch = trimmed.match(/(Hz|kHz|MHz|GHz|THz)$/i);
+    const unit = unitMatch ? unitMatch[1] : 'GHz';
+
+    const values = trimmed.match(/[-+]?((\d+(\.\d*)?)|(\.\d+))(e[-+]?\d+)?/g);
+
+    if (trimmed.includes('>')) {
+        const numericValue = Number(values[0]);
+        return { lower: numericValue, upper: null, unit };
+    }
+
+    if (values.length % 2 == 0) {
+        let ranges = [];
+        for (let range=0; range < values.length; range += 2) {
+            const lower = Number(values[range]);
+            const upper = Number(values[range + 1]);
+            ranges.push({ lower, upper, unit });
+        }
+    return ranges;
+    }
+}
+
+const convertValueToUnit = (value, fromUnit, toUnit) => {
+    const unitToHz = {
+        hz: 1,
+        khz: 1e3,
+        mhz: 1e6,
+        ghz: 1e9
+    };
+
+    const normalizedFrom = fromUnit.toLowerCase();
+    const normalizedTo = toUnit.toLowerCase();
+
+    if (!unitToHz[normalizedFrom] || !unitToHz[normalizedTo]) {
+        return value;
+    }
+
+    return value * unitToHz[normalizedFrom] / unitToHz[normalizedTo];
+}
+
 const isNum = (val) => {
     return !(isNaN(+val));
 }
@@ -95,4 +193,4 @@ const convertToDefaultUnits = (parameter, value) => {
 
 }
 
-export {validateInput}
+export {validateInput, validateInputAgainstInstrumentRange}

@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 import re
-from atlast_sc.utils import FileHelper
+from atlast_sc.core.utils import FileHelper
 
 from atlast_sc.instruments.config import InstrumentConfig
 from atlast_sc.instruments.classes.Default import Default

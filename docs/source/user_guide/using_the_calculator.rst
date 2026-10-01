@@ -89,9 +89,9 @@ will not be stored in the Calculator object.
 Checking the parameters stored by the calculator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The calculator stores the user input parameters, instrument, telescope and environment setup parameters, and
-any further derived parameters calculated from other inputs. You can output these
-parameters to the console as follows:
+The calculator stores the user input parameters, telescope and environment setup parameters, and
+any further derived parameters calculated from other inputs. You can output the current
+parameters to the console as follows. (Note that these are not necessarily those used in the most recent calculation and that the derived parameters are recalculated each time the user inputs are changed.)
 
 .. code-block:: bash
 
@@ -222,3 +222,15 @@ The observing frequency and bandwidth ranges for the instruments can be checked 
     >>> calculator.list_instruments()
 
 
+Instrument priority order
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As a user, you can specify a particular order for the instruments to be considered when making 
+calculations. Should you choose to specify an order, you can do it through the calculator object:
+
+.. code-block:: python
+
+    >>> calculator.instrument_order_preference = ['Finer', 'Chai', 'Default', 'Sepia', 'Tifuun', 'Muscat']
+
+If you choose not to specify an order, the calculator will take the default order into consideration
+when making calculations.

@@ -1,15 +1,15 @@
 import copy, re
-from atlast_sc.models import UserInput
-from atlast_sc.models import CalculationInput
-from atlast_sc.models import CalculationResult
-from atlast_sc.models import TelescopeAndEnvironment
+from atlast_sc.core.models import UserInput
+from atlast_sc.core.models import CalculationInput
+from atlast_sc.core.models import CalculationResult
+from atlast_sc.core.models import TelescopeAndEnvironment
 
 from atlast_sc.instruments.config import InstrumentConfig
 
-from atlast_sc.derived_groups import AtmosphereParams
-from atlast_sc.derived_groups import Temperatures
-from atlast_sc.derived_groups import Efficiencies
-from atlast_sc.models import DerivedParams
+from atlast_sc.parameters.derived_groups import AtmosphereParams
+from atlast_sc.parameters.derived_groups import Temperatures
+from atlast_sc.parameters.derived_groups import Efficiencies
+from atlast_sc.core.models import DerivedParams
 
 import astropy.units as u
 from astropy.constants import k_B
@@ -17,7 +17,7 @@ import numpy as np
 
 class ParameterSetup:
     """
-    Class that holds the user input and instrument setup parameters
+    Class that holds the user input and telescope and environment parameters
     used to perform the sensitivity calculations.
     """
     def __init__(self, user_input={}, telescope_and_environment={}, finetune=False):
@@ -54,6 +54,7 @@ class ParameterSetup:
         # Get loaded instrument classes
         self._loaded_instruments = inst_config.instrument_classes
         self._chosen_inst = None
+        self.inst_order_preference = inst_config.instrument_order_preference
 
         # Create dictionaries of each instrument and their observing frequency
         # and bandwidth ranges.
@@ -80,7 +81,7 @@ class ParameterSetup:
     @property
     def calculation_inputs(self):
         """
-        The inputs to the calculation (user input and instrument setup)
+        The inputs to the calculation (user input and telescope and environment)
         """
         return self._calculation_inputs
     
@@ -136,7 +137,7 @@ class ParameterSetup:
     def reset(self):
         """
         Resets the calculator configuration parameters (user input and
-        instrument setup to their original values.
+        telescope and environment parameters to their original values.
         """
         self._calculation_inputs = \
             self._original_inputs
@@ -170,9 +171,10 @@ class ParameterSetup:
         user_obs_freq = self.user_input.obs_freq.value
         user_bandwidth = self.user_input.bandwidth.value
         # See which instrument those values correspond to
-        chosen_inst_name = self.find_applicable_instruments(user_obs_freq, user_bandwidth,
+        applicable_instruments = self.find_applicable_instruments(user_obs_freq, user_bandwidth,
                                                             self.instrument_obs_freqs,
                                                             self.instrument_bandw_vals)
+        chosen_inst_name = self._choose_instrument_from_applicable(applicable_instruments, self.inst_order_preference)
         # Get the instrument module according to instrument name
         chosen_inst = self.loaded_instruments[chosen_inst_name]
         return chosen_inst
@@ -251,13 +253,17 @@ class ParameterSetup:
 
         # Check what instrument/s the bandwidth value falls in
         for instrument, bandw_vals in instrument_bandw_vals.items():
-            bandw_val_ranges = bandw_vals['ranges']
-            for range in bandw_val_ranges:
-                range = re.findall(r"[\d.]+", range)
-                min_bandw = float(range[0])
-                max_bandw = float(range[1])
-                if bandwidth >= min_bandw and bandwidth <= max_bandw:
-                    applicable_bandw_instruments.append(instrument)
+            if not bandw_vals['ranges']: # Default instrument has no bandwidth range
+                applicable_bandw_instruments.append(instrument)
+                continue
+            else:
+                bandw_val_ranges = bandw_vals['ranges']
+                for range in bandw_val_ranges:                    
+                    range = re.findall(r"[\d.]+", range)
+                    min_bandw = float(range[0])
+                    max_bandw = float(range[1])
+                    if bandwidth >= min_bandw and bandwidth <= max_bandw:
+                        applicable_bandw_instruments.append(instrument)
 
         # Create a set of both applicable instruments lists and take the intersection
         applicable_instruments = list(set(applicable_obs_freq_instruments) & \
@@ -266,11 +272,31 @@ class ParameterSetup:
         # logic on how to choose an instrument if there are multiple applicable
         # instruments
         applicable_instruments = sorted(applicable_instruments)
+        return applicable_instruments
+       
+
+    def _choose_instrument_from_applicable(self, applicable_instruments, inst_order_preference):
+        """
+        Performs logic required to return a singular instrument name as
+        the chosen one. 
+
+        :param: applicable_instruments
+        :type: list of applicable instruments names
+        :return: name of chosen instrument
+        :rtype: string 
+        """
+        # Make every instrument name lowercase for accurate comparison
+        inst_order_preference = [inst.lower() for inst in inst_order_preference]
+        # Choose an instrument within the applicable instrument list with the biggest value
+        # in the preference list by negating the position of each instrument in the preference 
+        # list, and by assigning -inf to the absent instruments to make them lose to existent ones.  
+        def choice(applicable_inst_list):
+            return max(applicable_inst_list, key=lambda name: -inst_order_preference.index(name) \
+                       if name in inst_order_preference else float('-inf'))
         # If there are more than 1 applicable instrument
         if len(applicable_instruments) > 1:
-            # TODO: there might be further logic incorporated to choose which instrument 
-            # will be defaulted currently we are choosing the second applicable instrument
-            return applicable_instruments[1]
+            chosen_inst = choice(inst.lower() for inst in applicable_instruments)
+            return chosen_inst.capitalize()
         if len(applicable_instruments) == 1: # If there is only 1 applicable instrument
             return applicable_instruments[0]
         else: # If there is no applicable instrument
@@ -369,10 +395,11 @@ class ParameterSetup:
             # compute SEFD for each narrow spectral element
             for freq in obs_freq_list:
                 _transmittance = atm.calculate_transmittance(freq,weather,elevation)
-
                 _T_atm = atm.calculate_atmospheric_temperature(freq,weather)
-                _temps = Temperatures(self.chosen_instrument, obs_freq, bandwidth, T_cmb, T_amb, eta_eff,
-                            T_atm, transmittance, n_pol)
+                
+                _temps = Temperatures(self.chosen_instrument, freq, bandwidth, T_cmb, T_amb, eta_eff,
+                            _T_atm, _transmittance, n_pol)
+                del _transmittance, _T_atm
 
                 _sefd.append(self._calculate_sefd(_temps.T_sys,eta.eta_a, dish_radius).to('J/m2').value)
             _sefd = np.asarray(_sefd)*(u.J/u.m**2)

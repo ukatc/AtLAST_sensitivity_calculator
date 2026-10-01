@@ -1,6 +1,6 @@
 import math
 from fastapi import Request
-from atlast_sc.data import Data
+from atlast_sc.core.data import Data
 from web_client import utils
 
 

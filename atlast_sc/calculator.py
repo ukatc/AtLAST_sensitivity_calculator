@@ -1,12 +1,12 @@
 import warnings, yaml, re
 import astropy.units as u
 import numpy as np
-from atlast_sc.utils import DataHelper, Decorators
-from atlast_sc.exceptions import CalculatedValueInvalidWarning
-from atlast_sc.exceptions import ValueOutOfRangeException
-from atlast_sc.exceptions import InstrumentNotApplicableException
+from atlast_sc.core.utils import DataHelper, Decorators
+from atlast_sc.core.exceptions import CalculatedValueInvalidWarning
+from atlast_sc.core.exceptions import ValueOutOfRangeException
+from atlast_sc.core.exceptions import InstrumentNotApplicableException
 
-from atlast_sc.parameter_setup import ParameterSetup
+from atlast_sc.core.parameter_setup import ParameterSetup
 from atlast_sc.parameters.user_input_parameters import UserInputParameters
 from atlast_sc.parameters.telescope_and_environment_parameters import TelescopeAndEnvironmentParameters
 from atlast_sc.parameters.derived_parameters import DerivedParameters
@@ -19,21 +19,23 @@ class Calculator:
 
     :param user_input: Dictionary containing user-defined input parameters
     :type user_input: dict
-    :param instrument_setup: Dictionary containing instrument setup parameters.
-     **NB: usage not tested, and may not be supported in future.**
-    :type instrument_setup: dict
+    :param telescope_and_environment: Dictionary containing telescope and environment parameters
+    :type telescope_and_environment: dict
+    :param finetune: Narrow band approximation (if False) or full calculation across the bandwidth (if True)
+    :type finetune: boolean
     """
-    def __init__(self, user_input={}):
-        
-        if user_input:
-            self._param_setup = ParameterSetup(user_input=user_input)
-            # self.calculator = self._create_calculator(self.param_setup)
-        else: # use the default values
-            self._param_setup = ParameterSetup()
-            # self.calculator = self._create_calculator(self.param_setup)
+    def __init__(self, user_input={}, telescope_and_environment={}, finetune=False):
 
-        # Parameter setup class that contains models with default values
-        # self._param_setup = self.param_setup
+        kwargs = {}
+        if user_input:
+            kwargs["user_input"] = user_input
+        if telescope_and_environment:
+            kwargs["telescope_and_environment"] = telescope_and_environment
+        if finetune:
+            kwargs["finetune"] = finetune
+        
+        # Parameter setup class that contains models with default values if not specified
+        self._param_setup = ParameterSetup(**kwargs)
         # Special classes for customisation of models
         self._user_input = UserInputParameters(self._param_setup)
         self._telescope_and_environment = TelescopeAndEnvironmentParameters(self._param_setup)
@@ -41,10 +43,6 @@ class Calculator:
         # Calculated value variables of calculation result model
         self._calculated_sensitivity = self._param_setup.calculation_results.calculated_sensitivity
         self._calculated_t_int = self._param_setup.calculation_results.calculated_t_int
-
-    # @staticmethod
-    # def _create_calculator(param_setup):
-    #     return Calculator(param_setup)
 
     @property
     def user_input(self):
@@ -138,6 +136,14 @@ class Calculator:
                   'Proceeding with an applicable instrument from '\
                   'the list of instruments.')
         
+    @property
+    def instrument_order_preference(self):
+        return self._param_setup.inst_order_preference
+
+    @instrument_order_preference.setter
+    @Decorators.validate_inst_preference_list
+    def instrument_order_preference(self, list):
+        self._param_setup.inst_order_preference = list
 
     @property
     def loaded_instruments(self):
