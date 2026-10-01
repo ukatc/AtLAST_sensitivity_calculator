@@ -2,11 +2,12 @@ import copy
 import pytest
 import astropy.units as u
 from atlast_sc.calculator import Calculator
+from atlast_sc.instruments.classes.Finer import Finer
+from atlast_sc.core.utils import FileHelper
 from atlast_sc.core.parameter_setup import ParameterSetup
-from atlast_sc.parameters.user_input_parameters import UserInputParameters
 from atlast_sc.core.models import DerivedParams, CalculationInput
 from atlast_sc.core.utils import DataHelper
-from atlast_sc.core.exceptions import CalculatedValueInvalidWarning
+from atlast_sc.core.exceptions import InstrumentNotApplicableException
 from atlast_sc_tests.utils import does_not_raise
 from pydantic import ValidationError
 
@@ -281,19 +282,41 @@ class TestCalculator:
         assert calculator.user_input.obs_freq == obs_freq
         assert calculator.derived_parameters == original_derived_params
 
-    def test_reselects_instrument_before_derived_calculation(
-            self, calculator, mocker):
+    incorrect_value_format = 'name is not provided in the correct format'
+    incorrect_inst_name = 'not available. check if you have provided'
+    finer_data = FileHelper.read_instrument_yaml_file("Finer")
+    finer_inst_class = Finer(data=finer_data)
+
+    @pytest.mark.parametrize(
+        'inst_name,obs_freq,expect_raises,validation_error_type,exception_match_string',
+        [
+            ('Finer', 406 * u.GHz, pytest.raises(InstrumentNotApplicableException), 
+             'InstrumentNotApplicableException', None),
+            ('finer', 350 * u.GHz, does_not_raise(), None, None),
+            ('finER', 350 * u.GHz, does_not_raise(), None, None),
+            ('fiNerr', 350 * u.GHz, pytest.raises(KeyError), 'KeyError', incorrect_inst_name),
+            ('flower', 350 * u.GHz, pytest.raises(KeyError), 'KeyError', incorrect_inst_name),
+            (finer_inst_class, 350 * u.GHz, pytest.raises(AttributeError), 
+             'AttributeError', incorrect_value_format),
+        ]
+    )
+    def test_instrument_name_validation(self, inst_name, obs_freq, expect_raises,
+                                         validation_error_type, exception_match_string,
+                                         calculator, mocker):
         finer = calculator._param_setup.loaded_instruments['Finer']
-        calculator._param_setup.chosen_instrument = finer
-        mocker.patch.object(
-            finer,
-            'calculate_system_temperature',
-            side_effect=AssertionError('FINER used outside its frequency range'),
-        )
+        with expect_raises as exception_info:
+            calculator.user_input.obs_freq = obs_freq
+            calculator.chosen_instrument = inst_name
 
-        calculator.user_input.obs_freq = 406 * u.GHz
+        if exception_match_string:
+            # check if the error types correspond to what we expect
+            error_typename = exception_info.typename
+            assert validation_error_type == error_typename
 
-        assert calculator._param_setup.chosen_instrument.name == 'Default'
+            # check for part of the exception generated
+            validation_error = exception_info.value  
+            error_string = str(validation_error).lower()
+            assert exception_match_string in error_string
 
     @pytest.mark.parametrize(
         'new_t_int,update_calculator',
