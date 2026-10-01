@@ -139,8 +139,7 @@ class ParameterSetup:
         Resets the calculator configuration parameters (user input and
         telescope and environment parameters to their original values.
         """
-        self._calculation_inputs = \
-            self._original_inputs
+        self._calculation_inputs = copy.deepcopy(self._original_inputs)
         
     @staticmethod
     def _check_input_param_names(user_input):
