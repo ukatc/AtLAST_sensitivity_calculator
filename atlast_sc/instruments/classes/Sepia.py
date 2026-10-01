@@ -86,6 +86,5 @@ class Sepia(Instrument):
             / (freq_high_max - freq_high_min) ) * u.K
             self.T_rx = temp
 
-        if temp is not None:
-            self.T_rx = temp
-        return self.T_rx
+        self.T_rx = temp
+        return temp
