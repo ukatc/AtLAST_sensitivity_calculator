@@ -1,4 +1,4 @@
-name: "Alma-wsu"
+name: "Alma_wsu"
 allowed_ranges:
   observing_frequency: 
     # NB: We don't include band 3 as it overlaps entirely with band 2. 

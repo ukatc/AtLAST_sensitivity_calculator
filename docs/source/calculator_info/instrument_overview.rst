@@ -9,6 +9,7 @@ To go beyond this, in order to approximate the future instrumentation available 
     :header: "Name", "Telescope", "Project page"
     :widths: 6,6,30
 
+    :doc:`ALMA / ALMA WSU <instruments/alma_tsys>`, ALMA, https://almascience.eso.org/
     :doc:`CHAI <instruments/chai_tsys>`, CCAT, https://www.ccatobservatory.org/chai/
     :doc:`FINER <instruments/finer_tsys>`, LMT, https://finerreceiver.github.io/
     :doc:`MUSCAT <instruments/muscat_tsys>`, LMT, https://muscat-docs.astro.cf.ac.uk/
@@ -43,6 +44,8 @@ Each instrument has a specified range of frequencies, :math:`\nu`, and bandwidth
 +--------+-----------------------+-----------------------+----------------------------+----------------------------+
 | MUSCAT |                   250 |                   300 |                     10 GHz |                     80 GHz | 
 +--------+-----------------------+-----------------------+----------------------------+----------------------------+
+
+Information for the ALMA and ALMA WSU receivers is shown in a separate table on their :doc:`page <instruments/alma_tsys>`.
 
 .. image:: imgs/bandvsfreq_extended.png
     :alt: Bandwidth vs. frequency parameter space of the supported instruments
