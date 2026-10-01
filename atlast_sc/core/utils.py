@@ -46,6 +46,40 @@ class Decorators:
         return do_validation
 
     @staticmethod
+    def validate_instrument(func):
+        """
+        Decorator to support setter method of instrument choice. Validates
+        that the input is a string and that the value is available in 
+        previously loaded instrument names. 
+        """
+        @functools.wraps(func)
+        def inst_validation(calculator, value, **kwargs):
+
+            """
+            Validates that the instrument choice is provided in the 
+            correct format and that the provided value corresponds
+            to the existing instruments. 
+
+            :param calculator: The Calculator object
+            :type calculator: Calculator
+            :param value: instrument name
+            :type value: string
+            """
+            if not isinstance(value, str):
+                raise AttributeError(
+                        'Instrument name is not provided in the correct format. '\
+                        'Check if you have provided the name of the '\
+                        'instrument in a String format.')
+            if not value.lower().capitalize() in calculator.loaded_instruments.keys():
+                raise KeyError(
+                        'Instrument name provided \'' + value + '\' is not available. '\
+                        'Check if you have provided the instrument '\
+                        'correctly.')
+            return func(calculator, value, **kwargs)        
+        return inst_validation
+
+
+    @staticmethod
     def validate_and_update_params(func):
         """
         Decorator to support setter methods on calculations input parameters

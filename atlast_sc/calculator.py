@@ -97,44 +97,37 @@ class Calculator:
         return self._param_setup.chosen_instrument.name
     
     @chosen_instrument.setter
+    @Decorators.validate_instrument
     def chosen_instrument(self, instrument_name):
         old_inst_name = self._param_setup.chosen_instrument.name
         instrument_name = instrument_name.capitalize()
-        try:
-            requested_inst_name = \
-                self._param_setup.loaded_instruments[instrument_name].name
-            
-            # Check if the requested instrument can be selected given the 
-            # existing user input parameters
-            requested_inst_is_applicable = \
-                self.requested_inst_is_applicable(requested_inst_name)
+        requested_inst_name = \
+            self._param_setup.loaded_instruments[instrument_name].name
+        
+        # Check if the requested instrument can be selected given the 
+        # existing user input parameters
+        requested_inst_is_applicable = \
+            self.requested_inst_is_applicable(requested_inst_name)
 
-            try:
-                # User inputted obs_freq and bandwidth are in range
-                if requested_inst_is_applicable:
-                    self._param_setup.chosen_instrument = (
-                        self._param_setup.loaded_instruments[requested_inst_name]
-                    )
-                    # Recalculate derived parameters because new
-                    # instrument has been chosen
-                    self._param_setup._calculate_derived_parameters()
-                    new_inst_name = self._param_setup.chosen_instrument.name
-                    if old_inst_name != new_inst_name:
-                        print("Instrument has been changed from " + old_inst_name + " to " + \
-                          new_inst_name + ".")
-                else:
-                    # User inputted obs_freq and bandwidth are not 
-                    # in range of the requested instrument
-                    raise InstrumentNotApplicableException(
-                        requested_inst_name,
-                        self.chosen_instrument
-                    )
-            except InstrumentNotApplicableException as e:
-                raise
-        except KeyError as e:
-            print('Instrument name provided is not available. '\
-                  'Proceeding with an applicable instrument from '\
-                  'the list of instruments.')
+        # User inputted obs_freq and bandwidth are in range
+        if requested_inst_is_applicable:
+            self._param_setup.chosen_instrument = (
+                self._param_setup.loaded_instruments[requested_inst_name]
+            )
+            # Recalculate derived parameters because new
+            # instrument has been chosen
+            self._param_setup._calculate_derived_parameters()
+            new_inst_name = self._param_setup.chosen_instrument.name
+            if old_inst_name != new_inst_name:
+                print("Instrument has been changed from " + old_inst_name + " to " + \
+                    new_inst_name + ".")
+        else:
+            # User inputted obs_freq and bandwidth are not 
+            # in range of the requested instrument
+            raise InstrumentNotApplicableException(
+                requested_inst_name,
+                self.chosen_instrument
+            )
         
 
     @property
