@@ -89,9 +89,9 @@ will not be stored in the Calculator object.
 Checking the parameters stored by the calculator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The calculator stores the user input parameters, instrument, telescope and environment setup parameters, and
-any further derived parameters calculated from other inputs. You can output these
-parameters to the console as follows:
+The calculator stores the user input parameters, telescope and environment setup parameters, and
+any further derived parameters calculated from other inputs. You can output the current
+parameters to the console as follows. (Note that these are not necessarily those used in the most recent calculation and that the derived parameters are recalculated each time the user inputs are changed.)
 
 .. code-block:: bash
 
