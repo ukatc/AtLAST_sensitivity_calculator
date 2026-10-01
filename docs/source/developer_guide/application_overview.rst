@@ -58,7 +58,8 @@ This module provides methods exclusively for calculating sensitivity and integra
 It retrieves parameter sets, including user inputs, telescope and environmental
 conditions, and derived parameters through the parameter setup object. This design
 simplifies the process for users by providing a unified interface to access information 
-from each parameter class.
+from each parameter class. This module also allows the user to modify instrument preference
+order and select a specific instrument to use in the calculations. 
 
 core
 ++++
@@ -125,8 +126,10 @@ instruments
 +++++++++++
 This module contains the instrument data and classes used in the calculator, as well as the
 configuration class. The configuration class is the interface in which the developer can add 
-a new instrument to the calculator and contains methods for reading in the instrument data 
-from the YAML files, validating the data, and populating the instrument classes with the data.
+a new instrument to the calculator, change the instrument preference order, and contains methods
+for reading in the instrument data from the YAML files, validating the data, and populating the
+instrument classes with the data.
+
 Each instrument has a defined Python class under the *classes* directory, populated with 
 information from its respective YAML file under the *data* directory. Each instrument class 
 inherits from the base ``Instrument`` class in the core package, which contains methods and 
