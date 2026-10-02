@@ -1,10 +1,12 @@
-import os
+import os, inspect
 import functools
 import json
 from pathlib import Path
 from pathlib import Path
 from yaml import load, Loader, safe_load
 from astropy.units import Unit
+import astropy.units as u
+from astropy.constants import c
 from types import SimpleNamespace
 
 from atlast_sc.core.exceptions import InstrumentPreferenceListNotAllowed
@@ -108,6 +110,10 @@ class Decorators:
             # are expected to be floats)
             if isinstance(value, int):
                 value = float(value)
+
+            # This will only be executed when bandwidth is provided as a velocity
+            if ("bandwidth" in str(inspect.stack()[-1][-2])) and (value.unit == "km / s"):
+                value = DataHelper.convert_velocity_to_frequency(param_class, value)
 
             # Validate the new value
             DataHelper.validate(param_class, func.__name__, value)
@@ -521,6 +527,24 @@ class DataHelper:
         converted_quantity = source_quantity.to(target_unit)
 
         return converted_quantity.value
+
+    @staticmethod
+    def convert_velocity_to_frequency(param_class, value):
+        """
+        Converts the specified velocity to frequency.
+
+        :param param_class: The velocity value to be converted
+        :type param_class: UserInputParameters
+        :param value: A converted value
+        :type value: Quantity
+        """
+        # Convert from velocity bandwidth to frequency bandwidth
+        vband_fband = [(u.m/u.s, u.Hz, lambda x: \
+                        x * param_class.obs_freq.to(u.Hz).value / c.value, \
+                            lambda x: x * c.value / param_class.obs_freq.to(u.Hz).value)]
+        value = value.to(u.MHz, equivalencies=vband_fband)
+        return value
+
 
     @staticmethod
     def validate_instruments(preference_list, available_insts):
