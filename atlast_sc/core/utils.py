@@ -112,7 +112,8 @@ class Decorators:
                 value = float(value)
 
             # This will only be executed when bandwidth is provided as a velocity
-            if ("bandwidth" in str(inspect.stack()[-1][-2])) and (value.unit == "km / s"):
+            if ("bandwidth" in str(inspect.stack()[-1][-2])) and \
+                ((value.unit == "km / s") or (value.unit == "m / s")):
                 value = DataHelper.convert_velocity_to_frequency(param_class, value)
 
             # Validate the new value
