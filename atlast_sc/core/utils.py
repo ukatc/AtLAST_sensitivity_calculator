@@ -112,8 +112,7 @@ class Decorators:
                 value = float(value)
 
             # This will only be executed when bandwidth is provided as a velocity
-            if ("bandwidth" in str(inspect.stack()[-1][-2])) and \
-                ((value.unit == "km / s") or (value.unit == "m / s")):
+            if (func.__name__ == "bandwidth") and (value.unit in DataHelper.special_units):
                 value, unit = DataHelper.convert_velocity_to_frequency(param_class.obs_freq, value)
                 value = u.Quantity(float(value), unit)
 
@@ -464,6 +463,8 @@ class FileHelper:
 
 
 class DataHelper:
+
+    special_units = ['km / s', 'm / s']
 
     @staticmethod
     def validate(param_class, param_name, value):

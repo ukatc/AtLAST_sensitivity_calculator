@@ -24,8 +24,6 @@ class Data:
         units: list[str] = None
         data_conversion: dict = None
 
-        special_units = ['km / s', 'm / s']
-
         def __post_init__(self):
             # Make sure the default value is not infinity
             assert not math.isinf(self.default_value)
@@ -70,7 +68,7 @@ class Data:
             # conversion factors between allowed units and the default unit
             if self.units:
                 conversion_units = [unit for unit in self.units
-                                    if unit not in self.special_units]
+                                    if unit not in DataHelper.special_units]
 
                 self.data_conversion = DataHelper.data_conversion_factors(
                     self.default_unit,
