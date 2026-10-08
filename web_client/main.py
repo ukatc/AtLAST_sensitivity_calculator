@@ -4,9 +4,15 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from web_client.schemas import APIUserInput, InstrumentSelection, ApplicableInstrumentsRequest
-from web_client import utils, calculator
+
+import astropy.units as u
+from atlast_sc.core.utils import DataHelper
+
+from web_client.schemas import APIUserInput, InstrumentSelection, \
+    ApplicableInstrumentsRequest
 import web_client.context_processors as cp
+from web_client import utils, calculator
+
 
 os.chdir(os.path.dirname(__file__))
 
@@ -26,6 +32,9 @@ paths = {
 
 # Global state to store the currently selected instrument
 selected_instrument = 'Default'
+
+# Global state to store special units
+special_units = ['km / s', 'm / s']
 
 templates = Jinja2Templates(directory="templates",
                             context_processors=[cp.invalid_message_processor,
@@ -52,6 +61,10 @@ async def sensitivity(api_user_input: APIUserInput):
 
     user_input = _unpack_api_user_input(api_user_input)
 
+    # If bandwidth is provided as velocity
+    if user_input['bandwidth']['unit'] in special_units:
+        user_input = utils.modify_user_input_with_converted_values(user_input)
+
     try:
         return calculator.do_calculation(user_input, "sensitivity", selected_instrument)
     except calculator.UserInputError as e:
@@ -62,6 +75,10 @@ async def sensitivity(api_user_input: APIUserInput):
 async def t_int(api_user_input: APIUserInput):
 
     user_input = _unpack_api_user_input(api_user_input)
+
+    # If bandwidth is provided as velocity
+    if user_input['bandwidth']['unit'] in special_units:
+        user_input = utils.modify_user_input_with_converted_values(user_input)
 
     try:
         return calculator.do_calculation(user_input, "integration_time", selected_instrument)
@@ -83,11 +100,17 @@ async def get_applicable_instruments(req: ApplicableInstrumentsRequest):
     :return: list of applicable instrument names
     """
     obs_freq = req.obs_freq
-    bandwidth = req.bandwidth
+    bandwidth_value = req.bandwidth
     bandwidth_unit = req.bandwidth_unit
 
+    if bandwidth_unit in special_units:
+        bandwidth_value, bandwidth_unit = \
+            DataHelper.convert_velocity_to_frequency(u.Quantity(obs_freq, str(u.GHz)),\
+                                                     u.Quantity(bandwidth_value, bandwidth_unit))
+        
     try:
-        applicable_instruments = calculator.get_applicable_instruments(obs_freq, bandwidth, bandwidth_unit)
+        applicable_instruments = calculator.get_applicable_instruments(obs_freq, bandwidth_value, \
+                                                                       bandwidth_unit)
         return JSONResponse(
             content=applicable_instruments
         )
