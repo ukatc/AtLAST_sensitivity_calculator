@@ -12,7 +12,6 @@ class Data:
     Default values, default units, allowed units, allowed ranges and/or values
     for the parameters used by the sensitivity calculator.
     """
-
     @dataclass
     class DataType:
         default_value: float = None
@@ -24,6 +23,8 @@ class Data:
         allowed_values: list = None
         units: list[str] = None
         data_conversion: dict = None
+
+        special_units = ['km / s', 'm / s']
 
         def __post_init__(self):
             # Make sure the default value is not infinity
@@ -68,9 +69,12 @@ class Data:
             # If the data type has a list of allowed units, evaluate the
             # conversion factors between allowed units and the default unit
             if self.units:
+                conversion_units = [unit for unit in self.units
+                                    if unit not in self.special_units]
+
                 self.data_conversion = DataHelper.data_conversion_factors(
                     self.default_unit,
-                    self.units
+                    conversion_units
                 )
 
     integration_time = DataType(
@@ -119,7 +123,7 @@ class Data:
         lower_value_is_floor=True,
         upper_value=float('inf'),
         upper_value_is_ceil=True,
-        units=[str(u.Hz), str(u.kHz), str(u.MHz), str(u.GHz)],
+        units=[str(u.Hz), str(u.kHz), str(u.MHz), str(u.GHz), str(u.km / u.s), str(u.m / u.s)],
     )
 
     # Sky frequency of the observations
