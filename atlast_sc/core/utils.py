@@ -114,7 +114,8 @@ class Decorators:
             # This will only be executed when bandwidth is provided as a velocity
             if ("bandwidth" in str(inspect.stack()[-1][-2])) and \
                 ((value.unit == "km / s") or (value.unit == "m / s")):
-                value = DataHelper.convert_velocity_to_frequency(param_class, value)
+                value, unit = DataHelper.convert_velocity_to_frequency(param_class.obs_freq, value)
+                value = u.Quantity(float(value), unit)
 
             # Validate the new value
             DataHelper.validate(param_class, func.__name__, value)
@@ -504,7 +505,7 @@ class DataHelper:
         conversion_factors = \
             {unit: DataHelper._convert(1, unit, default_unit)
              for unit in allowed_units}
-
+        
         return conversion_factors
 
     @staticmethod
@@ -530,21 +531,23 @@ class DataHelper:
         return converted_quantity.value
 
     @staticmethod
-    def convert_velocity_to_frequency(param_class, value):
+    def convert_velocity_to_frequency(obs_freq, vel_value):
         """
         Converts the specified velocity to frequency.
 
-        :param param_class: The velocity value to be converted
-        :type param_class: UserInputParameters
-        :param value: A converted value
-        :type value: Quantity
+        :param obs_freq: Observing frequency
+        :type obs_freq: Quantity
+        :param vel_value: Velocity value to be converted
+        :type vel_value: Quantity
+        :return: tuple frequency value and unit
+        :rtpe: tuple(float, astropy Unit)
         """
         # Convert from velocity bandwidth to frequency bandwidth
         vband_fband = [(u.m/u.s, u.Hz, lambda x: \
-                        x * param_class.obs_freq.to(u.Hz).value / c.value, \
-                            lambda x: x * c.value / param_class.obs_freq.to(u.Hz).value)]
-        value = value.to(u.MHz, equivalencies=vband_fband)
-        return value
+                        x * obs_freq.to(u.Hz).value / c.value, \
+                            lambda x: x * c.value / obs_freq.to(u.Hz).value)]
+        freq = vel_value.to(u.Hz, equivalencies=vband_fband)
+        return float(freq.value), freq.unit
 
 
     @staticmethod
