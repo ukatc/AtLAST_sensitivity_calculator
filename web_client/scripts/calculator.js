@@ -27,16 +27,18 @@ $(document).ready(() => {
                 formValidated = validateInput(input, units, data[input.name]);
 
                 // Add an event listener to validate input when it changes
-                input.addEventListener("change", e => {
+                input.addEventListener("change", async e => {
                     if (input === e.target) {
                         formValidated =
                             validateAndSetUIState(input, units,
                                                   data[input.name]);
                         
                         // Validate frequency/bandwidth based on instrument selection
-                        const instrumentName = document.getElementById("instrument-type").value;
-                        formValidated = CalculatorUI.validateCurrentInputsAgainstInstrument(instrumentName);
-                        CalculatorUI.showApplicableInstruments(input);
+                        if (formValidated) {
+                            formValidated = await CalculatorUI.validateCurrentInputsAgainstInstrument();
+                            CalculatorUI.showApplicableInstruments(input);
+                        }
+                        
                     }
                 });
             });
@@ -47,7 +49,7 @@ $(document).ready(() => {
             allUnitsInputs.forEach(unitsInput => {
                 // Add an event listener to re-enable to the Calculate button
                 // if the form is in a valid state
-                unitsInput.addEventListener("change", e => {
+                unitsInput.addEventListener("change", async e => {
                     if (unitsInput === e.target) {
                         // Get the corresponding input for this units input
                         const input =
@@ -59,9 +61,8 @@ $(document).ready(() => {
                                                   data[input.name]);
                         
                         // Validate frequency/bandwidth based on instrument selection
-                        const instrumentName = document.getElementById("instrument-type").value;
                         formValidated =
-                            CalculatorUI.validateCurrentInputsAgainstInstrument(instrumentName);
+                            await CalculatorUI.validateCurrentInputsAgainstInstrument();
                     }
                 });
             })
