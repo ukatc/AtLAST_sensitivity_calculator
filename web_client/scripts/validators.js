@@ -2,6 +2,20 @@ import { convertVelocityToFrequency } from './rest_calls.js';
 
 const specialUnits = ['km / s', 'm / s']
 
+const getDefaultInvalidMessage = (input) => {
+    const invalidMessageElement =
+        document.getElementById(`${input.id}-invalid`);
+    if (!invalidMessageElement) {
+        return null;
+    }
+
+    if (invalidMessageElement.dataset.defaultMessage === undefined) {
+        invalidMessageElement.dataset.defaultMessage =
+            invalidMessageElement.textContent;
+    }
+    return invalidMessageElement.dataset.defaultMessage;
+}
+
 const validateInput = (input, units, paramData) => {
     const setUpValidState = (validState) => {
         const validStateMessage = (validState)? "" : "invalid";
@@ -9,12 +23,18 @@ const validateInput = (input, units, paramData) => {
 
         // Show or hide the validation message for each input
         const invalid_msg_elem = document.getElementById(`${input.id}-invalid`);
+        getDefaultInvalidMessage(input);
         invalid_msg_elem.hidden = (validState)? true: false;
     }
 
     // All values should be numeric
     if (!isNum(input.value)) {
         setUpValidState(false);
+        const invalidMessageElement = document.getElementById(`${input.id}-invalid`);
+        const defaultMessage = getDefaultInvalidMessage(input);
+        if (invalidMessageElement && defaultMessage !== null) {
+            invalidMessageElement.textContent = defaultMessage;
+        }
         return false;
     }
 
@@ -75,6 +95,10 @@ const validateInputAgainstInstrumentRange = async (input, rangeText, userSelecte
 
         const invalid_msg_elem = document.getElementById(`${input.id}-invalid`);
         if (invalid_msg_elem) {
+            getDefaultInvalidMessage(input);
+            if (message) {
+                invalid_msg_elem.textContent = message;
+            }
             invalid_msg_elem.hidden = validState;
         }
     }
@@ -82,6 +106,7 @@ const validateInputAgainstInstrumentRange = async (input, rangeText, userSelecte
     const parsedRangeList = parseInstrumentRange(rangeText);
     let numericValue = Number(input.value);
     if (!isNum(input.value)) {
+        setUpValidState(false, getDefaultInvalidMessage(input) || "");
         document.getElementById("calculate").disabled = true;
         return false;
     }
