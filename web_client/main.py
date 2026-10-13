@@ -9,7 +9,7 @@ import astropy.units as u
 from atlast_sc.core.utils import DataHelper
 
 from web_client.schemas import APIUserInput, InstrumentSelection, \
-    ApplicableInstrumentsRequest
+    ApplicableInstrumentsRequest, VelocityConversionRequest
 import web_client.context_processors as cp
 from web_client import utils, calculator
 
@@ -89,6 +89,17 @@ async def t_int(api_user_input: APIUserInput):
 @app.get(paths['param_values_units'])
 async def param_values_units():
     return JSONResponse(content=calculator.get_param_values_units())
+
+
+@app.post(paths['set_instrument'] + '/convert-velocity')
+async def velocity_to_frequency(req: VelocityConversionRequest):
+
+    value, unit = DataHelper.convert_velocity_to_frequency(
+        u.Quantity(req.obs_freq, u.GHz),
+        u.Quantity(req.velocity, req.velocity_unit),
+    )
+    return JSONResponse(content={"value": value, "unit": str(unit)})
+
 
 @app.post(paths['set_instrument'] + '/applicable-instruments')
 async def get_applicable_instruments(req: ApplicableInstrumentsRequest):
