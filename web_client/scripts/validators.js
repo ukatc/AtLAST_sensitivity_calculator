@@ -1,3 +1,7 @@
+import { convertVelocityToFrequency } from './rest_calls.js';
+
+const specialUnits = ['km / s', 'm / s']
+
 const validateInput = (input, units, paramData) => {
     const setUpValidState = (validState) => {
         const validStateMessage = (validState)? "" : "invalid";
@@ -57,7 +61,7 @@ const validateInput = (input, units, paramData) => {
     return true;
 }
 
-const validateInputAgainstInstrumentRange = (input, rangeText, userSelectedUnit = null) => {
+const validateInputAgainstInstrumentRange = async (input, rangeText, userSelectedUnit = null) => {
     const setUpValidState = (validState, message = "") => {
         const validStateMessage = validState ? "" : message;
         input.setCustomValidity(validStateMessage);
@@ -71,43 +75,52 @@ const validateInputAgainstInstrumentRange = (input, rangeText, userSelectedUnit 
 
         const invalid_msg_elem = document.getElementById(`${input.id}-invalid`);
         if (invalid_msg_elem) {
-            if (message) {
-                invalid_msg_elem.textContent = message;
-            }
             invalid_msg_elem.hidden = validState;
         }
     }
 
     const parsedRangeList = parseInstrumentRange(rangeText);
+    let numericValue = Number(input.value);
+    if (!isNum(input.value)) {
+        document.getElementById("calculate").disabled = true;
+        return false;
+    }
+
+    if (specialUnits.includes(userSelectedUnit)) {
+        const obsFreqInput = document.getElementById("obs-freq-input");
+        if (!obsFreqInput || !isNum(obsFreqInput.value)) {
+            document.getElementById("calculate").disabled = true;
+            return false;
+        }
+
+        const conversion = await convertVelocityToFrequency({
+            obs_freq: Number(obsFreqInput.value),
+            velocity: numericValue,
+            velocity_unit: userSelectedUnit,
+        });
+        numericValue = conversion.value;
+    }
+
     let valueInRange = false;
-    for (let parsedRange of Object.entries(parsedRangeList)) {
-        parsedRange = parsedRange[1]; // Only extract the range object from the array of entries
-        if (parsedRange === 0) { // Bandwidth range is "> 0", any value will always be in range
+    for (const parsedRange of parsedRangeList) {
+        const parsedRangeUnit = parsedRange.unit === null || parsedRange.unit === undefined ? "Hz" : parsedRange.unit;
+        const valueToValidate = convertValueToUnit(numericValue, userSelectedUnit, parsedRangeUnit);
+        const aboveLowerBound = parsedRange.upper === null
+            ? valueToValidate > parsedRange.lower
+            : valueToValidate >= parsedRange.lower;
+        const belowUpperBound = parsedRange.upper === null || parsedRange.upper === undefined
+            || valueToValidate <= parsedRange.upper;
+
+        if (aboveLowerBound && belowUpperBound) {
             valueInRange = true;
             setUpValidState(true);
             break;
         }
-        const numericValue = Number(input.value);
-        const inputUnit = userSelectedUnit;
-        const parsedRangeUnit = parsedRange.unit === null || parsedRange.unit === undefined ? "Hz" : parsedRange.unit;
-        const valueToValidate = convertValueToUnit(numericValue, inputUnit, parsedRangeUnit);
-        if (parsedRange.lower !== null && parsedRange.upper !== null) {
-            // If the value to validate is within the range 
-            if (parsedRange.lower <= valueToValidate && parsedRange.upper >= valueToValidate) {
-                valueInRange = true;
-                setUpValidState(true);
-            } else {
-                if (valueInRange == true){
-                    // This is the second or more time we are looping through a range and
-                    // one of the previous ranges were applicable for the user input but 
-                    // not the current range. We break the loop to avoid showing error message
-                    // incorrectly.
-                    break;
-                }
-                setUpValidState(false, `Value must be between allowed ranges 
-                    for the chosen instrument.`);
-            }
-        } 
+    }
+
+    if (!valueInRange) {
+        setUpValidState(false, `Value must be between allowed ranges 
+            for the chosen instrument.`);
     }
     return valueInRange;
 }
@@ -123,7 +136,7 @@ const parseInstrumentRange = (rangeText) => {
 
     if (trimmed.includes('>')) {
         const numericValue = Number(values[0]);
-        return { lower: numericValue, upper: null, unit };
+        return [{ lower: numericValue, upper: null, unit }];
     }
 
     if (values.length % 2 == 0) {
@@ -187,10 +200,6 @@ const isInRange = (val, ...rangeInfo) => {
 
 const isAllowedValue = (val, allowedValues) => {
     return true;
-}
-
-const convertToDefaultUnits = (parameter, value) => {
-
 }
 
 export {validateInput, validateInputAgainstInstrumentRange}
