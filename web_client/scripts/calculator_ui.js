@@ -81,7 +81,7 @@ const showApplicableInstruments = async () => {
     }
 }
 
-const validateCurrentInputsAgainstInstrument = (instrumentName) => {
+const validateCurrentInputsAgainstInstrument = async () => {
 
     const instrumentRanges = document.getElementById("instrument-ranges-display");
     if (!instrumentRanges) {
@@ -98,19 +98,25 @@ const validateCurrentInputsAgainstInstrument = (instrumentName) => {
         document.getElementById("bandwidth-input")
     ];
 
-    let inputValuesInRange = inputsToValidate.map((input) => {
-        const relevantRange = input.id === "obs-freq-input" ? rangeFields.obs_freq : rangeFields.bandwidth;
-        const userSelectedUnit = input.id === "obs-freq-input" ? "GHz" : document.getElementById(`${input.name}-units`).value;
-        return validateInputAgainstInstrumentRange(input, relevantRange, userSelectedUnit);
-    });
+    try {
+        const inputValuesInRange = await Promise.all(inputsToValidate.map((input) => {
+            const relevantRange = input.id === "obs-freq-input"
+                ? rangeFields.obs_freq
+                : rangeFields.bandwidth;
+            const userSelectedUnit = input.id === "obs-freq-input"
+                ? "GHz"
+                : document.getElementById(`${input.name}-units`).value;
+            return validateInputAgainstInstrumentRange(input, relevantRange, userSelectedUnit);
+        }));
 
-    if (inputValuesInRange.every(value => value === true)) {
-        inputValuesInRange = true;
-    } else {
-        inputValuesInRange = false;
+        const allInputsInRange = inputValuesInRange.every(value => value === true);
+        disableCalculateBtn(!allInputsInRange);
+        return allInputsInRange;
+    } catch (error) {
+        console.error("Error validating inputs against instrument range:", error);
+        disableCalculateBtn(true);
+        return false;
     }
-
-    return inputValuesInRange;
 }
 
 
@@ -122,7 +128,7 @@ const setChosenInstrument = async (instrumentName) => {
         // Update the ranges display for the new instrument
         await updateInstrumentRangesDisplay(data.instrument);
         // Validate current inputs against the newly set instrument
-        const inputsInRange = validateCurrentInputsAgainstInstrument(instrumentName);
+        const inputsInRange = await validateCurrentInputsAgainstInstrument();
 
         if (inputsInRange === true) {
             disableCalculateBtn(false);
