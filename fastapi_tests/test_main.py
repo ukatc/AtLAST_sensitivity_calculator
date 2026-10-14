@@ -45,6 +45,73 @@ def test_calculate_t_int():
     assert pytest.approx(integration_time['value'], 0.1) == 5.20
 
 
+@pytest.mark.parametrize(
+    ('velocity', 'velocity_unit'),
+    [
+        (100, 'km / s'),
+        (100_000, 'm / s'),
+    ],
+)
+def test_convert_velocity_to_frequency(velocity, velocity_unit):
+    response = client.post(
+        f'/v{version}/set-instrument/convert-velocity',
+        json={
+            'obs_freq': 100,
+            'velocity': velocity,
+            'velocity_unit': velocity_unit,
+        }
+    )
+
+    assert response.status_code == 200
+    converted = response.json()
+    assert converted['unit'] == 'Hz'
+    assert pytest.approx(converted['value']) == 33_356_409
+
+
+def test_convert_velocity_to_frequency_requires_all_fields():
+    response = client.post(
+        f'/v{version}/set-instrument/convert-velocity',
+        json={
+            'obs_freq': 100,
+            'velocity': 100,
+        }
+    )
+    assert response.status_code == 422
+
+
+def test_applicable_instruments_with_velocity_bandwidth_matches_frequency():
+    conversion = client.post(
+        f'/v{version}/set-instrument/convert-velocity',
+        json={
+            'obs_freq': 300,
+            'velocity': 100,
+            'velocity_unit': 'km / s',
+        }
+    )
+    assert conversion.status_code == 200
+
+    velocity_response = client.post(
+        f'/v{version}/set-instrument/applicable-instruments',
+        json={
+            'obs_freq': 300,
+            'bandwidth': 100,
+            'bandwidth_unit': 'km / s',
+        }
+    )
+    frequency_response = client.post(
+        f'/v{version}/set-instrument/applicable-instruments',
+        json={
+            'obs_freq': 300,
+            'bandwidth': conversion.json()['value'],
+            'bandwidth_unit': 'Hz',
+        }
+    )
+
+    assert velocity_response.status_code == 200
+    assert frequency_response.status_code == 200
+    assert velocity_response.json() == frequency_response.json()
+
+
 def test_param_values_units():
     response = client.get(
         f'/v{version}/param-values-units/'
