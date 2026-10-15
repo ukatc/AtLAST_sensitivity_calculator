@@ -543,13 +543,32 @@ class DataHelper:
         :return: tuple frequency value and unit
         :rtpe: tuple(float, astropy Unit)
         """
-        # Convert from velocity bandwidth to frequency bandwidth
+        # Create the equivalence to use in conversion
         vband_fband = [(u.m/u.s, u.Hz, lambda x: \
                         x * obs_freq.to(u.Hz).value / c.value, \
-                            lambda x: x * c.value / obs_freq.to(u.Hz).value)]
+                        lambda x: x * c.value / obs_freq.to(u.Hz).value)]
         freq = vel_value.to(u.Hz, equivalencies=vband_fband)
         return float(freq.value), freq.unit
 
+    @staticmethod
+    def convert_frequency_to_velocity(obs_freq, bandw_value):
+        """
+        Converts the specified frequency to velocity.
+
+        :param obs_freq: Observing frequency
+        :type obs_freq: Quantity
+        :param bandw_value: Bandwidth value to be converted
+        :type bandw_value: Quantity
+        :return: tuple velocity value and unit
+        :rtpe: tuple(float, astropy Unit)
+        """
+        # Create the equivalence to use in conversion
+        vband_fband = [(u.m/u.s, u.Hz, lambda x: \
+                    x * obs_freq.to(u.Hz).value / c.value, \
+                    lambda x: x * c.value / obs_freq.to(u.Hz).value)]
+
+        vel = bandw_value.to(u.km/u.s, equivalencies=vband_fband)
+        return float(vel.value), vel.unit
 
     @staticmethod
     def validate_instruments(preference_list, available_insts):
