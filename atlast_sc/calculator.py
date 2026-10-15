@@ -369,6 +369,32 @@ class Calculator:
         
         print(output)
 
+    def convert_frequency_to_velocity(self, bandw_freq):
+        """
+        Convert the given bandwidth frequency to velocity. 
+
+        :param bandw_freq: User inputted bandwidth frequency
+        :type bandw_freq: Quantity
+        :return: Equivalent velocity value
+        :rtype: Quantity
+        """
+        val, unit = DataHelper.convert_frequency_to_velocity(self.user_input.obs_freq,
+                                                             bandw_freq)
+        return u.Quantity(val, str(unit))
+    
+    def convert_velocity_to_frequency(self, bandw_velocity):
+        """
+        Convert the given bandwidth velocity to frequency. 
+
+        :param bandw_velocity: User inputted bandwidth velocity
+        :type bandw_velocity: Quantity
+        :return: Equivalent frequency value
+        :rtype: Quantity
+        """
+        val, unit = DataHelper.convert_velocity_to_frequency(self.user_input.obs_freq,
+                                                             bandw_velocity)
+        return u.Quantity(val, str(unit))
+
     def _format_bandwidth_ranges(self, bandwidth_ranges, bandwidth_unit):
         """
         Format bandwidth ranges, converting to MHz or kHz if the values are too
