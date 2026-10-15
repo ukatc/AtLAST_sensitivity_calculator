@@ -1,7 +1,9 @@
-import warnings, yaml, re
+import warnings, re
 import astropy.units as u
 import numpy as np
+from atlast_sc.core.data import Data
 from atlast_sc.core.utils import DataHelper, Decorators
+from atlast_sc.core.exceptions import UnitException
 from atlast_sc.core.exceptions import CalculatedValueInvalidWarning
 from atlast_sc.core.exceptions import ValueOutOfRangeException
 from atlast_sc.core.exceptions import InstrumentNotApplicableException
@@ -369,7 +371,7 @@ class Calculator:
         
         print(output)
 
-    def convert_frequency_to_velocity(self, bandw_freq):
+    def convert_frequency_to_velocity(self, bandw_freq, obs_freq=None):
         """
         Convert the given bandwidth frequency to velocity. 
 
@@ -378,11 +380,17 @@ class Calculator:
         :return: Equivalent velocity value
         :rtype: Quantity
         """
-        val, unit = DataHelper.convert_frequency_to_velocity(self.user_input.obs_freq,
-                                                             bandw_freq)
+        if obs_freq != None:
+            if obs_freq.unit in Data.obs_frequency.units:
+                val, unit = DataHelper.convert_frequency_to_velocity(obs_freq, bandw_freq)
+            else: 
+                raise UnitException("obs_freq="+str(obs_freq), Data.obs_frequency.units)
+        else:
+            val, unit = DataHelper.convert_frequency_to_velocity(self.user_input.obs_freq,
+                                                                 bandw_freq)
         return u.Quantity(val, str(unit))
     
-    def convert_velocity_to_frequency(self, bandw_velocity):
+    def convert_velocity_to_frequency(self, bandw_velocity, obs_freq=None):
         """
         Convert the given bandwidth velocity to frequency. 
 
@@ -391,8 +399,14 @@ class Calculator:
         :return: Equivalent frequency value
         :rtype: Quantity
         """
-        val, unit = DataHelper.convert_velocity_to_frequency(self.user_input.obs_freq,
-                                                             bandw_velocity)
+        if obs_freq != None:
+            if obs_freq.unit in Data.obs_frequency.units:
+                val, unit = DataHelper.convert_velocity_to_frequency(obs_freq, bandw_velocity)
+            else: 
+                raise UnitException("obs_freq="+str(obs_freq), Data.obs_frequency.units)
+        else:
+            val, unit = DataHelper.convert_velocity_to_frequency(self.user_input.obs_freq,
+                                                                 bandw_velocity)
         return u.Quantity(val, str(unit))
 
     def _format_bandwidth_ranges(self, bandwidth_ranges, bandwidth_unit):
