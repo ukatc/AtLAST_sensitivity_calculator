@@ -30,7 +30,7 @@ class TestInstrumentClasses:
                         {'ranges': ['(272.0-330.0)','(330.0-376.0)'], 
                                     'unit': 'GHz'},
                         # bandwidth
-                        {'ranges': ['(6.25e4-1.8e8)'], 'unit': 'Hz'},
+                        {'ranges': ['(6.25e4-64e9)'], 'unit': 'Hz'},
                         # receiver temperature
                         {'values': [90.0,216.5], 'unit': 'K'}
                     )
