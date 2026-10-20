@@ -70,7 +70,7 @@ class Mistral(Instrument):
         tau = -np.log(transmittance)
         NET = self.tau_to_net(tau)      
         NEP = 2 * constants.k_B.value * bandwidth.to(u.Hz).value * NET
-        Tsys = NEP / constants.k_B.value / self.chip_efficiency / self.cold_optics_efficiency / np.sqrt(n_pol * bandwidth.to(u.Hz).value)  * u.K
+        Tsys = NEP / constants.k_B.value / self.chip_efficiency / self.cold_optics_efficiency / np.sqrt(2 *n_pol * bandwidth.to(u.Hz).value)  * u.K
 
         self.T_sys = Tsys
         return Tsys
