@@ -11,8 +11,11 @@ MISTRAL instrument parameters
 class Mistral(Instrument):
     def __init__(self, data):
         super().__init__(data)
-        self.npix = self.data.npix["value"]
-        self.detector_yield = self.data.detector_yield["value"]
+        self.atm_fit_slope = float(self.data.tau_to_net["fit_slope"]["value"])
+        self.atm_fit_intercept = float(self.data.tau_to_net["fit_intercept"]["value"])
+        self.chip_efficiency = self.data.chip_efficiency["value"]
+        self.cold_optics_efficiency = self.data.cold_optics_efficiency["value"]
+        
 
     ##################################
     # Instrument specific parameters #
@@ -50,7 +53,7 @@ class Mistral(Instrument):
 
     def tau_to_net(self,tau):
 
-        fit = np.array([27.92229463,  0.17222585]) * 1e-3 # from mK to K
+        fit = np.array([self.atm_fit_slope, self.atm_fit_intercept]) # from mK to K
         poly = np.poly1d(fit)
 
         return poly(tau)
@@ -63,47 +66,11 @@ class Mistral(Instrument):
         :return: system temperature in Kelvin
         :rtype: astropy.units.Quantity
         """
+
         tau = -np.log(transmittance)
-        #print("Tau =", tau)
-        NET = self.tau_to_net(tau) 
-        #print("MISTRAL NET=", NET)
-        
-        #NEP = 2 * constants.k_B.value * (obs_freq.to(u.Hz).value)**2 / constants.c.value**2 * NET * bandwidth.to(u.Hz).value * (3.3e-3)**2
+        NET = self.tau_to_net(tau)      
         NEP = 2 * constants.k_B.value * bandwidth.to(u.Hz).value * NET
-        #print("MISTRAL NEP=", NEP)
-        Tsys = NEP / constants.k_B.value / 1 / 1 / np.sqrt(2 * 1 * bandwidth.to(u.Hz).value)  * u.K
-        #print("Tsys=", Tsys)
+        Tsys = NEP / constants.k_B.value / self.chip_efficiency / self.cold_optics_efficiency / np.sqrt(n_pol * bandwidth.to(u.Hz).value)  * u.K
 
         self.T_sys = Tsys
         return Tsys
-    
-    '''
-    def calculate_system_temperature(self, obs_freq, bandwidth, eta_eff, 
-                                     T_amb, T_sky, transmittance, n_pol):
-        """
-        Returns system temperature, following calculation in [doc]
-
-        :return: system temperature in Kelvin
-        :rtype: astropy.units.Quantity
-        """
-        # calculate power spectral density
-        psdkid = constants.k_B * (self.eta_chip * (1 - self.eta_co) * noise_temperature(self.T_co, obs_freq) +
-                self.eta_chip * self.eta_co * (1 - eta_eff) * noise_temperature(T_amb, obs_freq) +
-                self.eta_chip * self.eta_co * eta_eff * T_sky
-                )
-
-        # calculate power absorbed by instrument
-        pkid = (psdkid * n_pol * bandwidth) # assuming small bandwidth
-
-        # calculate noise equivalent power
-        nep = (sqrt(2 * pkid * constants.h * obs_freq +
-                    2 * pkid**2 / (n_pol * bandwidth) +
-                    4 * self.delta_g * pkid / self.eta_pb))
-
-        system_temp = (nep / (constants.k_B * eta_eff * transmittance * \
-               self.eta_chip * self.eta_co * \
-               sqrt(2 * n_pol * bandwidth))).to(u.K)
-        
-        self.T_sys = system_temp
-        return system_temp
-    '''
