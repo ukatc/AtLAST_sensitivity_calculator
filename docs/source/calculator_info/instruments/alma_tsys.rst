@@ -3,19 +3,19 @@ ALMA system temperature
 
 The Atacama Large Millimeter/submillimeter Array (`ALMA <https://almascience.eso.org/>`__) is an interferometer on the Chajnantor Plateau. It has dual polarisation heterodyne receivers that cover 10 bands from 35 to 950 GHz. It is set-up to cover channel spacings from 15.25 kHz to 7.5 GHz. The receiver temperatures for each band are shown in a table below. (See `Cortes et al. 2026 <https://almascience.eso.org/documents-and-tools/cycle13/alma-technical-handbook>`__ for more details.) 
 
+Here in the AtLAST sensitivity calculator, we use these receivers as exemplars of heterodyne instruments capable of working at these frequencies.
+
 ALMA is about undergo a Wideband Sensitivity Upgrade (WSU) and so we also include a module that demonstrates the expected improvements from this (the numbers for this are from `Santander-Vela et al. 2022 <https://www.eso.org/sci/facilities/alma/developmentstudies/ALMAFEDigitizerWGreportdraft220220909.pdf>`__ and `ALMA memo 621 <https://library.nrao.edu/public/memos/alma/main/memo621.pdf>`__). This will decrease the smallest channel spacing to 13.5 kHz. The maximum instantaneous bandwidth has not yet been decided so here we will assume the goal of 32 GHz. The receiver temperature requirements are also included in the table. 
 
-Here in the AtLAST sensitivity calculator, we use it as an exemplar of a heterodyne instrument capable of working at these frequencies.
-
-In this module, we calculate the system temperature used in the overall :doc:`sensitivity equation <../sensitivity>`. For an ALMA like system, the system temperature is calculated as:
+In these modules, we calculate the system temperature used in the overall :doc:`sensitivity equation <../sensitivity>`. For an ALMA like receiver, the system temperature is calculated as:
 
 .. math::
     T_{sys} = \frac{1+g}{\eta_\mathrm{eff} \mathfrak{t}} \times [T_\mathrm{rx} + (\eta_\mathrm{eff} T_\mathrm{sky}) + (1-\eta_\mathrm{eff}) O(\nu, T_\mathrm{amb})]
 
 where
 
-* :math:`g` is the sideband ratio, which is 0 for bands 1-8 and 1 for bands 9 and 10 of the current ALMA receivers; for the WSU it is 0 for all receivers
-* :math:`\eta_\mathrm{eff}` is the forward efficiency of the telescope
+* :math:`g` is the sideband ratio, which is 0 for bands 1-8 (as the band 1 receiver is single sideband and the others are dual sideband) and 1 for bands 9 and 10 (as they are double sideband) of the current ALMA receivers; for the WSU it is 0 for all receivers (as the band 9 and 10 receivers will be dual sideband)
+* :math:`\eta_\mathrm{eff}` is the forward efficiency of AtLAST
 * :math:`\mathfrak{t}` is the atmospheric transmittance, defined as :math:`\mathfrak{t} = \textrm{exp}^{(-\tau_{atm})}`
 * :math:`T_\mathrm{rx}` is the receiver temperature
 * :math:`T_\mathrm{sky}` is the sky temperature (in terms of a Rayleigh-Jeans brightness temperature) calculated from the model grid described in :doc:`Weather Calculations <../weather>`
