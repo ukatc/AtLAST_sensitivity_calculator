@@ -1,7 +1,7 @@
 import warnings, re
 import astropy.units as u
 import numpy as np
-from atlast_sc.core.data import Data
+from atlast_sc.core.data import Data, Validator
 from atlast_sc.core.utils import DataHelper, Decorators
 from atlast_sc.core.exceptions import UnitException
 from atlast_sc.core.exceptions import CalculatedValueInvalidWarning
@@ -371,43 +371,66 @@ class Calculator:
         
         print(output)
 
-    def convert_frequency_to_velocity(self, bandw_freq, obs_freq=None):
+    def convert_frequency_to_velocity(self, bandwidth, obs_freq=None):
         """
         Convert the given bandwidth frequency to velocity. 
 
-        :param bandw_freq: User inputted bandwidth frequency
-        :type bandw_freq: Quantity
+        :param bandwidth: User inputted bandwidth frequency
+        :type bandwidth: Quantity
         :return: Equivalent velocity value
         :rtype: Quantity
         """
-        if obs_freq != None:
-            if obs_freq.unit in Data.obs_frequency.units:
-                val, unit = DataHelper.convert_frequency_to_velocity(obs_freq, bandw_freq)
-            else: 
-                raise UnitException("obs_freq="+str(obs_freq), Data.obs_frequency.units)
-        else:
-            val, unit = DataHelper.convert_frequency_to_velocity(self.user_input.obs_freq,
-                                                                 bandw_freq)
+
+        # Pull observing frequency from parameter class if not supplied by user
+        obs_freq = self.user_input.obs_freq if obs_freq is None else obs_freq
+
+        # Do validation for parameters 
+        # NOTE: As bandwidth is provided in non-special units, the 
+        # bandwidth value validation should be done before the conversion.
+        Validator.validate_field("bandwidth", bandwidth)
+        Validator.validate_field("obs_freq", obs_freq)
+
+        # Do conversion
+        val, unit = DataHelper.convert_frequency_to_velocity(obs_freq, bandwidth)
+
+        converted_val = u.Quantity(val, str(unit))
+
+        # Validate converted bandwidth unit
+        Validator.validate_units(converted_val.unit, "bandwidth", \
+                                         Data.param_data_type_dicts["bandwidth"])
+        
         return u.Quantity(val, str(unit))
     
-    def convert_velocity_to_frequency(self, bandw_velocity, obs_freq=None):
+    def convert_velocity_to_frequency(self, bandwidth, obs_freq=None):
         """
         Convert the given bandwidth velocity to frequency. 
 
-        :param bandw_velocity: User inputted bandwidth velocity
-        :type bandw_velocity: Quantity
+        :param bandwidth: User inputted bandwidth velocity
+        :type bandwidth: Quantity
         :return: Equivalent frequency value
         :rtype: Quantity
         """
-        if obs_freq != None:
-            if obs_freq.unit in Data.obs_frequency.units:
-                val, unit = DataHelper.convert_velocity_to_frequency(obs_freq, bandw_velocity)
-            else: 
-                raise UnitException("obs_freq="+str(obs_freq), Data.obs_frequency.units)
-        else:
-            val, unit = DataHelper.convert_velocity_to_frequency(self.user_input.obs_freq,
-                                                                 bandw_velocity)
-        return u.Quantity(val, str(unit))
+
+        # Pull observing frequency from parameter class if not supplied by user
+        obs_freq = self.user_input.obs_freq if obs_freq is None else obs_freq
+
+        # Do validation for parameters 
+        # NOTE: The existing validation methods need non-special unit value
+        # to do validation. As bandwidth is provided in special units, 
+        # the bandwidth value validation will be done after the conversion.
+        Validator.validate_field("obs_freq", obs_freq)
+        Validator.validate_units(bandwidth.unit, "bandwidth", \
+                                 Data.param_data_type_dicts["bandwidth"])
+
+        # Do conversion
+        val, unit = DataHelper.convert_velocity_to_frequency(obs_freq, bandwidth)
+        
+        converted_val = u.Quantity(val, str(unit))
+
+        # Validate converted bandwidth value
+        Validator.validate_field("bandwidth", converted_val)
+
+        return converted_val
 
     def _format_bandwidth_ranges(self, bandwidth_ranges, bandwidth_unit):
         """
