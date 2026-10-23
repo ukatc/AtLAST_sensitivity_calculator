@@ -1,9 +1,9 @@
-import os, inspect
+import os
 import functools
 import json
 from pathlib import Path
-from pathlib import Path
 from yaml import load, Loader, safe_load
+from numpy import log, pi
 from astropy.units import Unit
 import astropy.units as u
 from astropy.constants import c
@@ -24,7 +24,7 @@ class Decorators:
         target parameter.
         """
         @functools.wraps(func)
-        def do_validation(calculator, value, **kwargs):
+        def do_validation(param_class, value, **kwargs):
 
             """
             Validates the type, value and units of the value for the target
@@ -40,12 +40,15 @@ class Decorators:
             # are expected to be floats)
             if isinstance(value, int):
                 value = float(value)
+            
+            # Do special unit conversion if needed
+            value = Decorators._special_unit_conversion(func.__name__, param_class, value)
 
             # Validate the new value
-            DataHelper.validate(calculator, func.__name__, value)
+            DataHelper.validate(param_class, func.__name__, value)
 
             # Update the parameter
-            func(calculator, value, **kwargs)
+            func(param_class, value, **kwargs)
 
         return do_validation
 
@@ -111,10 +114,8 @@ class Decorators:
             if isinstance(value, int):
                 value = float(value)
 
-            # This will only be executed when bandwidth is provided as a velocity
-            if (func.__name__ == "bandwidth") and (value.unit in DataHelper.special_units):
-                value, unit = DataHelper.convert_velocity_to_frequency(param_class.obs_freq, value)
-                value = u.Quantity(float(value), unit)
+            # Do special unit conversion if needed
+            value = Decorators._special_unit_conversion(func.__name__, param_class, value)
 
             # Validate the new value
             DataHelper.validate(param_class, func.__name__, value)
@@ -170,6 +171,38 @@ class Decorators:
 
         return do_validation           
 
+
+    def _special_unit_conversion(param_name, param_class, value):
+        """
+        Converts a parameter value that contains a special unit to the default
+        unit of the said parameter.
+
+        :param param_name: name of parameter
+        :type param_name: String
+        :param param_class: user input parameter class object
+        :type param_class: UserInputParameters
+        :param value: parameter value
+        :type value: Quantity
+        :return: converted value
+        :rtype: Quantity
+        """
+        if param_name in DataHelper.special_params_and_units.keys():
+            if value.unit in DataHelper.special_params_and_units[param_name]:
+                # Conversion needed
+                match param_name:
+                    case 'bandwidth': # Bandwidth is provided as a velocity
+                        value, unit = DataHelper.convert_velocity_to_frequency(
+                                                        param_class.obs_freq, value)
+                        value = u.Quantity(float(value), unit)
+
+                    case 'sensitivity': # Sensitivity is provided as a temperature
+                        dish_radius = \
+                            param_class._param_setup.telescope_and_environment.dish_radius.value
+                        value, unit = DataHelper.convert_temperature_to_flux_density(
+                                                param_class.obs_freq, dish_radius, value)
+                        value = u.Quantity(float(value), unit)
+
+        return value
 class FileHelper:
     """
     Class that provides support for reading input parameters from a file
@@ -464,7 +497,10 @@ class FileHelper:
 
 class DataHelper:
 
-    special_units = ['km / s', 'm / s']
+    special_params_and_units = {
+        'bandwidth': ['km / s', 'm / s'],
+        'sensitivity': ['mK', 'K']
+        }
 
     @staticmethod
     def validate(param_class, param_name, value):
@@ -569,6 +605,60 @@ class DataHelper:
 
         vel = bandw_value.to(u.km/u.s, equivalencies=vband_fband)
         return float(vel.value), vel.unit
+
+    @staticmethod
+    def convert_temperature_to_flux_density(obs_freq, dish_radius, sensitivity):
+        """
+        Converts the specified temperature to flux density.
+
+        :param obs_freq: Observing frequency
+        :type obs_freq: Quantity
+        :param dish_radius: Radius of the primary mirror
+        :type dish_radius: Quantity
+        :param sensitivity: Sensitivity in temperature value
+        :type sensitivity: Quantity
+        :return: Equivalent flux density value
+        :rtype: Quantity
+        """
+        lamu = c / obs_freq
+        diamu = 2 * dish_radius
+        # Assume Rayleigh criterion for beam size
+        beamu = (1.22 * lamu / diamu).decompose() * u.radian
+        # Convert to beam area
+        omu = pi * (beamu.to(u.arcsec)) ** 2 / (4 * log(2))
+        # Create the equivalence to use in conversion
+        eq = u.brightness_temperature(obs_freq, beam_area=omu)
+
+        # Convert brightness temperature to flux density
+        flux = sensitivity.to(u.Jy, equivalencies=eq)
+        return float(flux.value), flux.unit
+    
+    @staticmethod
+    def convert_flux_density_to_temperature(obs_freq, dish_radius, sensitivity):
+        """
+        Converts the given flux density to temperature. 
+
+        :param obs_freq: Observing frequency
+        :type obs_freq: Quantity
+        :param dish_radius: Radius of the primary mirror
+        :type dish_radius: Quantity
+        :param sensitivity: Sensitivity in flux density value
+        :type sensitivity: Quantity
+        :return: Equivalent temperature value
+        :rtype: Quantity
+        """
+        lamu = c / obs_freq
+        diamu = 2 * dish_radius
+        # Assume Rayleigh criterion for beam size
+        beamu = (1.22 * lamu / diamu).decompose() * u.radian
+        # Convert to beam area
+        omu = pi * (beamu.to(u.arcsec)) ** 2 / (4 * log(2))
+        # Create the equivalence to use in conversion
+        eq = u.brightness_temperature(obs_freq, beam_area=omu)
+
+        # Convert brightness temperature to flux density
+        flux = sensitivity.to(u.K, equivalencies=eq)
+        return float(flux.value), flux.unit
 
     @staticmethod
     def validate_instruments(preference_list, available_insts):
