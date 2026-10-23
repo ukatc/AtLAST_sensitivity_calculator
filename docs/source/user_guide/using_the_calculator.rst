@@ -57,6 +57,7 @@ For example, to set the bandwidth after initializing the calculator:
 
     calculator.user_input.bandwidth = 150*u.MHz
 
+For spectral line observations, it is also possible to input the bandwidth in terms of m/s or km/s, however note that the bandwidth will always be stored as a frequency.
 
 All input parameters are validated by the calculator. You will see
 an error if the values you provide are invalid (e.g., are out of a specified
