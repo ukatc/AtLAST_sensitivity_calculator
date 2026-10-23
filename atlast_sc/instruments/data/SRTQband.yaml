@@ -1,0 +1,13 @@
+name: "SRTQbabd"
+allowed_ranges:
+  observing_frequency:
+    ranges: [(33.0-50.0)]
+    unit: GHz
+  bandwidth: 
+    ranges: [(2.88e4,1.5e9)]
+    unit: Hz
+receiver_temperature: 
+  values: [(16-23)]
+  unit: K
+prefactor:
+  value: 5
