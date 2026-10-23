@@ -1,7 +1,7 @@
 import warnings, re
 import astropy.units as u
 import numpy as np
-from atlast_sc.core.data import Data
+from atlast_sc.core.data import Data, Validator
 from atlast_sc.core.utils import DataHelper, Decorators
 from atlast_sc.core.exceptions import UnitException
 from atlast_sc.core.exceptions import CalculatedValueInvalidWarning
@@ -408,6 +408,72 @@ class Calculator:
             val, unit = DataHelper.convert_velocity_to_frequency(self.user_input.obs_freq,
                                                                  bandw_velocity)
         return u.Quantity(val, str(unit))
+    
+    def sensitivity_in_flux_density(self, dish_radius, sensitivity, obs_freq=None):
+        """
+        Converts the given sensitivity temperature to flux density. 
+
+        :param dish_radius: Radius of the primary mirror
+        :type dish_radius: Quantity
+        :param sensitivity: Sensitivity in temperature value
+        :type sensitivity: Quantity
+        :param obs_freq: User inputted observing frequency 
+        :type obs_freq: Quantity
+        :return: Equivalent flux density value
+        :rtype: Quantity
+        """
+        
+        # Do validation for parameters 
+        Validator.validate_field("dish_radius", dish_radius)
+        Validator.validate_field("obs_freq", obs_freq)
+        # NOTE: The existing validation methods need non-special unit value
+        # to do validation. As sensitivity is provided in special units, 
+        # the sensitivity value validation will be done after the conversion.
+        Validator.validate_units(sensitivity.unit, "sensitivity", \
+                                 Data.param_data_type_dicts["sensitivity"])
+
+        # Do conversion
+        val, unit = DataHelper.convert_temperature_to_flux_density(obs_freq, dish_radius, \
+                                                                    sensitivity)
+        converted_val = u.Quantity(val, str(unit))
+
+        # Validate converted sensitivity value
+        Validator.validate_field("sensitivity", converted_val)
+        
+        return converted_val
+      
+
+    def sensitivity_in_temperature(self, dish_radius, sensitivity, obs_freq=None):
+        """
+        Converts the given sensitivity flux density to temperature. 
+
+        :param dish_radius: Radius of the primary mirror
+        :type dish_radius: Quantity
+        :param sensitivity: Sensitivity in temperature value
+        :type sensitivity: Quantity
+        :param obs_freq: User inputted observing frequency 
+        :type obs_freq: Quantity
+        :return: Equivalent temperature value
+        :rtype: Quantity
+        """
+
+        # Do validation for parameters 
+        Validator.validate_field("dish_radius", dish_radius)
+        Validator.validate_field("obs_freq", obs_freq)
+        # NOTE: As sensitivity is provided in non-special units, the 
+        # sensitivity value validation should be done before the conversion.
+        Validator.validate_field("sensitivity", sensitivity)
+
+        # Do conversion
+        val, unit = DataHelper.convert_flux_density_to_temperature(obs_freq, dish_radius, \
+                                                                    sensitivity)
+        converted_val = u.Quantity(val, str(unit))
+
+        # Validate converted sensitivity unit
+        Validator.validate_units(converted_val.unit, "sensitivity", \
+                                         Data.param_data_type_dicts["sensitivity"])
+        
+        return converted_val
 
     def _format_bandwidth_ranges(self, bandwidth_ranges, bandwidth_unit):
         """
