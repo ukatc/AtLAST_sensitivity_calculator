@@ -67,9 +67,15 @@ class Data:
             # If the data type has a list of allowed units, evaluate the
             # conversion factors between allowed units and the default unit
             if self.units:
-                conversion_units = [unit for unit in self.units
-                                    if unit not in DataHelper.special_units]
+                special_units = [ # combine all special units in one list
+                    unit
+                    for units in DataHelper.special_params_and_units.values()
+                    for unit in units
+                ]
 
+                conversion_units = [unit for unit in self.units
+                                    if unit not in special_units]
+                # Only consider conversion factor of non-special units
                 self.data_conversion = DataHelper.data_conversion_factors(
                     self.default_unit,
                     conversion_units
@@ -100,7 +106,7 @@ class Data:
         lower_value_is_floor=True,
         upper_value=float('inf'),
         upper_value_is_ceil=True,
-        units=[str(u.uJy), str(u.mJy), str(u.Jy)],
+        units=[str(u.uJy), str(u.mJy), str(u.Jy), str(u.mK), str(u.K)],
     )
 
     calculated_sensitivity = DataType(
