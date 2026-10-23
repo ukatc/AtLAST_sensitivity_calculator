@@ -17,7 +17,7 @@ class InstrumentConfig:
         muscat_instrument = {'class': 'Muscat.py', 'data': 'Muscat.yaml'}
         sepia_instrument = {'class': 'Sepia.py', 'data': 'Sepia.yaml'}
         tifuun_instrument = {'class': 'Tifuun.py', 'data': 'Tifuun.yaml'}
-        SRTQbabd_instrument = {'class': 'SRTQbabd.py', 'data': 'SRTQband.yaml'}
+        SRTQbabd_instrument = {'class': 'SRTQband.py', 'data': 'SRTQband.yaml'}
 
 
         # TODO: Add your custom instrument here.

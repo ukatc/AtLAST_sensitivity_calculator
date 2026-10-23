@@ -2,10 +2,28 @@ import re
 import astropy.units as u
 from atlast_sc.instrument import Instrument
 from atlast_sc.derived_groups import noise_temperature
+import numpy as np
+
 
 """
 SRTQband instrument parameters
 """        
+
+
+_NUMBER_RE = re.compile(r"\d+(?:\.\d+)?")
+
+def _parse_ranges(range_strings):
+    """Parse ['(33.0-50.0)', ...] into [(33.0, 50.0), ...]."""
+    ranges = []
+    for s in range_strings:
+        values = [float(v) for v in _NUMBER_RE.findall(str(s))]
+        if len(values) != 2:
+            raise ValueError(f"Cannot parse frequency range {s!r}")
+        lo, hi = sorted(values)
+        ranges.append((lo, hi))
+    return ranges
+
+
 class SRTQband(Instrument):
     def __init__(self, data):
         super().__init__(data)
@@ -35,54 +53,59 @@ class SRTQband(Instrument):
     # Additional instrument specific methods below #
     ################################################
 
-    def calculate_system_temperature(self, obs_freq, bandwidth, eta_eff, 
-                                     T_amb, T_sky, transmittance, n_pol):
-        """
-        Returns system temperature, following calculation in [doc]
 
-        :return: system temperature in Kelvin
-        :rtype: astropy.units.Quantity
-        """
-        self.T_rx = self.calculate_receiver_temp(obs_freq)
-        system_temp = 1 / (eta_eff * transmittance) * \
-            (self.T_rx
-            + (eta_eff * T_sky)
-            + ((1 - eta_eff) * noise_temperature(T_amb, obs_freq))
-            )
-        self.T_sys = system_temp
-        return system_temp
+
+
+
+    def calculate_system_temperature(self, obs_freq, bandwidth, eta_eff, 
+                                        T_amb, T_sky, transmittance, n_pol):
+            """
+            Returns system temperature, following calculation in [doc]
+
+            :return: system temperature in Kelvin
+            :rtype: astropy.units.Quantity
+            """
+            self.T_rx = self.calculate_receiver_temp(obs_freq)
+            system_temp = 1 / (eta_eff * transmittance) * \
+                (self.T_rx
+                + (eta_eff * T_sky)
+                + ((1 - eta_eff) * noise_temperature(T_amb, obs_freq))
+                )
+            self.T_sys = system_temp
+            return system_temp
 
     def calculate_receiver_temp(self, obs_freq):
         """
-        Returns receiver temperature, following calculation in [doc]
+        Returns receiver temperature, following calculation in [doc].
 
-        :return: receiver temperature in Kelvin
+        The last frequency range carries the T_rx law:
+
+        - one value in the YAML      -> constant T_rx
+        - two values (low, high)     -> linear from low at the range minimum
+                                        to high at the range maximum
+        - frequencies in earlier ranges get the low value (SEPIA-like case)
+
+        :param obs_freq: observing frequency
+        :type obs_freq: astropy.units.Quantity
+        :return: receiver temperature
         :rtype: astropy.units.Quantity
+        :raises ValueError: if obs_freq is outside all ranges
         """
-        # Extract instrument receiver temperature options
-        temp_options = self.receiver_temp_options_and_unit['values']
-        temp_options = [float(temp) for temp in temp_options]
-        # Extract instrument observing frequency ranges
-        freq_options = self.obs_freq_ranges_and_unit['ranges']
-        freq_ranges = []
-        for freq_range in freq_options:
-            range = re.findall(r"[\d.]+", freq_range)
-            range = [float(val) for val in range] # convert to float ranges
-            freq_ranges.append(range) 
+        temps = [float(t) for t in self.receiver_temp_options_and_unit['values']]
+        temp_unit = u.Unit(self.receiver_temp_options_and_unit.get('unit', 'K'))
+        freq_unit = u.Unit(self.obs_freq_ranges_and_unit.get('unit', 'GHz'))
+        ranges = _parse_ranges(self.obs_freq_ranges_and_unit['ranges'])
 
-        obs_freq = obs_freq.value
-        t_rx_low = temp_options[0] # low receiver temp specified in the YAML
-        t_rx_high = temp_options[1] # high receiver temp specified in the YAML
-        freq_high_min = freq_ranges[1][0] # min freq of second obs_freq range
-        freq_high_max = freq_ranges[1][1] # max freq of second obs_freq range
+        nu = obs_freq.to_value(freq_unit)
 
-        temp = None
-        # If the observing frequency is in the first range 
-        if obs_freq >= freq_ranges[0][0] and obs_freq <= freq_ranges[0][1]:
-            temp = t_rx_low * u.K
-        # If the observing frequency is in the second range
-        elif obs_freq > freq_ranges[1][0] and obs_freq <= freq_ranges[1][1]:
-            temp = ( t_rx_low + (t_rx_high - t_rx_low) * (obs_freq - freq_high_min) \
-            / (freq_high_max - freq_high_min) ) * u.K
-        self.T_rx = temp
-        return temp
+        if not any(lo <= nu <= hi for lo, hi in ranges):
+            raise ValueError(
+                f"Observing frequency {obs_freq} outside instrument ranges {ranges} {freq_unit}"
+            )
+
+        # np.interp clamps outside [lo, hi] -> earlier ranges get temps[0]
+        lo, hi = ranges[-1]
+        t_rx = np.interp(nu, [lo, hi], [temps[0], temps[-1]])
+
+        self.T_rx = t_rx * temp_unit
+        return self.T_rx
