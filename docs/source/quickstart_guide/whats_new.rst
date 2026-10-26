@@ -29,6 +29,15 @@ stored (see :ref:`Class Structure <class structure>` for a high level view of th
 
         calculator.user_input.bandwidth = 50*u.GHz   
 
+    Similarly, the class needs to be included when checking the current value of each parameter, e.g.:
+
+    .. code-block:: python
+
+        print(calculator.telescope_and_environment.eta_eff)
+        print(calculator.derived_parameters.T_sky)
+
+    The full list of parameters in each class is shown in :doc:`Inputs to the Calculation <../calculator_info/calculation_inputs>`.
+
     The way in which the current parameters can be displayed has also changed. Previously it was necessary to use ``print()``:
 
     .. code-block:: python
@@ -48,11 +57,11 @@ stored (see :ref:`Class Structure <class structure>` for a high level view of th
 
 New instruments
 +++++++++++++++
-Version 1 of the calculator assumed a generic coherent receiver. In this new version, we have worked with builders of (sub-)mm instruments to understand how to represent their instruments in the code so that they can be used as examples of the different types of instrument that will be built for AtLAST. These instruments include high resolution heterodyne spectrometers, a continuum camera using Kinetic Inductance Detector technology and a Integrated Field Unit using Kinetic Inductance Detector technology. For more details on these instruments see :doc:`the instrument overview <../calculator_info/instrument_overview>`. For information on how to make use of these in the command line interface see :ref:`the instrument selection <section_instrument_selection>` section. The web client also now includes an instrument selection box to allow the user access to the different instruments. The code has now been designed to make it possible to add further instruments, which can be achieved by following the instructions on :doc:`adding a new instrument <../developer_guide/adding_new_instrument>`. The generic receiver used in version 1 can still be accessed by selecting the instrument labelled 'Default'. However, note that this will not provide exactly the same results as before as improvements have been made to the treatment of temperatures in the code, as detailed in the next section.
+Version 1 of the calculator assumed a generic coherent receiver in the radiometer equation. In this new version, we have worked with builders of (sub-)mm instruments to understand how to represent their instruments in the code so that they can be used as examples of the different types of instrument that will be built for AtLAST. These instruments include high resolution heterodyne spectrometers, a continuum camera using Kinetic Inductance Detector technology and a Integrated Field Unit using Kinetic Inductance Detector technology. For more details on these instruments see :doc:`the instrument overview <../calculator_info/instrument_overview>`. For information on how to make use of these in the command line interface see :ref:`the instrument selection <section_instrument_selection>` section. The web client also now includes an instrument selection box to allow the user access to the different instruments. The code has now been designed to make it possible to add further instruments, which can be achieved by following the instructions on :doc:`adding a new instrument <../developer_guide/adding_new_instrument>`. The generic receiver used in version 1 can still be accessed by selecting the instrument labelled 'Default'. However, note that this will not provide exactly the same results as before as improvements have been made to the treatment of temperatures in the code, as detailed in the next section.
 
 Changes to the treatment of temperatures
 ++++++++++++++++++++++++++++++++++++++++
-During the process of working with the instrument builders to understand their instruments, we discovered that there were a few issues with the equations for the system temperature, which required the following changes:
+During the process of working with the instrument builders to understand their instruments, we discovered that there were a few inconsistencies with the equations for the system temperature, which required the following changes:
 
 * The contribution from the cosmic microwave background (CMB) was being counted twice as it was included in the output from the *am* code and also again in our equation for the sky temperature. We changed this so that it is only included in the sky temperature equation and not in the *am* code output.
 * The CMB temperature was not being multiplied by the transmittance. This factor has now been added.
