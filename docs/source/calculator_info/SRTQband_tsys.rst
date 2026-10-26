@@ -1,14 +1,14 @@
 SRTQBand system temperature
 ========================
 
-THE SRTQbabd is the 19-feed receiver installed on the Sardinia Radio Telescope. It was devopend under the project 
+THE SRTQband is the 19-feed receiver installed on the Sardinia Radio Telescope. It was developed under the project 
 
 *The Enhancement of the Sardinia Radio Telescope
 for the Study of the Universe at High Radio Frequen
 cies*, financially supported by the *Programma
 Operativo Nazionale del Italian Ministry of Education,
 Universities and Research Ricerca e Innovazione
-2014–2020 proposal  PIR01_00010*.  (`SEPIA <https://www.apex-telescope.org/ns/observing/the-telescope/instruments/sepia/sepia345/>`__) 
+2014–2020 proposal  PIR01_00010*.  (`SRT QBand  <https://sites.google.com/a/inaf.it/pon-srt/home/o-r-2>`__) 
 
 
 The receiver works from 33 to 50 GHz. It has a receiver temperature between 16 K and 23 K. The spectral channel frequency spacing depends on the backend. For the SKARAB backend varies from 1.5 GHz down to 22.8 KHz. (See `Melis et al. 2022 <https://www.worldscientific.com/doi/epdf/10.1142/S2251171724500089>`__ for more details about the backend.)
