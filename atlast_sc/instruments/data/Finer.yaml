@@ -4,7 +4,7 @@ allowed_ranges:
     ranges: [(120.0-210.0),(210.0-360.0)]
     unit: GHz
   bandwidth: 
-    ranges: [(8.8e4-1.8e8)]
+    ranges: [(8.8e4-10.24e9)]
     unit: Hz
 receiver_temperature: 
   values: [45.0,75.0]

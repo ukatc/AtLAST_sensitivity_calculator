@@ -1,7 +1,7 @@
 SEPIA system temperature
 ========================
 
-The Swedish-ESO PI receiver for APEX (`SEPIA <https://www.apex-telescope.org/ns/observing/the-telescope/instruments/sepia/sepia345/>`__) 345 GHz receiver is being built for the APEX Observatory. It covers the frequency ranges between 272 and 376 GHz. It is set-up to cover channel spacings from 62.5 kHz to 0.18 GHz. It has a receiver temperature that rises from 90 K to 216.5 K. (See `Meledin et al. 2022 <https://www.aanda.org/articles/aa/pdf/2022/12/aa44211-22.pdf>`__ for more details.)
+The Swedish-ESO PI receiver for APEX (`SEPIA <https://www.apex-telescope.org/ns/observing/the-telescope/instruments/sepia/sepia345/>`__) 345 GHz receiver is being built for the APEX Observatory. It covers the frequency ranges between 272 and 376 GHz. It is set-up to cover channel spacings from 62.5 kHz to 64 GHz. It has a receiver temperature that rises from 90 K to 216.5 K. (See `Meledin et al. 2022 <https://www.aanda.org/articles/aa/pdf/2022/12/aa44211-22.pdf>`__ for more details.)
 
 Here in the AtLAST sensitivity calculator, we use it as an exemplar of a heterodyne instrument capable of working at these frequencies.
 
