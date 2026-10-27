@@ -1,0 +1,17 @@
+name: "Alma"
+allowed_ranges:
+  observing_frequency: 
+    # NB: Band 2 actually extends to 116GHz and so overlaps with band 3. 
+    # To avoid any issues it has been truncated to 84GHz here. Both have the same Trx anyway. 
+    # Bands 4 and 5 also overlap. 
+    # Since band 4 has a lower Trx, we increase the min frequency of band 5 from 158 to 163GHz.
+    ranges: [(35.0-52.0),(67.0-84.0),(84-116),(125-163),(163-211),(211-275),(275-373),(385-500),(602-720),(787-950)]
+    unit: GHz
+  bandwidth: 
+    ranges: [(15.25e3-7.5e9)]
+    unit: Hz
+receiver_temperature: 
+  values: [28, 40, 40, 42, 50, 50, 72, 135, 105, 230]
+  unit: K
+sideband_ratio:
+  values: [0,0,0,0,0,0,0,0,1,1]
