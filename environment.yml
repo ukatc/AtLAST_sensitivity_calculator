@@ -3,13 +3,13 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.12
-  - astropy=6.1
-  - numpy=1.26
+  - python=3.13
+  - astropy=7.0
+  - numpy=2.1
   - pytest=7.2
   - pytest-mock=3.10
   - PyYAML=6.0
-  - scipy=1.11
+  - scipy=1.14
   - setuptools=65.5
   - sphinx-rtd-theme=3.1
   - myst-parser==2.0.0
@@ -23,10 +23,10 @@ dependencies:
   - flake8
   - sphinx-copybutton
   - fastapi=0.128
-  - uvicorn=0.23
+  - uvicorn=0.54
   - jinja2=3.1
   - aiofiles=22.1
-  - coverage=7.2
+  - coverage=7.17
   - pylint
   - pip
   - httpx=0.24
