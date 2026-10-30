@@ -1,7 +1,7 @@
 name: "Default"
 allowed_ranges:
   observing_frequency:
-    ranges: [(30.0-950.0)]
+    ranges: [(35.0-950.0)]
     unit: GHz
   bandwidth: 
     ranges: []
