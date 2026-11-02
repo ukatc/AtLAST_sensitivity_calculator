@@ -399,7 +399,7 @@ class Calculator:
         Validator.validate_units(converted_val.unit, "bandwidth", \
                                          Data.param_data_type_dicts["bandwidth"])
         
-        return u.Quantity(val, str(unit))
+        return converted_val
     
     def convert_velocity_to_frequency(self, bandwidth, obs_freq=None):
         """

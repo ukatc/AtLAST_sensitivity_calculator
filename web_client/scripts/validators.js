@@ -127,14 +127,23 @@ const validateInputAgainstInstrumentRange = async (input, rangeText, userSelecte
     }
 
     let valueInRange = false;
+    let parsedRangeLower, parsedRangeUpper;
     for (const parsedRange of parsedRangeList) {
         const parsedRangeUnit = parsedRange.unit === null || parsedRange.unit === undefined ? "Hz" : parsedRange.unit;
-        const valueToValidate = convertValueToUnit(numericValue, userSelectedUnit, parsedRangeUnit);
-        const aboveLowerBound = parsedRange.upper === null
-            ? valueToValidate > parsedRange.lower
-            : valueToValidate >= parsedRange.lower;
-        const belowUpperBound = parsedRange.upper === null || parsedRange.upper === undefined
-            || valueToValidate <= parsedRange.upper;
+        // If the parsed range unit is not Hz, convert the lower and upper bounds to Hz for comparison
+        if (parsedRangeUnit !== "Hz") {
+            parsedRangeLower = convertValueToUnit(parsedRange.lower, parsedRangeUnit, "Hz");
+            parsedRangeUpper = convertValueToUnit(parsedRange.upper, parsedRangeUnit, "Hz");
+        } else {
+            parsedRangeLower = parsedRange.lower;
+            parsedRangeUpper = parsedRange.upper;
+        }
+        const valueToValidate = convertValueToUnit(numericValue, userSelectedUnit, "Hz");
+        const aboveLowerBound = parsedRangeUpper === null
+            ? valueToValidate > parsedRangeLower
+            : valueToValidate >= parsedRangeLower;
+        const belowUpperBound = parsedRangeUpper === null || parsedRangeUpper === undefined
+            || valueToValidate <= parsedRangeUpper;
 
         if (aboveLowerBound && belowUpperBound) {
             valueInRange = true;
