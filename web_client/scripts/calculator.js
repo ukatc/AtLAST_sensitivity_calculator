@@ -16,6 +16,9 @@ $(document).ready(() => {
 
             CalculatorUI.initializeUnits(data);
 
+            // Show applicable instruments with initial values
+            CalculatorUI.showApplicableInstruments();
+
             // Set up the event listeners on user input fields
             const allUserInputs = document.querySelectorAll(".param-input");
 
@@ -39,6 +42,9 @@ $(document).ready(() => {
                             CalculatorUI.showApplicableInstruments(input);
                         }
                         
+                        const instrumentName = document.getElementById("instrument-type").value;
+                        formValidated = CalculatorUI.validateCurrentInputsAgainstInstrument(instrumentName);
+                        CalculatorUI.showApplicableInstruments();
                     }
                 });
             });
