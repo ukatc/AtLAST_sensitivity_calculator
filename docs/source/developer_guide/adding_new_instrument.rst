@@ -113,7 +113,7 @@ Following code block is a simple example on what the module could look like.
         
 The ``__init__`` method of the instrument class has a constructor parameter called ``data`` 
 which contains the parameters set in the instrument YAML file. The user should not change 
-the name of this parameter as it is required for the initilisation of the instrument class. 
+the name of this parameter as it is required for the initialisation of the instrument class. 
 The user can set any of the parameters from the YAML file as properties or variables in the
 instrument class as shown in the example above for the parameter called ``custom_parameter``
 and ``another_custom_parameter``.
@@ -125,7 +125,7 @@ setter method. Using properties with setter methods are also useful if a method 
 the instrument module needs to update the parameter value for any reason.
 
 The parameters set in the instrument YAML file can be accessed in the instrument module 
-via the ``data`` argument in the initilisation method. There is no reason that the developer
+via the ``data`` argument in the initialisation method. There is no reason that the developer
 needs to set each instrument parameter as a Python property. However, as mentioned in the 
 previous paragraph, doing so allows more complexity to be added to the parameter if required.
 The parameters in the YAML file can be used in any way within the instrument module. They 
@@ -172,7 +172,7 @@ could be taken as the base example. Below are different types of instrument cate
 where the individual Python modules could be taken as an example on how a new instrument 
 module in the same category could be customised:
 
-    - Heterodynes *(FINER, SEPIA, CHAI)*
+    - Heterodynes *(FINER, SEPIA, CHAI, ALMA WSU, ALMA)*
     - Continuum/LEKID *(MUSCAT)*
     - IFU/MKID *(TIFUUN)*
 
@@ -181,7 +181,7 @@ Modifying the configuration file to add the new instrument
 Thirdly, a couple of lines should be modified in :ref:`config.py <atlast-sc-instruments-module>` where they are 
 indicated within the configuration file with comments.
 
-In the initilisation method, a dictionary containing pointers to the new instrument's Python module 
+In the initialisation method, a dictionary containing pointers to the new instrument's Python module 
 and YAML file name should be added in similar format to the existing instruments. 
 
 .. code:: python
@@ -223,19 +223,17 @@ bandwidths.
     from atlast_sc.calculator import Calculator
 
     calculator = Calculator()
-    calculator.instrument_order_preference = ["inst1", "inst2", "inst3",
-                                "inst4", your custom instrument name]
+    calculator.instrument_order_preference = [your custom instrument name, "inst1", "inst2", "inst3",
+                                "inst4"]
 
 
 Add the new instrument to the documentation
 -------------------------------------------
 Once the new instrument is added to the calculator, the documentation should be updated to include
-a page for the new instrument in the ``/docs/source/calculator_info`` directory. This should include a description 
+a page for the new instrument in the ``/docs/source/calculator_info/instruments`` directory. This should include a description 
 of the instrument, references to literature on the instrument and provide a detailed explanation of 
 the equations used to calculate the system temperature for the new instrument. The documentation should 
-contain its operational ranges, any specific parameters it has for calculations. References to the new 
-page should be added to the :doc:`instrument overview <../calculator_info/instrument_overview>` and 
-:doc:`sensitivity calculation <../calculator_info/sensitivity>` pages. This will help users understand the capabilities 
+contain its operational ranges, any specific parameters it has for calculations. This will help users understand the capabilities 
 of the new instrument and how it can be used in their calculations.
 
 Add a Jupyter notebook example for the new instrument

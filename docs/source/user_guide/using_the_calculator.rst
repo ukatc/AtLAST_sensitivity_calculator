@@ -27,7 +27,7 @@ it useful to import ``astropy.units`` as this package is required for defining t
 
 
 Next, initialise the calculator object. The Calculator class is the main interface to the sensitivity calculator, 
-and provides a single point of access to all of the calculator's functionality. Initializing
+and provides a single point of access to all of the calculator's functionality. Initialising
 a calculator object at the beginning of your python session ensures that your changes to setup parameters are
 used consistently throughout.
 
@@ -51,7 +51,7 @@ been set, you can use:
 
 
 All input parameters can be updated manually, using the parameter names listed from ``calculator.user_input.show()``.
-For example, to set the bandwidth after initializing the calculator:
+For example, to set the bandwidth after initialising the calculator:
 
 .. code-block:: python
 
@@ -230,7 +230,8 @@ calculations. Should you choose to specify an order, you can do it through the c
 
 .. code-block:: python
 
-    >>> calculator.instrument_order_preference = ['Finer', 'Chai', 'Default', 'Sepia', 'Tifuun', 'Muscat']
+    >>> calculator.instrument_order_preference = ['Finer', 'Chai', 'Default', 'Sepia', 'Tifuun', 
+    'Muscat', 'Alma_wsu', 'Alma']
 
-If you choose not to specify an order, the calculator will take the default order into consideration
+If you choose not to specify an order, the calculator will use the default order (``["Tifuun", "Muscat", "Finer", "Sepia", "Chai", "Default", "Alma_wsu", "Alma"]``) 
 when making calculations.
