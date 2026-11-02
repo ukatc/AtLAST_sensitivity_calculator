@@ -13,18 +13,16 @@ Before you begin
 ^^^^^^^^^^^^^^^^
 
 It is strongly recommended that you create a separate environment for your work using your
-preferred environment management tool (e.g., `conda <https://docs.conda.io/en/latest/>`__,
-`venv <https://realpython.com/python-virtual-environments-a-primer/>`__,
-or `poetry <https://python-poetry.org/docs/>`__). For instance, if you are using conda you can create an 
+preferred environment management tool. We have tested the installation procedure with `conda <https://docs.conda.io/en/latest/>`__, and `mamba <https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html>`, although it may work with other tools. For instance, if you are using conda you can create an 
 environment with:
 
 .. code-block:: bash
 
 
-   conda create -n atlast python=3.12 pip
+   conda create -n atlast python=3.13 pip
 
 
-Note that the calculator is tested to work with Python versions 3.10 to 3.12. We cannot ensure compatibility with other versions and so it is necessary to specify the version here.
+Note that the calculator is tested to work with Python versions 3.10 to 3.13. We cannot ensure compatibility with other versions and so it is necessary to specify the version here.
 
 After the environment is created, activate it with:
 
@@ -58,6 +56,12 @@ The above installs the minimal set of packages required for the calculator to pe
 
 .. code-block:: bash
 
-    conda install -c conda-forge jupyter reproject astroquery
+    conda install matplotlib jupyter reproject astroquery
 
 The equivalent ``pip install`` command would work equally well in the conda environment.
+
+If you encounter an error when using the above command then this means conda-forge is not set-up as one of your channels and you need to explicitly mention it:
+
+.. code-block:: bash
+
+    conda install -c conda-forge matplotlib jupyter reproject astroquery
