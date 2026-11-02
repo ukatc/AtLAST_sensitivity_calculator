@@ -58,6 +58,6 @@ The above installs the minimal set of packages required for the calculator to pe
 
 .. code-block:: bash
 
-    conda install ipython matplotlib=3.9 jupyter reproject astroquery
+    conda install -c conda-forge jupyter reproject astroquery
 
 The equivalent ``pip install`` command would work equally well in the conda environment.
