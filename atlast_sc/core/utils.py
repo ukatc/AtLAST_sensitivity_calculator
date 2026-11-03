@@ -187,7 +187,8 @@ class Decorators:
         :rtype: Quantity
         """
         if param_name in DataHelper.special_params_and_units.keys():
-            if value.unit in DataHelper.special_params_and_units[param_name]:
+            if hasattr(value, "unit") and \
+                    str(value.unit) in DataHelper.special_params_and_units[param_name]:
                 # Conversion needed
                 match param_name:
                     case 'bandwidth': # Bandwidth is provided as a velocity
