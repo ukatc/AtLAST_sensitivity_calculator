@@ -53,6 +53,41 @@ class Decorators:
         return do_validation
 
     @staticmethod
+    def validate_calculated_value(func):
+        """
+        Decorator to support setter methods on calculation result parameters.
+        Validates the value for the target parameter.
+        """
+        @functools.wraps(func)
+        def do_validation(param_class, value, **kwargs):
+
+            """
+            Validates the type, value and units of the value for the target
+            parameter.
+
+            :param calculator: The Calculator object
+            :type calculator: Calculator
+            :param value: The new value
+            :type value: int, float or Quantity
+            """
+
+            # Ensure integer values are converted to floats (all parameter values
+            # are expected to be floats)
+            if isinstance(value, int):
+                value = float(value)
+            
+            # Do special unit conversion if needed
+            value = Decorators._special_unit_conversion_for_results(func.__name__, param_class, value)
+
+            # Validate the new value
+            DataHelper.validate(param_class, func.__name__, value)
+
+            # Update the parameter
+            func(param_class, value, **kwargs)
+
+        return do_validation
+
+    @staticmethod
     def validate_instrument(func):
         """
         Decorator to support setter method of instrument choice. Validates
@@ -201,6 +236,37 @@ class Decorators:
                             param_class._param_setup.telescope_and_environment.dish_radius.value
                         value, unit = DataHelper.convert_temperature_to_flux_density(
                                                 param_class.obs_freq, dish_radius, value)
+                        value = u.Quantity(float(value), unit)
+
+        return value
+
+    def _special_unit_conversion_for_results(param_name, param_class, value):
+        """
+        Converts a calculation result value that contains a special unit to 
+        the default unit of the said parameter.
+
+        :param param_name: name of parameter
+        :type param_name: String
+        :param param_class: user input parameter class object
+        :type param_class: UserInputParameters
+        :param value: parameter value
+        :type value: Quantity
+        :return: converted value
+        :rtype: Quantity
+        """
+        if param_name in DataHelper.special_params_and_units.keys():
+            if hasattr(value, "unit") and \
+                    str(value.unit) in DataHelper.special_params_and_units[param_name]:
+                # Conversion needed
+                match param_name:
+
+                    # NOTE: calculated integration time could be added too
+
+                    case 'calculated_sensitivity': # Calculated sensitivity is provided as a temperature
+                        dish_radius = \
+                            param_class.telescope_and_environment.dish_radius
+                        value, unit = DataHelper.convert_temperature_to_flux_density(
+                                                param_class.user_input.obs_freq, dish_radius, value)
                         value = u.Quantity(float(value), unit)
 
         return value
@@ -500,7 +566,8 @@ class DataHelper:
 
     special_params_and_units = {
         'bandwidth': ['km / s', 'm / s'],
-        'sensitivity': ['mK', 'K']
+        'sensitivity': ['mK', 'K'],
+        'calculated_sensitivity': ['mK', 'K']
         }
 
     @staticmethod

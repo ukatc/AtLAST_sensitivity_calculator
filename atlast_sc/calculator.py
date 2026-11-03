@@ -75,7 +75,7 @@ class Calculator:
         return self._calculated_sensitivity.value
 
     @calculated_sensitivity.setter
-    @Decorators.validate_value
+    @Decorators.validate_calculated_value
     def calculated_sensitivity(self, value):
         self._calculated_sensitivity.value = value
 
@@ -87,7 +87,7 @@ class Calculator:
         return self._calculated_t_int.value
 
     @calculated_t_int.setter
-    @Decorators.validate_value
+    @Decorators.validate_calculated_value
     def calculated_t_int(self, value):
         self._calculated_t_int.value = value
 
@@ -162,7 +162,8 @@ class Calculator:
     # integration time calculations                 #
     #################################################
 
-    def calculate_sensitivity(self, t_int=None, update_calculator=True):
+    def calculate_sensitivity(self, t_int=None, update_calculator=True, 
+                              brightness_temperature=False):
         """
         Calculates the telescope sensitivity (mJy) for a
         given integration time `t_int`.
@@ -187,7 +188,8 @@ class Calculator:
 
         sensitivity_result = \
             self.derived_parameters.sefd / \
-            (self.derived_parameters.eta_s * np.sqrt(self.user_input.n_pol * self.user_input.bandwidth * t_int))
+            (self.derived_parameters.eta_s * \
+             np.sqrt(self.user_input.n_pol * self.user_input.bandwidth * t_int))
 
         # Convert the output to the most convenient units
         sensitivity_result = sensitivity_result.to(u.mJy)
@@ -197,6 +199,14 @@ class Calculator:
             sensitivity_result = sensitivity_result.to(u.mJy)
         elif sensitivity_result >= 1000*u.mJy:
             sensitivity_result = sensitivity_result.to(u.Jy)
+
+        # If sensitivity is required in brightness temperature
+        if brightness_temperature:
+            sens_in_temp = DataHelper.convert_flux_density_to_temperature(
+                                    self.user_input.obs_freq, 
+                                    self.telescope_and_environment.dish_radius,
+                                    sensitivity_result)
+            sensitivity_result = u.Quantity(sens_in_temp[0], str(sens_in_temp[1]))
 
         # Try to update the sensitivity stored in the calculator
         if update_calculator:
