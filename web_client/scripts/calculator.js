@@ -36,15 +36,13 @@ $(document).ready(() => {
                             validateAndSetUIState(input, units,
                                                   data[input.name]);
                         
-                        // Validate frequency/bandwidth based on instrument selection
-                        if (formValidated) {
-                            formValidated = await CalculatorUI.validateCurrentInputsAgainstInstrument();
+                        // Only frequency and bandwidth belong to instrument ranges.
+                        if (formValidated &&
+                            (input.name === "obs_freq" || input.name === "bandwidth")) {
+                            formValidated =
+                                await CalculatorUI.validateCurrentInputsAgainstInstrument(input.name);
                             CalculatorUI.showApplicableInstruments(input);
                         }
-                        
-                        const instrumentName = document.getElementById("instrument-type").value;
-                        formValidated = CalculatorUI.validateCurrentInputsAgainstInstrument(instrumentName);
-                        CalculatorUI.showApplicableInstruments();
                     }
                 });
             });
@@ -66,9 +64,11 @@ $(document).ready(() => {
                             validateAndSetUIState(input, unitsInput,
                                                   data[input.name]);
                         
-                        // Validate frequency/bandwidth based on instrument selection
-                        formValidated =
-                            await CalculatorUI.validateCurrentInputsAgainstInstrument();
+                        // Validate only frequency and bandwidth ranges against instrument ranges
+                        if (input.name === "obs_freq" || input.name === "bandwidth") {
+                            formValidated =
+                                await CalculatorUI.validateCurrentInputsAgainstInstrument(input.name);
+                        }
                     }
                 });
             })
