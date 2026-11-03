@@ -116,7 +116,7 @@ class Data:
         lower_value_is_floor=True,
         upper_value=float('inf'),
         upper_value_is_ceil=True,
-        units=[str(u.uJy), str(u.mJy), str(u.Jy)],
+        units=[str(u.uJy), str(u.mJy), str(u.Jy),str(u.mK), str(u.K)],
     )
 
     # TODO: include km/s. Will have to provide suitable conversion logic
