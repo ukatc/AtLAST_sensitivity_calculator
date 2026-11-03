@@ -33,9 +33,6 @@ paths = {
 # Global state to store the currently selected instrument
 selected_instrument = 'Default'
 
-# Global state to store special units
-# special_units = ['km / s', 'm / s', 'K', 'mK']
-
 templates = Jinja2Templates(directory="templates",
                             context_processors=[cp.invalid_message_processor,
                                                 cp.default_values_processor,
