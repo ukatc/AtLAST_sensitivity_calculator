@@ -319,18 +319,23 @@ class TestCalculator:
             assert exception_match_string in error_string
 
     @pytest.mark.parametrize(
-        'new_t_int,update_calculator',
+        'new_t_int,update_calculator, brightness_temperature',
         [
-            (10 * u.s, None),
-            (10 * u.s, True),
-            (10 * u.s, False),
-            (None, None),
-            (None, True),
-            (None, False)
+            (10 * u.s, None, None),
+            (10 * u.s, None, False),
+            (10 * u.s, None, True),
+            (10 * u.s, True, None),
+            (10 * u.s, True, None),
+            (10 * u.s, False, False),
+            (10 * u.s, False, True),
+            (None, None, None),
+            (None, True, True),
+            (None, True, False),
+            (None, False, None)
         ]
     )
-    def test_calculate_sensitivity(self, new_t_int, update_calculator, t_int,
-                                   calculated_sensitivity, calculator):
+    def test_calculate_sensitivity(self, new_t_int, update_calculator, brightness_temperature,
+                                   t_int, calculated_sensitivity, calculator):
 
         if new_t_int is not None:
             if update_calculator is not None:
@@ -338,7 +343,8 @@ class TestCalculator:
                 # flag to the function
                 sens = \
                     calculator.calculate_sensitivity(new_t_int,
-                                                     update_calculator)
+                                                     update_calculator,
+                                                     brightness_temperature)
             else:
                 # Pass the new integration time to the function
                 sens = calculator.calculate_sensitivity(new_t_int)
@@ -371,8 +377,8 @@ class TestCalculator:
             assert calculator.calculated_sensitivity == calculated_sensitivity
 
         # Verify that the units of the calculated sensitivity are in units of 
-        # flux density
-        assert any(sens.unit == x for x in [u.uJy, u.mJy, u.Jy])
+        # flux density or temperature
+        assert any(sens.unit == x for x in [u.uJy, u.mJy, u.Jy, u.mK, u.K])
 
     @pytest.mark.parametrize(
         'new_sens,update_calculator',
