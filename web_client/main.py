@@ -34,7 +34,7 @@ paths = {
 selected_instrument = 'Default'
 
 # Global state to store special units
-special_units = ['km / s', 'm / s']
+# special_units = ['km / s', 'm / s', 'K', 'mK']
 
 templates = Jinja2Templates(directory="templates",
                             context_processors=[cp.invalid_message_processor,
@@ -61,9 +61,8 @@ async def sensitivity(api_user_input: APIUserInput):
 
     user_input = _unpack_api_user_input(api_user_input)
 
-    # If bandwidth is provided as velocity
-    if user_input['bandwidth']['unit'] in special_units:
-        user_input = utils.modify_user_input_with_converted_values(user_input)
+    # Convert special unit parameters to default unit equivalent
+    user_input = utils.modify_user_input_with_converted_values(user_input)
 
     try:
         return calculator.do_calculation(user_input, "sensitivity", selected_instrument)
@@ -76,9 +75,8 @@ async def t_int(api_user_input: APIUserInput):
 
     user_input = _unpack_api_user_input(api_user_input)
 
-    # If bandwidth is provided as velocity
-    if user_input['bandwidth']['unit'] in special_units:
-        user_input = utils.modify_user_input_with_converted_values(user_input)
+    # Convert special unit parameters to default unit equivalent
+    user_input = utils.modify_user_input_with_converted_values(user_input)
 
     try:
         return calculator.do_calculation(user_input, "integration_time", selected_instrument)
@@ -114,7 +112,7 @@ async def get_applicable_instruments(req: ApplicableInstrumentsRequest):
     bandwidth_value = req.bandwidth
     bandwidth_unit = req.bandwidth_unit
 
-    if bandwidth_unit in special_units:
+    if bandwidth_unit in utils.special_units:
         bandwidth_value, bandwidth_unit = \
             DataHelper.convert_velocity_to_frequency(u.Quantity(obs_freq, str(u.GHz)),\
                                                      u.Quantity(bandwidth_value, bandwidth_unit))
