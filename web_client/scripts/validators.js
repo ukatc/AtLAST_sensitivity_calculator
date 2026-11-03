@@ -138,6 +138,9 @@ const validateInputAgainstInstrumentRange = async (input, rangeText, userSelecte
             parsedRangeLower = parsedRange.lower;
             parsedRangeUpper = parsedRange.upper;
         }
+        if (parsedRangeUpper === 0) {
+            parsedRangeUpper = Infinity;
+        }
         const valueToValidate = convertValueToUnit(numericValue, userSelectedUnit, "Hz");
         const aboveLowerBound = parsedRangeUpper === null
             ? valueToValidate > parsedRangeLower
