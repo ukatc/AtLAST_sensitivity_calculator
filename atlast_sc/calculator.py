@@ -443,7 +443,7 @@ class Calculator:
 
         return converted_val
     
-    def sensitivity_in_flux_density(self, sensitivity, dish_radius=None):
+    def convert_temperature_to_flux_density(self, sensitivity, dish_radius=None):
         """
         Converts the given sensitivity temperature to flux density. 
 
@@ -478,7 +478,7 @@ class Calculator:
         return converted_val
       
 
-    def sensitivity_in_temperature(self, sensitivity, dish_radius=None):
+    def convert_flux_density_to_temperature(self, sensitivity, dish_radius=None):
         """
         Converts the given sensitivity flux density to temperature. 
 

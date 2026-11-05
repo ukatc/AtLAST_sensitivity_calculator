@@ -567,7 +567,7 @@ class TestDataHelper:
         assert result_value == target_value
         assert result_unit == target_unit
 
-    def test_sensitivity_in_flux_density(self):
+    def test_sconvert_temperature_to_flux_density(self):
         test_sensitivity = 500 * (u.K)
         test_dish_radius = 20 * u.m
         test_obs_freq = 406 * u.GHz
@@ -581,7 +581,7 @@ class TestDataHelper:
         assert result_value == target_value
         assert result_unit == target_unit
 
-    def test_sensitivity_in_temperature(self):
+    def test_convert_flux_density_to_temperature(self):
         test_sensitivity = 300 * (u.Jy)
         test_dish_radius = 25 * u.m  # default dish radius value
         test_obs_freq = 406 * u.GHz
