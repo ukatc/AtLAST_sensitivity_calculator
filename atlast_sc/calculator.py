@@ -207,6 +207,7 @@ class Calculator:
                                     self.telescope_and_environment.dish_radius,
                                     sensitivity_result)
             sensitivity_result = u.Quantity(sens_in_temp[0], str(sens_in_temp[1]))
+            if sensitivity_result < 1*u.K: sensitivity_result = sensitivity_result.to(u.mK)
 
         # Try to update the sensitivity stored in the calculator
         if update_calculator:
