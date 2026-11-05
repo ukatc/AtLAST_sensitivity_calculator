@@ -27,8 +27,8 @@ in the TIFUUN walkthrough:
 Since the NET is measured using the atmosphere at the SRT, that is an
 extended source, we are already accounting for the efficiency of
 detector array and cold optics, so we put these efficiencies to 1. We
-set :math:`n_{pol}=1` (in this notation, it means averaging over the two
-linear polarizations), as MISTRAL is not a polarimeter (yet).
+set :math:`n_{pol}=2` (it means averaging over the two
+linear polarizations, as MISTRAL is not a polarimeter (yet)).
 
 Note that the NET estimates are **preliminary**. Also, given that this
 calculator assumes AtLAST’s excellent atmosphere, the presented values
