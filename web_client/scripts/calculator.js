@@ -41,7 +41,7 @@ $(document).ready(() => {
                             (input.name === "obs_freq" || input.name === "bandwidth")) {
                             formValidated =
                                 await CalculatorUI.validateCurrentInputsAgainstInstrument(input.name);
-                            CalculatorUI.showApplicableInstruments(input);
+                            CalculatorUI.showApplicableInstruments();
                         }
                     }
                 });
@@ -68,6 +68,9 @@ $(document).ready(() => {
                         if (input.name === "obs_freq" || input.name === "bandwidth") {
                             formValidated =
                                 await CalculatorUI.validateCurrentInputsAgainstInstrument(input.name);
+                            if (formValidated) {
+                                CalculatorUI.showApplicableInstruments();
+                            }
                         }
                     }
                 });
