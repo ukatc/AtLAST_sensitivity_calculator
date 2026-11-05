@@ -165,7 +165,7 @@ class Calculator:
     def calculate_sensitivity(self, t_int=None, update_calculator=True, 
                               brightness_temperature=False):
         """
-        Calculates the telescope sensitivity (mJy) for a
+        Calculates the telescope sensitivity as a flux density or brightness temperature for a
         given integration time `t_int`.
 
         :param t_int: integration time. Optional. Defaults to the internally
@@ -175,7 +175,11 @@ class Calculator:
             the specified integration time and calculated sensitivity.
             Optional. Defaults to True
         :type update_calculator: bool
-        :return: sensitivity in mJy
+        :param brightness_temperature: True if the output should be a temperature 
+            (in mK or K depending on the value) instead of a flux density.
+            Optional. Defaults to False
+        :type brightness_temperature: bool
+        :return: sensitivity in uJy, mJy or Jy depending on the value
         :rtype: astropy.units.Quantity
         """
         if t_int is not None:
@@ -207,6 +211,7 @@ class Calculator:
                                     self.telescope_and_environment.dish_radius,
                                     sensitivity_result)
             sensitivity_result = u.Quantity(sens_in_temp[0], str(sens_in_temp[1]))
+            # Convert the output to the most convenient units
             if sensitivity_result < 1*u.K: sensitivity_result = sensitivity_result.to(u.mK)
 
         # Try to update the sensitivity stored in the calculator

@@ -66,13 +66,17 @@ parameters force it into a configuration that mandates a different instrument.
 
 With all of the input parameters set to meet your required calculation, including integration time, call the
 :meth:`calculate_sensitivity <atlast_sc.calculator.Calculator.calculate_sensitivity>`
-method to obtain the sensitivity (in mJy):
+method to obtain the sensitivity as a flux density (in uJy, mJy or Jy):
 
 .. code-block:: python
 
     calculated_sensitivity = calculator.calculate_sensitivity()
 
+This can also be output as a brightness temperature (in mK or K):
 
+.. code-block:: python
+
+    calculated_sensitivity = calculator.calculate_sensitivity(brightness_temperature=True)
 
 Alternatively, to obtain the integration time required having specified a sensitivity, call
 :meth:`calculate_t_integration <atlast_sc.calculator.Calculator.calculate_t_integration>`:
