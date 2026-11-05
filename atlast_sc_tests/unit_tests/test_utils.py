@@ -567,7 +567,7 @@ class TestDataHelper:
         assert result_value == target_value
         assert result_unit == target_unit
 
-    def test_sconvert_temperature_to_flux_density(self):
+    def test_convert_temperature_to_flux_density(self):
         test_sensitivity = 500 * (u.K)
         test_dish_radius = 20 * u.m
         test_obs_freq = 406 * u.GHz
