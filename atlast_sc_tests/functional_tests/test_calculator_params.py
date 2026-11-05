@@ -76,7 +76,7 @@ class TestCalculationInput:
              None),
             ({'obs_freq': {'value': 200, 'unit': 'Hz'}},
              pytest.raises(ValidationError), unit_exception),
-            ({'obs_freq': {'value': 30, 'unit': 'GHz'}},
+            ({'obs_freq': {'value': 29, 'unit': 'GHz'}},
              pytest.raises(ValidationError), value_out_of_range_exception),
             ({'obs_freq': {'value': 960, 'unit': 'GHz'}},
              pytest.raises(ValidationError), value_out_of_range_exception),

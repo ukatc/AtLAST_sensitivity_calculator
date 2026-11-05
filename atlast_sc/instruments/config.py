@@ -18,6 +18,9 @@ class InstrumentConfig:
         sepia_instrument = {'class': 'Sepia.py', 'data': 'Sepia.yaml'}
         tifuun_instrument = {'class': 'Tifuun.py', 'data': 'Tifuun.yaml'}
         mistral_instrument = {'class': 'Mistral.py', 'data': 'Mistral.yaml'}
+        SRTQband_instrument = {'class': 'SRTQband.py', 'data': 'SRTQband.yaml'}
+
+
         # TODO: Add your custom instrument here.
         
         available_instruments = [
@@ -28,6 +31,7 @@ class InstrumentConfig:
             sepia_instrument,
             tifuun_instrument,
             mistral_instrument,
+            SRTQband_instrument
             # TODO: Add your custom instrument here.
         ]
 
