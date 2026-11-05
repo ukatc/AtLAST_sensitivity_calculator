@@ -40,7 +40,7 @@ class InstrumentConfig:
         # The instrument order preference determines which instrument will be selected when 2 or more both
         # fit the given observing frequency and bandwidth
         # TODO: Add your instrument to this list.
-        self._instrument_order_preference = ["Tifuun", "Muscat", "Mistral" "Finer", "Sepia", "Chai", "SRTQband" "Default", "Alma_wsu", "Alma"]
+        self._instrument_order_preference = ["Tifuun", "Muscat", "Mistral", "Finer", "Sepia", "Chai", "SRTQband", "Default", "Alma_wsu", "Alma"]
 
         self._inst_classes = {}
 

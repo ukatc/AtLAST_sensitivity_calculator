@@ -2,8 +2,8 @@ from numpy import expm1, sqrt
 import numpy as np
 import astropy.units as u
 from astropy import constants
-from atlast_sc.instrument import Instrument
-from atlast_sc.derived_groups import noise_temperature
+from atlast_sc.core.instrument import Instrument
+from atlast_sc.parameters.derived_groups import noise_temperature
 
 """
 MISTRAL instrument parameters
