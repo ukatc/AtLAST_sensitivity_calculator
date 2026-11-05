@@ -60,7 +60,7 @@ The above installs the minimal set of packages required for the calculator to pe
 
 The equivalent ``pip install`` command would work equally well in the conda environment.
 
-Known Errors: 
+*Known Errors:*
 
 .. code-block:: bash 
 
