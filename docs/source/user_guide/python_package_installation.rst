@@ -60,7 +60,27 @@ The above installs the minimal set of packages required for the calculator to pe
 
 The equivalent ``pip install`` command would work equally well in the conda environment.
 
-If you encounter an error when using the above command then this means conda-forge is not set-up as one of your channels and you need to explicitly mention it:
+Known Errors: 
+
+.. code-block:: bash 
+
+   Channels:
+    - defaults
+   Platform: [...]
+   Collecting package metadata (repodata.json): done
+   Solving environment: failed
+   
+   PackagesNotFoundError: The following packages are not available from current channels:
+   
+     - [package_name/s]
+   
+   Current channels:
+   
+     - https://repo.anaconda.com/pkgs/main
+     - https://repo.anaconda.com/pkgs/r
+
+
+If you encounter the error above when using the above command then this means *conda-forge* is not set-up as one of your channels and you need to explicitly mention it:
 
 .. code-block:: bash
 
