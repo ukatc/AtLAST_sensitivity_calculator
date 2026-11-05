@@ -32,6 +32,21 @@ def test_calculate_sensitivity():
     assert pytest.approx(sensitivity['value'], 0.01) == 690.
 
 
+@pytest.mark.parametrize('temperature_unit', ['mK', 'K'])
+def test_calculate_t_int_rejects_negative_temperature_sensitivity(temperature_unit):
+    negative_temperature_input = {
+        **user_input,
+        'sensitivity': {'value': '-1', 'unit': temperature_unit},
+    }
+
+    response = client.post(
+        f'/v{version}/integration-time/',
+        json=negative_temperature_input
+    )
+
+    assert response.status_code == 400
+
+
 def test_calculate_t_int():
     response = client.post(
         f'/v{version}/integration-time/',
