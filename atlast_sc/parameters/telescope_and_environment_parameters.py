@@ -1,4 +1,4 @@
-from atlast_sc.utils import Decorators
+from atlast_sc.core.utils import Decorators
 
 ############################################################
 # Getters and a couple of setters for telescope parameters #

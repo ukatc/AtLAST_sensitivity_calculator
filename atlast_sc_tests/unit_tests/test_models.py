@@ -2,10 +2,10 @@ import math
 
 import pytest
 from astropy import units as u
-from atlast_sc.models import ModelUtils
-from atlast_sc.models import ValueWithUnits, ValueWithoutUnits, \
+from atlast_sc.core.models import ModelUtils
+from atlast_sc.core.models import ValueWithUnits, ValueWithoutUnits, \
     UserInput, CalculationInput
-from atlast_sc.data import Validator
+from atlast_sc.core.data import Validator
 from atlast_sc_tests.utils import does_not_raise
 
 
@@ -126,8 +126,8 @@ class TestModels:
         CalculationInput()
 
         expected_validation_calls = []
-        # Check that the user input and instrument setup parameters were
-        # validated
+        # Check that the user input and telescope and environment parameters 
+        # were validated
         for key, val in user_input_dict.items():
             expected_validation_calls.append(mocker.call(key, val))
         for key, val in telescope_and_environment_dict.items():

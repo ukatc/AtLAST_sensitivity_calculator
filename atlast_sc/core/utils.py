@@ -7,6 +7,8 @@ from yaml import load, Loader, safe_load
 from astropy.units import Unit
 from types import SimpleNamespace
 
+from atlast_sc.core.exceptions import InstrumentPreferenceListNotAllowed
+
 class Decorators:
     """
     Decorator functions
@@ -44,6 +46,40 @@ class Decorators:
             func(calculator, value, **kwargs)
 
         return do_validation
+
+    @staticmethod
+    def validate_instrument(func):
+        """
+        Decorator to support setter method of instrument choice. Validates
+        that the input is a string and that the value is available in 
+        previously loaded instrument names. 
+        """
+        @functools.wraps(func)
+        def inst_validation(calculator, value, **kwargs):
+
+            """
+            Validates that the instrument choice is provided in the 
+            correct format and that the provided value corresponds
+            to the existing instruments. 
+
+            :param calculator: The Calculator object
+            :type calculator: Calculator
+            :param value: instrument name
+            :type value: string
+            """
+            if not isinstance(value, str):
+                raise AttributeError(
+                        'Instrument name is not provided in the correct format. '\
+                        'Check if you have provided the name of the '\
+                        'instrument in a String format.')
+            if not value.lower().capitalize() in calculator.loaded_instruments.keys():
+                raise KeyError(
+                        'Instrument name provided \'' + value + '\' is not available. '\
+                        'Check if you have provided the instrument '\
+                        'correctly.')
+            return func(calculator, value, **kwargs)        
+        return inst_validation
+
 
     @staticmethod
     def validate_and_update_params(func):
@@ -95,6 +131,38 @@ class Decorators:
 
         return do_update
 
+    @staticmethod
+    def validate_inst_preference_list(func):
+        """
+        Decorator to support setter method on user inputted instrument order
+        preference list. Validates each of the instrument name with the
+        available instrument names in the calculator. 
+        
+        :param func: function that updates the instrument order preference
+        :type func: property setter function
+        """
+        @functools.wraps(func)
+        def do_validation(calculator, preference_list, **kwargs):
+            """
+            Validates each of the instrument name provided by the user in the 
+            instrument preference list against instrument names loaded within
+            the calculator.
+
+            :param calculator: The Calculator object
+            :type calculator: Calculator
+            :param preference_list: Instrument preference order 
+            :type preference_list: list of str
+            """
+            available_insts = calculator._param_setup.loaded_instruments
+            preference_list = [inst.lower() for inst in preference_list]
+            available_insts = [inst.lower() for inst in available_insts]
+
+            DataHelper.validate_instruments(preference_list, available_insts)
+
+            return func(calculator, preference_list, **kwargs)
+
+        return do_validation           
+
 class FileHelper:
     """
     Class that provides support for reading input parameters from a file
@@ -119,7 +187,7 @@ class FileHelper:
         :rtype: types
         """
         _STATIC_DATA_PATH = str(Path(__file__).resolve().parents[0])
-        _INSTRUMENTS_DATA_PATH = _STATIC_DATA_PATH + '/instruments/data/'
+        _INSTRUMENTS_DATA_PATH = _STATIC_DATA_PATH + '/../instruments/data/'
         instrument_file = _INSTRUMENTS_DATA_PATH + file_name + ".yaml"
 
         with open(instrument_file, "r") as file:
@@ -182,7 +250,6 @@ class FileHelper:
         file_writer = FileHelper._get_writer(file_type)
 
         file_path = f'{os.path.join(path, file_name)}.{file_type}'
-
         # Create and concatenate dictionaries from the user input model and
         # the derived parameters model
         params = {param: val['value']
@@ -454,3 +521,23 @@ class DataHelper:
         converted_quantity = source_quantity.to(target_unit)
 
         return converted_quantity.value
+
+    @staticmethod
+    def validate_instruments(preference_list, available_insts):
+        """
+        Validates the user inputted preference list against available
+        instruments that are loaded into the calculator.
+
+        :param preference_list: instrument preference order
+        :type preference_list: list of str
+        :param available_insts: available instrument names
+        :type available_insts: list of str
+        """
+        invalid_instruments = []
+        for inst in preference_list:
+            if inst not in available_insts:
+                invalid_instruments.append(inst)
+
+        if len(invalid_instruments) > 0:
+            raise InstrumentPreferenceListNotAllowed(invalid_instruments,
+                preference_list, available_insts)
