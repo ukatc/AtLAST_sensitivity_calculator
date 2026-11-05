@@ -55,10 +55,15 @@ const validateInput = (input, units, paramData) => {
         // Get the corresponding unit for the input
         const unitsElem = document.getElementById(`${input.name}-units`);
         if (units) {
-            // Convert the input value from the specified to the default
-            //  units for this parameter
-            valueToValidate =
-                input.value * paramData.data_conversion[units.value];
+            // Get the conversion factor for the selected unit
+            const conversionFactor =
+                paramData.data_conversion &&
+                paramData.data_conversion[units.value];
+            // Use the converted value when a factor exists; otherwise - in 
+            // special unit cases - validate the entered value unchanged
+            valueToValidate = conversionFactor !== undefined
+                ? input.value * conversionFactor
+                : input.value;
         }
         else {
             valueToValidate = input.value;
