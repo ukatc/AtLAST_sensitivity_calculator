@@ -30,16 +30,19 @@ $(document).ready(() => {
                 formValidated = validateInput(input, units, data[input.name]);
 
                 // Add an event listener to validate input when it changes
-                input.addEventListener("change", e => {
+                input.addEventListener("change", async e => {
                     if (input === e.target) {
                         formValidated =
                             validateAndSetUIState(input, units,
                                                   data[input.name]);
                         
-                        // Validate frequency/bandwidth based on instrument selection
-                        const instrumentName = document.getElementById("instrument-type").value;
-                        formValidated = CalculatorUI.validateCurrentInputsAgainstInstrument(instrumentName);
-                        CalculatorUI.showApplicableInstruments();
+                        // Only frequency and bandwidth belong to instrument ranges.
+                        if (formValidated &&
+                            (input.name === "obs_freq" || input.name === "bandwidth")) {
+                            formValidated =
+                                await CalculatorUI.validateCurrentInputsAgainstInstrument(input.name);
+                            CalculatorUI.showApplicableInstruments();
+                        }
                     }
                 });
             });
@@ -50,7 +53,7 @@ $(document).ready(() => {
             allUnitsInputs.forEach(unitsInput => {
                 // Add an event listener to re-enable to the Calculate button
                 // if the form is in a valid state
-                unitsInput.addEventListener("change", e => {
+                unitsInput.addEventListener("change", async e => {
                     if (unitsInput === e.target) {
                         // Get the corresponding input for this units input
                         const input =
@@ -61,10 +64,14 @@ $(document).ready(() => {
                             validateAndSetUIState(input, unitsInput,
                                                   data[input.name]);
                         
-                        // Validate frequency/bandwidth based on instrument selection
-                        const instrumentName = document.getElementById("instrument-type").value;
-                        formValidated =
-                            CalculatorUI.validateCurrentInputsAgainstInstrument(instrumentName);
+                        // Validate only frequency and bandwidth ranges against instrument ranges
+                        if (input.name === "obs_freq" || input.name === "bandwidth") {
+                            formValidated =
+                                await CalculatorUI.validateCurrentInputsAgainstInstrument(input.name);
+                            if (formValidated) {
+                                CalculatorUI.showApplicableInstruments();
+                            }
+                        }
                     }
                 });
             })

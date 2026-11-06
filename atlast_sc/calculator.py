@@ -1,7 +1,9 @@
-import warnings, yaml, re
+import warnings, re
 import astropy.units as u
 import numpy as np
+from atlast_sc.core.data import Data, Validator
 from atlast_sc.core.utils import DataHelper, Decorators
+from atlast_sc.core.exceptions import UnitException
 from atlast_sc.core.exceptions import CalculatedValueInvalidWarning
 from atlast_sc.core.exceptions import ValueOutOfRangeException
 from atlast_sc.core.exceptions import InstrumentNotApplicableException
@@ -73,7 +75,7 @@ class Calculator:
         return self._calculated_sensitivity.value
 
     @calculated_sensitivity.setter
-    @Decorators.validate_value
+    @Decorators.validate_calculated_value
     def calculated_sensitivity(self, value):
         self._calculated_sensitivity.value = value
 
@@ -85,7 +87,7 @@ class Calculator:
         return self._calculated_t_int.value
 
     @calculated_t_int.setter
-    @Decorators.validate_value
+    @Decorators.validate_calculated_value
     def calculated_t_int(self, value):
         self._calculated_t_int.value = value
 
@@ -160,9 +162,10 @@ class Calculator:
     # integration time calculations                 #
     #################################################
 
-    def calculate_sensitivity(self, t_int=None, update_calculator=True):
+    def calculate_sensitivity(self, t_int=None, update_calculator=True, 
+                              brightness_temperature=False):
         """
-        Calculates the telescope sensitivity (mJy) for a
+        Calculates the telescope sensitivity as a flux density or brightness temperature for a
         given integration time `t_int`.
 
         :param t_int: integration time. Optional. Defaults to the internally
@@ -172,7 +175,11 @@ class Calculator:
             the specified integration time and calculated sensitivity.
             Optional. Defaults to True
         :type update_calculator: bool
-        :return: sensitivity in mJy
+        :param brightness_temperature: True if the output should be a temperature 
+            (in mK or K depending on the value) instead of a flux density.
+            Optional. Defaults to False
+        :type brightness_temperature: bool
+        :return: sensitivity in uJy, mJy or Jy depending on the value
         :rtype: astropy.units.Quantity
         """
         if t_int is not None:
@@ -185,7 +192,8 @@ class Calculator:
 
         sensitivity_result = \
             self.derived_parameters.sefd / \
-            (self.derived_parameters.eta_s * np.sqrt(self.user_input.n_pol * self.user_input.bandwidth * t_int))
+            (self.derived_parameters.eta_s * \
+             np.sqrt(self.user_input.n_pol * self.user_input.bandwidth * t_int))
 
         # Convert the output to the most convenient units
         sensitivity_result = sensitivity_result.to(u.mJy)
@@ -195,6 +203,16 @@ class Calculator:
             sensitivity_result = sensitivity_result.to(u.mJy)
         elif sensitivity_result >= 1000*u.mJy:
             sensitivity_result = sensitivity_result.to(u.Jy)
+
+        # If sensitivity is required in brightness temperature
+        if brightness_temperature:
+            sens_in_temp = DataHelper.convert_flux_density_to_temperature(
+                                    self.user_input.obs_freq, 
+                                    self.telescope_and_environment.dish_radius,
+                                    sensitivity_result)
+            sensitivity_result = u.Quantity(sens_in_temp[0], str(sens_in_temp[1]))
+            # Convert the output to the most convenient units
+            if sensitivity_result < 1*u.K: sensitivity_result = sensitivity_result.to(u.mK)
 
         # Try to update the sensitivity stored in the calculator
         if update_calculator:
@@ -368,6 +386,135 @@ class Calculator:
         output += "-"*70 + "\n"
         
         print(output)
+
+    def convert_frequency_to_velocity(self, bandwidth, obs_freq=None):
+        """
+        Convert the given bandwidth frequency to velocity. 
+
+        :param bandwidth: User inputted bandwidth frequency
+        :type bandwidth: Quantity
+        :return: Equivalent velocity value
+        :rtype: Quantity
+        """
+
+        # Pull observing frequency from parameter class if not supplied by user
+        obs_freq = self.user_input.obs_freq if obs_freq is None else obs_freq
+
+        # Do validation for parameters 
+        # NOTE: As bandwidth is provided in non-special units, the 
+        # bandwidth value validation should be done before the conversion.
+        Validator.validate_field("bandwidth", bandwidth)
+        Validator.validate_field("obs_freq", obs_freq)
+
+        # Do conversion
+        val, unit = DataHelper.convert_frequency_to_velocity(obs_freq, bandwidth)
+
+        converted_val = u.Quantity(val, str(unit))
+
+        # Validate converted bandwidth unit
+        Validator.validate_units(converted_val.unit, "bandwidth", \
+                                         Data.param_data_type_dicts["bandwidth"])
+        
+        return converted_val
+    
+    def convert_velocity_to_frequency(self, bandwidth, obs_freq=None):
+        """
+        Convert the given bandwidth velocity to frequency. 
+
+        :param bandwidth: User inputted bandwidth velocity
+        :type bandwidth: Quantity
+        :return: Equivalent frequency value
+        :rtype: Quantity
+        """
+
+        # Pull observing frequency from parameter class if not supplied by user
+        obs_freq = self.user_input.obs_freq if obs_freq is None else obs_freq
+
+        # Do validation for parameters 
+        # NOTE: The existing validation methods need non-special unit value
+        # to do validation. As bandwidth is provided in special units, 
+        # the bandwidth value validation will be done after the conversion.
+        Validator.validate_field("obs_freq", obs_freq)
+        Validator.validate_units(bandwidth.unit, "bandwidth", \
+                                 Data.param_data_type_dicts["bandwidth"])
+
+        # Do conversion
+        val, unit = DataHelper.convert_velocity_to_frequency(obs_freq, bandwidth)
+        
+        converted_val = u.Quantity(val, str(unit))
+
+        # Validate converted bandwidth value
+        Validator.validate_field("bandwidth", converted_val)
+
+        return converted_val
+    
+    def convert_temperature_to_flux_density(self, sensitivity, dish_radius=None):
+        """
+        Converts the given sensitivity temperature to flux density. 
+
+        :param dish_radius: Radius of the primary mirror
+        :type dish_radius: Quantity
+        :param sensitivity: Sensitivity in temperature value
+        :type sensitivity: Quantity
+        :return: Equivalent flux density value
+        :rtype: Quantity
+        """
+
+        # Pull dish radius from parameter class if not supplied by user
+        dish_radius = self.telescope_and_environment.dish_radius \
+                                            if dish_radius is None else dish_radius
+        
+        # Do validation for parameters 
+        # NOTE: The existing validation methods need non-special unit value
+        # to do validation. As sensitivity is provided in special units, 
+        # the sensitivity value validation will be done after the conversion.
+        Validator.validate_field("dish_radius", dish_radius)
+        Validator.validate_units(sensitivity.unit, "sensitivity", \
+                                 Data.param_data_type_dicts["sensitivity"])
+
+        # Do conversion
+        val, unit = DataHelper.convert_temperature_to_flux_density(self.user_input.obs_freq, \
+                                                                   dish_radius, sensitivity)
+        converted_val = u.Quantity(val, str(unit))
+
+        # Validate converted sensitivity value
+        Validator.validate_field("sensitivity", converted_val)
+        
+        return converted_val
+      
+
+    def convert_flux_density_to_temperature(self, sensitivity, dish_radius=None):
+        """
+        Converts the given sensitivity flux density to temperature. 
+
+        :param dish_radius: Radius of the primary mirror
+        :type dish_radius: Quantity
+        :param sensitivity: Sensitivity in temperature value
+        :type sensitivity: Quantity
+        :return: Equivalent temperature value
+        :rtype: Quantity
+        """
+
+        # Pull dish radius from parameter class if not supplied by user
+        dish_radius = self.telescope_and_environment.dish_radius \
+                                            if dish_radius is None else dish_radius
+
+        # Do validation for parameters 
+        # NOTE: As sensitivity is provided in non-special units, the 
+        # sensitivity value validation should be done before the conversion.
+        Validator.validate_field("dish_radius", dish_radius)
+        Validator.validate_field("sensitivity", sensitivity)
+
+        # Do conversion
+        val, unit = DataHelper.convert_flux_density_to_temperature(self.user_input.obs_freq, \
+                                                                    dish_radius, sensitivity)
+        converted_val = u.Quantity(val, str(unit))
+
+        # Validate converted sensitivity unit
+        Validator.validate_units(converted_val.unit, "sensitivity", \
+                                         Data.param_data_type_dicts["sensitivity"])
+        
+        return converted_val
 
     def _format_bandwidth_ranges(self, bandwidth_ranges, bandwidth_unit):
         """
