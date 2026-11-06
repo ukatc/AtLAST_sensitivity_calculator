@@ -253,13 +253,11 @@ functions:
 
 .. code-block:: python
 
-    >>> sensitivity_in_flux_density = 50 * u.Jy
-    >>> temp = calculator.convert_flux_density_to_brightness_temperature(sensitivity_in_flux_density)
+    >>> temp = calculator.convert_flux_density_to_brightness_temperature(50 * u.Jy)
     >>> print(temp)
     26.841862850954524 K
 
-    >>> sensitivity_in_temperature = 300 * u.K
-    >>> flux_density = calculator.convert_brightness_temperature_to_flux_density(sensitivity_in_temperature) 
+    >>> flux_density = calculator.convert_brightness_temperature_to_flux_density(300 * u.K) 
     >>> print(flux_density)
     558.8285762165939 Jy
 
@@ -267,4 +265,4 @@ Both methods can take a dish radius value as an optional parameter:
 
 .. code-block:: python
 
-    >>> temp = calculator.convert_flux_density_to_brightness_temperature(sensitivity_in_flux_density, 30 * u.m)
+    >>> temp = calculator.convert_flux_density_to_brightness_temperature(50 * u.Jy, 30 * u.m)
