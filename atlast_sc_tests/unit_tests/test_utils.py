@@ -9,7 +9,6 @@ from atlast_sc.calculator import Calculator
 from atlast_sc_tests.utils import does_not_raise
 from atlast_sc.core.exceptions import InstrumentPreferenceListNotAllowed
 
-from atlast_sc.core.parameter_setup import ParameterSetup
 from atlast_sc.instruments.classes.Sepia import Sepia
 from atlast_sc.instruments.classes.Finer import Finer
 
@@ -556,6 +555,46 @@ class TestDataHelper:
 
         assert result == 1
 
+    def test_convert_velocity_to_frequency(self):
+        test_velocity = 100 * (u.km / u.s)
+        test_obs_freq = 406 * u.GHz
+        target_value = 135427022.65044972
+        target_unit = "Hz"
+
+        result_value, result_unit = DataHelper.convert_velocity_to_frequency(
+                                                test_obs_freq, test_velocity)
+
+        assert result_value == target_value
+        assert result_unit == target_unit
+
+    def test_convert_temperature_to_flux_density(self):
+        test_sensitivity = 500 * (u.K)
+        test_dish_radius = 20 * u.m
+        test_obs_freq = 406 * u.GHz
+        target_value = 1455.2827505640466
+        target_unit = "Jy"
+
+        result_value, result_unit = DataHelper.convert_temperature_to_flux_density(
+                                                test_obs_freq, test_dish_radius,
+                                                test_sensitivity)
+
+        assert result_value == target_value
+        assert result_unit == target_unit
+
+    def test_convert_flux_density_to_temperature(self):
+        test_sensitivity = 300 * (u.Jy)
+        test_dish_radius = 25 * u.m  # default dish radius value
+        test_obs_freq = 406 * u.GHz
+        target_value = 161.05117710572716
+        target_unit = "K"
+
+        result_value, result_unit = DataHelper.convert_flux_density_to_temperature(
+                                                test_obs_freq, test_dish_radius, 
+                                                test_sensitivity)
+
+        assert result_value == target_value
+        assert result_unit == target_unit
+
     @pytest.mark.parametrize(
         'default_unit,allowed_units,expected_result',
         [
@@ -563,6 +602,7 @@ class TestDataHelper:
             ('s', ['s', 'min', 'h'], {'s': 1, 'min': 60, 'h': 3600}),
             ('h', ['s', 'min', 'h'], {'s': 1 / 3600, 'min': 1 / 60, 'h': 1})
         ]
+        
     )
     def test_data_conversion_factors(self, default_unit, allowed_units,
                                      expected_result):

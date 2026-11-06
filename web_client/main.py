@@ -4,9 +4,15 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from web_client.schemas import APIUserInput, InstrumentSelection, ApplicableInstrumentsRequest
-from web_client import utils, calculator
+
+import astropy.units as u
+from atlast_sc.core.utils import DataHelper
+
+from web_client.schemas import APIUserInput, InstrumentSelection, \
+    ApplicableInstrumentsRequest, VelocityConversionRequest
 import web_client.context_processors as cp
+from web_client import utils, calculator
+
 
 os.chdir(os.path.dirname(__file__))
 
@@ -52,6 +58,9 @@ async def sensitivity(api_user_input: APIUserInput):
 
     user_input = _unpack_api_user_input(api_user_input)
 
+    # Convert special unit parameters to default unit equivalent
+    user_input = utils.modify_user_input_with_converted_values(user_input)
+
     try:
         return calculator.do_calculation(user_input, "sensitivity", selected_instrument)
     except calculator.UserInputError as e:
@@ -63,6 +72,9 @@ async def t_int(api_user_input: APIUserInput):
 
     user_input = _unpack_api_user_input(api_user_input)
 
+    # Convert special unit parameters to default unit equivalent
+    user_input = utils.modify_user_input_with_converted_values(user_input)
+
     try:
         return calculator.do_calculation(user_input, "integration_time", selected_instrument)
     except calculator.UserInputError as e:
@@ -72,6 +84,17 @@ async def t_int(api_user_input: APIUserInput):
 @app.get(paths['param_values_units'])
 async def param_values_units():
     return JSONResponse(content=calculator.get_param_values_units())
+
+
+@app.post(paths['set_instrument'] + '/convert-velocity')
+async def velocity_to_frequency(req: VelocityConversionRequest):
+
+    value, unit = DataHelper.convert_velocity_to_frequency(
+        u.Quantity(req.obs_freq, u.GHz),
+        u.Quantity(req.velocity, req.velocity_unit),
+    )
+    return JSONResponse(content={"value": value, "unit": str(unit)})
+
 
 @app.post(paths['set_instrument'] + '/applicable-instruments')
 async def get_applicable_instruments(req: ApplicableInstrumentsRequest):
@@ -83,11 +106,17 @@ async def get_applicable_instruments(req: ApplicableInstrumentsRequest):
     :return: list of applicable instrument names
     """
     obs_freq = req.obs_freq
-    bandwidth = req.bandwidth
+    bandwidth_value = req.bandwidth
     bandwidth_unit = req.bandwidth_unit
 
+    if bandwidth_unit in utils.special_units:
+        bandwidth_value, bandwidth_unit = \
+            DataHelper.convert_velocity_to_frequency(u.Quantity(obs_freq, str(u.GHz)),\
+                                                     u.Quantity(bandwidth_value, bandwidth_unit))
+        
     try:
-        applicable_instruments = calculator.get_applicable_instruments(obs_freq, bandwidth, bandwidth_unit)
+        applicable_instruments = calculator.get_applicable_instruments(obs_freq, bandwidth_value, \
+                                                                       bandwidth_unit)
         return JSONResponse(
             content=applicable_instruments
         )
