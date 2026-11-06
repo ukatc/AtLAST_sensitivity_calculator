@@ -144,22 +144,31 @@ $(document).ready(() => {
 
                 return new Promise((resolve, reject) => resolve(form.reset()))
                 .then(() => {
-                  CalculatorUI.setUIInitialState(data);
+                    CalculatorUI.setUIInitialState(data);
 
-                  // Reset the reference to the checked radio button
-                  for (const option of calcOptions) {
-                    // Keep track of which radio button is currently checked
-                    if (option.checked) {
-                        checkedOption = option;
+
+                    // Send the default instrument to the backend
+                    // NOTE: This is necessary because otherwise the backend
+                    // will try to doCalculation with the last instrument that 
+                    // was set, which may not be valid for the default input values.
+                    setInstrument("Default")
+
+                    // Reset the reference to the checked radio button
+                    for (const option of calcOptions) {
+                        // Keep track of which radio button is currently checked
+                        if (option.checked) {
+                            checkedOption = option;
+                        }
                     }
-                  }
 
-                  doCalculation(data);
+                    doCalculation(data);
                 })
             });
+            
 
             // Send the default instrument to the backend
-            setInstrument(document.getElementById("instrument-type").value)
+            setInstrument("Default")
+
             // Calculate the integration time using the default values
             doCalculation(data);
 

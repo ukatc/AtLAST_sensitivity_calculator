@@ -19,6 +19,9 @@ class InstrumentConfig:
         tifuun_instrument = {'class': 'Tifuun.py', 'data': 'Tifuun.yaml'}
         alma_instrument = {'class': 'Alma.py', 'data': 'Alma.yaml'}
         alma_wsu_instrument = {'class': 'Alma_wsu.py', 'data': 'Alma_wsu.yaml'}
+        SRTQband_instrument = {'class': 'SRTQband.py', 'data': 'SRTQband.yaml'}
+
+
         # TODO: Add your custom instrument here.
         
         available_instruments = [
@@ -29,7 +32,8 @@ class InstrumentConfig:
             sepia_instrument,
             tifuun_instrument,
             alma_instrument,
-            alma_wsu_instrument
+            alma_wsu_instrument,
+            SRTQband_instrument
             # TODO: Add your custom instrument here.
         ]
 
