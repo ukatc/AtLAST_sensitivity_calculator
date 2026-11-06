@@ -296,8 +296,11 @@ class ParameterSetup:
                        if name in inst_order_preference else float('-inf'))
         # If there are more than 1 applicable instrument
         if len(applicable_instruments) > 1:
-            chosen_inst = choice(inst.lower() for inst in applicable_instruments)
-            return chosen_inst.capitalize()
+            normalised_applicable_insts = {
+                inst.lower(): inst for inst in applicable_instruments
+            }
+            chosen_inst = choice(normalised_applicable_insts.keys())
+            return normalised_applicable_insts[chosen_inst]
         if len(applicable_instruments) == 1: # If there is only 1 applicable instrument
             return applicable_instruments[0]
         else: # If there is no applicable instrument

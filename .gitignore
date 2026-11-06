@@ -144,3 +144,4 @@ dmypy.json
 
 # fits files for example notebooks
 *.fits
+*.lock

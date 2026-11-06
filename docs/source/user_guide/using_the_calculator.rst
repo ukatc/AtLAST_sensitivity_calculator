@@ -238,7 +238,7 @@ calculations. Should you choose to specify an order, you can do it through the c
     >>> calculator.instrument_order_preference = ['Finer', 'Chai', 'Default', 'Sepia', 'Tifuun', 
     >>> 'Muscat', 'Alma_wsu', 'Alma']
 
-If you choose not to specify an order, the calculator will use the default order (``["Tifuun", "Muscat", "Finer", "Sepia", "Chai", "Default", "Alma_wsu", "Alma"]``) 
+If you choose not to specify an order, the calculator will use the default order (``["Tifuun", "Muscat", "Mistral", "Finer", "Sepia", "Chai", "SRTQband", "Default", "Alma_wsu", "Alma"]``) 
 when making calculations.
 
 
