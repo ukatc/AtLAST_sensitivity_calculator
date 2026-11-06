@@ -268,3 +268,26 @@ Both methods can take a dish radius value as an optional parameter:
 .. code-block:: python
 
     >>> temp = calculator.convert_flux_density_to_brightness_temperature(sensitivity_in_flux_density, 30 * u.m)
+
+
+Conversion between velocity and frequency
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you wish to convert between velocity and frequency, you can use the following helper
+functions:
+
+.. code-block:: python
+
+    >>> freq = calculator.convert_velocity_to_frequency(40 * u.km / u.s)
+    >>> print(freq)
+    54170809.06017989 Hz
+
+    >>> velocity = calculator.convert_frequency_to_velocity(600 * u.GHz)
+    >>> print(velocity)
+    443043.04137931037 km / s
+
+Both methods can take an observing frequency value as an optional parameter:
+
+.. code-block:: python
+
+    >>> freq = calculator.convert_velocity_to_frequency(40 * u.km / u.s, 230 * u.GHz)
