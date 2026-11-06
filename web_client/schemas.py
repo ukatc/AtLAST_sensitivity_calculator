@@ -63,3 +63,9 @@ class ApplicableInstrumentsRequest(BaseModel):
     obs_freq: Optional[float] = None
     bandwidth: Optional[float] = None
     bandwidth_unit: Optional[str] = None
+
+
+class VelocityConversionRequest(BaseModel):
+    obs_freq: float
+    velocity: float
+    velocity_unit: str

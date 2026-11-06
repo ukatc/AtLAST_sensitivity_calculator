@@ -32,6 +32,21 @@ def test_calculate_sensitivity():
     assert pytest.approx(sensitivity['value'], 0.01) == 690.
 
 
+@pytest.mark.parametrize('temperature_unit', ['mK', 'K'])
+def test_calculate_t_int_rejects_negative_temperature_sensitivity(temperature_unit):
+    negative_temperature_input = {
+        **user_input,
+        'sensitivity': {'value': '-1', 'unit': temperature_unit},
+    }
+
+    response = client.post(
+        f'/v{version}/integration-time/',
+        json=negative_temperature_input
+    )
+
+    assert response.status_code == 400
+
+
 def test_calculate_t_int():
     response = client.post(
         f'/v{version}/integration-time/',
@@ -43,6 +58,92 @@ def test_calculate_t_int():
     integration_time = response.json()
     assert integration_time['unit'] == 's'
     assert pytest.approx(integration_time['value'], 0.1) == 5.20
+
+
+@pytest.mark.parametrize(
+    ('velocity', 'velocity_unit'),
+    [
+        (100, 'km / s'),
+        (100_000, 'm / s'),
+    ],
+)
+def test_convert_velocity_to_frequency(velocity, velocity_unit):
+    response = client.post(
+        f'/v{version}/set-instrument/convert-velocity',
+        json={
+            'obs_freq': 100,
+            'velocity': velocity,
+            'velocity_unit': velocity_unit,
+        }
+    )
+
+    assert response.status_code == 200
+    converted = response.json()
+    assert converted['unit'] == 'Hz'
+    assert pytest.approx(converted['value']) == 33_356_409
+
+
+def test_convert_velocity_to_frequency_requires_all_fields():
+    response = client.post(
+        f'/v{version}/set-instrument/convert-velocity',
+        json={
+            'obs_freq': 100,
+            'velocity': 100,
+        }
+    )
+    assert response.status_code == 422
+
+
+def test_applicable_instruments_with_velocity_bandwidth_matches_frequency():
+    conversion = client.post(
+        f'/v{version}/set-instrument/convert-velocity',
+        json={
+            'obs_freq': 300,
+            'velocity': 100,
+            'velocity_unit': 'km / s',
+        }
+    )
+    assert conversion.status_code == 200
+
+    velocity_response = client.post(
+        f'/v{version}/set-instrument/applicable-instruments',
+        json={
+            'obs_freq': 300,
+            'bandwidth': 100,
+            'bandwidth_unit': 'km / s',
+        }
+    )
+    frequency_response = client.post(
+        f'/v{version}/set-instrument/applicable-instruments',
+        json={
+            'obs_freq': 300,
+            'bandwidth': conversion.json()['value'],
+            'bandwidth_unit': 'Hz',
+        }
+    )
+
+    assert velocity_response.status_code == 200
+    assert frequency_response.status_code == 200
+    assert velocity_response.json() == frequency_response.json()
+
+def test_calculation_done_with_flux_density_sensitivity():
+    test_user_input = {
+        't_int': {'value': '100', 'unit': 's'},
+        'sensitivity': {'value': '0.5', 'unit': 'K'},
+        'bandwidth': {'value': '100', 'unit': 'MHz'},
+        'obs_freq': {'value': '406', 'unit': 'GHz'},
+        'elevation': {'value': '45', 'unit': 'deg'},
+        'weather': {'value': '25', 'unit': None},
+        'n_pol': {'value': '2', 'unit': None}
+    }
+    calculate_t_int_response = client.post(
+        f'/v{version}/integration-time',
+        json=test_user_input
+    )
+    assert calculate_t_int_response.status_code == 200
+    integration_time = calculate_t_int_response.json()
+    assert integration_time['unit'] == 's'
+    assert pytest.approx(integration_time['value'], 0.1) == 0.0014
 
 
 def test_param_values_units():

@@ -95,4 +95,23 @@ const setApplicableInstruments = (inputData) => {
     });
 }
 
-export {getParamValuesUnits, calculate, setInstrument, getInstrumentRanges, setApplicableInstruments};
+const convertVelocityToFrequency = (inputData) => {
+    const version = apiVersion();
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: `/${version}/set-instrument/convert-velocity`,
+            type: 'POST',
+            data: JSON.stringify(inputData),
+            contentType: 'application/json',
+            success: function(data) {
+                resolve(data);
+            },
+            error: function(error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+export {getParamValuesUnits, calculate, setInstrument, getInstrumentRanges,
+        setApplicableInstruments, convertVelocityToFrequency};

@@ -1,3 +1,21 @@
+import { convertVelocityToFrequency } from './rest_calls.js';
+
+const specialUnits = ['km / s', 'm / s']
+
+const getDefaultInvalidMessage = (input) => {
+    const invalidMessageElement =
+        document.getElementById(`${input.id}-invalid`);
+    if (!invalidMessageElement) {
+        return null;
+    }
+
+    if (invalidMessageElement.dataset.defaultMessage === undefined) {
+        invalidMessageElement.dataset.defaultMessage =
+            invalidMessageElement.textContent;
+    }
+    return invalidMessageElement.dataset.defaultMessage;
+}
+
 const validateInput = (input, units, paramData) => {
     const setUpValidState = (validState) => {
         const validStateMessage = (validState)? "" : "invalid";
@@ -5,12 +23,18 @@ const validateInput = (input, units, paramData) => {
 
         // Show or hide the validation message for each input
         const invalid_msg_elem = document.getElementById(`${input.id}-invalid`);
+        getDefaultInvalidMessage(input);
         invalid_msg_elem.hidden = (validState)? true: false;
     }
 
     // All values should be numeric
     if (!isNum(input.value)) {
         setUpValidState(false);
+        const invalidMessageElement = document.getElementById(`${input.id}-invalid`);
+        const defaultMessage = getDefaultInvalidMessage(input);
+        if (invalidMessageElement && defaultMessage !== null) {
+            invalidMessageElement.textContent = defaultMessage;
+        }
         return false;
     }
 
@@ -31,10 +55,15 @@ const validateInput = (input, units, paramData) => {
         // Get the corresponding unit for the input
         const unitsElem = document.getElementById(`${input.name}-units`);
         if (units) {
-            // Convert the input value from the specified to the default
-            //  units for this parameter
-            valueToValidate =
-                input.value * paramData.data_conversion[units.value];
+            // Get the conversion factor for the selected unit
+            const conversionFactor =
+                paramData.data_conversion &&
+                paramData.data_conversion[units.value];
+            // Use the converted value when a factor exists; otherwise - in 
+            // special unit cases - validate the entered value unchanged
+            valueToValidate = conversionFactor !== undefined
+                ? input.value * conversionFactor
+                : input.value;
         }
         else {
             valueToValidate = input.value;
@@ -57,7 +86,7 @@ const validateInput = (input, units, paramData) => {
     return true;
 }
 
-const validateInputAgainstInstrumentRange = (input, rangeText, userSelectedUnit = null) => {
+const validateInputAgainstInstrumentRange = async (input, rangeText, userSelectedUnit = null) => {
     const setUpValidState = (validState, message = "") => {
         const validStateMessage = validState ? "" : message;
         input.setCustomValidity(validStateMessage);
@@ -71,6 +100,7 @@ const validateInputAgainstInstrumentRange = (input, rangeText, userSelectedUnit 
 
         const invalid_msg_elem = document.getElementById(`${input.id}-invalid`);
         if (invalid_msg_elem) {
+            getDefaultInvalidMessage(input);
             if (message) {
                 invalid_msg_elem.textContent = message;
             }
@@ -79,35 +109,60 @@ const validateInputAgainstInstrumentRange = (input, rangeText, userSelectedUnit 
     }
 
     const parsedRangeList = parseInstrumentRange(rangeText);
+    let numericValue = Number(input.value);
+    if (!isNum(input.value)) {
+        setUpValidState(false, getDefaultInvalidMessage(input) || "");
+        document.getElementById("calculate").disabled = true;
+        return false;
+    }
+
+    if (specialUnits.includes(userSelectedUnit)) {
+        const obsFreqInput = document.getElementById("obs-freq-input");
+        if (!obsFreqInput || !isNum(obsFreqInput.value)) {
+            document.getElementById("calculate").disabled = true;
+            return false;
+        }
+
+        const conversion = await convertVelocityToFrequency({
+            obs_freq: Number(obsFreqInput.value),
+            velocity: numericValue,
+            velocity_unit: userSelectedUnit,
+        });
+        numericValue = conversion.value;
+    }
+
     let valueInRange = false;
-    for (let parsedRange of Object.entries(parsedRangeList)) {
-        parsedRange = parsedRange[1]; // Only extract the range object from the array of entries
-        if (parsedRange === 0) { // Bandwidth range is "> 0", any value will always be in range
+    let parsedRangeLower, parsedRangeUpper;
+    for (const parsedRange of parsedRangeList) {
+        const parsedRangeUnit = parsedRange.unit === null || parsedRange.unit === undefined ? "Hz" : parsedRange.unit;
+        // If the parsed range unit is not Hz, convert the lower and upper bounds to Hz for comparison
+        if (parsedRangeUnit !== "Hz") {
+            parsedRangeLower = convertValueToUnit(parsedRange.lower, parsedRangeUnit, "Hz");
+            parsedRangeUpper = convertValueToUnit(parsedRange.upper, parsedRangeUnit, "Hz");
+        } else {
+            parsedRangeLower = parsedRange.lower;
+            parsedRangeUpper = parsedRange.upper;
+        }
+        if (parsedRangeUpper === 0) {
+            parsedRangeUpper = Infinity;
+        }
+        const valueToValidate = convertValueToUnit(numericValue, userSelectedUnit, "Hz");
+        const aboveLowerBound = parsedRangeUpper === null
+            ? valueToValidate > parsedRangeLower
+            : valueToValidate >= parsedRangeLower;
+        const belowUpperBound = parsedRangeUpper === null || parsedRangeUpper === undefined
+            || valueToValidate <= parsedRangeUpper;
+
+        if (aboveLowerBound && belowUpperBound) {
             valueInRange = true;
             setUpValidState(true);
             break;
         }
-        const numericValue = Number(input.value);
-        const inputUnit = userSelectedUnit;
-        const parsedRangeUnit = parsedRange.unit === null || parsedRange.unit === undefined ? "Hz" : parsedRange.unit;
-        const valueToValidate = convertValueToUnit(numericValue, inputUnit, parsedRangeUnit);
-        if (parsedRange.lower !== null && parsedRange.upper !== null) {
-            // If the value to validate is within the range 
-            if (parsedRange.lower <= valueToValidate && parsedRange.upper >= valueToValidate) {
-                valueInRange = true;
-                setUpValidState(true);
-            } else {
-                if (valueInRange == true){
-                    // This is the second or more time we are looping through a range and
-                    // one of the previous ranges were applicable for the user input but 
-                    // not the current range. We break the loop to avoid showing error message
-                    // incorrectly.
-                    break;
-                }
-                setUpValidState(false, `Value must be between allowed ranges 
-                    for the chosen instrument.`);
-            }
-        } 
+    }
+
+    if (!valueInRange) {
+        setUpValidState(false, `Value must be between allowed ranges 
+            for the chosen instrument.`);
     }
     return valueInRange;
 }
@@ -123,7 +178,7 @@ const parseInstrumentRange = (rangeText) => {
 
     if (trimmed.includes('>')) {
         const numericValue = Number(values[0]);
-        return { lower: numericValue, upper: null, unit };
+        return [{ lower: numericValue, upper: null, unit }];
     }
 
     if (values.length % 2 == 0) {
@@ -187,10 +242,6 @@ const isInRange = (val, ...rangeInfo) => {
 
 const isAllowedValue = (val, allowedValues) => {
     return true;
-}
-
-const convertToDefaultUnits = (parameter, value) => {
-
 }
 
 export {validateInput, validateInputAgainstInstrumentRange}

@@ -1,15 +1,16 @@
 import copy, re
 from atlast_sc.core.models import UserInput
+from atlast_sc.core.models import ValueWithUnits
 from atlast_sc.core.models import CalculationInput
 from atlast_sc.core.models import CalculationResult
 from atlast_sc.core.models import TelescopeAndEnvironment
+from atlast_sc.core.models import DerivedParams
 
 from atlast_sc.instruments.config import InstrumentConfig
 
 from atlast_sc.parameters.derived_groups import AtmosphereParams
 from atlast_sc.parameters.derived_groups import Temperatures
 from atlast_sc.parameters.derived_groups import Efficiencies
-from atlast_sc.core.models import DerivedParams
 
 import astropy.units as u
 from astropy.constants import k_B
@@ -46,7 +47,7 @@ class ParameterSetup:
         self._calculation_inputs = \
             CalculationInput(user_input=new_user_input,
                              telescope_and_environment=new_telescope_and_environment)
-        
+
         self._calculation_results = CalculationResult()
 
         # Get instrument config 
@@ -173,7 +174,8 @@ class ParameterSetup:
         applicable_instruments = self.find_applicable_instruments(user_obs_freq, user_bandwidth,
                                                             self.instrument_obs_freqs,
                                                             self.instrument_bandw_vals)
-        chosen_inst_name = self._choose_instrument_from_applicable(applicable_instruments, self.inst_order_preference)
+        chosen_inst_name = self._choose_instrument_from_applicable(applicable_instruments, \
+                                                                   self.inst_order_preference)
         # Get the instrument module according to instrument name
         chosen_inst = self.loaded_instruments[chosen_inst_name]
         return chosen_inst
