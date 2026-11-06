@@ -81,7 +81,7 @@ const showApplicableInstruments = async () => {
     }
 }
 
-const validateCurrentInputsAgainstInstrument = async () => {
+const validateCurrentInputsAgainstInstrument = async (parameterName = null) => {
 
     const instrumentRanges = document.getElementById("instrument-ranges-display");
     if (!instrumentRanges) {
@@ -96,7 +96,12 @@ const validateCurrentInputsAgainstInstrument = async () => {
     const inputsToValidate = [
         document.getElementById("obs-freq-input"),
         document.getElementById("bandwidth-input")
-    ];
+    ].filter(input => input && (!parameterName || input.name === parameterName));
+    // If no matching input is found for the requested parameter, skip the 
+    // instrument-range check.
+    if (inputsToValidate.length === 0) {
+        return true;
+    }
 
     try {
         const inputValuesInRange = await Promise.all(inputsToValidate.map((input) => {
