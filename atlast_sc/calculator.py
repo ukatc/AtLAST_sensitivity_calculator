@@ -102,9 +102,10 @@ class Calculator:
     @Decorators.validate_instrument
     def chosen_instrument(self, instrument_name):
         old_inst_name = self._param_setup.chosen_instrument.name
-        instrument_name = instrument_name.capitalize()
-        requested_inst_name = \
-            self._param_setup.loaded_instruments[instrument_name].name
+        normalised_instrument_names = {
+            name.lower(): name for name in self._param_setup.loaded_instruments
+        }
+        requested_inst_name = normalised_instrument_names[instrument_name.lower()]
         
         # Check if the requested instrument can be selected given the 
         # existing user input parameters
@@ -121,8 +122,8 @@ class Calculator:
             self._param_setup._calculate_derived_parameters()
             new_inst_name = self._param_setup.chosen_instrument.name
             if old_inst_name != new_inst_name:
-                print("Instrument has been changed from " + old_inst_name + " to " + \
-                    new_inst_name + ".")
+                print("Instrument has been changed from " + old_inst_name + \
+                      " to " + new_inst_name + ".")
         else:
             # User inputted obs_freq and bandwidth are not 
             # in range of the requested instrument
