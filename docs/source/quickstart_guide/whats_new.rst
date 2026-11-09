@@ -3,6 +3,22 @@ What's new in version 2
 
 The AtLAST Sensitivity Calculator was first developed as part of the AtLAST Design Study (funded by the European Union's Horizon Europe research and innovation programme under grant agreement No. 951815). As part of the AtLAST2 Design Consolidation Phase (funded by the European Union's Horizon Europe research and innovation programme under grant agreement No. 101188037), a new version of the code has been developed. The key objective of this new version is to provide a calculator that takes into account the variety of instruments that are being developed for current (sub-)mm telescopes so that science users can better constrain their science cases and instrument builders can better understand how best to improve their instruments to better satisfy the needs of the science community.
 
+New instruments
++++++++++++++++
+Version 1 of the calculator assumed a generic coherent receiver with a receiver temperature linearly dependent on frequency in the radiometer equation. In this new version, we have worked with builders of (sub-)mm instruments to understand how to represent their instruments that have been or are being built for other telescopes in the code so that they can be used as examples of the different types of instrument that will be built for AtLAST. These instruments include high resolution heterodyne spectrometers, continuum cameras using Kinetic Inductance Detector (KID) technology and an Integrated Field Unit using KID technology. Initially, this included the following five instruments:
+* CHAI
+* FINER
+* MUSCAT
+* SEPIA
+* TIFUUN
+For more details on these instruments see :doc:`the instrument overview <../calculator_info/instrument_overview>`. The For information on how to make use of these in the command line interface see :ref:`the instrument selection <section_instrument_selection>` section. 
+
+The web client also now includes an instrument selection box to allow the user access to the different instruments. 
+
+The code has now been designed to make it possible to add further instruments, which can be achieved by following the instructions on :doc:`adding a new instrument <../developer_guide/adding_new_instrument>`. 
+
+The generic receiver used in version 1 can still be accessed by selecting the instrument labelled 'Default'. However, note that this will not provide exactly the same results as before as improvements have been made to the treatment of temperatures in the code, as detailed in the next section.
+
 Code refactor
 +++++++++++++
 The codebase has been refactored to have a more modular structure for the calculation process. In the
@@ -55,15 +71,7 @@ stored (see :ref:`Class Structure <class structure>` for a high level view of th
         calculator.derived_parameters.show()
 
 
-New instruments
-+++++++++++++++
-Version 1 of the calculator assumed a generic coherent receiver with a receiver temperature linearly dependent on frequency in the radiometer equation. In this new version, we have worked with builders of (sub-)mm instruments to understand how to represent their instruments that have been or are being built for other telescopes in the code so that they can be used as examples of the different types of instrument that will be built for AtLAST. These instruments include high resolution heterodyne spectrometers, a continuum camera using Kinetic Inductance Detector (KID) technology and a Integrated Field Unit using KID technology. For more details on these instruments see :doc:`the instrument overview <../calculator_info/instrument_overview>`. For information on how to make use of these in the command line interface see :ref:`the instrument selection <section_instrument_selection>` section. 
 
-The web client also now includes an instrument selection box to allow the user access to the different instruments. 
-
-The code has now been designed to make it possible to add further instruments, which can be achieved by following the instructions on :doc:`adding a new instrument <../developer_guide/adding_new_instrument>`. 
-
-The generic receiver used in version 1 can still be accessed by selecting the instrument labelled 'Default'. However, note that this will not provide exactly the same results as before as improvements have been made to the treatment of temperatures in the code, as detailed in the next section.
 
 Changes to the treatment of temperatures
 ++++++++++++++++++++++++++++++++++++++++
