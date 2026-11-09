@@ -120,9 +120,9 @@ class InstrumentPreferenceListNotAllowed(ValueError):
     """
 
     def __init__(self, incorrect_insts, preference_list, available_instruments, message=None):
-        incorrect_insts = [inst.capitalize() for inst in incorrect_insts]
-        preference_list = [inst.capitalize() for inst in preference_list]
-        available_instruments = [inst.capitalize() for inst in available_instruments]
+        incorrect_insts = list(incorrect_insts)
+        preference_list = list(preference_list)
+        available_instruments = list(available_instruments)
 
         self.message = self.message \
             if message \
