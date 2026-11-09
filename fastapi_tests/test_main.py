@@ -32,6 +32,18 @@ def test_calculate_sensitivity():
     assert pytest.approx(sensitivity['value'], 0.01) == 690.
 
 
+def test_calculate_sensitivity_as_brightness_temperature():
+    response = client.post(
+        f'/v{version}/sensitivity/',
+        json={**user_input, 'brightness_temperature': True},
+    )
+
+    assert response.status_code == 200
+    sensitivity = response.json()
+    assert sensitivity['unit'] == 'mK'
+    assert sensitivity['value'] > 0
+
+
 @pytest.mark.parametrize('temperature_unit', ['mK', 'K'])
 def test_calculate_t_int_rejects_negative_temperature_sensitivity(temperature_unit):
     negative_temperature_input = {
