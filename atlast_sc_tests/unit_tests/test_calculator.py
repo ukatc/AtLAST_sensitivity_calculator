@@ -11,7 +11,6 @@ from atlast_sc.core.exceptions import InstrumentNotApplicableException
 from atlast_sc_tests.utils import does_not_raise
 from pydantic import ValidationError
 
-
 class TestCalculator:
 
     def iterate_over_properties(self, parameter_class):
@@ -317,6 +316,15 @@ class TestCalculator:
             validation_error = exception_info.value  
             error_string = str(validation_error).lower()
             assert exception_match_string in error_string
+
+    def test_choose_instrument_preserves_mixed_case_name(self):
+        result = ParameterSetup._choose_instrument_from_applicable(
+            None,
+            ["Finer", "SRTQBand", "Muscat"],
+            ["SRTQBand", "Finer", "Muscat"],
+        )
+
+        assert result == "SRTQBand"
 
     @pytest.mark.parametrize(
         'new_t_int,update_calculator, brightness_temperature',

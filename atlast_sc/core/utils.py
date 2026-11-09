@@ -112,7 +112,10 @@ class Decorators:
                         'Instrument name is not provided in the correct format. '\
                         'Check if you have provided the name of the '\
                         'instrument in a String format.')
-            if not value.lower().capitalize() in calculator.loaded_instruments.keys():
+            normalised_loaded_instruments = [
+                name.lower() for name in calculator.loaded_instruments.keys()
+            ]
+            if value.lower() not in normalised_loaded_instruments:
                 raise KeyError(
                         'Instrument name provided \'' + value + '\' is not available. '\
                         'Check if you have provided the instrument '\

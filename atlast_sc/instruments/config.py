@@ -17,6 +17,8 @@ class InstrumentConfig:
         muscat_instrument = {'class': 'Muscat.py', 'data': 'Muscat.yaml'}
         sepia_instrument = {'class': 'Sepia.py', 'data': 'Sepia.yaml'}
         tifuun_instrument = {'class': 'Tifuun.py', 'data': 'Tifuun.yaml'}
+        mistral_instrument = {'class': 'Mistral.py', 'data': 'Mistral.yaml'}
+        SRTQband_instrument = {'class': 'SRTQband.py', 'data': 'SRTQband.yaml'}
         alma_instrument = {'class': 'Alma.py', 'data': 'Alma.yaml'}
         alma_wsu_instrument = {'class': 'Alma_wsu.py', 'data': 'Alma_wsu.yaml'}
         SRTQband_instrument = {'class': 'SRTQband.py', 'data': 'SRTQband.yaml'}
@@ -33,11 +35,15 @@ class InstrumentConfig:
             tifuun_instrument,
             alma_instrument,
             alma_wsu_instrument,
-            SRTQband_instrument
+            SRTQband_instrument,
+            mistral_instrument,
             # TODO: Add your custom instrument here.
         ]
 
-        self._instrument_order_preference = ["Tifuun", "Muscat", "Finer", "Sepia", "Chai", "Default", "Alma_wsu", "Alma"]
+        # The instrument order preference determines which instrument will be selected when 2 or more both
+        # fit the given observing frequency and bandwidth
+        # TODO: Add your instrument to this list.
+        self._instrument_order_preference = ["Tifuun", "Muscat", "Mistral", "Finer", "Sepia", "Chai", "SRTQband", "Default", "Alma_wsu", "Alma"]
 
         self._inst_classes = {}
 

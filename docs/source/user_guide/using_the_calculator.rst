@@ -238,7 +238,7 @@ calculations. Should you choose to specify an order, you can do it through the c
     >>> calculator.instrument_order_preference = ['Finer', 'Chai', 'Default', 'Sepia', 'Tifuun', 
     >>> 'Muscat', 'Alma_wsu', 'Alma']
 
-If you choose not to specify an order, the calculator will use the default order (``["Tifuun", "Muscat", "Finer", "Sepia", "Chai", "Default", "Alma_wsu", "Alma"]``) 
+If you choose not to specify an order, the calculator will use the default order (``["Tifuun", "Muscat", "Mistral", "Finer", "Sepia", "Chai", "SRTQband", "Default", "Alma_wsu", "Alma"]``) 
 when making calculations.
 
 
@@ -265,4 +265,27 @@ Both methods can take a dish radius value as an optional parameter:
 
 .. code-block:: python
 
-    >>> temp = calculator.convert_flux_density_to_brightness_temperature(50 * u.Jy, 30 * u.m)
+    >>> temp = calculator.convert_flux_density_to_brightness_temperature(sensitivity_in_flux_density, 30 * u.m)
+
+
+Conversion between velocity and frequency
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you wish to convert between velocity and frequency, you can use the following helper
+functions:
+
+.. code-block:: python
+
+    >>> freq = calculator.convert_velocity_to_frequency(40 * u.km / u.s)
+    >>> print(freq)
+    54170809.06017989 Hz
+
+    >>> velocity = calculator.convert_frequency_to_velocity(600 * u.GHz)
+    >>> print(velocity)
+    443043.04137931037 km / s
+
+Both methods can take an observing frequency value as an optional parameter:
+
+.. code-block:: python
+
+    >>> freq = calculator.convert_velocity_to_frequency(40 * u.km / u.s, 230 * u.GHz)
