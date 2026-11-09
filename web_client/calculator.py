@@ -8,7 +8,8 @@ from pydantic import ValidationError
 from atlast_sc.core.data import Data
 
 
-def do_calculation(user_input, calculation, selected_instrument):
+def do_calculation(user_input, calculation, selected_instrument,
+                   brightness_temperature=False):
     """
     Perform the specified calculation (sensitivity or integration time)
     """
@@ -28,7 +29,13 @@ def do_calculation(user_input, calculation, selected_instrument):
             # TODO: handle error
             pass
     
-    calculated_param = func(update_calculator=False)
+    if calculation == "sensitivity":
+        calculated_param = func(
+            update_calculator=False,
+            brightness_temperature=brightness_temperature,
+        )
+    else:
+        calculated_param = func(update_calculator=False)
 
     value = calculated_param.value
     unit = str(calculated_param.unit)

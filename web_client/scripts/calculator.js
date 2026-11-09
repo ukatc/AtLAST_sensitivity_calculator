@@ -171,6 +171,7 @@ $(document).ready(() => {
                     checkedOption.getAttribute("calculation") !== "sensitivity"
                   );
 
+                  setInstrument("Default");
                   doCalculation(data);
                 })
             });
