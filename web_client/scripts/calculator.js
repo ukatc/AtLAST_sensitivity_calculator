@@ -81,6 +81,8 @@ $(document).ready(() => {
             const calcOptions =
                 document.querySelectorAll('input[name="calc-options"');
             let checkedOption;
+            const brightnessTemperatureOption =
+                document.getElementById("brightness-temperature-option");
             // Add an event listener to the radio buttons to show or hide the
             //   appropriate input box depending on selection.
             // Keep track of which option is checked so we know whether to
@@ -102,6 +104,10 @@ $(document).ready(() => {
                     }
                     // Update the checked option
                     checkedOption = e.target;
+                    brightnessTemperatureOption.classList.toggle(
+                        "d-none",
+                        checkedOption.getAttribute("calculation") !== "sensitivity"
+                    );
 
                     // Iterate over the radio buttons. For the one that's clicked,
                     // hide the corresponding input box, otherwise show the
@@ -122,6 +128,13 @@ $(document).ready(() => {
                     }
                 });
             }
+            // Add an event listener to the Brightness Temperature checkbox to
+            // re-enable the Calculate button if the form is in a valid state
+            document.getElementById("brightness-temperature")
+                .addEventListener("change", () => {
+                    CalculatorUI.disableCalculateBtn(false);
+                    CalculatorUI.resetOutputBox();
+                });
 
             // Add an event listener to do the calculation when the form is
             //  submitted
@@ -153,6 +166,10 @@ $(document).ready(() => {
                         checkedOption = option;
                     }
                   }
+                  brightnessTemperatureOption.classList.toggle(
+                    "d-none",
+                    checkedOption.getAttribute("calculation") !== "sensitivity"
+                  );
 
                   doCalculation(data);
                 })
@@ -203,6 +220,10 @@ const doCalculation = (paramData) => {
 
     for (const option of calcOptions) {
         if (option.checked) {
+            if (option.getAttribute("calculation") === "sensitivity") {
+                inputData.brightness_temperature =
+                    document.getElementById("brightness-temperature").checked;
+            }
             calculate(inputData, option.getAttribute("calculation"))
             .then((data) => {
                 CalculatorUI.showCalculatedValue(data.value, data.unit);
