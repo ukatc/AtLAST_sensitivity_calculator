@@ -1,4 +1,4 @@
-The :class:`FileHelper <atlast_sc.core. utils.FileHelper>` method
+The :class:`FileHelper <atlast_sc.core.utils.FileHelper>` method
 :meth:`write_to_file <atlast_sc.core.utils.FileHelper.write_to_file>` writes
 all user inputs and derived parameters to a     
 plain-text, `YAML <https://en.wikipedia.org/wiki/YAML>`__,

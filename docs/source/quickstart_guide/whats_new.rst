@@ -5,7 +5,7 @@ The AtLAST Sensitivity Calculator was first developed as part of the AtLAST Desi
 
 New instruments
 +++++++++++++++
-Version 1 of the calculator assumed a generic coherent receiver with a receiver temperature linearly dependent on frequency in :doc:`the radiometer equation <../calculator_info/sensitivity.rst>`. In this new version, we have worked with builders of (sub-)mm instruments to understand how to represent their instruments that have been or are being built for other telescopes in the code so that they can be used as examples of the different types of instrument that will be built for AtLAST. These instruments include high resolution heterodyne spectrometers, continuum cameras using Kinetic Inductance Detector (KID) technology and an Integrated Field Unit using KID technology. Initially, this included the following five instruments:
+Version 1 of the calculator assumed a generic coherent receiver with a receiver temperature linearly dependent on frequency in :doc:`the radiometer equation <../calculator_info/sensitivity>`. In this new version, we have worked with builders of (sub-)mm instruments to understand how to represent their instruments that have been or are being built for other telescopes in the code so that they can be used as examples of the different types of instrument that will be built for AtLAST. These instruments include high resolution heterodyne spectrometers, continuum cameras using Kinetic Inductance Detector (KID) technology and an Integrated Field Unit using KID technology. Initially, this included the following five instruments:
 
 * CHAI
 * FINER
@@ -16,7 +16,7 @@ Version 1 of the calculator assumed a generic coherent receiver with a receiver 
 For the heterodyne instruments, we can represent their sensitivity the same way we did for the generic coherent receiver, but this time using the measured receiver temperature, which was provided by the instrument builders as either a constant per band or a parameterised equation for the dependence on frequency. KIDs, on the other hand, are impacted by noise in a slightly different way. This is generally described by a noise equivalent power (NEP), which cannot simply be converted to an equivalent receiver temperature as this equivalence will still depend on the environmental noise. We found that we could convert this to a system temperature through the equation:
 
 .. math::
-    T_\mathrm{sys} &=& \frac{\mathrm{NEP}}{k\,\eta_\mathrm{chip}\,\eta_\mathrm{co}\,\eta_\mathrm{eff}\,t_\mathrm{r}\,\sqrt{2n_\mathrm{pol}\,\Delta\nu} } \label{etsysmkid}
+    T_\mathrm{sys} = \frac{\mathrm{NEP}}{k\,\eta_\mathrm{chip}\,\eta_\mathrm{co}\,\eta_\mathrm{eff}\,t_\mathrm{r}\,\sqrt{2n_\mathrm{pol}\,\Delta\nu} } \label{etsysmkid}
 
 where
 
@@ -26,9 +26,10 @@ where
 * :math:`\mathfrak{t}` is the atmospheric transmittance, defined as :math:`\mathfrak{t} = \textrm{exp}^{(-\tau_{atm})}`
 * :math:`n_\mathrm{pol}` is the number of polarisations being averaged over
 * :math:`\Delta\nu` is the bandwidth
+
 We, therefore re-arranged the calculator so that the system temperature is being calculated for the selected instrument in the relevant instrument module and then returned to the core calculator for the SEFD equation. For more details on the instruments and their system temperature calculations see :doc:`the instrument overview <../calculator_info/instrument_overview>`. For information on how to make use of these in the command line interface see :ref:`the instrument selection <section_instrument_selection>` section. 
 
-The code has now been designed to make it possible to add further instruments, which can be achieved by following the instructions on :doc:`adding a new instrument <../developer_guide/adding_new_instrument>`. This involves creating a module that calculates the system temperature, a text file that contains the relevant constants, adding the new instrument to the configuration module, creating a documentation page and creating a Jupyter notebook to demonstrate the instrument. This workflow has been tested by the teams behind the :doc:`MISTRAL continuum camera <../calculator_info/instruments/mistral_tsys>` and the :doc:`SRT Q Band heterodyne receiver <./calculator_info/instruments/SRTQband_tsys>`. We have also added the :doc:`ALMA and ALMA WSU receivers <../calculator_info/instruments/alma_tsys>` using this process.
+The code has now been designed to make it possible to add further instruments, which can be achieved by following the instructions on :doc:`adding a new instrument <../developer_guide/adding_new_instrument>`. This involves creating a module that calculates the system temperature, a text file that contains the relevant constants, adding the new instrument to the configuration module, creating a documentation page and creating a Jupyter notebook to demonstrate the instrument. This workflow has been tested by the teams behind the :doc:`MISTRAL continuum camera <../calculator_info/instruments/mistral_tsys>` and the :doc:`SRT Q Band heterodyne receiver <../calculator_info/instruments/SRTQband_tsys>`. We have also added the :doc:`ALMA and ALMA WSU receivers <../calculator_info/instruments/alma_tsys>` using this process.
 
 The generic receiver used in version 1 can still be accessed by selecting the instrument labelled 'Default'. However, note that this will not provide exactly the same results as before as improvements have been made to the treatment of temperatures in the code, as detailed :ref:`below <section_temperature_changes>`.
 
@@ -108,7 +109,7 @@ Note that the bandwidth and sensitivity are still stored as frequency and flux d
     print(calculator.convert_frequency_to_velocity(65 * u.Hz))
     print(calculator.convert_velocity_to_frequency(40 * u.m / u.s))
 
-For more details see 
+For more details see the section on :ref:`unit conversions <section_unit_conversions>`.
 
 Web client updates
 ++++++++++++++++++
