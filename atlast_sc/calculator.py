@@ -134,6 +134,9 @@ class Calculator:
         
     @property
     def instrument_order_preference(self):
+        """
+        The calculator will select the first instrument in this list that is valid for current observing frequency and bandwidth. 
+        """
         return self._param_setup.inst_order_preference
 
     @instrument_order_preference.setter

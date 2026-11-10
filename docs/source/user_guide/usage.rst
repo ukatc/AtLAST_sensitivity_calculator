@@ -6,11 +6,6 @@ Python code. See the
 :doc:`Installation Guide <python_package_installation>` for information on installing the sensitivity
 calculator and creating a conda environment with the required python packages.
 
-.. _input data:
-
-.. Using the Calculator
-.. ====================
-
 After the package has been successfully installed and verified, the following workflow describes how to setup and perform
 sensitivity or integration time calculations given weather, telescope and instrumentation settings and either a required sensitivity (to calculate
 on source integration time) or an integration time (to calculate sensitivity).
@@ -165,6 +160,7 @@ You can reset the user input parameters stored in the calculator to their initia
         # expected output
         # bandwidth 100.0 MHz
 
+.. _input data:
 
 Initialising the Calculator with a dictionary
 ---------------------------------------------
