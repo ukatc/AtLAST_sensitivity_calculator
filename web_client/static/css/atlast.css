@@ -207,6 +207,18 @@ img#logoimg {
   color: #747474;
 }
 
+#left-area {
+  margin-right: -5%;
+}
+
+#right-area {
+  margin-left: -5%;
+}
+
+#content-area {
+  padding-left: 10%;
+}
+
 @media print {
   #header {
     color: #3b3b3b;
@@ -237,6 +249,12 @@ img#logoimg {
     #tagline {
         font-size: 1.2rem;
     }
+
+    #content-area {
+        margin-left: -20%;
+        margin-right: -15%;
+    }
+
 }
 
 @media screen and (max-width: 660px) {
