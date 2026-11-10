@@ -266,11 +266,13 @@
           <div class="col col-sm-4 col-md-2 align-self-end">
             <div class="card" id="output"></div>
           </div>
-          <div class="col-auto d-none align-self-center" id="brightness-temperature-option">
+          <div class="d-none col col-sm-4 col-md-2 align-self-center d-flex justify-content-center" id="sensitivity-result-unit-option">
             <div class="d-flex align-items-center gap-2">
-              <div class="btn-group" role="group" aria-label="Sensitivity output unit">
-                <input class="btn-check" type="checkbox" id="brightness-temperature" autocomplete="off">
-                <label class="btn btn-outline-primary" for="brightness-temperature" id="sensitivity-output-unit">Jy</label>
+              <div class="btn-group" role="group">
+                <input class="btn-check" type="radio" name="sensitivity-output-unit" id="sensitivity-unit-jy" value="Jy" autocomplete="off" checked>
+                <label class="btn btn-outline-primary" for="sensitivity-unit-jy">Jy</label>
+                <input class="btn-check" type="radio" name="sensitivity-output-unit" id="sensitivity-unit-k" value="K" autocomplete="off">
+                <label class="btn btn-outline-primary" for="sensitivity-unit-k">K</label>
               </div>
             </div>
           </div>

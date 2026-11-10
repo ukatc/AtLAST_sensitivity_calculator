@@ -81,8 +81,8 @@ $(document).ready(() => {
             const calcOptions =
                 document.querySelectorAll('input[name="calc-options"');
             let checkedOption;
-            const brightnessTemperatureOption =
-                document.getElementById("brightness-temperature-option");
+            const sensitivityResultUnitOption =
+                document.getElementById("sensitivity-result-unit-option");
             // Add an event listener to the radio buttons to show or hide the
             //   appropriate input box depending on selection.
             // Keep track of which option is checked so we know whether to
@@ -104,7 +104,7 @@ $(document).ready(() => {
                     }
                     // Update the checked option
                     checkedOption = e.target;
-                    brightnessTemperatureOption.classList.toggle(
+                    sensitivityResultUnitOption.classList.toggle(
                         "d-none",
                         checkedOption.getAttribute("calculation") !== "sensitivity"
                     );
@@ -128,21 +128,14 @@ $(document).ready(() => {
                     }
                 });
             }
-            // Add an event listener to the Brightness Temperature checkbox to
-            // re-enable the Calculate button if the form is in a valid state
-            const brightnessTemperatureInput =
-                document.getElementById("brightness-temperature");
-            const sensitivityOutputUnit =
-                document.getElementById("sensitivity-output-unit");
-            const updateSensitivityOutputUnit = () => {
-                sensitivityOutputUnit.textContent =
-                    brightnessTemperatureInput.checked ? "K" : "Jy";
-            };
-            brightnessTemperatureInput.addEventListener("change", () => {
-                    updateSensitivityOutputUnit();
+            // Recalculate after the selected sensitivity output unit changes.
+            document.querySelectorAll('input[name="sensitivity-output-unit"]')
+                .forEach(unitInput => {
+                    unitInput.addEventListener("change", () => {
                     CalculatorUI.disableCalculateBtn(false);
                     CalculatorUI.resetOutputBox();
                 });
+            });
 
             // Add an event listener to do the calculation when the form is
             //  submitted
@@ -165,7 +158,6 @@ $(document).ready(() => {
 
                 return new Promise((resolve, reject) => resolve(form.reset()))
                 .then(() => {
-                  updateSensitivityOutputUnit();
                   CalculatorUI.setUIInitialState(data);
 
                   // Reset the reference to the checked radio button
@@ -175,7 +167,7 @@ $(document).ready(() => {
                         checkedOption = option;
                     }
                   }
-                  brightnessTemperatureOption.classList.toggle(
+                  sensitivityResultUnitOption.classList.toggle(
                     "d-none",
                     checkedOption.getAttribute("calculation") !== "sensitivity"
                   );
@@ -232,7 +224,7 @@ const doCalculation = (paramData) => {
         if (option.checked) {
             if (option.getAttribute("calculation") === "sensitivity") {
                 inputData.brightness_temperature =
-                    document.getElementById("brightness-temperature").checked;
+                    document.getElementById("sensitivity-unit-k").checked;
             }
             calculate(inputData, option.getAttribute("calculation"))
             .then((data) => {
