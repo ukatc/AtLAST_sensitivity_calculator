@@ -28,19 +28,20 @@ where
 * :math:`\Delta\nu` is the bandwidth
 We, therefore re-arranged the calculator so that the system temperature is being calculated for the selected instrument in the relevant instrument module and then returned to the core calculator for the SEFD equation. For more details on the instruments and their system temperature calculations see :doc:`the instrument overview <../calculator_info/instrument_overview>`. For information on how to make use of these in the command line interface see :ref:`the instrument selection <section_instrument_selection>` section. 
 
-The code has now been designed to make it possible to add further instruments, which can be achieved by following the instructions on :doc:`adding a new instrument <../developer_guide/adding_new_instrument>`. 
+The code has now been designed to make it possible to add further instruments, which can be achieved by following the instructions on :doc:`adding a new instrument <../developer_guide/adding_new_instrument>`. This involves creating a module that calculates the system temperature, a text file that contains the relevant constants, adding the new instrument to the configuration module, creating a documentation page and creating a Jupyter notebook to demonstrate the instrument. This workflow has been tested by the teams behind the :doc:`MISTRAL continuum camera <../calculator_info/instruments/mistral_tsys>` and the :doc:`SRT Q Band heterodyne receiver <./calculator_info/instruments/SRTQband_tsys>`. We have also added the :doc:`ALMA and ALMA WSU receivers <../calculator_info/instruments/alma_tsys>` using this process.
 
-The generic receiver used in version 1 can still be accessed by selecting the instrument labelled 'Default'. However, note that this will not provide exactly the same results as before as improvements have been made to the treatment of temperatures in the code, as detailed in the next section.
+The generic receiver used in version 1 can still be accessed by selecting the instrument labelled 'Default'. However, note that this will not provide exactly the same results as before as improvements have been made to the treatment of temperatures in the code, as detailed :ref:`below <section_temperature_changes>`.
 
 Code refactor
 +++++++++++++
-The codebase has been refactored to have a more modular structure for the calculation process. In the
-previous version, the code was structured in a singular streamlined process that made it difficult
-to modify the calculation process. The new structure allows for better organisation of the
-code and makes it easier to add new instruments or to modify the calculation process in the
-future. These changes include separating the calculation input parameters into different classes 
-based on their category, and introducing instrument modules where instrument data and methods are 
-stored (see :ref:`Class Structure <class structure>` for a high level view of the new structure).
+
+.. image:: imgs/block-diagram.png
+    :alt: Representation of how the instrument module interacts with the core code
+    :align: center
+    :width: 500px
+
+The separation of the system temperature calculation into separate instrument modules necessitated a restructuring of the code into the core calculator modules, the modules handling the parameters and the instrument modules. 
+
 
 .. note::
 
@@ -113,6 +114,8 @@ Web client updates
 ++++++++++++++++++
 The web client can be run locally and is also available on the `AtLAST website <https://senscalc.atlast.uio.no/>`__. The above implementations for the new instruments and the unit conversions have been propagated into the web client. This now includes an instrument selection box. As well as allowing the user to select the instrument they desire, this provides information on the instruments available for the current observing frequency and bandwidth and the ranges for the currently selected instrument. Clear error messages are provided if the user selects an instrument that does not fit with the currently selected frequency and bandwidth. Extra information has also been added to describe each of the input parameters.
 
+.. _section_temperature_changes:
+
 Changes to the treatment of temperatures
 ++++++++++++++++++++++++++++++++++++++++
 During the process of working with the instrument builders to understand their instruments, we discovered that there were a few inconsistencies with the equations for the system temperature, which required the following changes:
@@ -121,7 +124,7 @@ During the process of working with the instrument builders to understand their i
 * The CMB temperature was not being multiplied by the transmittance. This factor has now been added.
 * All of the temperatures that contribute to the noise should be Rayleigh-Jeans brightness temperatures, as described in, e.g., section 13.2.1 of Interferometry and Synthesis in Radio Astronomy. This was not the case and so we have changed the *am* code output to ensure that our atmospheric temperature is a Rayleigh-Jeans brightness temperature and adapted our CMB temperature and ambient temperature using equation 10 from ALMA memo 602. Note that the receiver temperature remains unchanged as this is defined as a Rayleigh-Jeans brightness temperature.
 
-The following plot shows the ratio between the final system temperature after taking into account these changes compared to the original system temperature from version 1 of the code.
+The following plot shows the ratio between the final system temperature after taking into account these changes compared to the original system temperature from version 1 of the code. From this we can see that, for most frequencies, the new results are within 10% of the previous values. This means that estimates made with the previous version are still good estimates given that many other aspects of the telescope will not be known to this level of accuracy until the telescope is built. 
 
 .. image:: imgs/ratio_tsys.png
     :alt: Ratio of new system temperature to old system temperature
@@ -130,7 +133,7 @@ The following plot shows the ratio between the final system temperature after ta
 
 Dependency updates
 ++++++++++++++++++
-The first version of the code was written in 2023 for Python 3.10. To ensure compatibility with currently supported versions of Python, we have updated a number of our dependencies:
+The first version of the code was written in 2023 for Python 3.10. This version of Python is no longer supported. To ensure compatibility with currently supported versions of Python, we have updated a number of our dependencies:
 
 * python 3.10 => 3.13
 * astropy 5.1 => 7.0
