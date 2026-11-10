@@ -2,10 +2,14 @@ import os
 import functools
 import json
 from pathlib import Path
-from pathlib import Path
 from yaml import load, Loader, safe_load
+from numpy import log, pi
 from astropy.units import Unit
+import astropy.units as u
+from astropy.constants import c
 from types import SimpleNamespace
+
+from atlast_sc.core.exceptions import InstrumentPreferenceListNotAllowed
 
 class Decorators:
     """
@@ -20,7 +24,7 @@ class Decorators:
         target parameter.
         """
         @functools.wraps(func)
-        def do_validation(calculator, value, **kwargs):
+        def do_validation(param_class, value, **kwargs):
 
             """
             Validates the type, value and units of the value for the target
@@ -36,14 +40,89 @@ class Decorators:
             # are expected to be floats)
             if isinstance(value, int):
                 value = float(value)
+            
+            # Do special unit conversion if needed
+            value = Decorators._special_unit_conversion(func.__name__, param_class, value)
 
             # Validate the new value
-            DataHelper.validate(calculator, func.__name__, value)
+            DataHelper.validate(param_class, func.__name__, value)
 
             # Update the parameter
-            func(calculator, value, **kwargs)
+            func(param_class, value, **kwargs)
 
         return do_validation
+
+    @staticmethod
+    def validate_calculated_value(func):
+        """
+        Decorator to support setter methods on calculation result parameters.
+        Validates the value for the target parameter.
+        """
+        @functools.wraps(func)
+        def do_validation(param_class, value, **kwargs):
+
+            """
+            Validates the type, value and units of the value for the target
+            parameter.
+
+            :param calculator: The Calculator object
+            :type calculator: Calculator
+            :param value: The new value
+            :type value: int, float or Quantity
+            """
+
+            # Ensure integer values are converted to floats (all parameter values
+            # are expected to be floats)
+            if isinstance(value, int):
+                value = float(value)
+            
+            # Do special unit conversion if needed
+            value = Decorators._special_unit_conversion_for_results(func.__name__, param_class, value)
+
+            # Validate the new value
+            DataHelper.validate(param_class, func.__name__, value)
+
+            # Update the parameter
+            func(param_class, value, **kwargs)
+
+        return do_validation
+
+    @staticmethod
+    def validate_instrument(func):
+        """
+        Decorator to support setter method of instrument choice. Validates
+        that the input is a string and that the value is available in 
+        previously loaded instrument names. 
+        """
+        @functools.wraps(func)
+        def inst_validation(calculator, value, **kwargs):
+
+            """
+            Validates that the instrument choice is provided in the 
+            correct format and that the provided value corresponds
+            to the existing instruments. 
+
+            :param calculator: The Calculator object
+            :type calculator: Calculator
+            :param value: instrument name
+            :type value: string
+            """
+            if not isinstance(value, str):
+                raise AttributeError(
+                        'Instrument name is not provided in the correct format. '\
+                        'Check if you have provided the name of the '\
+                        'instrument in a String format.')
+            normalised_loaded_instruments = [
+                name.lower() for name in calculator.loaded_instruments.keys()
+            ]
+            if value.lower() not in normalised_loaded_instruments:
+                raise KeyError(
+                        'Instrument name provided \'' + value + '\' is not available. '\
+                        'Check if you have provided the instrument '\
+                        'correctly.')
+            return func(calculator, value, **kwargs)        
+        return inst_validation
+
 
     @staticmethod
     def validate_and_update_params(func):
@@ -73,6 +152,9 @@ class Decorators:
             if isinstance(value, int):
                 value = float(value)
 
+            # Do special unit conversion if needed
+            value = Decorators._special_unit_conversion(func.__name__, param_class, value)
+
             # Validate the new value
             DataHelper.validate(param_class, func.__name__, value)
 
@@ -95,6 +177,102 @@ class Decorators:
 
         return do_update
 
+    @staticmethod
+    def validate_inst_preference_list(func):
+        """
+        Decorator to support setter method on user inputted instrument order
+        preference list. Validates each of the instrument name with the
+        available instrument names in the calculator. 
+        
+        :param func: function that updates the instrument order preference
+        :type func: property setter function
+        """
+        @functools.wraps(func)
+        def do_validation(calculator, preference_list, **kwargs):
+            """
+            Validates each of the instrument name provided by the user in the 
+            instrument preference list against instrument names loaded within
+            the calculator.
+
+            :param calculator: The Calculator object
+            :type calculator: Calculator
+            :param preference_list: Instrument preference order 
+            :type preference_list: list of str
+            """
+            available_insts = calculator._param_setup.loaded_instruments
+            preference_list = [inst.lower() for inst in preference_list]
+            available_insts = [inst.lower() for inst in available_insts]
+
+            DataHelper.validate_instruments(preference_list, available_insts)
+
+            return func(calculator, preference_list, **kwargs)
+
+        return do_validation           
+
+
+    def _special_unit_conversion(param_name, param_class, value):
+        """
+        Converts a parameter value that contains a special unit to the default
+        unit of the said parameter.
+
+        :param param_name: name of parameter
+        :type param_name: String
+        :param param_class: user input parameter class object
+        :type param_class: UserInputParameters
+        :param value: parameter value
+        :type value: Quantity
+        :return: converted value
+        :rtype: Quantity
+        """
+        if param_name in DataHelper.special_params_and_units.keys():
+            if hasattr(value, "unit") and \
+                    str(value.unit) in DataHelper.special_params_and_units[param_name]:
+                # Conversion needed
+                match param_name:
+                    case 'bandwidth': # Bandwidth is provided as a velocity
+                        value, unit = DataHelper.convert_velocity_to_frequency(
+                                                        param_class.obs_freq, value)
+                        value = u.Quantity(float(value), unit)
+
+                    case 'sensitivity': # Sensitivity is provided as a temperature
+                        dish_radius = \
+                            param_class._param_setup.telescope_and_environment.dish_radius.value
+                        value, unit = DataHelper.convert_temperature_to_flux_density(
+                                                param_class.obs_freq, dish_radius, value)
+                        value = u.Quantity(float(value), unit)
+
+        return value
+
+    def _special_unit_conversion_for_results(param_name, param_class, value):
+        """
+        Converts a calculation result value that contains a special unit to 
+        the default unit of the said parameter.
+
+        :param param_name: name of parameter
+        :type param_name: String
+        :param param_class: user input parameter class object
+        :type param_class: UserInputParameters
+        :param value: parameter value
+        :type value: Quantity
+        :return: converted value
+        :rtype: Quantity
+        """
+        if param_name in DataHelper.special_params_and_units.keys():
+            if hasattr(value, "unit") and \
+                    str(value.unit) in DataHelper.special_params_and_units[param_name]:
+                # Conversion needed
+                match param_name:
+
+                    # NOTE: calculated integration time could be added too
+
+                    case 'calculated_sensitivity': # Calculated sensitivity is provided as a temperature
+                        dish_radius = \
+                            param_class.telescope_and_environment.dish_radius
+                        value, unit = DataHelper.convert_temperature_to_flux_density(
+                                                param_class.user_input.obs_freq, dish_radius, value)
+                        value = u.Quantity(float(value), unit)
+
+        return value
 class FileHelper:
     """
     Class that provides support for reading input parameters from a file
@@ -389,6 +567,12 @@ class FileHelper:
 
 class DataHelper:
 
+    special_params_and_units = {
+        'bandwidth': ['km / s', 'm / s'],
+        'sensitivity': ['mK', 'K'],
+        'calculated_sensitivity': ['mK', 'K']
+        }
+
     @staticmethod
     def validate(param_class, param_name, value):
         attribute = getattr(param_class, param_name)
@@ -429,7 +613,7 @@ class DataHelper:
         conversion_factors = \
             {unit: DataHelper._convert(1, unit, default_unit)
              for unit in allowed_units}
-
+        
         return conversion_factors
 
     @staticmethod
@@ -453,3 +637,116 @@ class DataHelper:
         converted_quantity = source_quantity.to(target_unit)
 
         return converted_quantity.value
+
+    @staticmethod
+    def convert_velocity_to_frequency(obs_freq, vel_value):
+        """
+        Converts the specified velocity to frequency.
+
+        :param obs_freq: Observing frequency
+        :type obs_freq: Quantity
+        :param vel_value: Velocity value to be converted
+        :type vel_value: Quantity
+        :return: tuple frequency value and unit
+        :rtpe: tuple(float, astropy Unit)
+        """
+        # Create the equivalence to use in conversion
+        vband_fband = [(u.m/u.s, u.Hz, lambda x: \
+                        x * obs_freq.to(u.Hz).value / c.value, \
+                        lambda x: x * c.value / obs_freq.to(u.Hz).value)]
+        freq = vel_value.to(u.Hz, equivalencies=vband_fband)
+        return float(freq.value), freq.unit
+
+    @staticmethod
+    def convert_frequency_to_velocity(obs_freq, bandw_value):
+        """
+        Converts the specified frequency to velocity.
+
+        :param obs_freq: Observing frequency
+        :type obs_freq: Quantity
+        :param bandw_value: Bandwidth value to be converted
+        :type bandw_value: Quantity
+        :return: tuple velocity value and unit
+        :rtpe: tuple(float, astropy Unit)
+        """
+        # Create the equivalence to use in conversion
+        vband_fband = [(u.m/u.s, u.Hz, lambda x: \
+                    x * obs_freq.to(u.Hz).value / c.value, \
+                    lambda x: x * c.value / obs_freq.to(u.Hz).value)]
+
+        vel = bandw_value.to(u.km/u.s, equivalencies=vband_fband)
+        return float(vel.value), vel.unit
+
+    @staticmethod
+    def convert_temperature_to_flux_density(obs_freq, dish_radius, sensitivity):
+        """
+        Converts the specified temperature to flux density.
+
+        :param obs_freq: Observing frequency
+        :type obs_freq: Quantity
+        :param dish_radius: Radius of the primary mirror
+        :type dish_radius: Quantity
+        :param sensitivity: Sensitivity in temperature value
+        :type sensitivity: Quantity
+        :return: Equivalent flux density value
+        :rtype: Quantity
+        """
+        lamu = c / obs_freq
+        diamu = 2 * dish_radius
+        # Assume Rayleigh criterion for beam size
+        beamu = (1.22 * lamu / diamu).decompose() * u.radian
+        # Convert to beam area
+        omu = pi * (beamu.to(u.arcsec)) ** 2 / (4 * log(2))
+        # Create the equivalence to use in conversion
+        eq = u.brightness_temperature(obs_freq, beam_area=omu)
+
+        # Convert brightness temperature to flux density
+        flux = sensitivity.to(u.Jy, equivalencies=eq)
+        return float(flux.value), flux.unit
+    
+    @staticmethod
+    def convert_flux_density_to_temperature(obs_freq, dish_radius, sensitivity):
+        """
+        Converts the given flux density to temperature. 
+
+        :param obs_freq: Observing frequency
+        :type obs_freq: Quantity
+        :param dish_radius: Radius of the primary mirror
+        :type dish_radius: Quantity
+        :param sensitivity: Sensitivity in flux density value
+        :type sensitivity: Quantity
+        :return: Equivalent temperature value
+        :rtype: Quantity
+        """
+        lamu = c / obs_freq
+        diamu = 2 * dish_radius
+        # Assume Rayleigh criterion for beam size
+        beamu = (1.22 * lamu / diamu).decompose() * u.radian
+        # Convert to beam area
+        omu = pi * (beamu.to(u.arcsec)) ** 2 / (4 * log(2))
+        # Create the equivalence to use in conversion
+        eq = u.brightness_temperature(obs_freq, beam_area=omu)
+
+        # Convert brightness temperature to flux density
+        flux = sensitivity.to(u.K, equivalencies=eq)
+        return float(flux.value), flux.unit
+
+    @staticmethod
+    def validate_instruments(preference_list, available_insts):
+        """
+        Validates the user inputted preference list against available
+        instruments that are loaded into the calculator.
+
+        :param preference_list: instrument preference order
+        :type preference_list: list of str
+        :param available_insts: available instrument names
+        :type available_insts: list of str
+        """
+        invalid_instruments = []
+        for inst in preference_list:
+            if inst not in available_insts:
+                invalid_instruments.append(inst)
+
+        if len(invalid_instruments) > 0:
+            raise InstrumentPreferenceListNotAllowed(invalid_instruments,
+                preference_list, available_insts)

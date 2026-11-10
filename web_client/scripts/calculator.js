@@ -1,4 +1,4 @@
-import {geParamValuesUnits, calculate} from './rest_calls.js';
+import {getParamValuesUnits, calculate, setInstrument} from './rest_calls.js';
 import {validateInput} from './validators.js'
 import * as CalculatorUI from './calculator_ui.js'
 
@@ -9,12 +9,15 @@ $(document).ready(() => {
     // Get the parameter default values, default units, permitted range, etc.
     // then set up event listeners and do the initial calculation with default
     // input values.
-    geParamValuesUnits()
+    getParamValuesUnits()
         .then((data) => {
 
             let formValidated = false;
 
             CalculatorUI.initializeUnits(data);
+
+            // Show applicable instruments with initial values
+            CalculatorUI.showApplicableInstruments();
 
             // Set up the event listeners on user input fields
             const allUserInputs = document.querySelectorAll(".param-input");
@@ -27,12 +30,19 @@ $(document).ready(() => {
                 formValidated = validateInput(input, units, data[input.name]);
 
                 // Add an event listener to validate input when it changes
-                input.addEventListener("change", e => {
+                input.addEventListener("change", async e => {
                     if (input === e.target) {
                         formValidated =
                             validateAndSetUIState(input, units,
                                                   data[input.name]);
-
+                        
+                        // Only frequency and bandwidth belong to instrument ranges.
+                        if (formValidated &&
+                            (input.name === "obs_freq" || input.name === "bandwidth")) {
+                            formValidated =
+                                await CalculatorUI.validateCurrentInputsAgainstInstrument(input.name);
+                            CalculatorUI.showApplicableInstruments();
+                        }
                     }
                 });
             });
@@ -43,7 +53,7 @@ $(document).ready(() => {
             allUnitsInputs.forEach(unitsInput => {
                 // Add an event listener to re-enable to the Calculate button
                 // if the form is in a valid state
-                unitsInput.addEventListener("change", e => {
+                unitsInput.addEventListener("change", async e => {
                     if (unitsInput === e.target) {
                         // Get the corresponding input for this units input
                         const input =
@@ -53,9 +63,20 @@ $(document).ready(() => {
                         formValidated =
                             validateAndSetUIState(input, unitsInput,
                                                   data[input.name]);
+                        
+                        // Validate only frequency and bandwidth ranges against instrument ranges
+                        if (input.name === "obs_freq" || input.name === "bandwidth") {
+                            formValidated =
+                                await CalculatorUI.validateCurrentInputsAgainstInstrument(input.name);
+                            if (formValidated) {
+                                CalculatorUI.showApplicableInstruments();
+                            }
+                        }
                     }
                 });
             })
+
+            CalculatorUI.showDifferentInstrumentOptions("instrument-type");
 
             const calcOptions =
                 document.querySelectorAll('input[name="calc-options"');
@@ -123,19 +144,30 @@ $(document).ready(() => {
 
                 return new Promise((resolve, reject) => resolve(form.reset()))
                 .then(() => {
-                  CalculatorUI.setUIInitialState(data);
+                    CalculatorUI.setUIInitialState(data);
 
-                  // Reset the reference to the checked radio button
-                  for (const option of calcOptions) {
-                    // Keep track of which radio button is currently checked
-                    if (option.checked) {
-                        checkedOption = option;
+
+                    // Send the default instrument to the backend
+                    // NOTE: This is necessary because otherwise the backend
+                    // will try to doCalculation with the last instrument that 
+                    // was set, which may not be valid for the default input values.
+                    setInstrument("Default")
+
+                    // Reset the reference to the checked radio button
+                    for (const option of calcOptions) {
+                        // Keep track of which radio button is currently checked
+                        if (option.checked) {
+                            checkedOption = option;
+                        }
                     }
-                  }
 
-                  doCalculation(data);
+                    doCalculation(data);
                 })
             });
+            
+
+            // Send the default instrument to the backend
+            setInstrument("Default")
 
             // Calculate the integration time using the default values
             doCalculation(data);

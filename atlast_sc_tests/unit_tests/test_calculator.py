@@ -2,14 +2,14 @@ import copy
 import pytest
 import astropy.units as u
 from atlast_sc.calculator import Calculator
+from atlast_sc.instruments.classes.Finer import Finer
+from atlast_sc.core.utils import FileHelper
 from atlast_sc.core.parameter_setup import ParameterSetup
-from atlast_sc.parameters.user_input_parameters import UserInputParameters
 from atlast_sc.core.models import DerivedParams, CalculationInput
 from atlast_sc.core.utils import DataHelper
-from atlast_sc.core.exceptions import CalculatedValueInvalidWarning
+from atlast_sc.core.exceptions import InstrumentNotApplicableException
 from atlast_sc_tests.utils import does_not_raise
 from pydantic import ValidationError
-
 
 class TestCalculator:
 
@@ -274,19 +274,76 @@ class TestCalculator:
         # Calculator's parameter setup object
         parameter_setup_reset_spy.assert_called()
 
+        # Reset again after changing an input to ensure the saved originals
+        # were not mutated by the first reset.
+        calculator.user_input.obs_freq = 850 * u.GHz
+        calculator.reset()
+        assert calculator.user_input.obs_freq == obs_freq
+        assert calculator.derived_parameters == original_derived_params
+
+    incorrect_value_format = 'name is not provided in the correct format'
+    incorrect_inst_name = 'not available. check if you have provided'
+    finer_data = FileHelper.read_instrument_yaml_file("Finer")
+    finer_inst_class = Finer(data=finer_data)
+
     @pytest.mark.parametrize(
-        'new_t_int,update_calculator',
+        'inst_name,obs_freq,expect_raises,validation_error_type,exception_match_string',
         [
-            (10 * u.s, None),
-            (10 * u.s, True),
-            (10 * u.s, False),
-            (None, None),
-            (None, True),
-            (None, False)
+            ('Finer', 406 * u.GHz, pytest.raises(InstrumentNotApplicableException), 
+             'InstrumentNotApplicableException', None),
+            ('finer', 350 * u.GHz, does_not_raise(), None, None),
+            ('finER', 350 * u.GHz, does_not_raise(), None, None),
+            ('fiNerr', 350 * u.GHz, pytest.raises(KeyError), 'KeyError', incorrect_inst_name),
+            ('flower', 350 * u.GHz, pytest.raises(KeyError), 'KeyError', incorrect_inst_name),
+            (finer_inst_class, 350 * u.GHz, pytest.raises(AttributeError), 
+             'AttributeError', incorrect_value_format),
         ]
     )
-    def test_calculate_sensitivity(self, new_t_int, update_calculator, t_int,
-                                   calculated_sensitivity, calculator):
+    def test_instrument_name_validation(self, inst_name, obs_freq, expect_raises,
+                                         validation_error_type, exception_match_string,
+                                         calculator, mocker):
+        finer = calculator._param_setup.loaded_instruments['Finer']
+        with expect_raises as exception_info:
+            calculator.user_input.obs_freq = obs_freq
+            calculator.chosen_instrument = inst_name
+
+        if exception_match_string:
+            # check if the error types correspond to what we expect
+            error_typename = exception_info.typename
+            assert validation_error_type == error_typename
+
+            # check for part of the exception generated
+            validation_error = exception_info.value  
+            error_string = str(validation_error).lower()
+            assert exception_match_string in error_string
+
+    def test_choose_instrument_preserves_mixed_case_name(self):
+        result = ParameterSetup._choose_instrument_from_applicable(
+            None,
+            ["Finer", "SRTQBand", "Muscat"],
+            ["SRTQBand", "Finer", "Muscat"],
+        )
+
+        assert result == "SRTQBand"
+
+    @pytest.mark.parametrize(
+        'new_t_int,update_calculator, brightness_temperature',
+        [
+            (10 * u.s, None, None),
+            (10 * u.s, None, False),
+            (10 * u.s, None, True),
+            (10 * u.s, True, None),
+            (10 * u.s, True, None),
+            (10 * u.s, False, False),
+            (10 * u.s, False, True),
+            (None, None, None),
+            (None, True, True),
+            (None, True, False),
+            (None, False, None)
+        ]
+    )
+    def test_calculate_sensitivity(self, new_t_int, update_calculator, brightness_temperature,
+                                   t_int, calculated_sensitivity, calculator):
 
         if new_t_int is not None:
             if update_calculator is not None:
@@ -294,7 +351,8 @@ class TestCalculator:
                 # flag to the function
                 sens = \
                     calculator.calculate_sensitivity(new_t_int,
-                                                     update_calculator)
+                                                     update_calculator,
+                                                     brightness_temperature)
             else:
                 # Pass the new integration time to the function
                 sens = calculator.calculate_sensitivity(new_t_int)
@@ -327,8 +385,8 @@ class TestCalculator:
             assert calculator.calculated_sensitivity == calculated_sensitivity
 
         # Verify that the units of the calculated sensitivity are in units of 
-        # flux density
-        assert any(sens.unit == x for x in [u.uJy, u.mJy, u.Jy])
+        # flux density or temperature
+        assert any(sens.unit == x for x in [u.uJy, u.mJy, u.Jy, u.mK, u.K])
 
     @pytest.mark.parametrize(
         'new_sens,update_calculator',

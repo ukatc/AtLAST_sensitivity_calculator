@@ -1,12 +1,12 @@
 The Sensitivity Calculator can be initialized with your own input
-values from a file. The :class:`FileHelper <atlast_sc.utils.FileHelper>` class can be used to
+values from a file. The :class:`FileHelper <atlast_sc.core.utils.FileHelper>` class can be used to
 read data from a file and generate an input data dictionary.
 
 First, import the file helper class from the :mod:`utils <atlast_sc.utils>` module:
 
 .. code-block:: python
 
-    from atlast_sc.utils import FileHelper
+    from atlast_sc.core.utils import FileHelper
 
 
 Next, call :meth:`read_from_file <atlast_sc.utils.FileHelper.read_from_file>`,

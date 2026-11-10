@@ -12,7 +12,6 @@ class Data:
     Default values, default units, allowed units, allowed ranges and/or values
     for the parameters used by the sensitivity calculator.
     """
-
     @dataclass
     class DataType:
         default_value: float = None
@@ -68,9 +67,18 @@ class Data:
             # If the data type has a list of allowed units, evaluate the
             # conversion factors between allowed units and the default unit
             if self.units:
+                special_units = [ # combine all special units in one list
+                    unit
+                    for units in DataHelper.special_params_and_units.values()
+                    for unit in units
+                ]
+
+                conversion_units = [unit for unit in self.units
+                                    if unit not in special_units]
+                # Only consider conversion factor of non-special units
                 self.data_conversion = DataHelper.data_conversion_factors(
                     self.default_unit,
-                    self.units
+                    conversion_units
                 )
 
     integration_time = DataType(
@@ -98,7 +106,7 @@ class Data:
         lower_value_is_floor=True,
         upper_value=float('inf'),
         upper_value_is_ceil=True,
-        units=[str(u.uJy), str(u.mJy), str(u.Jy)],
+        units=[str(u.uJy), str(u.mJy), str(u.Jy), str(u.mK), str(u.K)],
     )
 
     calculated_sensitivity = DataType(
@@ -108,7 +116,7 @@ class Data:
         lower_value_is_floor=True,
         upper_value=float('inf'),
         upper_value_is_ceil=True,
-        units=[str(u.uJy), str(u.mJy), str(u.Jy)],
+        units=[str(u.uJy), str(u.mJy), str(u.Jy),str(u.mK), str(u.K)],
     )
 
     # TODO: include km/s. Will have to provide suitable conversion logic
@@ -119,14 +127,14 @@ class Data:
         lower_value_is_floor=True,
         upper_value=float('inf'),
         upper_value_is_ceil=True,
-        units=[str(u.Hz), str(u.kHz), str(u.MHz), str(u.GHz)],
+        units=[str(u.Hz), str(u.kHz), str(u.MHz), str(u.GHz), str(u.km / u.s), str(u.m / u.s)],
     )
 
     # Sky frequency of the observations
     obs_frequency = DataType(
         default_value=406,
         default_unit=str(u.GHz),
-        lower_value=35,
+        lower_value=30,
         upper_value=950,
         units=[str(u.GHz)]
     )

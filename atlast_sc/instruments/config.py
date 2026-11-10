@@ -1,5 +1,5 @@
 import importlib, inspect, os
-from atlast_sc.core.utils import FileHelper
+from atlast_sc.core.utils import FileHelper, Decorators
 from atlast_sc.core.instrument import Instrument
 
 class InstrumentConfig:
@@ -17,6 +17,13 @@ class InstrumentConfig:
         muscat_instrument = {'class': 'Muscat.py', 'data': 'Muscat.yaml'}
         sepia_instrument = {'class': 'Sepia.py', 'data': 'Sepia.yaml'}
         tifuun_instrument = {'class': 'Tifuun.py', 'data': 'Tifuun.yaml'}
+        mistral_instrument = {'class': 'Mistral.py', 'data': 'Mistral.yaml'}
+        SRTQband_instrument = {'class': 'SRTQband.py', 'data': 'SRTQband.yaml'}
+        alma_instrument = {'class': 'Alma.py', 'data': 'Alma.yaml'}
+        alma_wsu_instrument = {'class': 'Alma_wsu.py', 'data': 'Alma_wsu.yaml'}
+        SRTQband_instrument = {'class': 'SRTQband.py', 'data': 'SRTQband.yaml'}
+
+
         # TODO: Add your custom instrument here.
         
         available_instruments = [
@@ -25,9 +32,18 @@ class InstrumentConfig:
             finer_instrument,
             muscat_instrument,
             sepia_instrument,
-            tifuun_instrument
+            tifuun_instrument,
+            alma_instrument,
+            alma_wsu_instrument,
+            SRTQband_instrument,
+            mistral_instrument,
             # TODO: Add your custom instrument here.
         ]
+
+        # The instrument order preference determines which instrument will be selected when 2 or more both
+        # fit the given observing frequency and bandwidth
+        # TODO: Add your instrument to this list.
+        self._instrument_order_preference = ["Tifuun", "Muscat", "Mistral", "Finer", "Sepia", "Chai", "SRTQband", "Default", "Alma_wsu", "Alma"]
 
         self._inst_classes = {}
 
@@ -42,6 +58,15 @@ class InstrumentConfig:
     @property
     def instrument_classes(self):
         return self._inst_classes
+
+    @property
+    def instrument_order_preference(self):
+        return self._instrument_order_preference
+
+    @instrument_order_preference.setter
+    @Decorators.validate_inst_preference_list
+    def instrument_order_preference(self, list):
+        self._instrument_order_preference = list
 
     def load_instrument_class(self, path, python_package_dir, details):
         """
