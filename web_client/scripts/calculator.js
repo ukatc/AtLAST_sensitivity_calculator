@@ -130,8 +130,16 @@ $(document).ready(() => {
             }
             // Add an event listener to the Brightness Temperature checkbox to
             // re-enable the Calculate button if the form is in a valid state
-            document.getElementById("brightness-temperature")
-                .addEventListener("change", () => {
+            const brightnessTemperatureInput =
+                document.getElementById("brightness-temperature");
+            const sensitivityOutputUnit =
+                document.getElementById("sensitivity-output-unit");
+            const updateSensitivityOutputUnit = () => {
+                sensitivityOutputUnit.textContent =
+                    brightnessTemperatureInput.checked ? "K" : "Jy";
+            };
+            brightnessTemperatureInput.addEventListener("change", () => {
+                    updateSensitivityOutputUnit();
                     CalculatorUI.disableCalculateBtn(false);
                     CalculatorUI.resetOutputBox();
                 });
@@ -157,6 +165,7 @@ $(document).ready(() => {
 
                 return new Promise((resolve, reject) => resolve(form.reset()))
                 .then(() => {
+                  updateSensitivityOutputUnit();
                   CalculatorUI.setUIInitialState(data);
 
                   // Reset the reference to the checked radio button
