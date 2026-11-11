@@ -21,31 +21,41 @@ $(document).ready(() => {
 
             // Set up the event listeners on user input fields
             const allUserInputs = document.querySelectorAll(".param-input");
+            const updateFormValidationState = () => {
+                formValidated =
+                    Array.from(allUserInputs).every(input => input.validity.valid);
+                CalculatorUI.disableCalculateBtn(!formValidated);
+                return formValidated;
+            };
 
             allUserInputs.forEach(input => {
                 // Get the corresponding units for this input
                 const units =
                     document.getElementById(`${input.name}-units`);
                 // Validate the initial input data (should never fail!)
-                formValidated = validateInput(input, units, data[input.name]);
+                validateInput(input, units, data[input.name]);
 
                 // Add an event listener to validate input when it changes
                 input.addEventListener("change", async e => {
                     if (input === e.target) {
-                        formValidated =
-                            validateAndSetUIState(input, units,
-                                                  data[input.name]);
+                        const inputValidated =
+                            validateInput(input, units, data[input.name]);
+                        if (inputValidated) {
+                            CalculatorUI.resetOutputBox();
+                        }
+                        updateFormValidationState();
                         
                         // Only frequency and bandwidth belong to instrument ranges.
-                        if (formValidated &&
+                        if (inputValidated &&
                             (input.name === "obs_freq" || input.name === "bandwidth")) {
-                            formValidated =
-                                await CalculatorUI.validateCurrentInputsAgainstInstrument(input.name);
+                            await CalculatorUI.validateCurrentInputsAgainstInstrument(input.name);
+                            updateFormValidationState();
                             CalculatorUI.showApplicableInstruments();
                         }
                     }
                 });
             });
+            updateFormValidationState();
 
             // Set up event listeners on the units dropdowns
             const allUnitsInputs = document.querySelectorAll(".units-input");
@@ -60,14 +70,18 @@ $(document).ready(() => {
                             document.querySelector(
                                 `input[name=${unitsInput.id.replace("-units", "")}`
                             );
-                        formValidated =
-                            validateAndSetUIState(input, unitsInput,
-                                                  data[input.name]);
+                        const inputValidated =
+                            validateInput(input, unitsInput, data[input.name]);
+                        if (inputValidated) {
+                            CalculatorUI.resetOutputBox();
+                        }
+                        updateFormValidationState();
                         
                         // Validate only frequency and bandwidth ranges against instrument ranges
-                        if (input.name === "obs_freq" || input.name === "bandwidth") {
-                            formValidated =
-                                await CalculatorUI.validateCurrentInputsAgainstInstrument(input.name);
+                        if (inputValidated &&
+                            (input.name === "obs_freq" || input.name === "bandwidth")) {
+                            await CalculatorUI.validateCurrentInputsAgainstInstrument(input.name);
+                            updateFormValidationState();
                             if (formValidated) {
                                 CalculatorUI.showApplicableInstruments();
                             }
@@ -99,7 +113,7 @@ $(document).ready(() => {
                     // Re-enable to Calculate button if we've changed the
                     // the checked radio button
                     if (e.target !== checkedOption) {
-                        CalculatorUI.disableCalculateBtn(false);
+                        updateFormValidationState();
                         CalculatorUI.resetOutputBox();
                     }
                     // Update the checked option
@@ -132,10 +146,10 @@ $(document).ready(() => {
             document.querySelectorAll('input[name="sensitivity-output-unit"]')
                 .forEach(unitInput => {
                     unitInput.addEventListener("change", () => {
-                    CalculatorUI.disableCalculateBtn(false);
-                    CalculatorUI.resetOutputBox();
+                        updateFormValidationState();
+                        CalculatorUI.resetOutputBox();
+                    });
                 });
-            });
 
             // Add an event listener to do the calculation when the form is
             //  submitted
@@ -143,7 +157,7 @@ $(document).ready(() => {
             form.addEventListener("submit", (e) => {
                 e.preventDefault();
 
-                if (formValidated) {
+                if (updateFormValidationState()) {
                     doCalculation(data);
                 }
             });
@@ -159,6 +173,7 @@ $(document).ready(() => {
                 return new Promise((resolve, reject) => resolve(form.reset()))
                 .then(() => {
                   CalculatorUI.setUIInitialState(data);
+                  updateFormValidationState();
 
                   // Reset the reference to the checked radio button
                   for (const option of calcOptions) {
@@ -240,17 +255,4 @@ const doCalculation = (paramData) => {
             break;
         }
     }
-}
-
-const validateAndSetUIState = (input, units, paramData) => {
-
-    const formValidated = validateInput(input, units, paramData);
-    // Disable the calculation button if the form has not
-    // been validated, or enable if it has
-    CalculatorUI.disableCalculateBtn(!formValidated);
-    if (formValidated) {
-        CalculatorUI.resetOutputBox();
-    }
-
-    return formValidated;
 }

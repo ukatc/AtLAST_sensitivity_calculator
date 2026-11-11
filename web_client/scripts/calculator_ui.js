@@ -156,7 +156,10 @@ const showDifferentInstrumentOptions = (dropdown_choice) => {
     
 const disableCalculateBtn = (disable) => {
     const calculateBtn = document.getElementById("calculate");
-    calculateBtn.disabled = disable;
+    const userInputsValid =
+        Array.from(document.querySelectorAll(".param-input"))
+            .every(input => input.validity.valid);
+    calculateBtn.disabled = disable || !userInputsValid;
 }
 
 const showCalculatedValue = (value, unit) => {
