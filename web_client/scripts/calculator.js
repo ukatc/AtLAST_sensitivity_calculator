@@ -146,8 +146,11 @@ $(document).ready(() => {
             document.querySelectorAll('input[name="sensitivity-output-unit"]')
                 .forEach(unitInput => {
                     unitInput.addEventListener("change", () => {
-                        updateFormValidationState();
                         CalculatorUI.resetOutputBox();
+                        if (updateFormValidationState() &&
+                            document.getElementById("btn-sensitivity").checked) {
+                            doCalculation(data);
+                        }
                     });
                 });
 
