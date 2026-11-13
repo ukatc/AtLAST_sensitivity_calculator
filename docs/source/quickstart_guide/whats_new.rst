@@ -43,12 +43,47 @@ Code refactor
     :align: center
     :width: 500px
 
-The separation of the system temperature calculation into separate instrument modules necessitated a restructuring of the code into the core calculator modules, the modules handling the parameters and the instrument modules. 
+Each instrument requiring its own system temperature calculation necessitated
+a restructuring of the code. Previous version of the calculator had a single module 
+that contained all of the code for the calculator. This has now been split into core 
+calculator modules, instrument modules, parameter modules for handling different types 
+of parameters and other parameters that are derived from them. With this, the core calculator
+code is much simpler and easier to understand. This separation also allows the extension of
+the functionality of the calculator to include new instruments and their unique parameters or 
+functions without having to modify the core calculator code. Decoupling and breaking the 
+process of the calculator into different modules also allows for easier modification of
+the process in the future.
+
+The separation of the code into different modules has allowed us to improve the 
+handling of the parameters. In version 1, all of the parameters were stored in a single 
+class, which made it difficult to understand which parameters were user inputs, which were 
+telescope and environment parameters and which were derived parameters. In this new version, 
+we have separated these into various classes, which makes it easier to understand what 
+each parameter is and how it is used in the calculations. This separation also allows a 
+stringification method to be specified for each of these classes, where the user can easily 
+see the current values of all of the parameters in that class. 
+
+As each instrument needed its own system temperature calculation, we also needed 
+to store the parameters that are used in these calculations somewhere that makes logical
+sense with respect to the core calculator. This has been achieved by creating a separate 
+class for each instrument, which contains the parameters that are relevant to that instrument. 
+This setup makes it trivial to add new instruments to the process in the future without 
+having to modify the core calculator or its process.
+
+Additionally, the calculated integration time or sensitivity was previously stored in the
+same parameter as their relative user input. For example, if the user wanted to calculate
+integration time, the resulting value would be stored in the same parameter as 
+when the user enters an integration time if they wanted to calculate sensitivity. In the 
+new version, the calculated integration time and sensitivity are stored in separate 
+parameters from the user input equivalents to avoid confusion, overwriting of values and
+better handling. This also allows different specification for the units of the user input 
+and calculated values, for example, the user can provide a sensitivity in mJy for one 
+equation and the calculated sensitivity value for another can be output in K.
 
 
 .. note::
 
-    Users should note that this change has resulted in some backwards incompatible changes and so anyone who has code that used the previous version will likely need to update some of their commands. The changes needed are detailed here.
+    Users should note that some of these changes has resulted in some backwards incompatibility. Anyone who has code that used the previous version of the calculator will need to update some of their commands. The changes needed are detailed here.
 
     The parameters are now stored in the classes ``user_input``, ``telescope_and_environment`` and ``derived_parameters``. For instance, in version 1, a user input parameter could be changed by calling:
 
