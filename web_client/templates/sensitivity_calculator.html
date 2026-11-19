@@ -252,28 +252,38 @@
     </div>
 
       <div class="row mb-3" align="center">
-        <label for="calculation-options"><strong>Calculate integration time or sensitivity?</strong></label>
         <div class="d-flex flex-row justify-content-center">
-        <div class="col-8 col-sm-6 col-md-5 col-lg-3">
-            <div class="btn-group" role="group" id="calculation-options">
-              <input type="radio" name="calc-options" id="btn-t-int" calculation="integration-time" autocomplete="off" checked>
-              <label class="btn" for="btn-t-int">Integration time</label>
-
-              <input type="radio" name="calc-options" id="btn-sensitivity" calculation="sensitivity" autocomplete="off">
-              <label class="btn" for="btn-sensitivity">Sensitivity</label>
+          <div class="row col" align="right">
+            <div class="col-5">
+              <label for="calculation-options" id="calc-type-question">Calculate integration time or sensitivity?</label>
             </div>
-          </div>
-          <div class="col col-sm-4 col-md-2 align-self-end">
-            <div class="card" id="output"></div>
-          </div>
-          <div class="d-none col col-sm-4 col-md-2 align-self-center d-flex justify-content-center" id="sensitivity-result-unit-option">
-            <div class="d-flex align-items-center gap-2">
-              <div class="btn-group" role="group">
-                <input class="btn-check" type="radio" name="sensitivity-output-unit" id="sensitivity-unit-jy" value="Jy" autocomplete="off" checked>
-                <label class="btn btn-outline-primary" for="sensitivity-unit-jy">Jy</label>
-                <input class="btn-check" type="radio" name="sensitivity-output-unit" id="sensitivity-unit-k" value="K" autocomplete="off">
-                <label class="btn btn-outline-primary" for="sensitivity-unit-k">K</label>
+            <div class="col-5"></div>
+            <div class="w-100"></div>
+            <div class="col-5">
+              <div class="btn-group" role="group" id="calculation-options" align="left">
+                <input type="radio" name="calc-options" id="btn-t-int" calculation="integration-time" autocomplete="off" checked>
+                <label class="btn" for="btn-t-int">Integration time</label>
+
+                <input type="radio" name="calc-options" id="btn-sensitivity" calculation="sensitivity" autocomplete="off">
+                <label class="btn" for="btn-sensitivity">Sensitivity</label>
               </div>
+            </div>
+            <div class="col-5" align="left">
+              <div class="row">
+                <div class="col-6">
+                  <div class="card" id="output"></div>
+                </div>
+                <div class="col-6">
+                  <div class="col-5 d-none" id="sensitivity-result-unit-option">
+                    <div class="btn-group" role="group">
+                      <input class="btn-check" type="radio" name="sensitivity-output-unit" id="sensitivity-unit-jy" value="Jy" autocomplete="off" checked>
+                      <label class="btn btn-outline-primary" for="sensitivity-unit-jy">Jy</label>
+                      <input class="btn-check" type="radio" name="sensitivity-output-unit" id="sensitivity-unit-k" value="K" autocomplete="off">
+                      <label class="btn btn-outline-primary" for="sensitivity-unit-k">K</label>
+                    </div>
+    
+                  </div>
+                </div>
             </div>
           </div>
         </div>
