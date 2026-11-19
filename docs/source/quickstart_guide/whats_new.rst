@@ -171,11 +171,12 @@ The following plot shows the ratio between the final system temperature after ta
 
 Dependency updates
 ++++++++++++++++++
-The first version of the code was written in 2023 for Python 3.10. This version of Python is no longer supported. To ensure compatibility with currently supported versions of Python, we have updated a number of our dependencies:
+Version 1 of the calculator was written in 2023 for Python 3.10. This version of Python is no longer supported. To ensure compatibility with currently supported versions of Python, we have updated a number of our dependencies:
 
 * python 3.10 => 3.13
-* astropy 5.1 => 7.0
+* astropy 5.1 => 7.2
 * numpy 1.23 => 2.1
 * scipy 1.9 => 1.14
 * pydantic 1.10 => 2.12
 
+For other dependencies that were updated as a result of compatibility issues, see the `environment.yml` file.
