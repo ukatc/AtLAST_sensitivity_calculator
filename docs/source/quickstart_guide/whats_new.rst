@@ -184,7 +184,7 @@ The following plot shows the ratio between the final system temperature after ta
 .. image:: imgs/ratio_tsys.png
     :alt: Ratio of new system temperature to old system temperature
     :align: center
-    :width: 500px
+    :width: 300px
 
 Dependency updates
 ++++++++++++++++++
