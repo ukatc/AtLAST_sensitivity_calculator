@@ -148,6 +148,15 @@ Note that the bandwidth and sensitivity are still stored as frequency and flux d
 
 For more details see the section on :ref:`unit conversions <section_unit_conversions>`.
 
+API Updates
++++++++++++
+This version includes several API changes that reflect the revised code structure. The web client
+now separates instrument-related operations from sensitivity calculations, allowing the interface
+to retrieve the instruments that are compatible with a given observing configuration and to obtain
+the supported parameter ranges for each instrument. Additional requests are used to convert values
+between compatible units, ensuring that instrument selection and unit handling can respond to
+changes made in the input fields.
+
 Web client updates
 ++++++++++++++++++
 The web client can be run locally and is also available on the `AtLAST website <https://senscalc.atlast.uio.no/>`__. The above implementations for the new instruments and the unit conversions have been propagated into the web client. This now includes an instrument selection box. As well as allowing the user to select the instrument they desire, this provides information on the instruments available for the current observing frequency and bandwidth and the ranges for the currently selected instrument. Clear error messages are provided if the user selects an instrument that does not fit with the currently selected frequency and bandwidth. Extra information has also been added to describe each of the input parameters.
