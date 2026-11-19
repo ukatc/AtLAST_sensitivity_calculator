@@ -44,14 +44,12 @@ Code refactor
     :width: 500px
 
 Each instrument requiring its own system temperature calculation necessitated
-a restructuring of the code. Previous version of the calculator had a single module 
+a restructuring of the code. The previous version of the calculator had a single module 
 that contained all of the code for the calculator. This has now been split into core 
-calculator modules, instrument modules, parameter modules for handling different types 
-of parameters and other parameters that are derived from them. With this, the core calculator
-code is much simpler and easier to understand. This separation also allows the extension of
+calculator modules, instrument modules and parameter modules. This separation also allows the extension of
 the functionality of the calculator to include new instruments and their unique parameters or 
-functions without having to modify the core calculator code. Decoupling and breaking the 
-process of the calculator into different modules also allows for easier modification of
+functions without having to modify the core calculator code. Decoupling and separating the 
+process of the calculator into different modules provides a clear structure that facilitates modification of
 the process in the future.
 
 The separation of the code into different modules has allowed us to improve the 
@@ -60,7 +58,7 @@ class, which made it difficult to understand which parameters were user inputs, 
 telescope and environment parameters and which were derived parameters. In this new version, 
 we have separated these into various classes, which makes it easier to understand what 
 each parameter is and how it is used in the calculations. This separation also allows a 
-stringification method to be specified for each of these classes, where the user can easily 
+simple method to be specified for each of these classes, where the user can easily 
 see the current values of all of the parameters in that class. 
 
 As each instrument needed its own system temperature calculation, we also needed 
@@ -75,17 +73,17 @@ same parameter as their relative user input. For example, if the user wanted to 
 integration time, the resulting value would be stored in the same parameter as 
 when the user enters an integration time if they wanted to calculate sensitivity. In the 
 new version, the calculated integration time and sensitivity are stored in separate 
-parameters from the user input equivalents to avoid confusion, overwriting of values and
-better handling. This also allows different specification for the units of the user input 
+parameters from the user input equivalents to avoid confusion and overwriting of values. 
+This also allows a different specification for the units of the user input 
 and calculated values, for example, the user can provide a sensitivity in mJy for one 
 equation and the calculated sensitivity value for another can be output in K.
 
 
 .. note::
 
-    Users should note that some of these changes has resulted in some backwards incompatibility. Anyone who has code that used the previous version of the calculator will need to update some of their commands. The changes needed are detailed here.
+    Users should note that some of these changes have resulted in some backwards incompatibility. Anyone who has code that used the previous version of the calculator will need to update any commands related to setting or viewing parameters. 
 
-    The parameters are now stored in the classes ``user_input``, ``telescope_and_environment`` and ``derived_parameters``. For instance, in version 1, a user input parameter could be changed by calling:
+    The parameters are now stored in the classes ``user_input``, ``telescope_and_environment`` and ``derived_parameters`` rather than directly in the calculator class. For instance, in version 1, a user input parameter could be changed by calling:
 
     .. code-block:: python
 
@@ -148,6 +146,20 @@ Note that the bandwidth and sensitivity are still stored as frequency and flux d
 
 For more details see the section on :ref:`unit conversions <section_unit_conversions>`.
 
+Web client updates
+++++++++++++++++++
+The web client can be run locally and is also available on the `AtLAST website <https://senscalc.atlast.uio.no/>`__. The above implementations for the new instruments and the unit conversions have been propagated into the web client. This now includes an instrument selection box. As well as allowing the user to select the instrument they desire, this provides information on the instruments available for the current observing frequency and bandwidth and the ranges for the currently selected instrument. Clear error messages are provided if the user selects an instrument that does not fit with the currently selected frequency and bandwidth. Extra information has also been added to describe each of the input parameters. Below we show versions 1 and 2 of the web client for a side-by-side comparison.
+
+.. image:: imgs/web-v1.png
+    :alt: Version 1 of the web client
+    :align: center
+    :width: 500px
+
+.. image:: imgs/web-v2.png
+    :alt: Version 2 of the web client
+    :align: center
+    :width: 500px
+
 API Updates
 +++++++++++
 This version includes several API changes that reflect the revised code structure. The web client
@@ -156,10 +168,6 @@ to retrieve the instruments that are compatible with a given observing configura
 the supported parameter ranges for each instrument. Additional requests are used to convert values
 between compatible units, ensuring that instrument selection and unit handling can respond to
 changes made in the input fields.
-
-Web client updates
-++++++++++++++++++
-The web client can be run locally and is also available on the `AtLAST website <https://senscalc.atlast.uio.no/>`__. The above implementations for the new instruments and the unit conversions have been propagated into the web client. This now includes an instrument selection box. As well as allowing the user to select the instrument they desire, this provides information on the instruments available for the current observing frequency and bandwidth and the ranges for the currently selected instrument. Clear error messages are provided if the user selects an instrument that does not fit with the currently selected frequency and bandwidth. Extra information has also been added to describe each of the input parameters.
 
 .. _section_temperature_changes:
 
@@ -188,4 +196,4 @@ Version 1 of the calculator was written in 2023 for Python 3.10. This version of
 * scipy 1.9 => 1.14
 * pydantic 1.10 => 2.12
 
-For other dependencies that were updated as a result of compatibility issues, see the `environment.yml` file.
+For developers, a number of other dependencies were updated as a result of compatibility issues. See the `environment.yml` file for details.
