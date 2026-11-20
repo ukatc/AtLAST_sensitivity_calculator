@@ -19,6 +19,7 @@ class APIUserInput(BaseModel):
     elevation: dict
     weather: dict
     n_pol: dict
+    brightness_temperature: bool = False
 
     class Config:
         schema_extra = {
@@ -49,6 +50,7 @@ class APIUserInput(BaseModel):
                 "n_pol": {
                     "value": Data.n_pol.default_value,
                 },
+                "brightness_temperature": False,
             }
         }
 
