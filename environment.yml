@@ -1,15 +1,14 @@
 name: sens-calc
 channels:
   - conda-forge
-  - defaults
 dependencies:
-  - python=3.10
-  - astropy=5.3
-  - numpy=1.26
+  - python=3.13
+  - astropy=7.2
+  - numpy=2.1
   - pytest=7.2
-  - pytest-mock=3.10
+  - pytest-mock=3.13
   - PyYAML=6.0
-  - scipy=1.11
+  - scipy=1.14
   - setuptools=65.5
   - sphinx-rtd-theme=3.1
   - myst-parser==2.0.0
@@ -19,14 +18,14 @@ dependencies:
   - python-dotenv=0.21
   - pydantic=2.12
   - pandoc
-  - build
+  - python-build
   - flake8
   - sphinx-copybutton
   - fastapi=0.128
-  - uvicorn=0.21
+  - uvicorn=0.54
   - jinja2=3.1
   - aiofiles=22.1
-  - coverage=7.2
+  - coverage=7.17
   - pylint
   - pip
   - httpx=0.24
