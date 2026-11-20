@@ -192,7 +192,12 @@ $(document).ready(() => {
                             checkedOption = option;
                         }
                     }
+                    sensitivityResultUnitOption.classList.toggle(
+                        "d-none",
+                        checkedOption.getAttribute("calculation") !== "sensitivity"
+                    );
 
+                    setInstrument("Default");
                     doCalculation(data);
                 })
             });
