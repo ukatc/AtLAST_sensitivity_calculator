@@ -207,16 +207,20 @@ img#logoimg {
   color: #747474;
 }
 
-#left-area {
-  margin-right: -5%;
+#sensitivity-result-unit-option .btn-check:checked + .btn {
+  background-color: #aceadd;
+  border-color: #4c9c8b;
+  color: #3b3b3b;
 }
 
-#right-area {
-  margin-left: -5%;
+#sensitivity-result-unit-option .btn-check:checked + .btn:hover {
+  background-color: #aceadd;
+  border-color: #4c9c8b;
+  color: #3b3b3b;
 }
 
-#content-area {
-  padding-left: 10%;
+#calc-type-question {
+  font-weight:bold;
 }
 
 @media print {

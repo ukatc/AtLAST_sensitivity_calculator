@@ -62,7 +62,12 @@ async def sensitivity(api_user_input: APIUserInput):
     user_input = utils.modify_user_input_with_converted_values(user_input)
 
     try:
-        return calculator.do_calculation(user_input, "sensitivity", selected_instrument)
+        return calculator.do_calculation(
+            user_input,
+            "sensitivity",
+            selected_instrument,
+            api_user_input.brightness_temperature,
+        )
     except calculator.UserInputError as e:
         raise HTTPException(status_code=400, detail=e.message)
 
