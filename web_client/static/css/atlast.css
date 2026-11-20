@@ -223,6 +223,18 @@ img#logoimg {
   font-weight:bold;
 }
 
+#left-area {
+  margin-right: -5%;
+}
+
+#right-area {
+  margin-left: -5%;
+}
+
+#content-area {
+  padding-left: 10%;
+}
+
 @media print {
   #header {
     color: #3b3b3b;
