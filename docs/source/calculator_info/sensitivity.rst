@@ -19,7 +19,7 @@ where
 * :math:`SEFD` is the system equivalent flux density, a measure of the inherent noise in the observations that comes from the system.
 * :math:`\eta_\mathrm{s}` is the system efficiency on a scale of 0 to 1
 * :math:`n_\mathrm{pol}` is the number of polarizations
-* :math:`\Delta \nu` is the bandwidth of the observation
+* :math:`\Delta \nu` is the bandwidth / spectral channel width of the observation
 
 
 The system equivalent flux density is calculated as:

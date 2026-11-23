@@ -23,8 +23,8 @@ User input parameters
       - mJy
       - > 0
       - uJy, mJy, Jy, mK, K
-    * - Bandwidth
-      - bandwidth
+    * - Bandwidth / spectral channel width
+      - bandwidth 
       - 100
       - MHz
       - > 0
