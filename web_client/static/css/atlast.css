@@ -28,6 +28,12 @@ a.nav-link:hover {
     color: #18bc9c !important;
 }
 
+.atlast-navbar #version-number .nav-link {
+    color: #C8B1A2 !important;
+    position:absolute;
+    right: 2%;
+}
+
 .calculator-container {
     margin: auto;
 }
@@ -165,7 +171,7 @@ button:hover {
 
 #header {
     height: 200px;
-    width: 100%;
+    width:102%;
     background: url("../resources/atlast-banner-bg.png") top repeat-x;
     background-size: 10px;
 }
