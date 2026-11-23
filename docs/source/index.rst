@@ -55,6 +55,7 @@ This chapter describes how to use the calculator as a Python package in :doc:`us
    user_guide/usage
    user_guide/input_and_output_files
    user_guide/running_the_web_client
+   user_guide/using_web_client
 
 Developer Guide
 ---------------
