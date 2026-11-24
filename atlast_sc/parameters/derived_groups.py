@@ -1,8 +1,20 @@
+import os
+import time
 from pathlib import Path
+
 from scipy.interpolate import RegularGridInterpolator
 import numpy as np
 import astropy.units as u
 from astropy import constants
+
+def _read_atmosphere_table(path):
+    if os.environ.get("ATLAST_TIME_ATMOSPHERE_TABLE_READS") == "1":
+        start = time.perf_counter()
+        table = np.genfromtxt(path)
+        elapsed = time.perf_counter() - start
+        print(f"Atmosphere table read {path.name}: {elapsed:.3f}s", flush=True)
+        return table
+    return np.genfromtxt(path)
 
 # I'm not sure if this is the best place for this function.
 # It's needed both here and also in the instrument modules. 
@@ -34,8 +46,8 @@ class AtmosphereParams:
 
     def __init__(self):
 
-        self.T_atm_table = np.genfromtxt(AtmosphereParams._T_ATM_PATH) # Rayleigh-Jeans sky brightness temperature at zenith
-        self.tau_atm_table = np.genfromtxt(AtmosphereParams._TAU_ATM_PATH) # Sky opacity at zenith
+        self.T_atm_table = _read_atmosphere_table(AtmosphereParams._T_ATM_PATH) # Rayleigh-Jeans sky brightness temperature at zenith
+        self.tau_atm_table = _read_atmosphere_table(AtmosphereParams._TAU_ATM_PATH) # Sky opacity at zenith
         # the temperature values obtained by interpolating over the ATM tables are rescaled by the opacity at zenith to obtain T_atm (see the discussion around Eq. 7-9 in the ALMA Memo 602 (https://library.nrao.edu/public/memos/alma/main/memo602.pdf))
         self.T_atm_table[:,1:] = self.T_atm_table[:,1:] / (1.00 - np.exp(-self.tau_atm_table[:,1:]))
 

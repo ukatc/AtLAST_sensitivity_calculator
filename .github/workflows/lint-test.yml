@@ -24,8 +24,10 @@ jobs:
         echo $CONDA/bin >> $GITHUB_PATH
         conda env update --file environment.yml --name base
     - name: Run focused Calculator reset test
+      env:
+        ATLAST_TIME_ATMOSPHERE_TABLE_READS: "1"
       run: |
-        pytest atlast_sc_tests/unit_tests/test_calculator.py::TestCalculator::test_reset -vv --durations=10
+        pytest atlast_sc_tests/unit_tests/test_calculator.py::TestCalculator::test_reset -s -vv --durations=10
     - name: Profile focused Calculator reset test
       run: |
         python -m cProfile -s cumulative -m pytest -q atlast_sc_tests/unit_tests/test_calculator.py::TestCalculator::test_reset
