@@ -1,7 +1,12 @@
 import math
 from fastapi import Request
+from atlast_sc import __version__
 from atlast_sc.core.data import Data
 from web_client import utils
+
+
+def project_version(request: Request):
+    return dict(project_version=__version__)
 
 
 def api_version(request: Request):
