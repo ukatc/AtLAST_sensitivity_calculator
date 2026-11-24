@@ -94,6 +94,13 @@ input:invalid {
   color: #434343;
 }
 
+.allowed-range-info {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.4;
+}
+
+
 html,
 body {
   font-family: sans-serif, Arial, sans-serif;
@@ -223,6 +230,18 @@ img#logoimg {
   font-weight:bold;
 }
 
+#left-area {
+  margin-right: -5%;
+}
+
+#right-area {
+  margin-left: -5%;
+}
+
+#content-area {
+  padding-left: 10%;
+}
+
 @media print {
   #header {
     color: #3b3b3b;
@@ -253,6 +272,12 @@ img#logoimg {
     #tagline {
         font-size: 1.2rem;
     }
+
+    #content-area {
+        margin-left: -20%;
+        margin-right: -15%;
+    }
+
 }
 
 @media screen and (max-width: 660px) {
@@ -293,8 +318,24 @@ img#logoimg {
     }
 }
 
-.allowed-range-info {
-    font-size: 0.95rem;
-    color: #666;
-    line-height: 1.4;
+
+@media screen and (max-width: 767px) {
+    #right-area {
+      padding-top: 5%;
+      padding-bottom: 10%;
+      padding-right: 10%;
+      padding-left: 15%;
+    }
+}
+
+@media screen and (max-width: 660px) {
+    #content-area {
+      margin-left: -10%;
+      margin-right: -10%;
+    }
+
+    #calculation-type-area {
+      padding-left: 10%;
+    }
+
 }
