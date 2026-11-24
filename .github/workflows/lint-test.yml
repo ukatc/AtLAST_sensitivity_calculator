@@ -1,6 +1,14 @@
 name: Lint and test Python package
 
-on: [push]
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      profile_calculator_reset:
+        description: Run and profile the focused Calculator reset test
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   lint-test:
@@ -23,6 +31,14 @@ jobs:
         conda install -y python=3.13
         echo $CONDA/bin >> $GITHUB_PATH
         conda env update --file environment.yml --name base
+    - name: Run focused Calculator reset test
+      if: ${{ inputs.profile_calculator_reset }}
+      run: |
+        pytest atlast_sc_tests/unit_tests/test_calculator.py::TestCalculator::test_reset -vv --durations=10
+    - name: Profile focused Calculator reset test
+      if: ${{ inputs.profile_calculator_reset }}
+      run: |
+        python -m cProfile -s cumulative -m pytest -q atlast_sc_tests/unit_tests/test_calculator.py::TestCalculator::test_reset
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
