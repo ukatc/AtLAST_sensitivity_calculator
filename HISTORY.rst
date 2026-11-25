@@ -1,6 +1,7 @@
 2.0.0 (2026-11-25)
 ++++++++++++++++++
-Code Improvements:
+**Code Improvements**
+
 - Created a core package for calculator functionality and modules.
 - Added specific instrument modules to represent ALMA and ALMA WSU.
 - Added option to supply telescope and environment parameters on the CLI. 
@@ -16,7 +17,8 @@ Code Improvements:
 - Added API requests to set instruments on the backend. 
 - Added conversion of any bandwidth unit to Hz for easier comparison in the backend.
 
-Testing & Validation:
+**Testing & Validation**
+
 - Updated test environment image version to Ubuntu 24.04 (was 22.04).
 - Updated test environment to Python 3.13 (was 3.10).
 - Added validation for the chosen instrument.
@@ -25,7 +27,8 @@ Testing & Validation:
 - Added tests for added functionalities. 
 - Populated Fast API tests.
 
-Web Client:
+**Web Client**
+
 - Reorganised the layout into user input area (left) and instrument area (right).
 - Added an option to select an instrument to use in the calculations. 
 - Added functionality to see available instruments and instrument ranges on the instrument area.
@@ -37,7 +40,8 @@ Web Client:
 - Updated EU funding acknowledgement. 
 - Added new adjustments to keep UI tidy in additional two screen sizes.
 
-Documentation & User Experience:
+**Documentation & User Experience**
+
 - Added documentation for ALMA and ALMA WSU.
 - Modified documentation to explain the new package structures.
 - Modified documentation to include new special units for bandwidth and sensitivity values. 
@@ -50,7 +54,8 @@ Documentation & User Experience:
 2.0.0-beta (2026-05-29)
 ++++++++++++++++++++++++++
 
-Code Improvements:
+**Code Improvements**
+
 - Simplified and modularised code structure
 - Separated calculation input parameters into categories
 - Added error handling when calculator parameters are accessed using the deprecated API.
@@ -67,12 +72,14 @@ Code Improvements:
 - Changed system temperature and sky temperature equations to ensure all temperatures are noise temperatures.
 - Added notebook walkthroughs for each of the instruments.
 
-Web Client:
+**Web Client**
+
 - Updated EU flag image assets
 - Minor HTML/template improvements
 - Added EU funding acknowledgement
 
-Documentation & User Experience:
+**Documentation & User Experience**
+
 - Added comprehensive quickstart guide.
 - Added instrument documentation with dedicated pages for CHAI, FINER, MUSCAT, SEPIA, and TIFUUN system temperature calculations.
 - Revised and expanded calculator info and user guide.
