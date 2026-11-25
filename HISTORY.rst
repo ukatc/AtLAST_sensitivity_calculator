@@ -1,30 +1,92 @@
-2.0.0-alpha.3 (2026-05-15)
-++++++++++++++++++++++++++
-- Re-added sideband ratio for CHAI and set it to 1.
-- Ensured n_pol=1 in the walkthrough.
-- Updated documentation and walkthrough to reflect these changes.
+2.0.0 (2026-11-25)
+++++++++++++++++++
+**Code Improvements**
 
-2.0.0-alpha.2 (2026-04-27)
-++++++++++++++++++++++++++
-- Added / updated dependencies to ensure documentation could be generated locally.
+- Created a core package for calculator functionality and modules.
+- Added specific instrument modules to represent ALMA and ALMA WSU.
+- Added option to supply telescope and environment parameters on the CLI. 
+- Re-added the finetune option when creating a calculator object on the CLI (Mistakenly removed in 2.0.0-beta).
+- Added functionality to specify instrument preference order in the CLI.
+- Changed method of choosing an applicable instrument to consider instrument preference order, if specified.
+- Added option to choose viewing calculated sensitivity as a flux density or brightness temperature.
+- Added option to supply bandwidth frequency value as velocity.
+- Added methods to convert between flux density and temperature (for sensitivity values) and added user-facing methods to do conversion.
+- Added methods to convert between velocity and frequency (for bandwidth values) and added user-facing methods to do conversion.
+- Added API requests to convert from special units to default units. 
+- Added API requests to get applicable instruments and instrument ranges.
+- Added API requests to set instruments on the backend. 
+- Added conversion of any bandwidth unit to Hz for easier comparison in the backend.
 
-2.0.0-alpha.1 (2026-03-20)
+**Testing & Validation**
+
+- Updated test environment image version to Ubuntu 24.04 (was 22.04).
+- Updated test environment to Python 3.13 (was 3.10).
+- Added validation for the chosen instrument.
+- Added validation for instrument preference list.
+- Added special unit recognition (for bandwidth and sensitivity values) in validation methods.
+- Added tests for added functionalities. 
+- Populated Fast API tests.
+
+**Web Client**
+
+- Reorganised the layout into user input area (left) and instrument area (right).
+- Added an option to select an instrument to use in the calculations. 
+- Added functionality to see available instruments and instrument ranges on the instrument area.
+- Added link to instrument documentation on the instrument area.
+- Added version number on the header.
+- Fixed change of polarisation value not triggering the enability of calculate button. 
+- Added cross validation between chosen instrument and inputted observing frequency and bandwidth values.
+- Add the option of displaying the calculated sensitivity value in flux density or brightness temperature.
+- Updated EU funding acknowledgement. 
+- Added new adjustments to keep UI tidy in additional two screen sizes.
+
+**Documentation & User Experience**
+
+- Added documentation for ALMA and ALMA WSU.
+- Modified documentation to explain the new package structures.
+- Modified documentation to include new special units for bandwidth and sensitivity values. 
+- Modified documentation to include instructions on instrument preference order specification.
+- Modified documentation to include instructions on how to use unit conversion helper functions.
+- Changed Python package installation instructions to correspond to new dependency versions. 
+- Removed Docker instructions.
+
+
+2.0.0-beta (2026-05-29)
 ++++++++++++++++++++++++++
-- Refactored code to improve flexibility.
-- Changed the names and workings of calculation input parameter classes to make more sense with the addition of instrument modules.
+
+**Code Improvements**
+
+- Simplified and modularised code structure
+- Separated calculation input parameters into categories
+- Added error handling when calculator parameters are accessed using the deprecated API.
+- Updated test utilities and modified unit tests according to the new structure.
 - Added functionality for instrument modules to be introduced for calculating the system temperature.
 - Added specific instrument modules to represent CHAI, FINER, MUSCAT, SEPIA, TIFUUN.
 - Added automatic instrument selection based on observing frequency and bandwidth input by user.
 - Added instrument selection option on the CLI.
 - Added functionality to see if requested instrument can be chosen.
 - Added functionality to show a list of instruments with their observing frequency and bandwidth ranges.
-- Made instrument name specification case insensitive.
-- Modified unit tests according to the new structure.
+- Changed default observing frequency to 406 GHz (was 100 GHz).
 - More explanatory exception messages.
 - Changed am model output to produce Rayleigh-Jeans brightness temperature and to avoid including CMB (to avoid counting it twice).
 - Changed system temperature and sky temperature equations to ensure all temperatures are noise temperatures.
 - Added notebook walkthroughs for each of the instruments.
-- Documentation updates to take account of these changes.
+
+**Web Client**
+
+- Updated EU flag image assets
+- Minor HTML/template improvements
+- Added EU funding acknowledgement
+
+**Documentation & User Experience**
+
+- Added comprehensive quickstart guide.
+- Added instrument documentation with dedicated pages for CHAI, FINER, MUSCAT, SEPIA, and TIFUUN system temperature calculations.
+- Revised and expanded calculator info and user guide.
+- Improved developer guide with sections on adding new instruments and repository overview.
+- Added EU funding acknowledgement throughout documentation.
+- Reorganised documentation structure for better navigation.
+- Added / updated dependencies to ensure documentation could be generated locally.
 
 1.1.3 (2026-04-15)
 ++++++++++++++++++

@@ -3,9 +3,8 @@ import pytest
 from dataclasses import dataclass
 import astropy.units as u
 from pydantic import BaseModel
-from atlast_sc.parameters.derived_groups import Temperatures
-from atlast_sc.parameters.derived_groups import AtmosphereParams
-from atlast_sc.parameters.derived_groups import Efficiencies
+from atlast_sc.parameters.derived_groups import Temperatures, AtmosphereParams, \
+                                                    Efficiencies
 from atlast_sc.core.data import Data, DataHelper
 from atlast_sc.calculator import Calculator
 from atlast_sc.core.models import ValueWithoutUnits, ValueWithUnits
