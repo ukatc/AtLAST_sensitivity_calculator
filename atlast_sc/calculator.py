@@ -3,10 +3,8 @@ import astropy.units as u
 import numpy as np
 from atlast_sc.core.data import Data, Validator
 from atlast_sc.core.utils import DataHelper, Decorators
-from atlast_sc.core.exceptions import UnitException
-from atlast_sc.core.exceptions import CalculatedValueInvalidWarning
-from atlast_sc.core.exceptions import ValueOutOfRangeException
-from atlast_sc.core.exceptions import InstrumentNotApplicableException
+from atlast_sc.core.exceptions import CalculatedValueInvalidWarning, ValueOutOfRangeException, \
+                                        InstrumentNotApplicableException
 
 from atlast_sc.core.parameter_setup import ParameterSetup
 from atlast_sc.parameters.user_input_parameters import UserInputParameters
