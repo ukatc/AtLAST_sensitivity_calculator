@@ -2,9 +2,8 @@ import math
 
 import pytest
 from astropy import units as u
-from atlast_sc.core.models import ModelUtils
 from atlast_sc.core.models import ValueWithUnits, ValueWithoutUnits, \
-    UserInput, CalculationInput
+                                    ModelUtils, UserInput, CalculationInput
 from atlast_sc.core.data import Validator
 from atlast_sc_tests.utils import does_not_raise
 
