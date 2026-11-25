@@ -1,5 +1,6 @@
 import os
 import time
+from functools import lru_cache
 from pathlib import Path
 
 from scipy.interpolate import RegularGridInterpolator
@@ -7,6 +8,7 @@ import numpy as np
 import astropy.units as u
 from astropy import constants
 
+@lru_cache(maxsize=None)
 def _read_atmosphere_table(path):
     if os.environ.get("ATLAST_TIME_ATMOSPHERE_TABLE_READS") == "1":
         start = time.perf_counter()
@@ -46,8 +48,14 @@ class AtmosphereParams:
 
     def __init__(self):
 
-        self.T_atm_table = _read_atmosphere_table(AtmosphereParams._T_ATM_PATH) # Rayleigh-Jeans sky brightness temperature at zenith
-        self.tau_atm_table = _read_atmosphere_table(AtmosphereParams._TAU_ATM_PATH) # Sky opacity at zenith
+        self.T_atm_table = np.array(
+            _read_atmosphere_table(AtmosphereParams._T_ATM_PATH),
+            copy=True,
+        ) # Rayleigh-Jeans sky brightness temperature at zenith
+        self.tau_atm_table = np.array(
+            _read_atmosphere_table(AtmosphereParams._TAU_ATM_PATH),
+            copy=True,
+        ) # Sky opacity at zenith
         # the temperature values obtained by interpolating over the ATM tables are rescaled by the opacity at zenith to obtain T_atm (see the discussion around Eq. 7-9 in the ALMA Memo 602 (https://library.nrao.edu/public/memos/alma/main/memo602.pdf))
         self.T_atm_table[:,1:] = self.T_atm_table[:,1:] / (1.00 - np.exp(-self.tau_atm_table[:,1:]))
 
@@ -91,6 +99,12 @@ class AtmosphereParams:
         transmittance = np.exp(-tau_atm)
         
         return float(transmittance)
+
+
+# Load the atmosphere tables once during module startup. AtmosphereParams creates
+# independent copies for each instance; subsequent instances only copy memory.
+_read_atmosphere_table(AtmosphereParams._T_ATM_PATH)
+_read_atmosphere_table(AtmosphereParams._TAU_ATM_PATH)
 
 
 class Efficiencies:

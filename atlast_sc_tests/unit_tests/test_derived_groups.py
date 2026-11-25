@@ -1,7 +1,8 @@
 import pytest
 import astropy.units as u
+import numpy as np
 from atlast_sc.parameters.derived_groups import AtmosphereParams, Temperatures, \
-    Efficiencies
+    Efficiencies, _read_atmosphere_table
 from atlast_sc_tests.utils import create_default_inst_class, find_chosen_instrument
 
 class TestAtmosphereParams:
@@ -10,6 +11,15 @@ class TestAtmosphereParams:
         AtmosphereParams()
         # Nothing to test here
         assert True
+
+    def test_tables_are_cached_across_instances(self, mocker):
+        _read_atmosphere_table.cache_clear()
+        genfromtxt_spy = mocker.spy(np, "genfromtxt")
+
+        AtmosphereParams()
+        AtmosphereParams()
+
+        assert genfromtxt_spy.call_count == 2
 
 
 class TestEfficiencies:
