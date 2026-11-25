@@ -1,3 +1,4 @@
+from itertools import chain
 import astropy.units as u
 from atlast_sc.core.utils import DataHelper
 from atlast_sc.core.parameter_setup import ParameterSetup
@@ -6,7 +7,7 @@ from atlast_sc.core.parameter_setup import ParameterSetup
 VERSION = "1.0.0"
 
 # Global state to store special units
-special_units = ['km / s', 'm / s', 'K', 'mK']
+special_units = [x for x in chain(*DataHelper.special_params_and_units.values()) if x]
 
 def version_num_for_url():
     return VERSION.replace(".", "_")
