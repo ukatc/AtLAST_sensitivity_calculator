@@ -38,6 +38,7 @@ templates = Jinja2Templates(directory="templates",
                                                 cp.default_values_processor,
                                                 cp.default_units_processor,
                                                 cp.allowed_range_processor,
+                                                cp.project_version,
                                                 cp.api_version,
                                                 ])
 

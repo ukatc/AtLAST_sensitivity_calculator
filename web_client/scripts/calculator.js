@@ -19,7 +19,7 @@ $(document).ready(() => {
             // Show applicable instruments with initial values
             CalculatorUI.showApplicableInstruments();
 
-            // Set up the event listeners on user input fields
+            // Set up the event listeners on user input fields besides polarisation
             const allUserInputs = document.querySelectorAll(".param-input");
             const updateFormValidationState = () => {
                 formValidated =
@@ -27,6 +27,13 @@ $(document).ready(() => {
                 CalculatorUI.disableCalculateBtn(!formValidated);
                 return formValidated;
             };
+
+            // Set up event listener on the polarisation input field
+            const polarizationInput = document.getElementById("npol-input");
+            polarizationInput.addEventListener("change", () => {
+                CalculatorUI.resetOutputBox();
+                updateFormValidationState();
+            });
 
             allUserInputs.forEach(input => {
                 // Get the corresponding units for this input
