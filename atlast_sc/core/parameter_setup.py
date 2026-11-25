@@ -1,16 +1,10 @@
 import copy, re
-from atlast_sc.core.models import UserInput
-from atlast_sc.core.models import ValueWithUnits
-from atlast_sc.core.models import CalculationInput
-from atlast_sc.core.models import CalculationResult
-from atlast_sc.core.models import TelescopeAndEnvironment
-from atlast_sc.core.models import DerivedParams
+from atlast_sc.core.models import UserInput, TelescopeAndEnvironment, DerivedParams
+from atlast_sc.core.models import CalculationInput, CalculationResult
 
 from atlast_sc.instruments.config import InstrumentConfig
 
-from atlast_sc.parameters.derived_groups import AtmosphereParams
-from atlast_sc.parameters.derived_groups import Temperatures
-from atlast_sc.parameters.derived_groups import Efficiencies
+from atlast_sc.parameters.derived_groups import AtmosphereParams, Temperatures, Efficiencies
 
 import astropy.units as u
 from astropy.constants import k_B
