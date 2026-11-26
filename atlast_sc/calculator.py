@@ -318,27 +318,28 @@ class Calculator:
         user_bandwidth = user_bandwidth.value
 
         # Requested instrument ranges
-        instrument_obs_freqs = \
-            self.loaded_instruments[requested_inst_name]['obs_freq']['ranges']
-        instrument_bandw_vals = \
-            self.loaded_instruments[requested_inst_name]['bandwidth']['ranges']
+        instrument_ranges = self.loaded_instruments[requested_inst_name]
+        instrument_obs_freqs = instrument_ranges['obs_freq']['ranges']
+        instrument_bandw_vals = instrument_ranges['bandwidth']['ranges']
+        instrument_bandw_unit = u.Unit(instrument_ranges['bandwidth']['unit'])
+        range_pattern = r"(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?"
         
         # Check if user inputted observing frequency value falls in 
         # the range of the requested instrument ranges
-        for range in instrument_obs_freqs:
-            range = re.findall(r"[\d.]+", range)
-            min_freq = float(range[0])
-            max_freq = float(range[1])
+        for obs_freq_range in instrument_obs_freqs:
+            bounds = re.findall(range_pattern, obs_freq_range)
+            min_freq = float(bounds[0])
+            max_freq = float(bounds[1])
             if user_obs_freq >= min_freq and user_obs_freq <= max_freq:
                 obs_freq_applicable = True
 
         # Check if user inputted bandwidth value falls in the range of 
         # the requested instrument ranges
         if requested_inst_name != 'Default':
-            for range in instrument_bandw_vals:
-                range = re.findall(r"[\d.]+", range)
-                min_bandw = float(range[0])
-                max_bandw = float(range[1])
+            for bandwidth_range in instrument_bandw_vals:
+                bounds = re.findall(range_pattern, bandwidth_range)
+                min_bandw = (float(bounds[0]) * instrument_bandw_unit).to(u.Hz).value
+                max_bandw = (float(bounds[1]) * instrument_bandw_unit).to(u.Hz).value
                 if user_bandwidth >= min_bandw and user_bandwidth <= max_bandw:
                     bandwidth_applicable = True
         else: # If the requested instrument is Default
