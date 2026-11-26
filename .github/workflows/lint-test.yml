@@ -23,6 +23,14 @@ jobs:
         conda install -y python=3.13
         echo $CONDA/bin >> $GITHUB_PATH
         conda env update --file environment.yml --name base
+    - name: Run focused Calculator reset test
+      env:
+        ATLAST_TIME_ATMOSPHERE_TABLE_READS: "1"
+      run: |
+        pytest atlast_sc_tests/unit_tests/test_calculator.py::TestCalculator::test_reset -s -vv --durations=10
+    - name: Profile focused Calculator reset test
+      run: |
+        python -m cProfile -s cumulative -m pytest -q atlast_sc_tests/unit_tests/test_calculator.py::TestCalculator::test_reset
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -30,10 +38,14 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Run python package tests and coverage report
+      env:
+        ATLAST_TIME_ATMOSPHERE_TABLE_READS: "1"
       run: |
-        coverage run -m pytest atlast_sc_tests -s -vv
+        coverage run -m pytest atlast_sc_tests -s -vv --durations=25
         coverage report -m
     - name: Run FastAPI tests and coverage report
+      env:
+        ATLAST_TIME_ATMOSPHERE_TABLE_READS: "1"
       run: |
-        coverage run -m pytest fastapi_tests -s -vv
+        coverage run -m pytest fastapi_tests -s -vv --durations=25
         coverage report -m --omit=atlast_sc/*        
