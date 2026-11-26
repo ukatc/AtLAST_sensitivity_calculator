@@ -246,6 +246,8 @@ class Calculator:
         """
 
         if sensitivity is not None:
+            # Convert sensitivity value if it's in special unit
+            sensitivity = Decorators._special_unit_conversion('sensitivity', self.user_input, sensitivity)
             if update_calculator:
                 self.user_input.sensitivity = sensitivity
             else:

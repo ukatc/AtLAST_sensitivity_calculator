@@ -447,6 +447,29 @@ class TestCalculator:
         # units of time
         assert any(int_time.unit == x for x in [u.s, u.min, u.h])
 
+    @pytest.mark.parametrize('update_calculator', [True, False])
+    def test_calculate_t_integration_converts_temperature_sensitivity(
+            self, update_calculator, sensitivity, calculator):
+        temperature_sensitivity = 500 * u.K
+        expected_value, expected_unit = \
+            DataHelper.convert_temperature_to_flux_density(
+                calculator.user_input.obs_freq,
+                calculator.telescope_and_environment.dish_radius,
+                temperature_sensitivity,
+            )
+
+        calculator.calculate_t_integration(
+            temperature_sensitivity,
+            update_calculator=update_calculator,
+        )
+
+        if update_calculator:
+            assert calculator.user_input.sensitivity.unit == u.Unit(expected_unit)
+            assert calculator.user_input.sensitivity.value == \
+                pytest.approx(expected_value)
+        else:
+            assert calculator.user_input.sensitivity == sensitivity
+
     @pytest.mark.parametrize(
         'input_value,func_name',
         [
