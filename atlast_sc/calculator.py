@@ -118,10 +118,6 @@ class Calculator:
             # Recalculate derived parameters because new
             # instrument has been chosen
             self._param_setup._calculate_derived_parameters()
-            new_inst_name = self._param_setup.chosen_instrument.name
-            if old_inst_name != new_inst_name:
-                print("Instrument has been changed from " + old_inst_name + \
-                      " to " + new_inst_name + ".")
         else:
             # User inputted obs_freq and bandwidth are not 
             # in range of the requested instrument
