@@ -72,6 +72,39 @@ def test_calculate_t_int():
     assert pytest.approx(integration_time['value'], 0.1) == 5.20
 
 
+def test_instrument_is_supplied_per_calculation(monkeypatch):
+    instrument_names = []
+
+    def fake_do_calculation(
+            user_input, calculation, instrument_name="Default",
+            brightness_temperature=False):
+        instrument_names.append(instrument_name)
+        return {"value": 1, "unit": "mJy"}
+
+    monkeypatch.setattr(
+        "web_client.main.calculator.do_calculation",
+        fake_do_calculation,
+    )
+
+    selected_response = client.post(
+        f'/v{version}/sensitivity',
+        json={**user_input, "instrument_name": "Finer"},
+    )
+    second_selected_response = client.post(
+        f'/v{version}/integration-time',
+        json={**user_input, "instrument_name": "Alma"},
+    )
+    default_response = client.post(
+        f'/v{version}/sensitivity',
+        json=user_input,
+    )
+
+    assert selected_response.status_code == 200
+    assert second_selected_response.status_code == 200
+    assert default_response.status_code == 200
+    assert instrument_names == ["Finer", "Alma", "Default"]
+
+
 @pytest.mark.parametrize(
     ('velocity', 'velocity_unit'),
     [

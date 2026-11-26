@@ -8,14 +8,14 @@ from pydantic import ValidationError
 from atlast_sc.core.data import Data
 
 
-def do_calculation(user_input, calculation, selected_instrument,
+def do_calculation(user_input, calculation, instrument_name="Default",
                    brightness_temperature=False):
     """
     Perform the specified calculation (sensitivity or integration time)
     """
     try:
         calculator = _create_calculator(user_input)
-        calculator.chosen_instrument = selected_instrument
+        calculator.chosen_instrument = instrument_name
     except UserInputError as e:
         raise e
 
@@ -176,8 +176,7 @@ def get_applicable_instruments(obs_freq, bandwidth, bandwidth_unit=None):
 
 def _create_calculator(user_input):
     """
-    Create a calculator object with the specified user input and apply
-    the currently selected instrument if one has been set.
+    Create a calculator object with the specified user input.
     """
     try:
         calculator = Calculator(user_input)

@@ -1,4 +1,4 @@
-import { setInstrument, getInstrumentRanges, setApplicableInstruments } from './rest_calls.js';
+import { getInstrumentRanges, setApplicableInstruments } from './rest_calls.js';
 import { validateInputAgainstInstrumentRange } from './validators.js';
 
 const setUIInitialState = (paramData) => {
@@ -128,10 +128,8 @@ const validateCurrentInputsAgainstInstrument = async (parameterName = null) => {
 
 const setChosenInstrument = async (instrumentName) => {
     try {
-        const data = await setInstrument(instrumentName);
-        console.log(data);
         // Update the ranges display for the new instrument
-        await updateInstrumentRangesDisplay(data.instrument);
+        await updateInstrumentRangesDisplay(instrumentName);
         // Validate current inputs against the newly set instrument
         const inputsInRange = await validateCurrentInputsAgainstInstrument();
 

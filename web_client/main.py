@@ -27,11 +27,9 @@ paths = {
     'sensitivity': f'/{version}/sensitivity',
     'integration_time': f'/{version}/integration-time',
     'param_values_units': f'/{version}/param-values-units',
-    'set_instrument': f'/{version}/set-instrument'
+    'set_instrument': f'/{version}/set-instrument',
+    'get_instrument': f'/{version}/get-instrument'
 }
-
-# Global state to store the currently selected instrument
-selected_instrument = 'Default'
 
 templates = Jinja2Templates(directory="templates",
                             context_processors=[cp.invalid_message_processor,
@@ -66,7 +64,7 @@ async def sensitivity(api_user_input: APIUserInput):
         return calculator.do_calculation(
             user_input,
             "sensitivity",
-            selected_instrument,
+            api_user_input.instrument_name,
             api_user_input.brightness_temperature,
         )
     except calculator.UserInputError as e:
@@ -82,7 +80,9 @@ async def t_int(api_user_input: APIUserInput):
     user_input = utils.modify_user_input_with_converted_values(user_input)
 
     try:
-        return calculator.do_calculation(user_input, "integration_time", selected_instrument)
+        return calculator.do_calculation(
+            user_input, "integration_time", api_user_input.instrument_name
+        )
     except calculator.UserInputError as e:
         raise HTTPException(status_code=400, detail=e.message)
 
@@ -132,7 +132,7 @@ async def get_applicable_instruments(req: ApplicableInstrumentsRequest):
             content="Default"
         )
 
-@app.get(paths['set_instrument'] + '/ranges')
+@app.get(paths['get_instrument'] + '/ranges')
 async def get_instrument_ranges(instrument_name: str):
     """
     Get the observing frequency and bandwidth ranges for a given instrument.
@@ -154,19 +154,6 @@ async def get_instrument_ranges(instrument_name: str):
             content=ranges
         )
 
-@app.post(paths['set_instrument'])
-async def set_instrument(instrument_selection: InstrumentSelection):
-    global selected_instrument
-    try:
-        selected_instrument = instrument_selection.instrument_name
-        return JSONResponse(
-            content={
-                "status": "success",
-                "instrument": selected_instrument
-            }
-        )
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
 
 
 def _unpack_api_user_input(api_user_input):

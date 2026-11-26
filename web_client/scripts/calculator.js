@@ -1,4 +1,4 @@
-import {getParamValuesUnits, calculate, setInstrument} from './rest_calls.js';
+import {getParamValuesUnits, calculate} from './rest_calls.js';
 import {validateInput} from './validators.js'
 import * as CalculatorUI from './calculator_ui.js'
 
@@ -186,12 +186,6 @@ $(document).ready(() => {
                   updateFormValidationState();
 
 
-                    // Send the default instrument to the backend
-                    // NOTE: This is necessary because otherwise the backend
-                    // will try to doCalculation with the last instrument that 
-                    // was set, which may not be valid for the default input values.
-                    setInstrument("Default")
-
                     // Reset the reference to the checked radio button
                     for (const option of calcOptions) {
                         // Keep track of which radio button is currently checked
@@ -204,14 +198,10 @@ $(document).ready(() => {
                         checkedOption.getAttribute("calculation") !== "sensitivity"
                     );
 
-                    setInstrument("Default");
                     doCalculation(data);
                 })
             });
             
-
-            // Send the default instrument to the backend
-            setInstrument("Default")
 
             // Calculate the integration time using the default values
             doCalculation(data);
@@ -228,6 +218,8 @@ const doCalculation = (paramData) => {
     CalculatorUI.toggleSpinner('calculate', false);
 
     const inputData = {};
+    inputData.instrument_name =
+        document.getElementById("instrument-type").value;
 
     for (const param in paramData) {
         // Get the input element for the current param and retrieve its

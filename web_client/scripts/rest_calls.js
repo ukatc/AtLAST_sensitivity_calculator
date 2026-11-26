@@ -39,25 +39,6 @@ const calculate = (inputData, targetPath) => {
     });
 }
 
-const setInstrument = (instrumentName) => {
-    const version = apiVersion();
-
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: `/${version}/set-instrument`,
-            type: 'POST',
-            data: JSON.stringify({ instrument_name: instrumentName }),
-            contentType: 'application/json',
-            success: function(data) {
-                resolve(data);
-            },
-            error: function(error) {
-                reject(error);
-            }
-        });
-    });
-}
-
 const getInstrumentRanges = (instrumentName) => {
     const version = apiVersion();
     const params = new URLSearchParams();
@@ -65,7 +46,7 @@ const getInstrumentRanges = (instrumentName) => {
 
     return new Promise((resolve, reject) => {
         $.ajax({
-            url: `/${version}/set-instrument/ranges?${params.toString()}`,
+            url: `/${version}/get-instrument/ranges?${params.toString()}`,
             type: 'GET',
             success: function(data) {
                 resolve(data);
@@ -113,5 +94,5 @@ const convertVelocityToFrequency = (inputData) => {
     });
 }
 
-export {getParamValuesUnits, calculate, setInstrument, getInstrumentRanges,
+export {getParamValuesUnits, calculate, getInstrumentRanges,
         setApplicableInstruments, convertVelocityToFrequency};
