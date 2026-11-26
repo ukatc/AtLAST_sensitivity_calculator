@@ -3,7 +3,9 @@
 **Code Improvements**
 
 - Created a core package for calculator functionality and modules.
-- Added specific instrument modules to represent ALMA and ALMA WSU.
+- Moved derived_groups.py into the parameters module.
+- Added specific instrument modules to represent ALMA, ALMA WSU, MISTRAL and SRT Q Band.
+- Increased maximum bandwidth for FINER and SEPIA instruments.
 - Added option to supply telescope and environment parameters on the CLI. 
 - Re-added the finetune option when creating a calculator object on the CLI (Mistakenly removed in 2.0.0-beta).
 - Added functionality to specify instrument preference order in the CLI.
@@ -19,13 +21,15 @@
 
 **Testing & Validation**
 
-- Updated test environment image version to Ubuntu 24.04 (was 22.04).
+- Updated test environment image version to Ubuntu 24.04 (was Ubuntu latest).
+- Updated test environment actions to v7 (was v3).
 - Updated test environment to Python 3.13 (was 3.10).
 - Added validation for the chosen instrument.
 - Added validation for instrument preference list.
 - Added special unit recognition (for bandwidth and sensitivity values) in validation methods.
-- Added tests for added functionalities. 
+- Added tests for new functionalities. 
 - Populated Fast API tests.
+- Added Jupyter notebooks for demonstrating the new ALMA, ALMA WSU, MISTRAL and SRT Q Band modules.
 
 **Web Client**
 
@@ -34,7 +38,7 @@
 - Added functionality to see available instruments and instrument ranges on the instrument area.
 - Added link to instrument documentation on the instrument area.
 - Added version number on the header.
-- Fixed change of polarisation value not triggering the enability of calculate button. 
+- Fixed change of polarisation value not reenabling the calculate button. 
 - Added cross validation between chosen instrument and inputted observing frequency and bandwidth values.
 - Add the option of displaying the calculated sensitivity value in flux density or brightness temperature.
 - Updated EU funding acknowledgement. 
@@ -42,7 +46,8 @@
 
 **Documentation & User Experience**
 
-- Added documentation for ALMA and ALMA WSU.
+- Added documentation for ALMA, ALMA WSU, MISTRAL and SRT Q Band.
+- Moved instrumentation documentation to a new 'instruments' sub-directory of 'calculator_info'.
 - Modified documentation to explain the new package structures.
 - Modified documentation to include new special units for bandwidth and sensitivity values. 
 - Modified documentation to include instructions on instrument preference order specification.
