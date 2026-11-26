@@ -3,6 +3,7 @@ import math
 import astropy.units as u
 from dataclasses import asdict
 from atlast_sc.calculator import Calculator
+from atlast_sc.core.exceptions import InstrumentNotApplicableException
 from atlast_sc.core.parameter_setup import ParameterSetup
 from pydantic import ValidationError
 from atlast_sc.core.data import Data
@@ -13,11 +14,15 @@ def do_calculation(user_input, calculation, instrument_name="Default",
     """
     Perform the specified calculation (sensitivity or integration time)
     """
+    calculator = _create_calculator(user_input)
     try:
-        calculator = _create_calculator(user_input)
         calculator.chosen_instrument = instrument_name
-    except UserInputError as e:
-        raise e
+    except KeyError as e:
+        raise UserInputError(
+            f"Unknown instrument '{instrument_name}'."
+        ) from e
+    except InstrumentNotApplicableException as e:
+        raise UserInputError(str(e)) from e
 
     func = None
     match calculation:
