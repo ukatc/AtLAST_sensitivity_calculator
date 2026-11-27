@@ -22,13 +22,13 @@ User input parameters
       - 3.0
       - mJy
       - > 0
-      - uJy, mJy, Jy
+      - uJy, mJy, Jy, mK, K
     * - Bandwidth
       - bandwidth
       - 100
       - MHz
       - > 0
-      - Hz, kHz, MHz, GHz
+      - Hz, kHz, MHz, GHz, km/s, m/s
     * - Observing frequency
       - obs_freq
       - 406

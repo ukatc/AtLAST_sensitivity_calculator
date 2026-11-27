@@ -28,13 +28,20 @@ a.nav-link:hover {
     color: #18bc9c !important;
 }
 
+.atlast-navbar #version-number .nav-link {
+    color: #C8B1A2 !important;
+    position:absolute;
+    right: 2%;
+    font-size: 0.8rem;
+}
+
 .calculator-container {
-    margin-left: 35%;
+    margin: auto;
 }
 
 .titles {
     font-weight: 600;
-    color: #747474;
+    color: #434343;
     font-size: larger;
 }
 
@@ -62,7 +69,7 @@ input:invalid {
 }
 
 .param-input-group {
-    width: 80%;
+    width: 60%;
 }
 
 .submit-btn-col {
@@ -75,11 +82,31 @@ input:invalid {
 }
 
 .invalid-message {
-    width:100%;
     margin-bottom:1.5rem;
     font-size:.9em;
     color:#e74c3c;
 }
+
+.param-description {
+    font-size:.8em;
+    color:#757575;
+}
+
+.inst-range-label {
+  color: black;
+}
+
+.inst-selection{
+  font-size: 0.8rem;
+  color: #434343;
+}
+
+.allowed-range-info {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.4;
+}
+
 
 html,
 body {
@@ -152,8 +179,8 @@ button:hover {
 
 #header {
     height: 200px;
-    width: 100%;
-    background: url("../resources/atlast-banner-bg.png") top center repeat-x;
+    width:102%;
+    background: url("../resources/atlast-banner-bg.png") top repeat-x;
     background-size: 10px;
 }
 
@@ -166,7 +193,6 @@ img#logoimg {
 #logotext {
   font-size: 5rem;
   top: 100px;
-  left: 35%;
   position: relative;
   padding: 10px 0;
 }
@@ -175,6 +201,52 @@ img#logoimg {
   padding-top: 20px;
   font-size: 1.5rem;
   line-height: 1.1;
+}
+
+#instrument-choice {
+  width:70%;
+}
+
+#inst-selection-box {
+  background-color: #7EAADC;
+}
+
+#allowed-setup-box {
+  background-color: #C8B1A2;
+  color: black;
+}
+
+#allowed-setups-title {
+  font-weight: 600;
+  color: #747474;
+}
+
+#sensitivity-result-unit-option .btn-check:checked + .btn {
+  background-color: #aceadd;
+  border-color: #4c9c8b;
+  color: #3b3b3b;
+}
+
+#sensitivity-result-unit-option .btn-check:checked + .btn:hover {
+  background-color: #aceadd;
+  border-color: #4c9c8b;
+  color: #3b3b3b;
+}
+
+#calc-type-question {
+  font-weight:bold;
+}
+
+#left-area {
+  margin-right: -5%;
+}
+
+#right-area {
+  margin-left: -5%;
+}
+
+#content-area {
+  padding-left: 10%;
 }
 
 @media print {
@@ -194,9 +266,10 @@ img#logoimg {
         background-size: 8px;
     }
     #logotext {
-        left: 30%;
+        left: 0;
         top: 70px;
         font-size: 4rem;
+        text-align: center;
     }
     img#logoimg {
         height: 70px;
@@ -206,6 +279,12 @@ img#logoimg {
     #tagline {
         font-size: 1.2rem;
     }
+
+    #content-area {
+        margin-left: -20%;
+        margin-right: -15%;
+    }
+
 }
 
 @media screen and (max-width: 660px) {
@@ -238,6 +317,32 @@ img#logoimg {
         left: -90px;
     }
     #tagline {
-        display: none;
+      font-size: 0.8rem;
     }
+    #right-area {
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+    }
+}
+
+
+@media screen and (max-width: 767px) {
+    #right-area {
+      padding-top: 5%;
+      padding-bottom: 10%;
+      padding-right: 10%;
+      padding-left: 15%;
+    }
+}
+
+@media screen and (max-width: 660px) {
+    #content-area {
+      margin-left: -10%;
+      margin-right: -10%;
+    }
+
+    #calculation-type-area {
+      padding-left: 10%;
+    }
+
 }

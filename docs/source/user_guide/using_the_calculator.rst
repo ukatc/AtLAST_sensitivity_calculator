@@ -1,12 +1,12 @@
 Using the Calculator
---------------------
+====================
 
 After the package has been successfully installed and verified, the following workflow describes how to setup and perform
 sensitivity or integration time calculations given weather, telescope and instrumentation settings and either a required sensitivity (to calculate
 on source integration time) or an integration time (to calculate sensitivity).
 
 Basic usage
-^^^^^^^^^^^
+-----------
 After installing the package and creating the conda environment, follow these commands to import the calculator and required
 packages and run simple time and sensitivity calculations for a given set of weather, telescope and instrument
 parameters.
@@ -27,7 +27,7 @@ it useful to import ``astropy.units`` as this package is required for defining t
 
 
 Next, initialise the calculator object. The Calculator class is the main interface to the sensitivity calculator, 
-and provides a single point of access to all of the calculator's functionality. Initializing
+and provides a single point of access to all of the calculator's functionality. Initialising
 a calculator object at the beginning of your python session ensures that your changes to setup parameters are
 used consistently throughout.
 
@@ -51,12 +51,13 @@ been set, you can use:
 
 
 All input parameters can be updated manually, using the parameter names listed from ``calculator.user_input.show()``.
-For example, to set the bandwidth after initializing the calculator:
+For example, to set the bandwidth after initialising the calculator:
 
 .. code-block:: python
 
     calculator.user_input.bandwidth = 150*u.MHz
 
+For spectral line observations, it is also possible to input the bandwidth in terms of m/s or km/s, however note that the bandwidth will always be stored as a frequency.
 
 All input parameters are validated by the calculator. You will see
 an error if the values you provide are invalid (e.g., are out of a specified
@@ -65,13 +66,17 @@ parameters force it into a configuration that mandates a different instrument.
 
 With all of the input parameters set to meet your required calculation, including integration time, call the
 :meth:`calculate_sensitivity <atlast_sc.calculator.Calculator.calculate_sensitivity>`
-method to obtain the sensitivity (in mJy):
+method to obtain the sensitivity as a flux density (in uJy, mJy or Jy):
 
 .. code-block:: python
 
     calculated_sensitivity = calculator.calculate_sensitivity()
 
+This can also be output as a brightness temperature (in mK or K):
 
+.. code-block:: python
+
+    calculated_sensitivity = calculator.calculate_sensitivity(brightness_temperature=True)
 
 Alternatively, to obtain the integration time required having specified a sensitivity, call
 :meth:`calculate_t_integration <atlast_sc.calculator.Calculator.calculate_t_integration>`:
@@ -87,11 +92,11 @@ will not be stored in the Calculator object.
 
 
 Checking the parameters stored by the calculator
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------------------------
 
-The calculator stores the user input parameters, instrument, telescope and environment setup parameters, and
-any further derived parameters calculated from other inputs. You can output these
-parameters to the console as follows:
+The calculator stores the user input parameters, telescope and environment setup parameters, and
+any further derived parameters calculated from other inputs. You can output the current
+parameters to the console as follows. (Note that these are not necessarily those used in the most recent calculation and that the derived parameters are recalculated each time the user inputs are changed.)
 
 .. code-block:: bash
 
@@ -130,7 +135,7 @@ parameters to the console as follows:
 The user input and derived parameters can be output to a file as described in the :ref:`writing parameters to a file<section_writing_data>` section.
 
 Resetting the calculator
-^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------
 
 You can reset the user input parameters stored in the calculator to their initial values using the :meth:`reset <atlast_sc.calculator.Calculator.reset>` method:
 
@@ -152,7 +157,7 @@ You can reset the user input parameters stored in the calculator to their initia
 
 
 Initializing the Calculator with a dictionary
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------------
 
 The :class:`Calculator <atlast_sc.calculator.Calculator>` object accepts a dictionary as input.
 First, create a dictionary with the input data you wish to use:
@@ -185,7 +190,7 @@ The dictionary can be generated from an input file as described in :ref:`Reading
 .. _section_instrument_selection:
 
 Instrument selection
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 
 The AtLAST sensitivity calculator supports a range of instruments as described in the
 :doc:`instrument overview <../calculator_info/instrument_overview>`. The calculator will
@@ -222,3 +227,65 @@ The observing frequency and bandwidth ranges for the instruments can be checked 
     >>> calculator.list_instruments()
 
 
+Instrument priority order
+-------------------------
+
+As a user, you can specify a particular order for the instruments to be considered when making 
+calculations. Should you choose to specify an order, you can do it through the calculator object:
+
+.. code-block:: python
+
+    >>> calculator.instrument_order_preference = ['Finer', 'Chai', 'Default', 'Sepia', 'Tifuun', 
+    >>> 'Muscat', 'Alma_wsu', 'Alma']
+
+If you choose not to specify an order, the calculator will use the default order (``["Tifuun", "Muscat", "Mistral", "Finer", "Sepia", "Chai", "SRTQband", "Default", "Alma_wsu", "Alma"]``) 
+when making calculations.
+
+
+Conversion helper functions
+---------------------------
+
+Conversion between flux density and brightness temperature
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you wish to convert between flux density and brightness temperature, you can use the following helper
+functions:
+
+.. code-block:: python
+
+    >>> temp = calculator.convert_flux_density_to_brightness_temperature(50 * u.Jy)
+    >>> print(temp)
+    26.841862850954524 K
+
+    >>> flux_density = calculator.convert_brightness_temperature_to_flux_density(300 * u.K) 
+    >>> print(flux_density)
+    558.8285762165939 Jy
+
+Both methods can take a dish radius value as an optional parameter:
+
+.. code-block:: python
+
+    >>> temp = calculator.convert_flux_density_to_brightness_temperature(sensitivity_in_flux_density, 30 * u.m)
+
+
+Conversion between velocity and frequency
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you wish to convert between velocity and frequency, you can use the following helper
+functions:
+
+.. code-block:: python
+
+    >>> freq = calculator.convert_velocity_to_frequency(40 * u.km / u.s)
+    >>> print(freq)
+    54170809.06017989 Hz
+
+    >>> velocity = calculator.convert_frequency_to_velocity(600 * u.GHz)
+    >>> print(velocity)
+    443043.04137931037 km / s
+
+Both methods can take an observing frequency value as an optional parameter:
+
+.. code-block:: python
+
+    >>> freq = calculator.convert_velocity_to_frequency(40 * u.km / u.s, 230 * u.GHz)

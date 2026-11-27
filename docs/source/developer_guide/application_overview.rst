@@ -41,7 +41,7 @@ information on using the Python package is provided :doc:`through this link to t
 
 Modules
 ^^^^^^^
-Below is an overview description of each of the modules included in the
+Below is an overview description of each of the packages and modules included in the
 ``atlast_sc`` package. More detailed information on parameters and relationships is provided in the
 :doc:`Public API <../code_docs/public_api>` and :doc:`UML diagrams <../code_docs/uml>`
 sections.
@@ -50,20 +50,29 @@ calculator
 ++++++++++
 This module contains the main ``Calculator`` class that provides the interface
 for performing sensitivity and integration time calculations. A ``Calculator``
-object may be instantiated with user input parameters constructor, or with the default
-user input parameter constructor.
+object may be instantiated with user input parameters, telescope and environment
+parameters, and finetune constructor. Alternatively, it can be instantiated with
+the respective default constructors.
 
 This module provides methods exclusively for calculating sensitivity and integration time.
 It retrieves parameter sets, including user inputs, telescope and environmental
-conditions, and derived parameters, through the parameter setup object. This design
+conditions, and derived parameters through the parameter setup object. This design
 simplifies the process for users by providing a unified interface to access information 
-from each parameter class.
+from each parameter class. This module also allows the user to modify instrument preference
+order and select a specific instrument to use in the calculations. 
 
+core
+++++
+This package contains the core classes that are used throughout the calculator. The core 
+classes include the ``ParameterSetup``, ``Data``, ``Validator``, ``Instrument``, various 
+model, exception, and utility classes. This package serves as the foundation location for the 
+calculator functionality, providing the necessary structure for performing calculations 
+and managing parameters. 
 
 parameter_setup
 +++++++++++++++
-This class serves as a centralised container for storing and accessing the values of each 
-parameter in the following parameter classes:
+This class resides in the ``core`` package and serves as a centralised container for storing and
+accessing the values of each parameter in the following parameter classes:
 - user input parameters
 - telescope and environment parameters
 - derived parameters
@@ -89,61 +98,64 @@ telescope and environment parameters and subsequently derived parameters used in
 
 The ``Validator`` class provides methods for validating data provided to the calculator.
 
+They both reside in the ``core`` package.
+
 
 models
 ++++++
-This module contains model definitions that describe the structure of the data
-provided to the calculator. The module uses the ``pydantic`` library; models
-within the module inherit from the pydantic ``BaseModel``. Custom validation methods
+This module resides in the ``core`` package and contains model definitions that describe the 
+structure of the data provided to the calculator. The module uses the ``pydantic`` library; 
+models within the module inherit from the pydantic ``BaseModel``. Custom validation methods
 within the models ensure that input data is of the right type and satisfies the
 constraints defined in the ``data.Data`` class.
 
-derived_groups
-++++++++++++++
-This module contains classes that logically group parameters derived by the calculator
-for use in the calculations. Derived parameters are those that are dependent on the data
-provided to the calculator (user input and telescope and environmental properties). They are
-calculated at runtime when the calculator is instantiated, and when any of the 
-independent parameters are updated.
-
-The derived group classes are ``AtmosphereParams``, ``Efficiencies``, and
-``Temperatures``. Although these classes are accessible via the public API, they
-are primarily intended to be used internally.
-
 .. _atlast-sc-instruments-module:
+
+exceptions
+++++++++++
+This module resides in the ``core`` package and contains the data validation exception and 
+warning classes so that the user is informed about why their setup cannot generate a valid output.
+
+utils
++++++
+This is a utility module that resides in the ``core`` package and contains classes and methods used 
+throughout the application. The contents include helper methods for validating and updating parameters,
+performing unit conversions, and file input/output methods for reading and writing data to file.
 
 instruments
 +++++++++++
 This module contains the instrument data and classes used in the calculator, as well as the
 configuration class. The configuration class is the interface in which the developer can add 
-a new instrument to the calculator and contains methods for reading in the instrument data 
-from the YAML files, validating the data, and populating the instrument classes with the data.
+a new instrument to the calculator, change the instrument preference order, and contains methods
+for reading in the instrument data from the YAML files, validating the data, and populating the
+instrument classes with the data.
+
 Each instrument has a defined Python class under the *classes* directory, populated with 
 information from its respective YAML file under the *data* directory. Each instrument class 
-inherits from the base ``Instrument`` class, which contains methods and parameters common to 
-all instruments. An instrument class can contain any instrument specific parameters and 
-methods that are required for the calculations.
+inherits from the base ``Instrument`` class in the core package, which contains methods and 
+parameters common to all instruments. An instrument class can contain any instrument specific 
+parameters and methods that are required for the calculations.
 
 parameters
 ++++++++++
 This module contains classes that logically group parameters for use in the calculations. 
 The parameter classes are ``UserInputParams``, ``TelescopeEnvironmentParams``, and ``DerivedParameters``. 
-These classes are accessed within the calculator through the ``ParameterSetup`` class, and are 
-used to store and access the values of each parameter within the parameter classes. The parameter 
-classes also contain methods for validating and updating parameter values, and performing unit 
-conversions when necessary.
+These classes are accessed within the calculator through the ``ParameterSetup`` class in the core
+package, and are used to store and access the values of each parameter within the parameter classes. 
+The parameter classes also contain methods for validating and updating parameter values, and 
+performing unit conversions when necessary.
 
+derived_groups
+++++++++++++++
+This module is in the ``parameters`` package and contains classes that logically group parameters 
+derived by the calculator for use in the calculations. Derived parameters are those that are dependent 
+on the data provided to the calculator (user input and telescope and environmental properties). 
+They are calculated at runtime when the calculator is instantiated, and when any of the 
+independent parameters are updated.
 
-exceptions
-++++++++++
-This module contains the data validation exception and warning classes so that the user is informed
-about why their setup cannot generate a valid output.
-
-utils
-+++++
-This is a utility module that contains classes and methods used throughout the application. 
-The contents include helper methods for validating and updating parameters, performing 
-unit conversions, and file input/output methods for reading and writing data to file.
+The derived group classes are ``AtmosphereParams``, ``Efficiencies``, and
+``Temperatures``. Although these classes are accessible via the public API, they
+are primarily intended to be used internally.
 
 .. _class structure:
 

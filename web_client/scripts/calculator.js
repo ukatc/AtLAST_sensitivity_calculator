@@ -1,4 +1,4 @@
-import {geParamValuesUnits, calculate} from './rest_calls.js';
+import {getParamValuesUnits, calculate, setInstrument} from './rest_calls.js';
 import {validateInput} from './validators.js'
 import * as CalculatorUI from './calculator_ui.js'
 
@@ -9,33 +9,60 @@ $(document).ready(() => {
     // Get the parameter default values, default units, permitted range, etc.
     // then set up event listeners and do the initial calculation with default
     // input values.
-    geParamValuesUnits()
+    getParamValuesUnits()
         .then((data) => {
 
             let formValidated = false;
 
             CalculatorUI.initializeUnits(data);
 
-            // Set up the event listeners on user input fields
+            // Show applicable instruments with initial values
+            CalculatorUI.showApplicableInstruments();
+
+            // Set up the event listeners on user input fields besides polarisation
             const allUserInputs = document.querySelectorAll(".param-input");
+            const updateFormValidationState = () => {
+                formValidated =
+                    Array.from(allUserInputs).every(input => input.validity.valid);
+                CalculatorUI.disableCalculateBtn(!formValidated);
+                return formValidated;
+            };
+
+            // Set up event listener on the polarisation input field
+            const polarizationInput = document.getElementById("npol-input");
+            polarizationInput.addEventListener("change", () => {
+                CalculatorUI.resetOutputBox();
+                updateFormValidationState();
+            });
 
             allUserInputs.forEach(input => {
                 // Get the corresponding units for this input
                 const units =
                     document.getElementById(`${input.name}-units`);
                 // Validate the initial input data (should never fail!)
-                formValidated = validateInput(input, units, data[input.name]);
+                validateInput(input, units, data[input.name]);
 
                 // Add an event listener to validate input when it changes
-                input.addEventListener("change", e => {
+                input.addEventListener("change", async e => {
                     if (input === e.target) {
-                        formValidated =
-                            validateAndSetUIState(input, units,
-                                                  data[input.name]);
-
+                        const inputValidated =
+                            validateInput(input, units, data[input.name]);
+                        if (inputValidated) {
+                            CalculatorUI.resetOutputBox();
+                        }
+                        updateFormValidationState();
+                        
+                        // Only frequency and bandwidth belong to instrument ranges.
+                        if (inputValidated &&
+                            (input.name === "obs_freq" || input.name === "bandwidth")) {
+                            await CalculatorUI.validateCurrentInputsAgainstInstrument(input.name);
+                            updateFormValidationState();
+                            CalculatorUI.showApplicableInstruments();
+                        }
                     }
                 });
             });
+            updateFormValidationState();
 
             // Set up event listeners on the units dropdowns
             const allUnitsInputs = document.querySelectorAll(".units-input");
@@ -43,23 +70,40 @@ $(document).ready(() => {
             allUnitsInputs.forEach(unitsInput => {
                 // Add an event listener to re-enable to the Calculate button
                 // if the form is in a valid state
-                unitsInput.addEventListener("change", e => {
+                unitsInput.addEventListener("change", async e => {
                     if (unitsInput === e.target) {
                         // Get the corresponding input for this units input
                         const input =
                             document.querySelector(
                                 `input[name=${unitsInput.id.replace("-units", "")}`
                             );
-                        formValidated =
-                            validateAndSetUIState(input, unitsInput,
-                                                  data[input.name]);
+                        const inputValidated =
+                            validateInput(input, unitsInput, data[input.name]);
+                        if (inputValidated) {
+                            CalculatorUI.resetOutputBox();
+                        }
+                        updateFormValidationState();
+                        
+                        // Validate only frequency and bandwidth ranges against instrument ranges
+                        if (inputValidated &&
+                            (input.name === "obs_freq" || input.name === "bandwidth")) {
+                            await CalculatorUI.validateCurrentInputsAgainstInstrument(input.name);
+                            updateFormValidationState();
+                            if (formValidated) {
+                                CalculatorUI.showApplicableInstruments();
+                            }
+                        }
                     }
                 });
             })
 
+            CalculatorUI.showDifferentInstrumentOptions("instrument-type");
+
             const calcOptions =
                 document.querySelectorAll('input[name="calc-options"');
             let checkedOption;
+            const sensitivityResultUnitOption =
+                document.getElementById("sensitivity-result-unit-option");
             // Add an event listener to the radio buttons to show or hide the
             //   appropriate input box depending on selection.
             // Keep track of which option is checked so we know whether to
@@ -76,11 +120,15 @@ $(document).ready(() => {
                     // Re-enable to Calculate button if we've changed the
                     // the checked radio button
                     if (e.target !== checkedOption) {
-                        CalculatorUI.disableCalculateBtn(false);
+                        updateFormValidationState();
                         CalculatorUI.resetOutputBox();
                     }
                     // Update the checked option
                     checkedOption = e.target;
+                    sensitivityResultUnitOption.classList.toggle(
+                        "d-none",
+                        checkedOption.getAttribute("calculation") !== "sensitivity"
+                    );
 
                     // Iterate over the radio buttons. For the one that's clicked,
                     // hide the corresponding input box, otherwise show the
@@ -101,6 +149,17 @@ $(document).ready(() => {
                     }
                 });
             }
+            // Recalculate after the selected sensitivity output unit changes.
+            document.querySelectorAll('input[name="sensitivity-output-unit"]')
+                .forEach(unitInput => {
+                    unitInput.addEventListener("change", () => {
+                        CalculatorUI.resetOutputBox();
+                        if (updateFormValidationState() &&
+                            document.getElementById("btn-sensitivity").checked) {
+                            doCalculation(data);
+                        }
+                    });
+                });
 
             // Add an event listener to do the calculation when the form is
             //  submitted
@@ -108,7 +167,7 @@ $(document).ready(() => {
             form.addEventListener("submit", (e) => {
                 e.preventDefault();
 
-                if (formValidated) {
+                if (updateFormValidationState()) {
                     doCalculation(data);
                 }
             });
@@ -124,18 +183,35 @@ $(document).ready(() => {
                 return new Promise((resolve, reject) => resolve(form.reset()))
                 .then(() => {
                   CalculatorUI.setUIInitialState(data);
+                  updateFormValidationState();
 
-                  // Reset the reference to the checked radio button
-                  for (const option of calcOptions) {
-                    // Keep track of which radio button is currently checked
-                    if (option.checked) {
-                        checkedOption = option;
+
+                    // Send the default instrument to the backend
+                    // NOTE: This is necessary because otherwise the backend
+                    // will try to doCalculation with the last instrument that 
+                    // was set, which may not be valid for the default input values.
+                    setInstrument("Default")
+
+                    // Reset the reference to the checked radio button
+                    for (const option of calcOptions) {
+                        // Keep track of which radio button is currently checked
+                        if (option.checked) {
+                            checkedOption = option;
+                        }
                     }
-                  }
+                    sensitivityResultUnitOption.classList.toggle(
+                        "d-none",
+                        checkedOption.getAttribute("calculation") !== "sensitivity"
+                    );
 
-                  doCalculation(data);
+                    setInstrument("Default");
+                    doCalculation(data);
                 })
             });
+            
+
+            // Send the default instrument to the backend
+            setInstrument("Default")
 
             // Calculate the integration time using the default values
             doCalculation(data);
@@ -180,6 +256,10 @@ const doCalculation = (paramData) => {
 
     for (const option of calcOptions) {
         if (option.checked) {
+            if (option.getAttribute("calculation") === "sensitivity") {
+                inputData.brightness_temperature =
+                    document.getElementById("sensitivity-unit-k").checked;
+            }
             calculate(inputData, option.getAttribute("calculation"))
             .then((data) => {
                 CalculatorUI.showCalculatedValue(data.value, data.unit);
@@ -194,17 +274,4 @@ const doCalculation = (paramData) => {
             break;
         }
     }
-}
-
-const validateAndSetUIState = (input, units, paramData) => {
-
-    const formValidated = validateInput(input, units, paramData);
-    // Disable the calculation button if the form has not
-    // been validated, or enable if it has
-    CalculatorUI.disableCalculateBtn(!formValidated);
-    if (formValidated) {
-        CalculatorUI.resetOutputBox();
-    }
-
-    return formValidated;
 }

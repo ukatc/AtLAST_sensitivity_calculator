@@ -3,7 +3,7 @@ from numpy import floating
 from typing import Union
 from pydantic import BaseModel, ConfigDict, model_validator
 from astropy.units import Unit, Quantity
-from atlast_sc.data import Data, Validator
+from atlast_sc.core.data import Data, Validator
 
 class ModelUtils:
 
@@ -199,8 +199,8 @@ class CalculationInput(BaseModel):
 
 class DerivedParams(BaseModel):
     """
-    Derived parameters, calculated from user input and instrument setup
-    parameters.
+    Derived parameters, calculated from user input and telescope 
+    and environment parameters.
     """
     # Atmospheric opacity
     transmittance: float

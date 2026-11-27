@@ -1,7 +1,7 @@
 import pytest
 import astropy.units as u
-from atlast_sc.data import Data, Validator
-from atlast_sc.exceptions import UnitException, ValueNotAllowedException, \
+from atlast_sc.core.data import Data, Validator
+from atlast_sc.core.exceptions import UnitException, ValueNotAllowedException, \
     ValueOutOfRangeException, ValueTooLowException, ValueTooHighException
 from atlast_sc_tests.utils import does_not_raise
 

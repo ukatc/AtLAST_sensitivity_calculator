@@ -1,4 +1,4 @@
-from atlast_sc.data import Validator, Data
+from atlast_sc.core.data import Validator, Data
 
 class Instrument():
     def __init__(self, data):

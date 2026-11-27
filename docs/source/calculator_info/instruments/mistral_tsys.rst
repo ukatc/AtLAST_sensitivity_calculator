@@ -1,14 +1,13 @@
-# MISTRAL Instrument Walkthrough
+MISTRAL system temperature
+==========================
 
-This doc shows how to use the AtLAST Sensitivity Calculator with the MISTRAL (MIllimieter Sardinia radio Telescope Receiver based on Array of Lumped elements KIDs), a KIDs camera observing in the W-band from the Sardinia Radio Telescope
+This doc shows how to use the AtLAST Sensitivity Calculator with the MISTRAL (MIllimieter Sardinia radio Telescope Receiver based on Array of Lumped elements KIDs), a KIDs camera observing in the W-band from the Sardinia Radio Telescope.
 
-## MISTRAL Specifications
+MISTRAL Specifications
 
-- **Frequency Range**: 77-103 GHz
-- **Type**: Lumped elements Kinetic Inductance Detectors (LEKIDs)
-- **Purpose**: Wide area mapping
-
-This walkthrough is based on the other AtLAST tutorial notebooks. 
+* **Frequency Range**: 77-103 GHz
+* **Type**: Lumped elements Kinetic Inductance Detectors (LEKIDs)
+* **Purpose**: Wide area mapping
 
 This notebook calculates the sensitivity of MISTRAL based on preliminary
 data acquired during the commissioning phase at the telescope. We
@@ -22,7 +21,7 @@ the NET to NEP using the following formula:
 we then estimate SEFD and system temperature following the same steps as
 in the TIFUUN walkthrough:
 
-.. math::  T_{sys} = \frac{NEP}{k_b \eta_{chip}\eta_{co}t\sqrt{2n_{pol}\Delta\nu}}
+.. math::  T_{sys} = \frac{NEP}{k_b \eta_{chip}\eta_{co}\sqrt{2n_{pol}\Delta\nu}}
 
 Since the NET is measured using the atmosphere at the SRT, that is an
 extended source, we are already accounting for the efficiency of

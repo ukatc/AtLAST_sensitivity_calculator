@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from atlast_sc.data import Data
+from atlast_sc.core.data import Data
+from typing import Optional
 
 
 class APIUserInput(BaseModel):
@@ -18,6 +19,7 @@ class APIUserInput(BaseModel):
     elevation: dict
     weather: dict
     n_pol: dict
+    brightness_temperature: bool = False
 
     class Config:
         schema_extra = {
@@ -48,5 +50,24 @@ class APIUserInput(BaseModel):
                 "n_pol": {
                     "value": Data.n_pol.default_value,
                 },
+                "brightness_temperature": False,
             }
         }
+
+
+class InstrumentSelection(BaseModel):
+    """
+    Schema for selecting an instrument by name
+    """
+    instrument_name: str
+
+class ApplicableInstrumentsRequest(BaseModel):
+    obs_freq: Optional[float] = None
+    bandwidth: Optional[float] = None
+    bandwidth_unit: Optional[str] = None
+
+
+class VelocityConversionRequest(BaseModel):
+    obs_freq: float
+    velocity: float
+    velocity_unit: str
