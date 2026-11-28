@@ -4,13 +4,8 @@ from atlast_sc.core.utils import DataHelper
 from atlast_sc.core.parameter_setup import ParameterSetup
 
 
-VERSION = "1.0.0"
-
 # Global state to store special units
 special_units = [x for x in chain(*DataHelper.special_params_and_units.values()) if x]
-
-def version_num_for_url():
-    return VERSION.replace(".", "_")
 
 
 def modify_user_input_with_converted_values(user_input):

@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
 import astropy.units as u
+from atlast_sc import __version__
 from atlast_sc.core.utils import DataHelper
 
 from web_client.schemas import APIUserInput, InstrumentSelection, \
@@ -18,11 +19,11 @@ os.chdir(os.path.dirname(__file__))
 
 app = FastAPI(
     title="AtLast Sensitivity Calculator",
-    version=utils.VERSION,
+    version=__version__,
     swagger_ui_parameters={"defaultModelsExpandDepth": -1}
 )
 
-version = f'v{utils.version_num_for_url()}'
+version = f'v{__version__}'
 paths = {
     'sensitivity': f'/{version}/sensitivity',
     'integration_time': f'/{version}/integration-time',
